@@ -17,6 +17,7 @@ import logging
 import datetime
 import math
 
+import ephem
 import astropy.units as u
 
 from IQMon import IQMon
@@ -32,7 +33,7 @@ from IQMon import IQMon
 ## - once a set of dark frames which satify the criterion is found, combine all via a median combine
 ## - write that combined dark to a file named for the DataNight (not the night it was taken)
 ##############################################################
-def ListDarks(tel, image, config, logger):
+def ListDarks(image, tel, config, logger):
 	nDarksMin = 5  ## Minimum number of dark files to return for combination
 	SearchNDays = 10 ## Number of days back in time to look for dark frames
 	logger.info("Looking for master dark frame or darks to combine.")
@@ -47,12 +48,12 @@ def ListDarks(tel, image, config, logger):
 	DateLimit = DataNight - datetime.timedelta(days=SearchNDays)
 	
 	## Check to see if MasterDark Exists for this Observation Date
-	MasterDarkFilename = "MasterDark_"+tel.name+"_"+DataNightString+"_"+str(int(math.floor(image.exptime)))+".fits"
+	MasterDarkFilename = "MasterDark_"+tel.name+"_"+DataNightString+"_"+str(int(math.floor(image.exptime.to(u.s).value)))+".fits"
 	MasterDarkFile  = os.path.join(config.pathTemp, MasterDarkFilename)	
 	## Is that Master Dark File does not exist, see if the raw files exit to build one.
 	if os.path.exists(MasterDarkFile):
 		logger.info("Found Master Dark: %s" % MasterDarkFilename)
-		return [MasterDarkFilename]
+		return [MasterDarkFile]
 	else:
 		logger.info("Could Not Find Master Dark.  Looking for raw frames.")
 		Darks = []
@@ -64,10 +65,10 @@ def ListDarks(tel, image, config, logger):
 				logger.debug("Looking for darks in {0}".format(SearchPath))
 				Files = os.listdir(SearchPath)
 				for File in Files:
-					IsDark = re.match("Dark\-([0-9]{3})\-([0-9]{8})at([0-9]{6})\.fts", File)
+					IsDark = re.match("Dark\-([0-9]{3})\-([0-9]{8})at([0-9]{6})\.fi?ts", File)
 					if IsDark:
 						DarkExp = float(IsDark.group(1))
-						if DarkExp == image.exptime:
+						if DarkExp == image.exptime.value:
 							Darks.append(os.path.join(SearchPath, File.replace("fts", "fits")))
 				if len(Darks) >= nDarksMin:
 					## Once we have found enough dark files, return the list of dark files
@@ -77,7 +78,8 @@ def ListDarks(tel, image, config, logger):
 					return Darks
 			NewDate = NewDate - OneDay
 			NewDateString = datetime.datetime.strftime(NewDate, "%Y%m%dUT")
-
+		if len(Darks) == 0:
+			logger.warning("No darks found to combine.")
 
 
 
@@ -133,9 +135,10 @@ def main():
 	logger.addHandler(LogFileHandler)
 
 	##-------------------------------------------------------------------------
-	## Establish Configuration
+	## Establish IQMon Configuration
 	##-------------------------------------------------------------------------
 	config = IQMon.Config()
+
 
 	##-------------------------------------------------------------------------
 	## Determine which VYSOS Telescope Image is from
@@ -150,15 +153,14 @@ def main():
 		elif V20match and not V5match:
 			telescope = "V20"
 		else:
-			logger.error("Can not determine telescope from arguments or filename.")
+			logger.critical("Can not determine valid telescope from arguments or filename.")
 			sys.exit()
-
-	logger.info("###### Processing Image:  %s ######", FitsFilename)
-	logger.info("Setting telescope variable to %s", telescope)
 
 	##-------------------------------------------------------------------------
 	## Create Telescope Object
 	##-------------------------------------------------------------------------
+	logger.info("###### Processing Image:  %s ######", FitsFilename)
+	logger.info("Setting telescope variable to %s", telescope)
 	tel = IQMon.Telescope()
 	tel.name = telescope
 	if tel.name == "V5":
@@ -191,25 +193,27 @@ def main():
 		tel.fRatio = tel.focalLength.to(u.mm)/tel.aperture.to(u.mm)
 		tel.SExtractorPhotAperture = 16.0*u.pix
 		tel.SExtractorSeeing = 2.0*u.arcsec
+	## Define Site (ephem site object)
+	tel.site = ephem.Observer()
 
 	tel.CheckUnits(logger)
 
+
 	##-------------------------------------------------------------------------
-	## Create Image Object
+	## Perform Actual Image Analysis
 	##-------------------------------------------------------------------------
-	image = IQMon.Image(FitsFile)
-	image.ReadImage(config)
-	image.GetHeader(logger)
-	
-	darks = ListDarks(tel, image, config, logger)
-	
-# 	image.DarkSubtract(darks)
-# 	image.SolveAstrometry(tel, config, logger)
-	image.DeterminePointingError(logger)
-	image.GetHeader(logger)
-	image.Crop(tel,logger)
-	image.GetHeader(logger)
-	image.RunSExtractor(tel, config, logger)
+	image = IQMon.Image(FitsFile)  ## Create image object
+	image.ReadImage(config)        ## Create working copy of image (don't edit raw file!)
+	image.GetHeader(tel, logger)   ## Extract values from header
+	if not image.imageWCS:
+		image.SolveAstrometry(tel, config, logger)  ## Solve Astrometry
+		image.GetHeader(logger)                     ## Refresh Header
+	image.DeterminePointingError(logger)            ## Calculate Pointing Error
+	darks = ListDarks(image, tel, config, logger)   ## List dark files
+	image.DarkSubtract(darks, tel, config, logger)  ## Dark Subtract Image
+	image.Crop(tel, logger)                         ## Crop Image
+	image.GetHeader(tel, logger)                    ## Refresh Header
+	image.RunSExtractor(tel, config, logger)        ## Run SExtractor
 	
 	image.CleanUp(logger)
 	
