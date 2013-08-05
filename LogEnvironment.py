@@ -55,7 +55,7 @@ def GetFMTemp(FocusMax):
 		try:
 			FocusMax.Link = True
 		except:
-			return -999.0
+			return None
 		
 	FocuserTemps = []
 	FocuserTemp = float("NaN")
@@ -82,7 +82,7 @@ def GetFMPos(FocusMax):
 		try:
 			FocusMax.Link = True
 		except:
-			return -1
+			return None
 		
 	FocuserPositions = []
 	for i in range(0,4,1):
@@ -487,7 +487,10 @@ def main(argv=None):
 			logger.info("Getting Data from FocusMax")
 			FocuserTemp = GetFMTemp(FocusMax)
 			FocuserPos  = GetFMPos(FocusMax)
-			logger.info("  Temp = %.1f, Position = %d" % (FocuserTemp, FocuserPos))
+			if FocuserTemp and FocuserPos:
+    			logger.info("  Temp = %.1f, Position = %d" % (FocuserTemp, FocuserPos))
+    		elif not FocuserTemp and FocuserPos:
+    		    logger.info("  Temp = N/A, Position = %d" % (FocuserPos))
 		if telescope == "V20":
 			logger.info("Getting Data from RCOS TCC")
 			TrussTemp, PriTemp, SecTemp, FanSpeed, FocusPos = GetRCOSData(RCOST, RCOSF)

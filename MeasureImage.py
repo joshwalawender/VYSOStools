@@ -16,11 +16,19 @@ import re
 import logging
 import datetime
 import math
+import time
 
 import ephem
 import astropy.units as u
 
 from IQMon import IQMon
+
+
+class ParseError(Exception):
+	def __init__(self, value):
+		self.value = value
+	def __str__(self):
+		return repr(self.value)
 
 
 ##############################################################
@@ -112,27 +120,6 @@ def main():
 	DataNightString = os.path.split(FitsFileDirectory)[1]
 	FitsBasename, FitsExt = os.path.splitext(FitsFilename)
 
-	##-------------------------------------------------------------------------
-	## Create Logger Object
-	##-------------------------------------------------------------------------
-	IQMonLogFileName = "/Users/joshw/IQMon/tmp/templog.txt"
-	logger = logging.getLogger('IQMonLogger')
-	logger.setLevel(logging.DEBUG)
-	LogFileHandler = logging.FileHandler(IQMonLogFileName)
-	if args.verbose:
-		LogFileHandler.setLevel(logging.DEBUG)
-	else:
-		LogFileHandler.setLevel(logging.INFO)
-	LogConsoleHandler = logging.StreamHandler()
-	if args.verbose:
-		LogConsoleHandler.setLevel(logging.DEBUG)
-	else:
-		LogConsoleHandler.setLevel(logging.INFO)
-	LogFormat = logging.Formatter('%(asctime)23s %(levelname)8s: %(message)s')
-	LogFileHandler.setFormatter(LogFormat)
-	LogConsoleHandler.setFormatter(LogFormat)
-	logger.addHandler(LogConsoleHandler)
-	logger.addHandler(LogFileHandler)
 
 	##-------------------------------------------------------------------------
 	## Establish IQMon Configuration
@@ -153,14 +140,12 @@ def main():
 		elif V20match and not V5match:
 			telescope = "V20"
 		else:
-			logger.critical("Can not determine valid telescope from arguments or filename.")
-			sys.exit()
+			raise ParseError("Can not determine valid telescope from arguments or filename.")
+
 
 	##-------------------------------------------------------------------------
 	## Create Telescope Object
 	##-------------------------------------------------------------------------
-	logger.info("###### Processing Image:  %s ######", FitsFilename)
-	logger.info("Setting telescope variable to %s", telescope)
 	tel = IQMon.Telescope()
 	tel.name = telescope
 	if tel.name == "V5":
@@ -196,15 +181,42 @@ def main():
 	## Define Site (ephem site object)
 	tel.site = ephem.Observer()
 
-	tel.CheckUnits(logger)
+
+	##-------------------------------------------------------------------------
+	## Create IQMon.Image Object
+	##-------------------------------------------------------------------------
+	image = IQMon.Image(FitsFile)  ## Create image object
+
+	##-------------------------------------------------------------------------
+	## Create Logger Object
+	##-------------------------------------------------------------------------
+	IQMonLogFileName = os.path.join(config.pathLog, tel.longName, image.rawFileBasename+"_"+tel.name+"_IQMonLog.txt")
+	logger = logging.getLogger('IQMonLogger')
+	logger.setLevel(logging.DEBUG)
+	LogFileHandler = logging.FileHandler(IQMonLogFileName)
+	LogFileHandler.setLevel(logging.DEBUG)
+	LogConsoleHandler = logging.StreamHandler()
+	if args.verbose:
+		LogConsoleHandler.setLevel(logging.DEBUG)
+	else:
+		LogConsoleHandler.setLevel(logging.INFO)
+	LogFormat = logging.Formatter('%(asctime)23s %(levelname)8s: %(message)s')
+	LogFileHandler.setFormatter(LogFormat)
+	LogConsoleHandler.setFormatter(LogFormat)
+	logger.addHandler(LogConsoleHandler)
+	logger.addHandler(LogFileHandler)
 
 
 	##-------------------------------------------------------------------------
 	## Perform Actual Image Analysis
 	##-------------------------------------------------------------------------
-	image = IQMon.Image(FitsFile)  ## Create image object
+	logger.info("###### Processing Image:  %s ######", FitsFilename)
+	logger.info("Setting telescope variable to %s", telescope)
+	tel.CheckUnits(logger)
+	image.htmlImageList = os.path.join(config.pathLog, tel.longName, DataNightString+"_"+tel.name+".html")
 	image.ReadImage(config)        ## Create working copy of image (don't edit raw file!)
 	image.GetHeader(tel, logger)   ## Extract values from header
+	image.MakeJPEG(image.rawFileBasename+"_full.jpg", tel, config, logger, rotate=True, binning=2)
 	if not image.imageWCS:
 		image.SolveAstrometry(tel, config, logger)  ## Solve Astrometry
 		image.GetHeader(logger)                     ## Refresh Header
@@ -214,8 +226,11 @@ def main():
 	image.Crop(tel, logger)                         ## Crop Image
 	image.GetHeader(tel, logger)                    ## Refresh Header
 	image.RunSExtractor(tel, config, logger)        ## Run SExtractor
-	
+	image.DetermineFWHM(logger)
+	image.MakeJPEG(image.rawFileBasename+"_crop.jpg", tel, config, logger, marked=True, binning=1)
 	image.CleanUp(logger)
+	image.CalculateProcessTime(logger)
+	image.AddWebLogEntry(tel, config, logger)
 	
 
 if __name__ == '__main__':
