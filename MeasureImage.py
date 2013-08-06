@@ -113,7 +113,6 @@ def main():
 	parser.add_argument("-t", dest="telescope",
 	    required=False, type=str,
 		help="Telescope which tool the data ('V5' or 'V20')")
-	
 	args = parser.parse_args()
 	
 	##-------------------------------------------------------------------------

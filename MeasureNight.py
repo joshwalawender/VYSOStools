@@ -24,10 +24,7 @@ The help message goes here.
 '''
 
 
-def main(argv=None):
-    telescope = ""
-    date = None
-    
+def main(argv=None):  
     ##-------------------------------------------------------------------------
     ## Parse Command Line Arguments
     ##-------------------------------------------------------------------------
@@ -35,16 +32,18 @@ def main(argv=None):
     parser = ArgumentParser(description="Describe the script")
     ## add flags
     parser.add_argument("-n", "--no-clobber",
-        action="store_false", dest="clobber",
-        default=True, help="Delete previous logs and summary files for this night. (default = True)")
+        dest="clobber", action="store_false", default=True, 
+        help="Delete previous logs and summary files for this night. (default = True)")
     ## add arguments
-    parser.add_argument("-t", dest="telescope",
-        required=True, type=str,
+    parser.add_argument("-t", "--telescope",
+        dest="telescope", required=True, type=str,
+        choices=["V5", "V20"],
         help="Telescope which took the data ('V5' or 'V20')")
-    parser.add_argument("-d", dest="date",
-        required=False, type=str,
-        help="UT date of night to analyze. (i.e. 20130805UT)")
+    parser.add_argument("-d", "--date", 
+        dest="date", required=False, default="", type=str,
+        help="UT date of night to analyze. (i.e. '20130805UT')")
     args = parser.parse_args()
+    
     
     ##-------------------------------------------------------------------------
     ## Establish IQMon Configuration
@@ -56,21 +55,21 @@ def main(argv=None):
     ##-------------------------------------------------------------------------
     now = time.gmtime()
     DateString = time.strftime("%Y%m%dUT", now)
-    if not date:
-        date = DateString
+    if not args.date:
+        args.date = DateString
     
     ## Set Path to Data for this night
-    if telescope == "V5":
+    if re.match("V5", args.telescope):
         VYSOSDATAPath = os.path.join("/Volumes", "Data_V5")
-    elif telescope == "V20":
+    elif re.match("V20", args.telescope):
         VYSOSDATAPath = os.path.join("/Volumes", "Data_V20")
     else:
-        print("Telescope {0} does not match 'V5' or 'V20'".format(telescope))
+        print("Telescope {0} does not match 'V5' or 'V20'".format(args.telescope))
         sys.exit()
-    ImagesDirectory = os.path.join(VYSOSDATAPath, "Images", date)
-    LogsDirectory = os.path.join(VYSOSDATAPath, "Logs", date)
+    ImagesDirectory = os.path.join(VYSOSDATAPath, "Images", args.date)
+    LogsDirectory = os.path.join(VYSOSDATAPath, "Logs", args.date)
     
-    print "Analyzing data for night of "+date
+    print "Analyzing data for night of "+args.date
     if os.path.exists(ImagesDirectory) and os.path.exists(LogsDirectory):
         print "  Found "+ImagesDirectory+" and "+LogsDirectory
         ##
