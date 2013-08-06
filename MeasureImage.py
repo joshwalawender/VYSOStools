@@ -229,7 +229,7 @@ def main():
     image.MakeJPEG(image.rawFileBasename+"_full.jpg", tel, config, logger, rotate=True, binning=2)
     if not image.imageWCS:
         image.SolveAstrometry(tel, config, logger)  ## Solve Astrometry
-        image.GetHeader(logger)                     ## Refresh Header
+        image.GetHeader(tel, logger)                ## Refresh Header
     image.DeterminePointingError(logger)            ## Calculate Pointing Error
     darks = ListDarks(image, tel, config, logger)   ## List dark files
     image.DarkSubtract(darks, tel, config, logger)  ## Dark Subtract Image
