@@ -16,7 +16,7 @@ def TestDevice(address, nPings):
     MatchPingResult = re.compile(".*([0-9]+)\spackets\stransmitted,\s([0-9]+)\spackets received,\s([0-9\.]+).\spacket\sloss.*")
     MatchPingStats  = re.compile(".*round\-trip\smin/avg/max/stddev\s=\s([0-9\.]+)/([0-9\.]+)/([0-9\.]+)/([0-9\.]+)\sms.*")
     
-    result = subprocess.check_output(["ping", "-c "+str(nPings), address])
+    result = subprocess32.check_output(["ping", "-c "+str(nPings), address])
     foo = result.find("statistics ---") + len("statistics ---")
     result = result[foo+1:-1]
     IsMatch = MatchPingResult.match(result)
