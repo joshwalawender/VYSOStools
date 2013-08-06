@@ -77,7 +77,7 @@ def ListDarks(image, tel, config, logger):
                     if IsDark:
                         DarkExp = float(IsDark.group(1))
                         if DarkExp == image.exptime.value:
-                            Darks.append(os.path.join(SearchPath, File.replace("fts", "fits")))
+                            Darks.append(os.path.join(SearchPath, File))
                 if len(Darks) >= nDarksMin:
                     ## Once we have found enough dark files, return the list of dark files
                     logger.info("Found %d dark files in %s" % (len(Darks), SearchPath))
@@ -226,7 +226,7 @@ def main():
         if os.path.exists(image.htmlImageList): os.remove(image.htmlImageList)
     image.ReadImage(config)        ## Create working copy of image (don't edit raw file!)
     image.GetHeader(tel, logger)   ## Extract values from header
-#     image.MakeJPEG(image.rawFileBasename+"_full.jpg", tel, config, logger, rotate=True, binning=2)
+    image.MakeJPEG(image.rawFileBasename+"_full.jpg", tel, config, logger, rotate=True, binning=2)
     if not image.imageWCS:
         image.SolveAstrometry(tel, config, logger)  ## Solve Astrometry
         image.GetHeader(logger)                     ## Refresh Header
@@ -237,7 +237,7 @@ def main():
     image.GetHeader(tel, logger)                    ## Refresh Header
     image.RunSExtractor(tel, config, logger)        ## Run SExtractor
     image.DetermineFWHM(logger)
-#     image.MakeJPEG(image.rawFileBasename+"_crop.jpg", tel, config, logger, marked=True, binning=1)
+    image.MakeJPEG(image.rawFileBasename+"_crop.jpg", tel, config, logger, marked=True, binning=1)
     image.CleanUp(logger)
     image.CalculateProcessTime(logger)
     image.AddWebLogEntry(tel, config, logger)
