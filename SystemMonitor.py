@@ -59,10 +59,7 @@ def main():
     LogFileHandler = logging.FileHandler(LogFileName)
     LogFileHandler.setLevel(logging.DEBUG)
     LogConsoleHandler = logging.StreamHandler()
-    if args.verbose:
-        LogConsoleHandler.setLevel(logging.DEBUG)
-    else:
-        LogConsoleHandler.setLevel(logging.INFO)
+    LogConsoleHandler.setLevel(logging.DEBUG)
     LogFormat = logging.Formatter('%(asctime)23s %(levelname)8s: %(message)s')
     LogFileHandler.setFormatter(LogFormat)
     LogConsoleHandler.setFormatter(LogFormat)
