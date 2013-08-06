@@ -62,8 +62,11 @@ def main(argv=None):
     ## Set Path to Data for this night
     if telescope == "V5":
         VYSOSDATAPath = os.path.join("/Volumes", "Data_V5")
-    if telescope == "V20":
+    elif telescope == "V20":
         VYSOSDATAPath = os.path.join("/Volumes", "Data_V20")
+    else:
+        print("Telescope {0} does not match 'V5' or 'V20'".format(telescope))
+        sys.exit()
     ImagesDirectory = os.path.join(VYSOSDATAPath, "Images", date)
     LogsDirectory = os.path.join(VYSOSDATAPath, "Logs", date)
     
