@@ -8,28 +8,22 @@ Copyright (c) 2012 . All rights reserved.
 """
 
 import sys
-import getopt
 import os
+from argparse import ArgumentParser
 import re
 import string
 import fnmatch
-import numpy
-import math
-import astropy
-import astropy.io
-import astropy.io.ascii
-import astropy.table
-
-import matplotlib.pyplot as pyplot
-import ephem
+import time
 import datetime
+import math
+import numpy
+import matplotlib.pyplot as pyplot
 
-import IQMonTools
-import SiteCustomization
+import ephem
+from astropy.io import ascii
+from astropy import table
+import IQMon
 
-class Usage(Exception):
-    def __init__(self, msg):
-        self.msg = msg
 
 def TimeStringToDecimal(TimeString):
     hms = string.split(TimeString, ":")
@@ -43,8 +37,8 @@ def ConvertHSTtoUTString(TimeString):
     else:
         UTString = str(int(hmsHST[0])+10)+":"+hmsHST[1]+":"+hmsHST[2]
     return UTString
-    
-    
+
+
 ###########################################################
 ## Read ACP Logs
 ## - extract ACP FWHM and Pointing Error
@@ -101,22 +95,21 @@ def ReadACPLog(DateString, VYSOSDATAPath, PixelScale):
     else:
         print "  Failed to Find ACP Log Directory: "+ACPLogDirectory
         ACPdata = []
-    
-    return ACPdata
 
+    return ACPdata
 
 
 ###########################################################
 ## Read IQMon Logs
 ## - extract IQMon FWHM, ellipticity, pointing error
-def ReadIQMonLog(LogPath, telescope, DateString):
+def ReadIQMonLog(config, telescope, DateString):
     FoundIQMonFile = False
     if telescope == "V5":
         telname = "VYSOS-5"
     if telescope == "V20":
         telname = "VYSOS-20"
-    if os.path.exists(os.path.join(LogPath, telname)):
-        Files = os.listdir(os.path.join(LogPath, telname))
+    if os.path.exists(os.path.join(config.pathLog, telname)):
+        Files = os.listdir(os.path.join(config.pathLog, telname))
         if telescope == "V5":
             MatchIQMonFile = re.compile("([0-9]{8}UT)_V5_Summary\.txt")
         if telescope == "V20":
@@ -124,24 +117,24 @@ def ReadIQMonLog(LogPath, telescope, DateString):
         for File in Files:
             IsIQMonFile = MatchIQMonFile.match(File)
             if IsIQMonFile:
-                FullIQMonFile = os.path.join(LogPath, telname, File)
+                FullIQMonFile = os.path.join(config.pathLog, telname, File)
                 IQMonFileDate = IsIQMonFile.group(1)
                 if IQMonFileDate == DateString:
                     print "    IQMon Summary file for "+DateString+" is "+File
                     FoundIQMonFile = True
                     try:
-                        IQMonTable = astropy.io.ascii.read(FullIQMonFile)
+                        IQMonTable = ascii.read(FullIQMonFile, fill_values=("--", float("nan")))
                         IQMonTimeDecimals = []
                         for i in range(0,len(IQMonTable),1):
                             IQMonTimeDecimals.append(TimeStringToDecimal(IQMonTable[i]['ExpStart'][11:19]))
-                        IQMonTable.add_column(astropy.table.Column(data=IQMonTimeDecimals, name='Time'))
+                        IQMonTable.add_column(table.MaskedColumn(data=IQMonTimeDecimals, name='Time'))
                         print "    Data for %d images extracted from IQMon summary file." % len(IQMonTable)
                     except:
                         print "    Failed to Read IQMon Log File"
-                        IQMonTable = astropy.table.Table(names=ColNames)
+                        IQMonTable = table.Table(names=ColNames)
     if not FoundIQMonFile:
-        print "  Failed to Find IQMon Logs: "+os.path.join(LogPath, telname)
-        IQMonTable = astropy.table.Table()
+        print "  Failed to Find IQMon Logs: "+os.path.join(config.pathLog, telname)
+        IQMonTable = table.Table()
 
     return IQMonTable
     
@@ -223,9 +216,9 @@ def ReadFocusMaxLog(VYSOSDATAPath, DateString):
         FocusRuns = []
 
     return FocusRuns
-    
-    
-###########################################################            
+
+
+###########################################################
 ## Read Environmental Logs
 def ReadEnvironmentalLogs(DateString, telescope, V5DataPath, V20DataPath):
     print "  Reading Environmental Logs"
@@ -239,13 +232,13 @@ def ReadEnvironmentalLogs(DateString, telescope, V5DataPath, V20DataPath):
         FoundV20EnvLogFile = True
         ColStarts = [ 0, 11, 22, 32, 42, 52, 62, 72, 82,  92, 102, 112, 122, 132, 142, 152, 162]
         ColEnds   = [ 9, 18, 31, 41, 51, 61, 71, 81, 91, 101, 111, 121, 131, 141, 151, 161, 171]
-        ColNames  = ['Date', 'TimeString', 'TubeTemp', 'PrimaryTemp', 'SecTemp', 'FanPower', 'FocusPos', 
+        ColNames  = ['Date', 'TimeString', 'TubeTemp', 'PrimaryTemp', 'SecTemp', 'FanPower', 'FocusPos',
                      'SkyTemp', 'OutsideTemp', 'WindSpeed', 'Humidity', 'DewPoint', 'Alt', 'Az', 'Condition', 'DomeTemp', 'DomeFanState']
-        V20EnvTable = astropy.io.ascii.read(V20EnvLogFileName, data_start=2, Reader=astropy.io.ascii.FixedWidth,
+        V20EnvTable = ascii.read(V20EnvLogFileName, data_start=2, Reader=ascii.FixedWidth,
                       col_starts=ColStarts, col_ends=ColEnds, names=ColNames, 
                       guess=False, comment=";", header_start=0)
         V20SkyDiff   = V20EnvTable['SkyTemp'] #- V20EnvTable['OutsideTemp']
-        V20EnvTable.add_column(astropy.table.Column(data=V20SkyDiff, name='SkyDiff'))
+        V20EnvTable.add_column(table.Column(data=V20SkyDiff, name='SkyDiff'))
         V20DomeFan = []
         V20TimeDecimal = []
         V20Wetness = []
@@ -273,16 +266,16 @@ def ReadEnvironmentalLogs(DateString, telescope, V5DataPath, V20DataPath):
                 V20DomeFan.append(float(FanMatch.group(1))*100)
             else:
                 V20DomeFan.append(float(0))
-        V20EnvTable.add_column(astropy.table.Column(data=V20TimeDecimal, name='Time'))
-        V20EnvTable.add_column(astropy.table.Column(data=V20Wetness, name='WetCondition'))
-        V20EnvTable.add_column(astropy.table.Column(data=V20Cloudiness, name='CloudCondition'))
-        V20EnvTable.add_column(astropy.table.Column(data=V20Windiness, name='WindCondition'))
-        V20EnvTable.add_column(astropy.table.Column(data=V20DomeFan, name='DomeFan'))
+        V20EnvTable.add_column(table.Column(data=V20TimeDecimal, name='Time'))
+        V20EnvTable.add_column(table.Column(data=V20Wetness, name='WetCondition'))
+        V20EnvTable.add_column(table.Column(data=V20Cloudiness, name='CloudCondition'))
+        V20EnvTable.add_column(table.Column(data=V20Windiness, name='WindCondition'))
+        V20EnvTable.add_column(table.Column(data=V20DomeFan, name='DomeFan'))
     else:
-        ColNames  = ['Date', 'TimeString', 'TubeTemp', 'PrimaryTemp', 'SecTemp', 'FanPower', 'FocusPos', 
+        ColNames  = ['Date', 'TimeString', 'TubeTemp', 'PrimaryTemp', 'SecTemp', 'FanPower', 'FocusPos',
                      'SkyTemp', 'OutsideTemp', 'WindSpeed', 'Humidity', 'DewPoint', 'Alt', 'Az', 'Condition', 'DomeTemp', 'DomeFanState']
-        V20EnvTable = astropy.table.Table(names=ColNames)
-        
+        V20EnvTable = table.Table(names=ColNames)
+
     if os.path.exists(V5EnvLogFileName):
         print "  Found VYSOS-5 Environmental Logs"
         FoundV5EnvLogFile = True
@@ -290,11 +283,11 @@ def ReadEnvironmentalLogs(DateString, telescope, V5DataPath, V20DataPath):
         ColEnds   = [ 9, 18, 31, 41, 51, 61, 71, 81, 91, 101, 111, 121]
         ColNames  = ['Date', 'TimeString', 'TubeTemp', 'FocusPos', 
                      'SkyTemp', 'OutsideTemp', 'WindSpeed', 'Humidity', 'DewPoint', 'Alt', 'Az', 'Condition']
-        V5EnvTable = astropy.io.ascii.read(V5EnvLogFileName, data_start=2, Reader=astropy.io.ascii.FixedWidth, 
+        V5EnvTable = ascii.read(V5EnvLogFileName, data_start=2, Reader=ascii.FixedWidth, 
                      col_starts=ColStarts, col_ends=ColEnds, names=ColNames, 
                      guess=False, comment=";", header_start=0)
         V5SkyDiff   = V5EnvTable['SkyTemp'] - V5EnvTable['OutsideTemp']
-        V5EnvTable.add_column(astropy.table.Column(data=V5SkyDiff, name='SkyDiff'))
+        V5EnvTable.add_column(table.Column(data=V5SkyDiff, name='SkyDiff'))
         V5TimeDecimal = []
         V5Wetness = []
         V5Cloudiness = []
@@ -315,21 +308,19 @@ def ReadEnvironmentalLogs(DateString, telescope, V5DataPath, V20DataPath):
                 V5Windiness.append("-1")
             ## Filter Out Bad Sky Diff Values
             if V5EnvTable[i]['SkyTemp'] < -100.: V5EnvTable[i]['SkyTemp'] = float("nan")
-        V5EnvTable.add_column(astropy.table.Column(data=V5TimeDecimal, name='Time'))
-        V5EnvTable.add_column(astropy.table.Column(data=V5Wetness, name='WetCondition'))
-        V5EnvTable.add_column(astropy.table.Column(data=V5Cloudiness, name='CloudCondition'))
-        V5EnvTable.add_column(astropy.table.Column(data=V5Windiness, name='WindCondition'))
+        V5EnvTable.add_column(table.Column(data=V5TimeDecimal, name='Time'))
+        V5EnvTable.add_column(table.Column(data=V5Wetness, name='WetCondition'))
+        V5EnvTable.add_column(table.Column(data=V5Cloudiness, name='CloudCondition'))
+        V5EnvTable.add_column(table.Column(data=V5Windiness, name='WindCondition'))
     else:
         ColNames  = ['Date', 'TimeString', 'TubeTemp', 'FocusPos', 
                      'SkyTemp', 'OutsideTemp', 'WindSpeed', 'Humidity', 'DewPoint', 'Alt', 'Az', 'Condition']
-        V5EnvTable = astropy.table.Table(names=ColNames)
+        V5EnvTable = table.Table(names=ColNames)
 
     return V20EnvTable, V5EnvTable
 
 
-
-
-###########################################################            
+###########################################################
 ## Make Plots
 def MakePlots(DateString, telescope):
     print "#### Making Nightly Plots for "+telescope+" on the Night of "+DateString+" ####"
@@ -343,14 +334,12 @@ def MakePlots(DateString, telescope):
 
     ##############################################################
     ## Read Configuration File to get the following items
-    ## - IQMONEXECPATH
-    ## - IQMONLOGS
-    ## - IQMONPLOTS
-    ## - IQMONTMP
-    IQMonExecPath, LogPath, PlotsPath, tmpPath, PythonPath, V5DataPath, V20DataPath, CatalogPath, LogBuffer = IQMonTools.ReadConfigFile()
-    
+    config = IQMon.Config()
+
     ##############################################################
     ## Set up pathnames and filenames
+    V5DataPath = os.path.join("/Volumes", "Data_V5")
+    V20DataPath = os.path.join("/Volumes", "Data_V20")
     if telescope == "V5":
         VYSOSDATAPath = V5DataPath
         PixelScale = 2.53
@@ -361,20 +350,18 @@ def MakePlots(DateString, telescope):
         PixelScale = 0.44
         telname = "VYSOS-20"
         OtherTelescope = "V5"
-    
+
     ## Set File Name
     PlotFileName = DateString+"_"+telescope+".png"
-    PlotFile = os.path.join(LogPath, telname, PlotFileName)
+    PlotFile = os.path.join(config.pathLog, telname, PlotFileName)
     EnvPlotFileName = DateString+"_"+telescope+"_Env.png"
-    EnvPlotFile = os.path.join(LogPath, telname, EnvPlotFileName)
+    EnvPlotFile = os.path.join(config.pathLog, telname, EnvPlotFileName)
     RecentPlotFileName = "Recent_"+telname+"_Conditions.png"
-    RecentPlotFile = os.path.join(LogPath, telname, RecentPlotFileName)
-    
+    RecentPlotFile = os.path.join(config.pathLog, telname, RecentPlotFileName)
+
     ## Compile Various Regular Expressions for File Name Matching and ACP Log Parsing
-    MatchDir           = re.compile(DateString)
-    MatchCCDILine      = re.compile("\d{2}/\d{2}/\d{2}\s*(\d{2}:\d{2}:\d{2})\s*([a-zA-Z0-9@_\-]{5,50}\.fts)\s+([0-9\.]{2,6})px\s+.*")
-    
-    
+    MatchDir = re.compile(DateString)
+
     ##############################################################
     ## Use pyephem determine sunrise and sunset times
     Observatory = ephem.Observer()
@@ -405,11 +392,11 @@ def MakePlots(DateString, telescope):
     MorningAstronomicalTwilightTime = Observatory.next_rising(ephem.Sun(), use_center=True).datetime()
     EveningAstronomicalTwilightDecimal = float(datetime.datetime.strftime(EveningAstronomicalTwilightTime, "%H"))+float(datetime.datetime.strftime(EveningAstronomicalTwilightTime, "%M"))/60.+float(datetime.datetime.strftime(EveningAstronomicalTwilightTime, "%S"))/3600.
     MorningAstronomicalTwilightDecimal = float(datetime.datetime.strftime(MorningAstronomicalTwilightTime, "%H"))+float(datetime.datetime.strftime(MorningAstronomicalTwilightTime, "%M"))/60.+float(datetime.datetime.strftime(MorningAstronomicalTwilightTime, "%S"))/3600.
-    
+
     PlotStartUT = math.floor(SunsetDecimal)
     PlotEndUT = math.ceil(SunriseDecimal)
     nUTHours = PlotEndUT-PlotStartUT+1
-    
+
     Observatory.date = DateString[0:4]+"/"+DateString[4:6]+"/"+DateString[6:8]+" 0:00:01.0"
     TheMoon = ephem.Moon()
     TheMoon.compute(Observatory)
@@ -417,7 +404,7 @@ def MakePlots(DateString, telescope):
     MoonriseTime = Observatory.next_rising(ephem.Moon()).datetime()
     MoonsetDecimal = float(datetime.datetime.strftime(MoonsetTime, "%H"))+float(datetime.datetime.strftime(MoonsetTime, "%M"))/60.+float(datetime.datetime.strftime(MoonsetTime, "%S"))/3600.
     MoonriseDecimal = float(datetime.datetime.strftime(MoonriseTime, "%H"))+float(datetime.datetime.strftime(MoonriseTime, "%M"))/60.+float(datetime.datetime.strftime(MoonriseTime, "%S"))/3600.        
-    
+
     MoonTimes = numpy.arange(0,24,0.1)
     MoonAlts = []
     for MoonTime in MoonTimes:
@@ -433,10 +420,10 @@ def MakePlots(DateString, telescope):
     Observatory.date = DateString[0:4]+"/"+DateString[4:6]+"/"+DateString[6:8]+" "+MoonPeakTimeString
     TheMoon.compute(Observatory)
     MoonPhase = TheMoon.phase
-        
+
     now = datetime.datetime.utcnow()
     DecimalTime = now.hour+now.minute/60.+now.second/3600.
-        
+
     ###########################################################
     ## Read ACP Logs
     ACPdata = ReadACPLog(DateString, VYSOSDATAPath, PixelScale)
@@ -445,7 +432,7 @@ def MakePlots(DateString, telescope):
     ###########################################################
     ## Read IQMon Logs
     ## - extract IQMon FWHM, ellipticity, pointing error
-    IQMonTable = ReadIQMonLog(LogPath, telescope, DateString)
+    IQMonTable = ReadIQMonLog(config, telescope, DateString)
     if len(IQMonTable) > 1: FoundIQMonFile = True
     # IQMonTable = IQMonTable.sort('Time')
 
@@ -455,29 +442,30 @@ def MakePlots(DateString, telescope):
     FocusRuns = ReadFocusMaxLog(VYSOSDATAPath, DateString)
     if len(FocusRuns) > 1: FoundFocusMaxFile = True
 
-    ###########################################################            
+    ###########################################################
     ## Get Environmental Data
     V20EnvTable, V5EnvTable = ReadEnvironmentalLogs(DateString, telescope, V5DataPath, V20DataPath)
     if len(V20EnvTable) > 1: FoundV20Env = True
     if len(V5EnvTable) > 1:  FoundV5Env = True
     # V20EnvTable = V20EnvTable.sort('Time')
     # V5EnvTable = V5EnvTable.sort('Time')
-        
+
     ###########################################################
     ## Match up ACP Log and IQMon Results Based on filename
     print "  Matching IQMon and ACP data"
     if FoundIQMonFile and FoundACPLog:
-        MatchedData = astropy.table.Table(
+        MatchedData = table.Table(
                       names=('ACP Time', 'ACP File', 'ACP FWHM', 'ACP PErr', 'IQMon Time', 'IQMon File', 'IQMon FWHM', 'IQMon PErr'),
-                      dtypes=('f',       'S',        'f',        'f',        'S',           'S',         'f',          'f')
+                      dtypes=('f',       'S',        'f',        'f',        'S',           'S',         'f',          'f'),
+                      masked=True
                       )
         for ACPentry in ACPdata:
             FoundIQMonMatch = False
             for IQMonEntry in IQMonTable:
                 if re.match(IQMonEntry['File']+".*", ACPentry[1]+".fts"):
-                    FoundIQMonMatch = True                            
-                    MatchedData.add_row([ACPentry[0], ACPentry[1], ACPentry[3], ACPentry[5], 
-                                         IQMonEntry['ExpStart'], IQMonEntry['File'], IQMonEntry['FWHM'], IQMonEntry['PointingError']])    
+                    FoundIQMonMatch = True
+                    MatchedData.add_row([ACPentry[0], ACPentry[1], ACPentry[3], ACPentry[5],
+                                         IQMonEntry['ExpStart'], IQMonEntry['File'], IQMonEntry['FWHM (pix)'], IQMonEntry['PointingError (arcmin)']])
             if not FoundIQMonMatch:
                 ACPFile = os.path.join(VYSOSDATAPath, "Images", DateString, ACPentry[1]+".fts")
                 if os.path.exists(ACPFile):
@@ -485,21 +473,21 @@ def MakePlots(DateString, telescope):
                 else:
                     print "  - Could not find file for ACP log entry "+ACPentry[1]+".fts."
     # MatchedData = MatchedData.sort('ACP Time')
-        
 
-    ###########################################################            
+
+    ###########################################################
     ## Make Nightly Sumamry Plot (show only night time)
-    ###########################################################            
+    ###########################################################
     print "  Writing Output File: "+PlotFileName
     dpi=100
     Figure = pyplot.figure(figsize=(11,11), dpi=dpi)
-    
-    ###########################################################            
+
+    ###########################################################
     ## Temperatures
     if FoundV20Env or FoundV5Env:
         TemperatureAxes = pyplot.axes([0.0, 0.765, 0.46, 0.235])
         pyplot.title("Environmental Data for "+telescope + " on the Night of " + DateString)
-    
+
         if telescope == "V20" and FoundV20Env:
             if FoundV5Env:
                 pyplot.plot(V5EnvTable['Time'], V5EnvTable['OutsideTemp'], 'k-', alpha=0.5, drawstyle="steps-post", label="Outside Temp ("+OtherTelescope+")")
@@ -507,20 +495,19 @@ def MakePlots(DateString, telescope):
             pyplot.plot(V20EnvTable['Time'], V20EnvTable['OutsideTemp'], 'k-', drawstyle="steps-post", label="Outside Temp ("+telescope+")")
             pyplot.plot(V20EnvTable['Time'], V20EnvTable['PrimaryTemp'], 'r-', drawstyle="steps-post", label="Mirror Temp")
             pyplot.plot(V20EnvTable['Time'], V20EnvTable['DomeTemp'], 'c-', drawstyle="steps-post", label="Dome Temp")
-            
-        
+
         if telescope == "V5" and FoundV5Env:
             if FoundV20Env:
                 pyplot.plot(V20EnvTable['Time'], V20EnvTable['OutsideTemp'], 'k-', alpha=0.5, drawstyle="steps-post", label="Outside Temp ("+OtherTelescope+")")
             pyplot.plot(V5EnvTable['Time'], V5EnvTable['TubeTemp'], 'g-', drawstyle="steps-post", label="Tube Temp")
             pyplot.plot(V5EnvTable['Time'], V5EnvTable['OutsideTemp'], 'k-', drawstyle="steps-post", label="Outside Temp ("+telescope+")")
-        
+
         pyplot.legend(loc='best', prop={'size':10})
         pyplot.ylabel("Temperature (F)")
         pyplot.xticks(numpy.linspace(PlotStartUT,PlotEndUT,nUTHours,endpoint=True))
         pyplot.xlim(PlotStartUT,PlotEndUT)
         pyplot.grid()
-        
+
         ## Overplot Twilights
         pyplot.axvspan(SunsetDecimal, EveningCivilTwilightDecimal, ymin=0, ymax=1, color='blue', alpha=0.1)
         pyplot.axvspan(EveningCivilTwilightDecimal, EveningNauticalTwilightDecimal, ymin=0, ymax=1, color='blue', alpha=0.2)
@@ -552,8 +539,8 @@ def MakePlots(DateString, telescope):
             pyplot.yticks(numpy.linspace(0,100,3,endpoint=True))
             pyplot.legend(loc='best', prop={'size':10})
             pyplot.grid()
-    
-    ###########################################################            
+
+    ###########################################################
     ## Sky Condition (Cloudiness)
     if FoundV20Env or FoundV5Env:
         # Figure.add_axes([0.0, 0.255, 0.46, 0.235])
@@ -580,7 +567,7 @@ def MakePlots(DateString, telescope):
         pyplot.ylim(-100,-20)
         pyplot.grid()
 
-    ###########################################################            
+    ###########################################################
     ## Humidity
     if FoundV20Env or FoundV5Env:
         if telescope == "V5" and FoundV5Env:
@@ -608,7 +595,7 @@ def MakePlots(DateString, telescope):
         pyplot.ylim(-5,105)
         pyplot.grid()
 
-    ###########################################################            
+    ###########################################################
     ## Wind Speed
     if FoundV20Env or FoundV5Env:
         Figure.add_axes([0.0, 0.000, 0.46, 0.235])
@@ -635,13 +622,11 @@ def MakePlots(DateString, telescope):
         pyplot.xticks(numpy.linspace(PlotStartUT,PlotEndUT,nUTHours,endpoint=True))
         pyplot.xlim(PlotStartUT,PlotEndUT)
         pyplot.grid()
-    
-    
-    
-    ###########################################################            
+
+    ###########################################################
     ## FWHM vs. Time
     if FoundIQMonFile:
-        Figure.add_axes([0.54, 0.765, 0.46, 0.235])            
+        Figure.add_axes([0.54, 0.765, 0.46, 0.235])
         pyplot.title("IQ Mon Results for "+telescope + " on the Night of " + DateString)
         if FoundACPLog:
             if telescope == "V5":
@@ -672,7 +657,7 @@ def MakePlots(DateString, telescope):
         pyplot.axvspan(MorningCivilTwilightDecimal, SunriseDecimal, ymin=0, ymax=1, color='blue', alpha=0.1)
 
 
-    ###########################################################            
+    ###########################################################
     ## Focus Position
     if (telescope == "V5" and FoundV5Env and FoundIQMonFile):
         Figure.add_axes([0.54, 0.510, 0.46, 0.235])
@@ -704,9 +689,9 @@ def MakePlots(DateString, telescope):
         pyplot.ylim(ylimlower-0.15*ylimrange, ylimupper+0.15*ylimrange)
         pyplot.legend(loc='best', prop={'size':10})
         pyplot.grid()
-    
 
-    ###########################################################            
+
+    ###########################################################
     ## Ellipticity vs. Time
     if FoundIQMonFile:
         Figure.add_axes([0.54, 0.255, 0.46, 0.235])
@@ -719,7 +704,7 @@ def MakePlots(DateString, telescope):
         pyplot.grid()
 
 
-    ###########################################################            
+    ###########################################################
     ## Pointing Error vs. Time
     if FoundIQMonFile:
         Figure.add_axes([0.54, 0.000, 0.46, 0.235])
@@ -736,14 +721,13 @@ def MakePlots(DateString, telescope):
         pyplot.ylim(0,PErrPlotMax)
         pyplot.legend(loc='best', prop={'size':10})
         pyplot.grid()
-    
+
     pyplot.savefig(PlotFile, dpi=dpi, bbox_inches='tight', pad_inches=0.10)
-    
 
 
-    ###########################################################            
+    ###########################################################
     ## Make Environmental Plot (show entire day)
-    ###########################################################            
+    ###########################################################
     print "  Writing Output File: "+EnvPlotFileName
     dpi=100
     Figure = pyplot.figure(figsize=(11,11), dpi=dpi)
@@ -751,12 +735,12 @@ def MakePlots(DateString, telescope):
     PlotEndUT = 24
     nUTHours = 25
     
-    ###########################################################            
+    ###########################################################
     ## Temperatures
     if FoundV20Env or FoundV5Env:
-        TemperatureAxes = pyplot.axes([0.0, 0.765, 1.0, 0.235])        
+        TemperatureAxes = pyplot.axes([0.0, 0.765, 1.0, 0.235])
         pyplot.title("Environmental Data for "+telescope + " on the Night of " + DateString)
-    
+
         if telescope == "V20" and FoundV20Env:
             if FoundV5Env:
                 pyplot.plot(V5EnvTable['Time'], V5EnvTable['OutsideTemp'], 'k-', alpha=0.5, drawstyle="steps-post", label="Outside Temp ("+OtherTelescope+")")
@@ -764,19 +748,19 @@ def MakePlots(DateString, telescope):
             pyplot.plot(V20EnvTable['Time'], V20EnvTable['OutsideTemp'], 'k-', drawstyle="steps-post", label="Outside Temp ("+telescope+")")
             pyplot.plot(V20EnvTable['Time'], V20EnvTable['PrimaryTemp'], 'r-', drawstyle="steps-post", label="Mirror Temp")
             pyplot.plot(V20EnvTable['Time'], V20EnvTable['DomeTemp'], 'c-', drawstyle="steps-post", label="Dome Temp")
-        
+
         if telescope == "V5" and FoundV5Env:
             if FoundV20Env:
                 pyplot.plot(V20EnvTable['Time'], V20EnvTable['OutsideTemp'], 'k-', alpha=0.5, drawstyle="steps-post", label="Outside Temp ("+OtherTelescope+")")
             pyplot.plot(V5EnvTable['Time'], V5EnvTable['TubeTemp'], 'g-', drawstyle="steps-post", label="Tube Temp")
             pyplot.plot(V5EnvTable['Time'], V5EnvTable['OutsideTemp'], 'k-', drawstyle="steps-post", label="Outside Temp ("+telescope+")")
-        
+
         pyplot.legend(loc='best', prop={'size':10})
         pyplot.ylabel("Temperature (F)")
         pyplot.xticks(numpy.linspace(PlotStartUT,PlotEndUT,nUTHours,endpoint=True))
         pyplot.xlim(PlotStartUT,PlotEndUT)
         pyplot.grid()
-        
+
         ## Overplot Twilights
         pyplot.axvspan(SunsetDecimal, EveningCivilTwilightDecimal, ymin=0, ymax=1, color='blue', alpha=0.1)
         pyplot.axvspan(EveningCivilTwilightDecimal, EveningNauticalTwilightDecimal, ymin=0, ymax=1, color='blue', alpha=0.2)
@@ -785,7 +769,7 @@ def MakePlots(DateString, telescope):
         pyplot.axvspan(MorningAstronomicalTwilightDecimal, MorningNauticalTwilightDecimal, ymin=0, ymax=1, color='blue', alpha=0.3)
         pyplot.axvspan(MorningNauticalTwilightDecimal, MorningCivilTwilightDecimal, ymin=0, ymax=1, color='blue', alpha=0.2)
         pyplot.axvspan(MorningCivilTwilightDecimal, SunriseDecimal, ymin=0, ymax=1, color='blue', alpha=0.1)
-        
+
         ## Overplot Moon Up Time
         MoonAxes = TemperatureAxes.twinx()
         MoonAxes.set_ylabel('Moon Alt (%.0f%% full)' % MoonPhase, color='y')
@@ -795,7 +779,7 @@ def MakePlots(DateString, telescope):
         pyplot.xticks(numpy.linspace(PlotStartUT,PlotEndUT,nUTHours,endpoint=True))
         pyplot.xlim(PlotStartUT,PlotEndUT)
         pyplot.fill_between(MoonTimes, 0, MoonAlts, where=MoonAlts>0, color='yellow', alpha=MoonFill)        
-                
+
         ## Add Fan Power (if VYSOS-20)
         if telescope == "V20":
             Figure.add_axes([0.0, 0.675, 1.0, 0.07], xticklabels=[])
@@ -808,9 +792,9 @@ def MakePlots(DateString, telescope):
             pyplot.yticks(numpy.linspace(0,100,3,endpoint=True))
             pyplot.legend(loc='best', prop={'size':10})
             pyplot.grid()
-    
 
-    ###########################################################            
+
+    ###########################################################
     ## Sky Condition (Cloudiness)
     if FoundV20Env or FoundV5Env:
         # Figure.add_axes([0.0, 0.255, 1.0, 0.235])
@@ -830,7 +814,7 @@ def MakePlots(DateString, telescope):
             pyplot.fill_between(V5EnvTable['Time'], -140, V5EnvTable['SkyTemp'], where=(V5EnvTable['CloudCondition']=="1"), color='green', alpha=0.5)
             pyplot.fill_between(V5EnvTable['Time'], -140, V5EnvTable['SkyTemp'], where=(V5EnvTable['CloudCondition']=="2"), color='yellow', alpha=0.8)
             pyplot.fill_between(V5EnvTable['Time'], -140, V5EnvTable['SkyTemp'], where=(V5EnvTable['CloudCondition']=="3"), color='red', alpha=0.8)
-            
+
         pyplot.legend(loc='best', prop={'size':10})
         pyplot.ylabel("Temperature Difference (F)")
         pyplot.xticks(numpy.linspace(PlotStartUT,PlotEndUT,nUTHours,endpoint=True))
@@ -838,7 +822,7 @@ def MakePlots(DateString, telescope):
         pyplot.ylim(-100,-20)
         pyplot.grid()
 
-    ###########################################################            
+    ###########################################################
     ## Humidity
     if FoundV20Env or FoundV5Env:
         if telescope == "V5" and FoundV5Env:
@@ -866,7 +850,7 @@ def MakePlots(DateString, telescope):
         pyplot.ylim(-5,105)
         pyplot.grid()
 
-    ###########################################################            
+    ###########################################################
     ## Wind Speed
     if FoundV20Env or FoundV5Env:
         Figure.add_axes([0.0, 0.000, 1.0, 0.235])
@@ -897,17 +881,16 @@ def MakePlots(DateString, telescope):
     pyplot.savefig(EnvPlotFile, dpi=dpi, bbox_inches='tight', pad_inches=0.10)
 
 
-
-    ###########################################################            
+    ###########################################################
     ## Make Recent Conditions Plot (Last 2 hours)
-    ###########################################################            
+    ###########################################################
     print "  Writing Output File: "+RecentPlotFileName
     dpi=100
     Figure = pyplot.figure(figsize=(11.2,5.8), dpi=dpi)
     now = datetime.datetime.utcnow()
     nowDateString = "%04d%02d%02dUT" % (now.year, now.month, now.day)
     nowDecimal = now.hour + now.minute/60. + now.second/3600.
-    
+
     if nowDateString == DateString:
         if nowDecimal < 2:
             PlotStartUT = 0
@@ -916,31 +899,31 @@ def MakePlots(DateString, telescope):
             PlotStartUT = nowDecimal-2.
             PlotEndUT = nowDecimal
         nUTHours = 3
-    
-        ###########################################################            
+
+        ###########################################################
         ## Temperatures
         if FoundV20Env or FoundV5Env:
             TemperatureAxes = pyplot.axes([0.0, 0.53, 0.45, 0.47])
             pyplot.title("Recent Environmental Data for "+telescope)
-    
+
             if telescope == "V20" and FoundV20Env:
                 pyplot.plot(V20EnvTable['Time'], V20EnvTable['TubeTemp'], 'g-', drawstyle="steps-post", label="Tube Temp")
                 pyplot.plot(V20EnvTable['Time'], V20EnvTable['OutsideTemp'], 'k-', drawstyle="steps-post", label="Outside Temp ("+telescope+")")
                 pyplot.plot(V20EnvTable['Time'], V20EnvTable['PrimaryTemp'], 'r-', drawstyle="steps-post", label="Mirror Temp")
                 pyplot.plot(V20EnvTable['Time'], V20EnvTable['DomeTemp'], 'c-', drawstyle="steps-post", label="Dome Temp")
-        
+
             if telescope == "V5" and FoundV5Env:
                 if FoundV20Env:
                     pyplot.plot(V20EnvTable['Time'], V20EnvTable['OutsideTemp'], 'k-', alpha=0.5, drawstyle="steps-post", label="Outside Temp ("+OtherTelescope+")")
                 pyplot.plot(V5EnvTable['Time'], V5EnvTable['TubeTemp'], 'g-', drawstyle="steps-post", label="Tube Temp")
                 pyplot.plot(V5EnvTable['Time'], V5EnvTable['OutsideTemp'], 'k-', drawstyle="steps-post", label="Outside Temp ("+telescope+")")
-        
+
             pyplot.legend(loc='best', prop={'size':10})
             pyplot.ylabel("Temperature (F)")
             pyplot.xticks(numpy.arange(math.floor(PlotStartUT),math.ceil(PlotEndUT),0.25))
             pyplot.xlim(PlotStartUT,PlotEndUT)
             pyplot.grid()
-        
+
             ## Overplot Twilights
             pyplot.axvspan(SunsetDecimal, EveningCivilTwilightDecimal, ymin=0, ymax=1, color='blue', alpha=0.1)
             pyplot.axvspan(EveningCivilTwilightDecimal, EveningNauticalTwilightDecimal, ymin=0, ymax=1, color='blue', alpha=0.2)
@@ -949,7 +932,7 @@ def MakePlots(DateString, telescope):
             pyplot.axvspan(MorningAstronomicalTwilightDecimal, MorningNauticalTwilightDecimal, ymin=0, ymax=1, color='blue', alpha=0.3)
             pyplot.axvspan(MorningNauticalTwilightDecimal, MorningCivilTwilightDecimal, ymin=0, ymax=1, color='blue', alpha=0.2)
             pyplot.axvspan(MorningCivilTwilightDecimal, SunriseDecimal, ymin=0, ymax=1, color='blue', alpha=0.1)
-        
+
             # ## Overplot Moon Up Time
             # MoonAxes = TemperatureAxes.twinx()
             # MoonAxes.set_yticklabels([])
@@ -960,7 +943,7 @@ def MakePlots(DateString, telescope):
             # pyplot.xticks(numpy.arange(math.floor(PlotStartUT),math.ceil(PlotEndUT),0.25))
             # pyplot.xlim(PlotStartUT,PlotEndUT)
             # pyplot.fill_between(MoonTimes, 0, MoonAlts, where=MoonAlts>0, color='yellow', alpha=MoonFill)        
-        
+
             ## Add Fan Power (if VYSOS-20)
             if telescope == "V20":
                 Figure.add_axes([0.0, 0.34, 0.45, 0.13], xticklabels=[])
@@ -972,10 +955,10 @@ def MakePlots(DateString, telescope):
                 pyplot.ylim(-10,110)
                 pyplot.yticks(numpy.linspace(0,100,3,endpoint=True))
                 pyplot.legend(loc='center left', prop={'size':10})
-                pyplot.grid()    
+                pyplot.grid()
 
 
-        ###########################################################            
+        ###########################################################
         ## Humidity
         if FoundV20Env or FoundV5Env:
             if telescope == "V5" and FoundV5Env:
@@ -1001,7 +984,7 @@ def MakePlots(DateString, telescope):
             pyplot.ylim(-5,105)
             pyplot.grid()
 
-        ###########################################################            
+        ###########################################################
         ## Sky Condition (Cloudiness)
         if FoundV20Env or FoundV5Env:
             Figure.add_axes([0.53, 0.53, 0.45, 0.47])
@@ -1027,7 +1010,7 @@ def MakePlots(DateString, telescope):
             pyplot.ylim(-100,-20)
             pyplot.grid()
 
-        ###########################################################            
+        ###########################################################
         ## Wind Speed
         if FoundV20Env or FoundV5Env:
             Figure.add_axes([0.53, 0.0, 0.45, 0.47])
@@ -1056,59 +1039,40 @@ def MakePlots(DateString, telescope):
             pyplot.grid()
 
         pyplot.savefig(RecentPlotFile, dpi=dpi, bbox_inches='tight', pad_inches=0.10)
-    
-    
-    
-    
-    
-    
+
+
     if os.path.exists(PlotFile):
         return True
     else:
         return False
 
 
-
-
-    
 def main(argv=None):
-    DateString = ""    
-    if argv is None:
-        argv = sys.argv
-    try:
-        try:
-            opts, args = getopt.getopt(argv[1:], "hd:t:", ["help", "date=", "telescope="])
-        except getopt.error, msg:
-            raise Usage(msg)
-    
-        # option processing
-        for option, value in opts:
-            if option in ("-h", "--help"):
-                raise Usage(help_message)
-            if option in ("-d", "--date"):
-                DateString = value
-            if option in ("-t", "--telescope"):
-                telescope = value
-            
-    except Usage, err:
-        print >> sys.stderr, sys.argv[0].split("/")[-1] + ": " + str(err.msg)
-        print >> sys.stderr, "\t for help use --help"
-        return 2
-    
-    ## Set date to tonight if not specified
-    now = datetime.datetime.utcnow()
-    
-    if (DateString == "tonight") or (DateString == "Tonight") or (DateString == "lastnight") or (DateString == "LastNight") or (DateString ==""):
-        DateString = now.strftime("%Y%m%dUT")
-    
-    if telescope == "V5" or telescope == "VYSOS5" or telescope == "VYSOS-5":
-        telescope = "V5"
-    if telescope == "V20" or telescope == "VYSOS20" or telescope == "VYSOS-20":
-        telescope = "V20"
+    ##-------------------------------------------------------------------------
+    ## Parse Command Line Arguments
+    ##-------------------------------------------------------------------------
+    ## create a parser object for understanding command-line arguments
+    parser = ArgumentParser(description="Describe the script")
+    ## add arguments
+    parser.add_argument("-t", "--telescope",
+        dest="telescope", required=True, type=str,
+        choices=["V5", "V20"],
+        help="Telescope which took the data ('V5' or 'V20')")
+    parser.add_argument("-d", "--date", 
+        dest="date", required=False, default="", type=str,
+        help="UT date of night to analyze. (i.e. '20130805UT')")
+    args = parser.parse_args()
 
-    Success = MakePlots(DateString, telescope)
-    
-        
+    ##-------------------------------------------------------------------------
+    ## Set date to tonight if not specified
+    ##-------------------------------------------------------------------------
+    now = time.gmtime()
+    DateString = time.strftime("%Y%m%dUT", now)
+    if not args.date:
+        args.date = DateString
+
+    ## Run MakePlots Function
+    Success = MakePlots(args.date, args.telescope)
 
 
 if __name__ == '__main__':
