@@ -106,7 +106,7 @@ def main(argv=None):
                     DateString = time.strftime("%Y%m%dUT", now)
 
                     ProcessCall = ["MeasureImage.py"]
-                    if clobber and Image == SortedImageFiles[0]:
+                    if args.clobber and Image == SortedImageFiles[0]:
                         ProcessCall.append("--clobber")
                     ProcessCall.append(os.path.join(ImagesDirectory, Image))
                     print "  %s Calling MeasureImage.py with %s" % (TimeString, ProcessCall)
