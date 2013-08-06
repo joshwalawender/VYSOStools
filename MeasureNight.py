@@ -24,99 +24,99 @@ The help message goes here.
 
 
 def main(argv=None):
-	telescope = ""
-	date = None
-	
-	##-------------------------------------------------------------------------
-	## Parse Command Line Arguments
-	##-------------------------------------------------------------------------
-	## create a parser object for understanding command-line arguments
-	parser = ArgumentParser(description="Describe the script")
-	## add flags
-	parser.add_argument("-n", "--no-clobber",
+    telescope = ""
+    date = None
+    
+    ##-------------------------------------------------------------------------
+    ## Parse Command Line Arguments
+    ##-------------------------------------------------------------------------
+    ## create a parser object for understanding command-line arguments
+    parser = ArgumentParser(description="Describe the script")
+    ## add flags
+    parser.add_argument("-n", "--no-clobber",
         action="store_false", dest="clobber",
-		default=True, help="Delete previous logs and summary files for this night. (default = True)")
-	## add arguments
-	parser.add_argument("-t", dest="telescope",
-	    required=True, type=str,
-		help="Telescope which took the data ('V5' or 'V20')")
-	parser.add_argument("-d", dest="date",
-	    required=False, type=str,
-		help="UT date of night to analyze. (i.e. 20130805UT)")
-	args = parser.parse_args()
-	
-	##-------------------------------------------------------------------------
-	## Establish IQMon Configuration
-	##-------------------------------------------------------------------------
-	config = IQMon.Config()
+        default=True, help="Delete previous logs and summary files for this night. (default = True)")
+    ## add arguments
+    parser.add_argument("-t", dest="telescope",
+        required=True, type=str,
+        help="Telescope which took the data ('V5' or 'V20')")
+    parser.add_argument("-d", dest="date",
+        required=False, type=str,
+        help="UT date of night to analyze. (i.e. 20130805UT)")
+    args = parser.parse_args()
+    
+    ##-------------------------------------------------------------------------
+    ## Establish IQMon Configuration
+    ##-------------------------------------------------------------------------
+    config = IQMon.Config()
 
-	##-------------------------------------------------------------------------
-	## Set date to tonight if not specified
-	##-------------------------------------------------------------------------
-	now = time.gmtime()
-	DateString = time.strftime("%Y%m%dUT", now)
+    ##-------------------------------------------------------------------------
+    ## Set date to tonight if not specified
+    ##-------------------------------------------------------------------------
+    now = time.gmtime()
+    DateString = time.strftime("%Y%m%dUT", now)
     if not date:
-    	date = DateString
-	
-	## Set Path to Data for this night
-	if telescope == "V5":
-		VYSOSDATAPath = os.path.join("/Volumes", "Data_V5")
-	if telescope == "V20":
-		VYSOSDATAPath = os.path.join("/Volumes", "Data_V20")
-	ImagesDirectory = os.path.join(VYSOSDATAPath, "Images", date)
-	LogsDirectory = os.path.join(VYSOSDATAPath, "Logs", date)
-	
-	print "Analyzing data for night of "+date
-	if os.path.exists(ImagesDirectory) and os.path.exists(LogsDirectory):
-		print "  Found "+ImagesDirectory+" and "+LogsDirectory
-		##
-		## Loop Through All Images in Images Directory
-		##
-		Files = os.listdir(ImagesDirectory)
-		print "Found %d files in images directory" % len(Files)
-		if len(Files) >= 1:
-			## Parse filename for date and time
-			MatchFilename = re.compile("(.*)\-([0-9]{8})at([0-9]{6})\.fts")
-			MatchEmpty = re.compile(".*\-Empty\-.*\.fts")
-			Properties = []
-			for File in Files:
-				IsMatch = MatchFilename.match(File)
-				IsEmpty = MatchEmpty.match(File)
-				if IsMatch and not IsEmpty:
-					target = IsMatch.group(1)
-					FNdate = IsMatch.group(2)
-					FNtime = IsMatch.group(3)
-					Properties.append([FNtime, FNdate, target, File])
-				else:
-					print "  File Rejected: %s" % File
-		
-			SortedImageTimes   = numpy.array([row[0] for row in sorted(Properties)])
-			SortedImageDates   = numpy.array([row[1] for row in sorted(Properties)])
-			SortedImageTargets = numpy.array([row[2] for row in sorted(Properties)])
-			SortedImageFiles   = numpy.array([row[3] for row in sorted(Properties)])
-		
-			print "%d out of %d files meet selection criteria." % (len(SortedImageFiles), len(Files))
-			for Image in SortedImageFiles:
-				if fnmatch.fnmatch(Image, "*.fts"):
-					now = time.gmtime()
-					TimeString = time.strftime("%Y/%m/%d %H:%M:%S UT -", now)
-					DateString = time.strftime("%Y%m%dUT", now)
+        date = DateString
+    
+    ## Set Path to Data for this night
+    if telescope == "V5":
+        VYSOSDATAPath = os.path.join("/Volumes", "Data_V5")
+    if telescope == "V20":
+        VYSOSDATAPath = os.path.join("/Volumes", "Data_V20")
+    ImagesDirectory = os.path.join(VYSOSDATAPath, "Images", date)
+    LogsDirectory = os.path.join(VYSOSDATAPath, "Logs", date)
+    
+    print "Analyzing data for night of "+date
+    if os.path.exists(ImagesDirectory) and os.path.exists(LogsDirectory):
+        print "  Found "+ImagesDirectory+" and "+LogsDirectory
+        ##
+        ## Loop Through All Images in Images Directory
+        ##
+        Files = os.listdir(ImagesDirectory)
+        print "Found %d files in images directory" % len(Files)
+        if len(Files) >= 1:
+            ## Parse filename for date and time
+            MatchFilename = re.compile("(.*)\-([0-9]{8})at([0-9]{6})\.fts")
+            MatchEmpty = re.compile(".*\-Empty\-.*\.fts")
+            Properties = []
+            for File in Files:
+                IsMatch = MatchFilename.match(File)
+                IsEmpty = MatchEmpty.match(File)
+                if IsMatch and not IsEmpty:
+                    target = IsMatch.group(1)
+                    FNdate = IsMatch.group(2)
+                    FNtime = IsMatch.group(3)
+                    Properties.append([FNtime, FNdate, target, File])
+                else:
+                    print "  File Rejected: %s" % File
+        
+            SortedImageTimes   = numpy.array([row[0] for row in sorted(Properties)])
+            SortedImageDates   = numpy.array([row[1] for row in sorted(Properties)])
+            SortedImageTargets = numpy.array([row[2] for row in sorted(Properties)])
+            SortedImageFiles   = numpy.array([row[3] for row in sorted(Properties)])
+        
+            print "%d out of %d files meet selection criteria." % (len(SortedImageFiles), len(Files))
+            for Image in SortedImageFiles:
+                if fnmatch.fnmatch(Image, "*.fts"):
+                    now = time.gmtime()
+                    TimeString = time.strftime("%Y/%m/%d %H:%M:%S UT -", now)
+                    DateString = time.strftime("%Y%m%dUT", now)
 
-					ProcessCall = ["MeasureImage.py"]
-					if clobber and Image == SortedImageFiles[0]:
-						ProcessCall.append("--clobber")
-					ProcessCall.append(os.path.join(ImagesDirectory, Image))
-					print "  %s Calling MeasureImage.py with %s" % (TimeString, ProcessCall)
-					try:
-						MIoutput = subprocess32.check_output(ProcessCall, stderr=subprocess32.STDOUT, timeout=150)
-						for line in MIoutput.split("\n"):
-							print line
-					except:
-						print "Call to MeasureImage.py Failed"
-		else:
-			print "No image files found in directory: "+ImagesDirectory
-	else:
-		print "No Images or Logs directory for this night"
+                    ProcessCall = ["MeasureImage.py"]
+                    if clobber and Image == SortedImageFiles[0]:
+                        ProcessCall.append("--clobber")
+                    ProcessCall.append(os.path.join(ImagesDirectory, Image))
+                    print "  %s Calling MeasureImage.py with %s" % (TimeString, ProcessCall)
+                    try:
+                        MIoutput = subprocess32.check_output(ProcessCall, stderr=subprocess32.STDOUT, timeout=150)
+                        for line in MIoutput.split("\n"):
+                            print line
+                    except:
+                        print "Call to MeasureImage.py Failed"
+        else:
+            print "No image files found in directory: "+ImagesDirectory
+    else:
+        print "No Images or Logs directory for this night"
 
 if __name__ == "__main__":
-	sys.exit(main())
+    sys.exit(main())
