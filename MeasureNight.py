@@ -109,7 +109,7 @@ def main(argv=None):
                     if args.clobber and Image == SortedImageFiles[0]:
                         ProcessCall.append("--clobber")
                     ProcessCall.append(os.path.join(ImagesDirectory, Image))
-                    print "  %s Calling MeasureImage.py with %s" % (TimeString, ProcessCall)
+                    print "%s Calling MeasureImage.py with %s" % (TimeString, ProcessCall)
                     try:
                         MIoutput = subprocess32.check_output(ProcessCall, stderr=subprocess32.STDOUT, timeout=150)
                         for line in MIoutput.split("\n"):

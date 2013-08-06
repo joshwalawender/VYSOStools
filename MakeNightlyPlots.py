@@ -323,11 +323,8 @@ def ReadEnvironmentalLogs(DateString, telescope, V5DataPath, V20DataPath):
         ColNames  = ['Date', 'TimeString', 'TubeTemp', 'FocusPos', 
                      'SkyTemp', 'OutsideTemp', 'WindSpeed', 'Humidity', 'DewPoint', 'Alt', 'Az', 'Condition']
         V5EnvTable = astropy.table.Table(names=ColNames)
-    
-        
+
     return V20EnvTable, V5EnvTable
-        
-                            
 
 
 
@@ -336,14 +333,14 @@ def ReadEnvironmentalLogs(DateString, telescope, V5DataPath, V20DataPath):
 ## Make Plots
 def MakePlots(DateString, telescope):
     print "#### Making Nightly Plots for "+telescope+" on the Night of "+DateString+" ####"
-    
+
     FoundACPLog       = False
     FoundIQMonFile    = False
     FoundFocusMaxFile = False
     FoundV20Env       = False
     FoundV5Env        = False
     pyplot.ioff()
-        
+
     ##############################################################
     ## Read Configuration File to get the following items
     ## - IQMONEXECPATH
