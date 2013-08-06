@@ -1,4 +1,5 @@
-#!python
+#!/usr/bin/env python
+# encoding: utf-8
 
 import sys
 import os
@@ -6,6 +7,7 @@ import subprocess32
 import time
 import math
 import re
+import logging
 
 ##-----------------------------------------------------------------------------
 ## Function to Ping and Address and Return Stats
