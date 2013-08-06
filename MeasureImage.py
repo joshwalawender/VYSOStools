@@ -101,6 +101,9 @@ def main():
 	parser.add_argument("-v", "--verbose",
         action="store_true", dest="verbose",
 		default=False, help="Be verbose! (default = False)")
+	parser.add_argument("-c", "--clobber",
+        action="store_true", dest="clobber",
+		default=False, help="Delete previous logs and summary files for this image. (default = False)")
 	## add arguments
 	parser.add_argument("filename",
 	    type=str,
@@ -108,6 +111,7 @@ def main():
 	parser.add_argument("-t", dest="telescope",
 	    required=False, type=str,
 		help="Telescope which tool the data ('V5' or 'V20')")
+	
 	args = parser.parse_args()
 	
 	##-------------------------------------------------------------------------
@@ -191,6 +195,8 @@ def main():
 	## Create Logger Object
 	##-------------------------------------------------------------------------
 	IQMonLogFileName = os.path.join(config.pathLog, tel.longName, image.rawFileBasename+"_"+tel.name+"_IQMonLog.txt")
+	if clobber:
+		if os.path.exists(IQMonLogFileName): os.remove(IQMonLogFileName)
 	logger = logging.getLogger('IQMonLogger')
 	logger.setLevel(logging.DEBUG)
 	LogFileHandler = logging.FileHandler(IQMonLogFileName)
@@ -214,6 +220,8 @@ def main():
 	logger.info("Setting telescope variable to %s", telescope)
 	tel.CheckUnits(logger)
 	image.htmlImageList = os.path.join(config.pathLog, tel.longName, DataNightString+"_"+tel.name+".html")
+	if clobber:
+		if os.path.exists(image.htmlImageList): os.remove(image.htmlImageList)
 	image.ReadImage(config)        ## Create working copy of image (don't edit raw file!)
 	image.GetHeader(tel, logger)   ## Extract values from header
 	image.MakeJPEG(image.rawFileBasename+"_full.jpg", tel, config, logger, rotate=True, binning=2)

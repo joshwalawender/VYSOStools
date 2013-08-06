@@ -134,8 +134,6 @@ def main(argv=None):
 					ProcessCall = ["MeasureImage.py"]
 					if Clobber and Image == SortedImageFiles[0]:
 						ProcessCall.append("--clobber")
-					if cosmicrays:
-						ProcessCall.append("--cosmicrays")
 					ProcessCall.append(os.path.join(ImagesDirectory, Image))
 					print "  %s Calling MeasureImage.py with %s" % (TimeString, ProcessCall)
 					
