@@ -21,7 +21,7 @@ import time
 import ephem
 import astropy.units as u
 
-from IQMon import IQMon
+from IQMon
 
 
 class ParseError(Exception):
