@@ -16,85 +16,57 @@ import fnmatch
 import numpy
 import time
 
-import IQMonTools
+import IQMon
 
 help_message = '''
 The help message goes here.
 '''
 
 
-class Usage(Exception):
-	def __init__(self, msg):
-		self.msg = msg
-
-
 def main(argv=None):
 	telescope = ""
-	Focus = False
-	Clobber = True
-	cosmicrays = False
+	date = None
 	
-	if argv is None:
-		argv = sys.argv
-	try:
-		try:
-			opts, args = getopt.getopt(argv[1:], "hfd:n:t:", ["help", "focus", "no-clobber", "date=", "night=", "telescope=", "cosmicrays"])
-		except getopt.error, msg:
-			raise Usage(msg)
+	##-------------------------------------------------------------------------
+	## Parse Command Line Arguments
+	##-------------------------------------------------------------------------
+	## create a parser object for understanding command-line arguments
+	parser = ArgumentParser(description="Describe the script")
+	## add flags
+	parser.add_argument("-n", "--no-clobber",
+        action="store_false", dest="clobber",
+		default=True, help="Delete previous logs and summary files for this night. (default = True)")
+	## add arguments
+	parser.add_argument("-t", dest="telescope",
+	    required=True, type=str,
+		help="Telescope which took the data ('V5' or 'V20')")
+	parser.add_argument("-d", dest="date",
+	    required=False, type=str,
+		help="UT date of night to analyze. (i.e. 20130805UT)")
+	args = parser.parse_args()
 	
-		# option processing
-		for option, value in opts:
-			if option in ("-h", "--help"):
-				raise Usage(help_message)
-			if option in ("-f", "--focus"):
-				Focus = True
-			if option in ("-d", "--date", "-n", "--night"):
-				input = value
-			else:
-				input = ""
-			if option in ("-t", "--telescope"):
-				telescope = value
-			if option in ("--no-clobber"):
-				Clobber = False
-			if option in ("--cosmicrays"):
-				cosmicrays = True
-			
-	
-	except Usage, err:
-		print >> sys.stderr, sys.argv[0].split("/")[-1] + ": " + str(err.msg)
-		print >> sys.stderr, "\t for help use --help"
-		return 2
-	
-	##############################################################
-	## Read Configuration File to get the following items
-	IQMonExecPath, LogPath, PlotsPath, tmpPath, PythonPath, V5DataPath, V20DataPath, CatalogPath, LogBuffer = IQMonTools.ReadConfigFile()
-	
+	##-------------------------------------------------------------------------
+	## Establish IQMon Configuration
+	##-------------------------------------------------------------------------
+	config = IQMon.Config()
+
+	##-------------------------------------------------------------------------
 	## Set date to tonight if not specified
+	##-------------------------------------------------------------------------
 	now = time.gmtime()
 	DateString = time.strftime("%Y%m%dUT", now)
-	if (input == "tonight") or (input == "Tonight") or (input == "lastnight") or (input == "LastNight") or (input ==""):
-		input = DateString
+    if not date:
+    	date = DateString
 	
-	## Set Default Telescope to V5 if not set
-	if telescope == "V20" or telescope == "VYSOS20" or telescope == "VYSOS-20":
-		telescope = "V20"
-	if telescope == "V5" or telescope == "VYSOS5" or telescope == "VYSOS-5":
-		telescope = "V5"
-	if telescope != "V20" and telescope != "V5":
-		telescope = "V5"
-	
-		
-	###########################
-	## 
+	## Set Path to Data for this night
 	if telescope == "V5":
-		VYSOSDATAPath = V5DataPath
+		VYSOSDATAPath = os.path.join("/Volumes", "Data_V5")
 	if telescope == "V20":
-		VYSOSDATAPath = V20DataPath
-	ImagesDirectory = os.path.join(VYSOSDATAPath, "Images", input)
-	LogsDirectory = os.path.join(VYSOSDATAPath, "Logs", input)
-	PythonString = os.path.join(PythonPath, "python")
+		VYSOSDATAPath = os.path.join("/Volumes", "Data_V20")
+	ImagesDirectory = os.path.join(VYSOSDATAPath, "Images", date)
+	LogsDirectory = os.path.join(VYSOSDATAPath, "Logs", date)
 	
-	print "Analyzing data for night of "+input
+	print "Analyzing data for night of "+date
 	if os.path.exists(ImagesDirectory) and os.path.exists(LogsDirectory):
 		print "  Found "+ImagesDirectory+" and "+LogsDirectory
 		##
@@ -130,13 +102,11 @@ def main(argv=None):
 					TimeString = time.strftime("%Y/%m/%d %H:%M:%S UT -", now)
 					DateString = time.strftime("%Y%m%dUT", now)
 
-					# ProcessCall = [PythonString, IQMonExecPath+"/MeasureImage.py", os.path.join(ImagesDirectory, Image)]
 					ProcessCall = ["MeasureImage.py"]
-					if Clobber and Image == SortedImageFiles[0]:
+					if clobber and Image == SortedImageFiles[0]:
 						ProcessCall.append("--clobber")
 					ProcessCall.append(os.path.join(ImagesDirectory, Image))
 					print "  %s Calling MeasureImage.py with %s" % (TimeString, ProcessCall)
-					
 					try:
 						MIoutput = subprocess32.check_output(ProcessCall, stderr=subprocess32.STDOUT, timeout=150)
 						for line in MIoutput.split("\n"):
@@ -147,13 +117,6 @@ def main(argv=None):
 			print "No image files found in directory: "+ImagesDirectory
 	else:
 		print "No Images or Logs directory for this night"
-	if not Focus:
-		# print "  Making Nightly Plots for "+input
-		# MNPcommand = [PythonString, IQMonExecPath+"/VYSOS_MakeNightlyPlots.py", "--date="+input, "--telescope="+telescope]
-		# MNPoutput = subprocess32.check_output(MNPcommand, stderr=subprocess32.STDOUT, timeout=600)
-		print "  Updating index.html web pages with new nights"
-		MWPcommand = [PythonString, IQMonExecPath+"/VYSOS_MakeWebPage.py", "--telescope="+telescope]
-		MWPoutput = subprocess32.check_output(MWPcommand, stderr=subprocess32.STDOUT, timeout=600)
 
 if __name__ == "__main__":
 	sys.exit(main())
