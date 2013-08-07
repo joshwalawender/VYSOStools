@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """
-VYSOS_LongTermLog.py
+MakeWebPage.py
 
 Created by Josh Walawender on 2013-05-01.
 Copyright (c) 2013 __MyCompanyName__. All rights reserved.
@@ -9,51 +9,39 @@ Copyright (c) 2013 __MyCompanyName__. All rights reserved.
 
 import sys
 import os
-import getopt
+from argparse import ArgumentParser
 import re
 import shutil
-import IQMonTools
 import subprocess32
 import datetime
 
+import IQMon
+
+
 def main(argv=None):
-    telescope = ""
-    
-    if argv is None:
-        argv = sys.argv
-    try:
-        try:
-            opts, args = getopt.getopt(argv[1:], "ht:", ["help", "telescope="])
-        except getopt.error, msg:
-            raise Usage(msg)
-    
-        # option processing
-        for option, value in opts:
-            if option in ("-h", "--help"):
-                raise Usage(help_message)
-            if option in ("-t", "--telescope"):
-                telescope = value            
-    
-    except Usage, err:
-        print >> sys.stderr, sys.argv[0].split("/")[-1] + ": " + str(err.msg)
-        print >> sys.stderr, "\t for help use --help"
-        return 2
-    
-    
-    
-    ##############################################################
-    ## Read Configuration File to get the following items
-    ## - IQMONEXECPATH
-    ## - IQMONLOGS
-    ## - IQMONPLOTS
-    ## - IQMONTMP
-    IQMonExecPath, LogPath, PlotsPath, tmpPath, PythonPath, V5DataPath, V20DataPath, CatalogPath, LogBuffer = IQMonTools.ReadConfigFile()
+    ##-------------------------------------------------------------------------
+    ## Parse Command Line Arguments
+    ##-------------------------------------------------------------------------
+    ## create a parser object for understanding command-line arguments
+    parser = ArgumentParser(description="Describe the script")
+    ## add arguments
+    parser.add_argument("-t", "--telescope",
+        dest="telescope", required=True, type=str,
+        choices=["V5", "V20"],
+        help="Telescope which took the data ('V5' or 'V20')")
+    args = parser.parse_args()
+
+    telescope = args.telescope
+
+    ##-------------------------------------------------------------------------
+    ## Establish IQMon Configuration
+    ##-------------------------------------------------------------------------
+    config = IQMon.Config()
     if telescope == "V20": telname = "VYSOS-20"
     if telescope == "V5":  telname = "VYSOS-5"
-    NightSummariesDirectory = os.path.join(LogPath, telname)
+    NightSummariesDirectory = os.path.join(config.pathLog, telname)
     SummaryHTMLFile = os.path.join(NightSummariesDirectory, "index.html")
     TemporaryHTMLFile = os.path.join(NightSummariesDirectory, "index_tmp.html")
-
 
 
     ##############################################################
@@ -67,7 +55,7 @@ def main(argv=None):
     ## - if date not already recorded, add to list
     Dates = []
     for File in Files:
-         HasDate = MatchDateOnFile.match(File)
+        HasDate = MatchDateOnFile.match(File)
         if HasDate:
             Date = HasDate.group(1)
             DateAlreadyListed = False
@@ -117,12 +105,13 @@ def main(argv=None):
     ##############################################################
     ## Make index.html file
     HTML = open(SummaryHTMLFile, 'w')
-    HTMLheader = open(os.path.join(IQMonExecPath, "VYSOS_ListOfNights.html"), 'r')
+    pathHome = homePath = os.path.expandvars("$HOME")
+    HTMLheader = open(os.path.join(pathHome, "bin", "VYSOS", "ListOfNights.html"), 'r')
     header = HTMLheader.read()
     header = header.replace("telescopename", telname)
     HTMLheader.close()
     HTML.write(header)
-    
+
 
     for DateInfo in SortedDates:
         HTML.write("    <tr>\n")

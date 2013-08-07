@@ -8,7 +8,6 @@ Copyright (c) 2012 . All rights reserved.
 """
 
 import sys
-import getopt
 import os
 import subprocess32
 import re
