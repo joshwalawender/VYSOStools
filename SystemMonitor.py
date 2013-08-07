@@ -9,6 +9,8 @@ import math
 import re
 import logging
 
+from astropy import table
+
 ##-----------------------------------------------------------------------------
 ## Function to Ping and Address and Return Stats
 ##-----------------------------------------------------------------------------
@@ -52,8 +54,9 @@ def main():
     ##-------------------------------------------------------------------------
     now = time.gmtime()
     DateString = time.strftime("%Y%m%dUT", now)
+    TimeString = time.strftime("%Y%m%dUT_at_$H:%M:%S", now)
     homePath = os.path.expandvars("$HOME")
-    LogFileName = os.path.join(homePath, "IQMon", "Logs", DateString+"_StatusLog.txt")
+    LogFileName = os.path.join(homePath, "IQMon", "Logs", DateString+"_SystemLogger.txt")
     logger = logging.getLogger('Logger')
     logger.setLevel(logging.DEBUG)
     LogFileHandler = logging.FileHandler(LogFileName)
@@ -66,30 +69,57 @@ def main():
     logger.addHandler(LogConsoleHandler)
     logger.addHandler(LogFileHandler)
 
-
+    ##-------------------------------------------------------------------------
     ## Get CPU Load over Last 1 minute
+    ##-------------------------------------------------------------------------
     IOStatOutput = subprocess32.check_output('iostat', timeout=5)
     idx_1m = IOStatOutput.split("\n")[1].split().index("1m")
     CPU_1m = IOStatOutput.split("\n")[2].split()[idx_1m]
     logger.info("CPU Load over last minute = {0}".format(CPU_1m))
 
+    ##-------------------------------------------------------------------------
     ## Get Temperatures
+    ##-------------------------------------------------------------------------
     TempHeader = subprocess32.check_output(['tempmonitor', '-f', '-th'], timeout=5)
     TempOutput = subprocess32.check_output(['tempmonitor', '-f', '-tv'], timeout=5)
     idx_cpu = TempHeader.split(",").index('"SMC CPU A PROXIMITY"')
     TempCPU = float(TempOutput.split(",")[idx_cpu])
     logger.info("CPU Temperature = {0:.1f} F".format(TempCPU))
 
+    ##-------------------------------------------------------------------------
     ## Ping Devices
+    ##-------------------------------------------------------------------------
     names = ['Router', 'Switch', 'OldRouter', 'Panoptes', 'Altair', 'CCTV', 'MLOAllSky']
     IPs = ['192.168.1.1', '192.168.1.2', '192.168.1.10', '192.168.1.50', '192.168.1.102', '192.168.1.103', '192.168.1.104']
     Addresses = dict(zip(names, IPs))
     nPings = 7
     ## Loop through devices and get ping results
+    DeviceStatusList = []
     for Device in names:
         Status, PacketLoss, AvgRT = TestDevice(Addresses[Device], nPings)
+        DeviceStatusList.append(Status)
         logger.info("{0} status is {1} with {2} % loss and {3} avg return time.".format(Device, Status, PacketLoss, AvgRT))
 
+    ##-------------------------------------------------------------------------
+    ## Write Results to Astropy Table and Save to ASCII File
+    ##-------------------------------------------------------------------------
+    ResultsFile = os.path.join(homePath, "IQMon", "Logs", DateString+"_SystemStatus.txt")
+    if not os.path.exists(ResultsFile):    
+        ColNames = ("time", "CPU Load", "CPU Temperature")
+        Types = ('a24', 'f4', 'f4')
+        for Device in names:
+            ColNames.append(Device)
+            Types.append('a6')
+        ResultsTable = table.Table(names=ColNames, dtypes=Types)
+        
+    else:
+        ResultsTable = ascii.read(ResultsFile)
+    ## Add line to table
+    newResults = (TimeString, CPU_1m, TempCPU)
+    for DeviceStatus in DeviceStatusList:
+        newResults.append(DeviceStatus)
+    ResultsTable.add_row((newResults))
+    ascii.write(ResultsTable, ResultsFile, Writer=ascii.basic.Basic)
 
 
 if __name__ == '__main__':
