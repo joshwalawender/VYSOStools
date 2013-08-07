@@ -83,15 +83,15 @@ def main(argv=None):
                         FileFound = True
                 if not FileFound:
                     if re.match(".*\.fi?ts", File) and not re.match(".*\-Empty\-.*\.fts", File):
-                        print "New fits File Found:  %s" % File
+                        print("New fits File Found:  %s" % File)
                         Focus = False
                         ProcessCall = [PythonString, MeasureImageString, os.path.join(DataPath, File)]
-                        print "  %s Calling MeasureImage.py with %s" % (TimeString, ProcessCall[2:])
+                        print("  %s Calling MeasureImage.py with %s" % (TimeString, ProcessCall[2:]))
                         try:
                             MIoutput = subprocess32.check_output(ProcessCall, stderr=subprocess32.STDOUT, timeout=150)
-                            print "Call to MeasureImage.py Succeeded"
+                            print("Call to MeasureImage.py Succeeded")
                         except:
-                            print "Call to MeasureImage.py Failed"
+                            print("Call to MeasureImage.py Failed")
         PreviousFiles = Files
         PreviousFilesTime = now
         time.sleep(5)
