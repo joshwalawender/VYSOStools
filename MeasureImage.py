@@ -13,7 +13,6 @@ import sys
 import os
 from argparse import ArgumentParser
 import re
-import logging
 import datetime
 import math
 import time
@@ -198,21 +197,7 @@ def main():
     IQMonLogFileName = os.path.join(config.pathLog, tel.longName, image.rawFileBasename+"_"+tel.name+"_IQMonLog.txt")
     if args.clobber:
         if os.path.exists(IQMonLogFileName): os.remove(IQMonLogFileName)
-    logger = logging.getLogger('IQMonLogger')
-    logger.setLevel(logging.DEBUG)
-    LogFileHandler = logging.FileHandler(IQMonLogFileName)
-    LogFileHandler.setLevel(logging.DEBUG)
-    LogConsoleHandler = logging.StreamHandler()
-    if args.verbose:
-        LogConsoleHandler.setLevel(logging.DEBUG)
-    else:
-        LogConsoleHandler.setLevel(logging.INFO)
-    LogFormat = logging.Formatter('%(asctime)23s %(levelname)8s: %(message)s')
-    LogFileHandler.setFormatter(LogFormat)
-    LogConsoleHandler.setFormatter(LogFormat)
-    logger.addHandler(LogConsoleHandler)
-    logger.addHandler(LogFileHandler)
-
+    logger = config.MakeLogger(IQMonLogFileName, args.verbose)
 
     ##-------------------------------------------------------------------------
     ## Perform Actual Image Analysis
