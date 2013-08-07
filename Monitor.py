@@ -12,6 +12,7 @@ from __future__ import division, print_function
 import sys
 import os
 from argparse import ArgumentParser
+import re
 import time
 import subprocess32
 
