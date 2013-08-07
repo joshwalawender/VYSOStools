@@ -195,8 +195,12 @@ def main():
     ## Create Logger Object
     ##-------------------------------------------------------------------------
     IQMonLogFileName = os.path.join(config.pathLog, tel.longName, DataNightString+"_"+tel.name+"_IQMonLog.txt")
+    image.htmlImageList = os.path.join(config.pathLog, tel.longName, DataNightString+"_"+tel.name+".html")
+    image.summaryFile = os.path.join(config.pathLog, tel.longName, DataNightString+"_"+tel.name+"_Summary.txt")
     if args.clobber:
         if os.path.exists(IQMonLogFileName): os.remove(IQMonLogFileName)
+        if os.path.exists(image.htmlImageList): os.remove(image.htmlImageList)
+        if os.path.exists(image.summaryFile): os.remove(image.summaryFile)
     logger = config.MakeLogger(IQMonLogFileName, args.verbose)
 
     ##-------------------------------------------------------------------------
@@ -205,8 +209,6 @@ def main():
     logger.info("###### Processing Image:  %s ######", FitsFilename)
     logger.info("Setting telescope variable to %s", telescope)
     tel.CheckUnits(logger)
-    image.htmlImageList = os.path.join(config.pathLog, tel.longName, DataNightString+"_"+tel.name+".html")
-    image.summaryFile = os.path.join(config.pathLog, tel.longName, DataNightString+"_"+tel.name+"_Summary.txt")
     if args.clobber:
         if os.path.exists(image.htmlImageList): os.remove(image.htmlImageList)
     image.ReadImage(config)        ## Create working copy of image (don't edit raw file!)
