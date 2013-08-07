@@ -194,7 +194,7 @@ def main():
     ##-------------------------------------------------------------------------
     ## Create Logger Object
     ##-------------------------------------------------------------------------
-    IQMonLogFileName = os.path.join(config.pathLog, tel.longName, image.rawFileBasename+"_"+tel.name+"_IQMonLog.txt")
+    IQMonLogFileName = os.path.join(config.pathLog, tel.longName, DataNightString+"_"+tel.name+"_IQMonLog.txt")
     if args.clobber:
         if os.path.exists(IQMonLogFileName): os.remove(IQMonLogFileName)
     logger = config.MakeLogger(IQMonLogFileName, args.verbose)
