@@ -45,9 +45,9 @@ def main(argv=None):
     ## Set data path
     ##-------------------------------------------------------------------------
     if telescope == "V5":
-        DataPath = os.path.join(V5DataPath, "Images", DateString)
+        DataPath = os.path.join("/Volumes", "Data_V5", "Images", DateString)
     if telescope == "V20":
-        DataPath = os.path.join(V20DataPath, "Images", DateString)
+        DataPath = os.path.join("/Volumes", "Data_V20", "Images", DateString)
 
 
     ##-------------------------------------------------------------------------
