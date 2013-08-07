@@ -163,7 +163,7 @@ def main():
         tel.thresholdFWHM = 2.5*u.pix
         tel.thresholdPointingErr = 5.0*u.arcmin
         tel.thresholdEllipticity = 0.30*u.dimensionless_unscaled
-        tel.pixelScale = tel.pixelSize.to(u.mm)/tel.focalLength.to(u.mm)*u.radian.to(u.arcsec)
+        tel.pixelScale = tel.pixelSize.to(u.mm)/tel.focalLength.to(u.mm)*u.radian.to(u.arcsec)*u.arcsec/u.pix
         tel.fRatio = tel.focalLength.to(u.mm)/tel.aperture.to(u.mm)
         tel.SExtractorPhotAperture = 6.0*u.pix
         tel.SExtractorSeeing = 2.0*u.arcsec
@@ -178,13 +178,14 @@ def main():
         tel.thresholdFWHM = 2.5*u.arcsec
         tel.thresholdPointingErr = 5.0*u.arcmin
         tel.thresholdEllipticity = 0.30*u.dimensionless_unscaled
-        tel.pixelScale = tel.pixelSize.to(u.mm)/tel.focalLength.to(u.mm)*u.radian.to(u.arcsec)
+        tel.pixelScale = tel.pixelSize.to(u.mm)/tel.focalLength.to(u.mm)*u.radian.to(u.arcsec)*u.arcsec/u.pix
         tel.fRatio = tel.focalLength.to(u.mm)/tel.aperture.to(u.mm)
         tel.SExtractorPhotAperture = 16.0*u.pix
         tel.SExtractorSeeing = 2.0*u.arcsec
     ## Define Site (ephem site object)
     tel.site = ephem.Observer()
 
+    print(tel.pixelScale)
 
     ##-------------------------------------------------------------------------
     ## Create IQMon.Image Object

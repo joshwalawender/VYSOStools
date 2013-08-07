@@ -76,7 +76,10 @@ def main():
     IOStatOutput = subprocess32.check_output('iostat', timeout=5)
     idx_1m = IOStatOutput.split("\n")[1].split().index("1m")
     CPU_1m = IOStatOutput.split("\n")[2].split()[idx_1m]
-    logger.info("CPU Load over last minute = {0}".format(CPU_1m))
+    logger.info("CPU Load over last 1 min = {0}".format(CPU_1m))
+    idx_5m = IOStatOutput.split("\n")[1].split().index("5m")
+    CPU_5m = IOStatOutput.split("\n")[2].split()[idx_5m]
+    logger.info("CPU Load over last 5 min = {0}".format(CPU_5m))
 
     ##-------------------------------------------------------------------------
     ## Get Temperatures
@@ -115,12 +118,16 @@ def main():
     else:
         ResultsTable = ascii.read(ResultsFile)
     ## Add line to table
-    newResults = [TimeString, CPU_1m, TempCPU]
+    newResults = [TimeString, CPU_5m, TempCPU]
     for DeviceStatus in DeviceStatusList:
         newResults.append(DeviceStatus)
     ResultsTable.add_row(tuple(newResults))
     ascii.write(ResultsTable, ResultsFile, Writer=ascii.basic.Basic)
 
+
+    ##-------------------------------------------------------------------------
+    ## Read Results File and Make Plot of System Status for Today
+    ##-------------------------------------------------------------------------
 
 if __name__ == '__main__':
     main()
