@@ -10,6 +10,7 @@ import re
 import logging
 
 from astropy import table
+from astropy.io import ascii
 
 ##-----------------------------------------------------------------------------
 ## Function to Ping and Address and Return Stats
@@ -17,7 +18,7 @@ from astropy import table
 def TestDevice(address, nPings):    
     MatchPingResult = re.compile(".*([0-9]+)\spackets\stransmitted,\s([0-9]+)\spackets received,\s([0-9\.]+).\spacket\sloss.*")
     MatchPingStats  = re.compile(".*round\-trip\smin/avg/max/stddev\s=\s([0-9\.]+)/([0-9\.]+)/([0-9\.]+)/([0-9\.]+)\sms.*")
-    
+
     result = subprocess32.check_output(["ping", "-c "+str(nPings), address])
     foo = result.find("statistics ---") + len("statistics ---")
     result = result[foo+1:-1]
@@ -54,9 +55,9 @@ def main():
     ##-------------------------------------------------------------------------
     now = time.gmtime()
     DateString = time.strftime("%Y%m%dUT", now)
-    TimeString = time.strftime("%Y%m%dUT_at_$H:%M:%S", now)
+    TimeString = time.strftime("%Y%m%dUTat%H:%M:%S", now)
     homePath = os.path.expandvars("$HOME")
-    LogFileName = os.path.join(homePath, "IQMon", "Logs", DateString+"_SystemLogger.txt")
+    LogFileName = os.path.join(homePath, "IQMon", "Logs", "SystemStatus", DateString+"_Log.txt")
     logger = logging.getLogger('Logger')
     logger.setLevel(logging.DEBUG)
     LogFileHandler = logging.FileHandler(LogFileName)
@@ -92,7 +93,7 @@ def main():
     names = ['Router', 'Switch', 'OldRouter', 'Panoptes', 'Altair', 'CCTV', 'MLOAllSky']
     IPs = ['192.168.1.1', '192.168.1.2', '192.168.1.10', '192.168.1.50', '192.168.1.102', '192.168.1.103', '192.168.1.104']
     Addresses = dict(zip(names, IPs))
-    nPings = 7
+    nPings = 4
     ## Loop through devices and get ping results
     DeviceStatusList = []
     for Device in names:
@@ -103,22 +104,21 @@ def main():
     ##-------------------------------------------------------------------------
     ## Write Results to Astropy Table and Save to ASCII File
     ##-------------------------------------------------------------------------
-    ResultsFile = os.path.join(homePath, "IQMon", "Logs", DateString+"_SystemStatus.txt")
+    ResultsFile = os.path.join(homePath, "IQMon", "Logs", "SystemStatus", DateString+".txt")
     if not os.path.exists(ResultsFile):    
-        ColNames = ("time", "CPU Load", "CPU Temperature")
-        Types = ('a24', 'f4', 'f4')
+        ColNames = ["time", "CPU Load", "CPU Temperature"]
+        Types = ['a24', 'f4', 'f4']
         for Device in names:
             ColNames.append(Device)
             Types.append('a6')
-        ResultsTable = table.Table(names=ColNames, dtypes=Types)
-        
+        ResultsTable = table.Table(names=tuple(ColNames), dtypes=tuple(Types))
     else:
         ResultsTable = ascii.read(ResultsFile)
     ## Add line to table
-    newResults = (TimeString, CPU_1m, TempCPU)
+    newResults = [TimeString, CPU_1m, TempCPU]
     for DeviceStatus in DeviceStatusList:
         newResults.append(DeviceStatus)
-    ResultsTable.add_row((newResults))
+    ResultsTable.add_row(tuple(newResults))
     ascii.write(ResultsTable, ResultsFile, Writer=ascii.basic.Basic)
 
 
