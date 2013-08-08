@@ -40,10 +40,10 @@ class ParseError(Exception):
 ## - once a set of dark frames which satify the criterion is found, combine all via a median combine
 ## - write that combined dark to a file named for the DataNight (not the night it was taken)
 ##############################################################
-def ListDarks(image, tel, config, logger):
+def ListDarks(image):
     nDarksMin = 5  ## Minimum number of dark files to return for combination
     SearchNDays = 10 ## Number of days back in time to look for dark frames
-    logger.info("Looking for master dark frame or darks to combine.")
+    image.logger.info("Looking for master dark frame or darks to combine.")
     ## Extract night data was taken from path
     DataPath = os.path.split(image.rawFile)[0]
     BaseDirectory, DataNightString = os.path.split(DataPath)
@@ -55,21 +55,21 @@ def ListDarks(image, tel, config, logger):
     DateLimit = DataNight - datetime.timedelta(days=SearchNDays)
     
     ## Check to see if MasterDark Exists for this Observation Date
-    MasterDarkFilename = "MasterDark_"+tel.name+"_"+DataNightString+"_"+str(int(math.floor(image.exptime.to(u.s).value)))+".fits"
-    MasterDarkFile  = os.path.join(config.pathTemp, MasterDarkFilename)    
+    MasterDarkFilename = "MasterDark_"+image.tel.name+"_"+DataNightString+"_"+str(int(math.floor(image.exptime.to(u.s).value)))+".fits"
+    MasterDarkFile  = os.path.join(image.config.pathTemp, MasterDarkFilename)    
     ## Is that Master Dark File does not exist, see if the raw files exit to build one.
     if os.path.exists(MasterDarkFile):
-        logger.info("Found Master Dark: %s" % MasterDarkFilename)
+        image.logger.info("Found Master Dark: %s" % MasterDarkFilename)
         return [MasterDarkFile]
     else:
-        logger.info("Could Not Find Master Dark.  Looking for raw frames.")
+        image.logger.info("Could Not Find Master Dark.  Looking for raw frames.")
         Darks = []
         while NewDate > DateLimit:
             ## Look for this directory
             SearchPath = os.path.join(BaseDirectory, NewDateString, "Calibration")
             if os.path.exists(SearchPath):
                 ## Now look for darks in that directory
-                logger.debug("Looking for darks in {0}".format(SearchPath))
+                image.logger.debug("Looking for darks in {0}".format(SearchPath))
                 Files = os.listdir(SearchPath)
                 for File in Files:
                     IsDark = re.match("Dark\-([0-9]{3})\-([0-9]{8})at([0-9]{6})\.fi?ts", File)
@@ -79,14 +79,14 @@ def ListDarks(image, tel, config, logger):
                             Darks.append(os.path.join(SearchPath, File))
                 if len(Darks) >= nDarksMin:
                     ## Once we have found enough dark files, return the list of dark files
-                    logger.info("Found %d dark files in %s" % (len(Darks), SearchPath))
+                    image.logger.info("Found %d dark files in %s" % (len(Darks), SearchPath))
                     for Dark in Darks:
-                        logger.debug("Found Dark File: {0}".format(Dark))
+                        image.logger.debug("Found Dark File: {0}".format(Dark))
                     return Darks
             NewDate = NewDate - OneDay
             NewDateString = datetime.datetime.strftime(NewDate, "%Y%m%dUT")
         if len(Darks) == 0:
-            logger.warning("No darks found to combine.")
+            image.logger.warning("No darks found to combine.")
 
 
 ##-------------------------------------------------------------------------
@@ -185,51 +185,49 @@ def main():
     ## Define Site (ephem site object)
     tel.site = ephem.Observer()
 
-    print(tel.pixelScale)
-
     ##-------------------------------------------------------------------------
     ## Create IQMon.Image Object
     ##-------------------------------------------------------------------------
-    image = IQMon.Image(FitsFile)  ## Create image object
+    image = IQMon.Image(FitsFile, tel, config)  ## Create image object
 
     ##-------------------------------------------------------------------------
-    ## Create Logger Object
+    ## Create Filenames
     ##-------------------------------------------------------------------------
     IQMonLogFileName = os.path.join(config.pathLog, tel.longName, DataNightString+"_"+tel.name+"_IQMonLog.txt")
-    image.htmlImageList = os.path.join(config.pathLog, tel.longName, DataNightString+"_"+tel.name+".html")
-    image.summaryFile = os.path.join(config.pathLog, tel.longName, DataNightString+"_"+tel.name+"_Summary.txt")
+    htmlImageList = os.path.join(config.pathLog, tel.longName, DataNightString+"_"+tel.name+".html")
+    summaryFile = os.path.join(config.pathLog, tel.longName, DataNightString+"_"+tel.name+"_Summary.txt")
+    FullFrameJPEG = image.rawFileBasename+"_full.jpg"
+    CropFrameJPEG = image.rawFileBasename+"_crop.jpg"
     if args.clobber:
         if os.path.exists(IQMonLogFileName): os.remove(IQMonLogFileName)
-        if os.path.exists(image.htmlImageList): os.remove(image.htmlImageList)
-        if os.path.exists(image.summaryFile): os.remove(image.summaryFile)
-    logger = config.MakeLogger(IQMonLogFileName, args.verbose)
+        if os.path.exists(htmlImageList): os.remove(htmlImageList)
+        if os.path.exists(summaryFile): os.remove(summaryFile)
 
     ##-------------------------------------------------------------------------
     ## Perform Actual Image Analysis
     ##-------------------------------------------------------------------------
-    logger.info("###### Processing Image:  %s ######", FitsFilename)
-    logger.info("Setting telescope variable to %s", telescope)
-    tel.CheckUnits(logger)
-    if args.clobber:
-        if os.path.exists(image.htmlImageList): os.remove(image.htmlImageList)
-    image.ReadImage(config)        ## Create working copy of image (don't edit raw file!)
-    image.GetHeader(tel, logger)   ## Extract values from header
-    image.MakeJPEG(image.rawFileBasename+"_full.jpg", tel, config, logger, rotate=True, binning=2)
-    if not image.imageWCS:
-        image.SolveAstrometry(tel, config, logger)  ## Solve Astrometry
-        image.GetHeader(tel, logger)                ## Refresh Header
-    image.DeterminePointingError(logger)            ## Calculate Pointing Error
-    darks = ListDarks(image, tel, config, logger)   ## List dark files
-    image.DarkSubtract(darks, tel, config, logger)  ## Dark Subtract Image
-    image.Crop(tel, logger)                         ## Crop Image
-    image.GetHeader(tel, logger)                    ## Refresh Header
-    image.RunSExtractor(tel, config, logger)        ## Run SExtractor
-    image.DetermineFWHM(logger)
-    image.MakeJPEG(image.rawFileBasename+"_crop.jpg", tel, config, logger, marked=True, binning=1)
-    image.CleanUp(logger)
-    image.CalculateProcessTime(logger)
-    image.AddWebLogEntry(tel, config, logger)
-    image.AddSummaryEntry(logger)
+    image.MakeLogger(IQMonLogFileName, args.verbose)
+    image.logger.info("###### Processing Image:  %s ######", FitsFilename)
+    image.logger.info("Setting telescope variable to %s", telescope)
+    image.tel.CheckUnits()
+    image.ReadImage()           ## Create working copy of image (don't edit raw file!)
+    image.GetHeader()           ## Extract values from header
+    image.MakeJPEG(FullFrameJPEG, rotate=True, binning=2)
+    if not image.imageWCS:      ## If no WCS found in header ...
+        image.SolveAstrometry() ## Solve Astrometry
+        image.GetHeader()       ## Refresh Header
+    image.DeterminePointingError()            ## Calculate Pointing Error
+    darks = ListDarks(image)    ## List dark files
+    image.DarkSubtract(darks)   ## Dark Subtract Image
+    image.Crop()                ## Crop Image
+    image.GetHeader()           ## Refresh Header
+    image.RunSExtractor()       ## Run SExtractor
+    image.DetermineFWHM()       ## Determine FWHM from SExtractor results
+    image.MakeJPEG(CropFrameJPEG, marked=True, binning=1)
+    image.CleanUp()             ## Cleanup (delete) temporary files.
+    image.CalculateProcessTime()## Calculate how long it took to process this image
+    image.AddWebLogEntry(htmlImageList) ## Add line for this image to HTML table
+    image.AddSummaryEntry(summaryFile)  ## Add line for this image to text table
     
 
 if __name__ == '__main__':
