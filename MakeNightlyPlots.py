@@ -75,7 +75,7 @@ def ReadACPLog(DateString, VYSOSDATAPath, PixelScale):
                     IsStartOfImage = MatchStartOfImage.match(line)
                     if IsStartOfImage:
                         if (ImageFile != "") and (not re.match(".*Empty.*", ImageFile)):
-                            ACPdata.add_row([TimeDecimal, ImageFile, TimeString, ImageFWHM, AvgFWHM, ACPPointingError])
+                            ACPdata.add_row((TimeDecimal, ImageFile, TimeString, ImageFWHM, AvgFWHM, ACPPointingError))
 #                             ACPdata.append([TimeDecimal, ImageFile, TimeString, ImageFWHM, AvgFWHM, ACPPointingError])
                         ImageFile = IsStartOfImage.group(2)
                         TimeString = IsStartOfImage.group(1)
@@ -91,7 +91,7 @@ def ReadACPLog(DateString, VYSOSDATAPath, PixelScale):
                         AvgFWHM = float(IsAvgFWHM.group(2))/PixelScale
                     IsRunComplete = MatchRunComplete.match(line)
                     if IsRunComplete:
-                        ACPdata.add_row([TimeDecimal, ImageFile, TimeString, ImageFWHM, AvgFWHM, ACPPointingError])
+                        ACPdata.add_row((TimeDecimal, ImageFile, TimeString, ImageFWHM, AvgFWHM, ACPPointingError))
 #                         ACPdata.append([TimeDecimal, ImageFile, TimeString, ImageFWHM, AvgFWHM, ACPPointingError])
                 input.close()
         nACPImages = len(ACPdata)
