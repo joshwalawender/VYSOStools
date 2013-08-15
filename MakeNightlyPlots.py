@@ -135,7 +135,7 @@ def ReadIQMonLog(config, telescope, DateString):
                         print "    Data for %d images extracted from IQMon summary file." % len(IQMonTable)
                     except:
                         print "    Failed to Read IQMon Log File"
-                        IQMonTable = table.Table(names=ColNames)
+                        IQMonTable = table.Table()
     if not FoundIQMonFile:
         print "  Failed to Find IQMon Logs: "+os.path.join(config.pathLog, telname)
         IQMonTable = table.Table()
@@ -391,6 +391,7 @@ def MakePlots(DateString, telescope):
                 if FindIQMonID:
                     IQMonID = FindIQMonID.group(1)
                 else:
+                    print len(IQMonEntry['File'])
                     print "Could not find ID for IQMon file: {0}".format(IQMonEntry['File'])
                 if IQMonID == ACPID:
                     print("{0} in IQMon results matched to {1} in ACP results.".format(IQMonEntry['File'], ACPentry['ImageFile']))
