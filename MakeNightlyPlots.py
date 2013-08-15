@@ -131,7 +131,7 @@ def ReadIQMonLog(config, telescope, DateString):
                         print "    Data for %d images extracted from IQMon summary file." % len(IQMonTable)
                     except:
                         print "    Failed to Read IQMon Log File"
-                        IQMonTable = table.Table(names=ColNames)
+                        IQMonTable = table.Table()
     if not FoundIQMonFile:
         print "  Failed to Find IQMon Logs: "+os.path.join(config.pathLog, telname)
         IQMonTable = table.Table()
