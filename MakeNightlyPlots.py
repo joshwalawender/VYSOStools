@@ -54,10 +54,12 @@ def ReadACPLog(DateString, VYSOSDATAPath, PixelScale):
     MatchAvgFWHM       = re.compile("(\d{2}:\d{2}:\d{2})\s*\(avg\sFWHM\s=\s([0-9\.]{2,5})\sarcsec\)")
     MatchRunComplete   = re.compile("(\d{2}:\d{2}:\d{2})\s*Run\scomplete")
     ACPLogDirectory = os.path.join(VYSOSDATAPath, "Logs", DateString)
-    ACPdata = []
     if os.path.exists(ACPLogDirectory):
         print "  Found ACP Log Directory: "+ACPLogDirectory
         FoundACPLog = True
+        colNames = ('TimeDecimal', 'ImageFile', 'TimeString', 'ImageFWHM', 'AvgFWHM', 'PointingError')
+        colTypes = ('f4', 'a', 'a', 'f4', 'f4', 'f4')
+        ACPdata = table.Table(names=colNames, dtypes=colTypes)
         ACPLogFiles = os.listdir(ACPLogDirectory)
         ## Loop through all log files
         for LogFile in ACPLogFiles:
@@ -73,7 +75,8 @@ def ReadACPLog(DateString, VYSOSDATAPath, PixelScale):
                     IsStartOfImage = MatchStartOfImage.match(line)
                     if IsStartOfImage:
                         if (ImageFile != "") and (not re.match(".*Empty.*", ImageFile)):
-                            ACPdata.append([TimeDecimal, ImageFile, TimeString, ImageFWHM, AvgFWHM, ACPPointingError])
+                            ACPdata.add_row([TimeDecimal, ImageFile, TimeString, ImageFWHM, AvgFWHM, ACPPointingError])
+#                             ACPdata.append([TimeDecimal, ImageFile, TimeString, ImageFWHM, AvgFWHM, ACPPointingError])
                         ImageFile = IsStartOfImage.group(2)
                         TimeString = IsStartOfImage.group(1)
                         TimeDecimal = TimeStringToDecimal(TimeString)
@@ -88,13 +91,14 @@ def ReadACPLog(DateString, VYSOSDATAPath, PixelScale):
                         AvgFWHM = float(IsAvgFWHM.group(2))/PixelScale
                     IsRunComplete = MatchRunComplete.match(line)
                     if IsRunComplete:
-                        ACPdata.append([TimeDecimal, ImageFile, TimeString, ImageFWHM, AvgFWHM, ACPPointingError])
+                        ACPdata.add_row([TimeDecimal, ImageFile, TimeString, ImageFWHM, AvgFWHM, ACPPointingError])
+#                         ACPdata.append([TimeDecimal, ImageFile, TimeString, ImageFWHM, AvgFWHM, ACPPointingError])
                 input.close()
         nACPImages = len(ACPdata)
         print "    Data for %d images (Empty filter images excluded) extracted from ACP Logs." % nACPImages
     else:
         print "  Failed to Find ACP Log Directory: "+ACPLogDirectory
-        ACPdata = []
+        ACPdata = None
 
     return ACPdata
 
@@ -137,85 +141,6 @@ def ReadIQMonLog(config, telescope, DateString):
         IQMonTable = table.Table()
 
     return IQMonTable
-    
-    
-    
-###########################################################
-## Read FocusMax Logs
-## - extract times of focus operations
-def ReadFocusMaxLog(VYSOSDATAPath, DateString):
-    FocusRuns = []
-    UTDate = int(DateString[0:8])
-    LocalNight = UTDate-1
-    LocalNightString = str(LocalNight)
-    FocusMaxLogPath = os.path.join(VYSOSDATAPath, "Logs", "FocusMax")
-    if os.path.exists(FocusMaxLogPath):
-        FMLogFiles = os.listdir(FocusMaxLogPath)
-        MatchLogFile = re.compile(LocalNightString+"_([0-9]{5,6})\.log")
-        RightLogFiles = []
-        for file in FMLogFiles:
-            IsRightLogFile = MatchLogFile.match(file)
-            if IsRightLogFile:
-                FoundFocusMaxFile = True
-                RightLogFiles.append(file)
-        for FocusMaxLogFileName in RightLogFiles:
-            print "  Found FocusMax Log File: "+FocusMaxLogFileName
-            FocusMaxLogFile = open(os.path.join(FocusMaxLogPath, FocusMaxLogFileName), 'r')
-            MatchStartingAS  = re.compile("\s?([0-9]{1,2}:[0-9]{2}:[0-9]{2})\s\s\s\*\*\sStarting AcquireStar Sequence")
-            MatchBestFocus   = re.compile("\s?([0-9]{1,2}:[0-9]{2}:[0-9]{2})\s\s\sBest Focus is:\s([0-9]{1,5})")
-            MatchTemperature = re.compile("\s?([0-9]{1,2}:[0-9]{2}:[0-9]{2})\s\s\sTemperature = ([0-9]{1,3}\.[0-9]{1,3})")
-            MatchASCompleted = re.compile("\s?([0-9]{1,2}:[0-9]{2}:[0-9]{2})\s\s\sAcquireStar completed")
-            MatchASnotCompleted = re.compile("\s?([0-9]{1,2}:[0-9]{2}:[0-9]{2})\s\s\sAcquireStar not completed")
-            Sequence = 0
-            FocusRuns = []
-            for line in FocusMaxLogFile:
-                IsStartingAS = MatchStartingAS.match(line)
-                if IsStartingAS:
-                    Sequence = 1
-                    StartTime = IsStartingAS.group(1)
-                    StartUT = TimeStringToDecimal(StartTime)+10.0
-                    if StartUT >= 24.0: StartUT = StartUT - 24.0
-                if Sequence == 1:
-                    IsBestFocus = MatchBestFocus.match(line)
-                    if IsBestFocus:
-                        BestFocus = int(IsBestFocus.group(2))
-                        Sequence = 2
-                    IsASnotCompleted = MatchASnotCompleted.match(line)
-                    if IsASnotCompleted:
-                        EndTime = IsASnotCompleted.group(1)
-                        EndUT = TimeStringToDecimal(EndTime)+10.0
-                        if EndUT >= 24.0: EndUT = EndUT - 24.0                    
-                        Sequence = 0
-                if Sequence == 2:
-                    IsTemperature = MatchTemperature.match(line)
-                    if IsTemperature:
-                        FocusMaxTemperature = float(IsTemperature.group(2))
-                        Sequence = 3
-                    IsASnotCompleted = MatchASnotCompleted.match(line)
-                    if IsASnotCompleted:
-                        EndTime = IsASnotCompleted.group(1)
-                        EndUT = TimeStringToDecimal(EndTime)+10.0
-                        if EndUT >= 24.0: EndUT = EndUT - 24.0
-                        Sequence = 0
-                if Sequence == 3:
-                    IsASCompleted = MatchASCompleted.match(line)
-                    if IsASCompleted:
-                        EndTime = IsASCompleted.group(1)
-                        EndUT = TimeStringToDecimal(EndTime)+10.0
-                        if EndUT >= 24.0: EndUT = EndUT - 24.0
-                        Sequence = 4
-                    IsASnotCompleted = MatchASnotCompleted.match(line)
-                    if IsASnotCompleted:
-                        Sequence = 0
-                if Sequence == 4:
-                    FocusRuns.append([StartTime, EndTime, StartUT, EndUT, BestFocus, FocusMaxTemperature])
-                    print "      Focus: %8s %8s %5d %8.2f" % (StartTime, EndTime, BestFocus, FocusMaxTemperature)
-                    Sequence = 0
-    else:
-        print "  Failed to Find FocusMax Log File"
-        FocusRuns = []
-
-    return FocusRuns
 
 
 ###########################################################
@@ -437,12 +362,6 @@ def MakePlots(DateString, telescope):
     # IQMonTable = IQMonTable.sort('Time')
 
     ###########################################################
-    ## Read FocusMax Logs
-    ## - extract times of focus operations
-    FocusRuns = ReadFocusMaxLog(VYSOSDATAPath, DateString)
-    if len(FocusRuns) > 1: FoundFocusMaxFile = True
-
-    ###########################################################
     ## Get Environmental Data
     V20EnvTable, V5EnvTable = ReadEnvironmentalLogs(DateString, telescope, V5DataPath, V20DataPath)
     if len(V20EnvTable) > 1: FoundV20Env = True
@@ -462,17 +381,16 @@ def MakePlots(DateString, telescope):
         for ACPentry in ACPdata:
             FoundIQMonMatch = False
             for IQMonEntry in IQMonTable:
-                if re.match(IQMonEntry['File']+".*", ACPentry[1]+".fts"):
+                if re.match(IQMonEntry['File']+".*", ACPentry['ImageFile']+".fts"):
                     FoundIQMonMatch = True
-                    MatchedData.add_row([ACPentry[0], ACPentry[1], ACPentry[3], ACPentry[5],
+                    MatchedData.add_row([ACPentry['TimeDecimal'], ACPentry['ImageFile'], ACPentry['ImageFWHM'], ACPentry['PointingError'],
                                          IQMonEntry['ExpStart'], IQMonEntry['File'], IQMonEntry['FWHM (pix)'], IQMonEntry['PointingError (arcmin)']])
             if not FoundIQMonMatch:
-                ACPFile = os.path.join(VYSOSDATAPath, "Images", DateString, ACPentry[1]+".fts")
+                ACPFile = os.path.join(VYSOSDATAPath, "Images", DateString, ACPentry['ImageFile']+".fts")
                 if os.path.exists(ACPFile):
-                    print "  - Could not find IQMon results for "+ACPentry[1]+".fts."
+                    print "  - Could not find IQMon results for "+ACPentry['ImageFile']+".fts."
                 else:
-                    print "  - Could not find file for ACP log entry "+ACPentry[1]+".fts."
-    # MatchedData = MatchedData.sort('ACP Time')
+                    print "  - Could not find file for ACP log entry "+ACPentry['ImageFile']+".fts."
 
 
     ###########################################################
