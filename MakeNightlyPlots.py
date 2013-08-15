@@ -58,7 +58,7 @@ def ReadACPLog(DateString, VYSOSDATAPath, PixelScale):
         print "  Found ACP Log Directory: "+ACPLogDirectory
         FoundACPLog = True
         colNames = ('TimeDecimal', 'ImageFile', 'TimeString', 'ImageFWHM', 'AvgFWHM', 'PointingError')
-        colTypes = ('f4', 'a', 'a', 'f4', 'f4', 'f4')
+        colTypes = ('f4', 'S80', 'S8', 'f4', 'f4', 'f4')
         ACPdata = table.Table(names=colNames, dtypes=colTypes)
         ACPLogFiles = os.listdir(ACPLogDirectory)
         ## Loop through all log files
@@ -371,7 +371,7 @@ def MakePlots(DateString, telescope):
 
     ###########################################################
     ## Match up ACP Log and IQMon Results Based on filename
-    print "  Matching IQMon and ACP data"
+    print "  Matching IQMon and ACP data: {0} and {1} lines respectively".format(len(IQMonTable), len(ACPdata))
     if FoundIQMonFile and FoundACPLog:
         MatchedData = table.Table(
                       names=('ACP Time', 'ACP File', 'ACP FWHM', 'ACP PErr', 'IQMon Time', 'IQMon File', 'IQMon FWHM', 'IQMon PErr'),
@@ -379,12 +379,25 @@ def MakePlots(DateString, telescope):
                       masked=True
                       )
         for ACPentry in ACPdata:
+            FindID = re.compile(".*(\d{8}at\d{6}).*")
+            FindACPID = FindID.match(ACPentry['ImageFile'])
+            if FindACPID:
+                ACPID = FindACPID.group(1)
+            else:
+                print "Could not find ID for ACP file: {0}".format(ACPentry['ImageFile'])
             FoundIQMonMatch = False
             for IQMonEntry in IQMonTable:
-                if re.match(IQMonEntry['File']+".*", ACPentry['ImageFile']+".fts"):
+                FindIQMonID = FindID.match(IQMonEntry['File'])
+                if FindIQMonID:
+                    IQMonID = FindIQMonID.group(1)
+                else:
+                    print "Could not find ID for IQMon file: {0}".format(IQMonEntry['File'])
+                if IQMonID == ACPID:
+                    print("{0} in IQMon results matched to {1} in ACP results.".format(IQMonEntry['File'], ACPentry['ImageFile']))
                     FoundIQMonMatch = True
                     MatchedData.add_row([ACPentry['TimeDecimal'], ACPentry['ImageFile'], ACPentry['ImageFWHM'], ACPentry['PointingError'],
                                          IQMonEntry['ExpStart'], IQMonEntry['File'], IQMonEntry['FWHM (pix)'], IQMonEntry['PointingError (arcmin)']])
+                    break
             if not FoundIQMonMatch:
                 ACPFile = os.path.join(VYSOSDATAPath, "Images", DateString, ACPentry['ImageFile']+".fts")
                 if os.path.exists(ACPFile):
