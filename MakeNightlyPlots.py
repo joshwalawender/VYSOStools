@@ -108,7 +108,7 @@ def ReadACPLog(DateString, VYSOSDATAPath, PixelScale, logger):
 ## Read IQMon Logs
 ## - extract IQMon FWHM, ellipticity, pointing error
 def ReadIQMonLog(config, telescope, DateString, logger):
-    FoundIQMonFile = False
+    IQMonTable = None
     if telescope == "V5":
         telname = "VYSOS-5"
     if telescope == "V20":
@@ -139,9 +139,8 @@ def ReadIQMonLog(config, telescope, DateString, logger):
                     except:
                         logger.critical("Failed to Read IQMon Log File")
                         IQMonTable = table.Table()
-    if not FoundIQMonFile:
+    if not IQMonTable:
         logger.critical("Failed to Find IQMon Logs: "+os.path.join(config.pathLog, telname))
-        IQMonTable = table.Table()
 
     return IQMonTable
 
