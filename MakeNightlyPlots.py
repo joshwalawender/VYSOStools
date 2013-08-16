@@ -1003,7 +1003,7 @@ def main(argv=None):
     logger = logging.getLogger('MakeNightlyPlotsLogger')
     logger.setLevel(logging.DEBUG)
     LogConsoleHandler = logging.StreamHandler()
-    if verbose:
+    if args.verbose:
         LogConsoleHandler.setLevel(logging.DEBUG)
     else:
         LogConsoleHandler.setLevel(logging.INFO)
