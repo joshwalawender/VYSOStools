@@ -368,8 +368,8 @@ def MakePlots(DateString, telescope, logger):
 
     ###########################################################
     ## Match up ACP Log and IQMon Results Based on filename
-    logger.info("Matching IQMon and ACP data with {0} and {1} lines respectively".format(len(IQMonTable), len(ACPdata)))
     if FoundIQMonFile and FoundACPLog:
+        logger.info("Matching IQMon and ACP data with {0} and {1} lines respectively".format(len(IQMonTable), len(ACPdata)))
         MatchedData = table.Table(
                       names=('ACP Time', 'ACP File', 'ACP FWHM', 'ACP PErr', 'IQMon Time', 'IQMon File', 'IQMon FWHM', 'IQMon PErr'),
                       dtypes=('f',       'S',        'f',        'f',        'S',           'S',         'f',          'f'),
