@@ -114,6 +114,7 @@ def ReadIQMonLog(config, telescope, DateString, logger):
     if telescope == "V20":
         telname = "VYSOS-20"
     if os.path.exists(os.path.join(config.pathLog, telname)):
+        FoundIQMonFile = True
         logger.debug("Found directory with IQMon summary files.")
         Files = os.listdir(os.path.join(config.pathLog, telname))
         if telescope == "V5":
