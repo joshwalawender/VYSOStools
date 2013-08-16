@@ -358,16 +358,13 @@ def MakePlots(DateString, telescope, logger):
     ## Read IQMon Logs
     ## - extract IQMon FWHM, ellipticity, pointing error
     IQMonTable = ReadIQMonLog(config, telescope, DateString, logger)
-    if len(IQMonTable) > 1: FoundIQMonFile = True
-    # IQMonTable = IQMonTable.sort('Time')
+    if IQMonTable and len(IQMonTable) > 1: FoundIQMonFile = True
 
     ###########################################################
     ## Get Environmental Data
     V20EnvTable, V5EnvTable = ReadEnvironmentalLogs(DateString, telescope, V5DataPath, V20DataPath, logger)
     if len(V20EnvTable) > 1: FoundV20Env = True
     if len(V5EnvTable) > 1:  FoundV5Env = True
-    # V20EnvTable = V20EnvTable.sort('Time')
-    # V5EnvTable = V5EnvTable.sort('Time')
 
     ###########################################################
     ## Match up ACP Log and IQMon Results Based on filename
