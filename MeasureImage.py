@@ -184,6 +184,8 @@ def main():
         tel.SExtractorSeeing = 2.0*u.arcsec
     ## Define Site (ephem site object)
     tel.site = ephem.Observer()
+    tel.CheckUnits()
+    tel.DefinePixelScale()
 
     ##-------------------------------------------------------------------------
     ## Create IQMon.Image Object
@@ -209,10 +211,9 @@ def main():
     image.MakeLogger(IQMonLogFileName, args.verbose)
     image.logger.info("###### Processing Image:  %s ######", FitsFilename)
     image.logger.info("Setting telescope variable to %s", telescope)
-    image.tel.CheckUnits()
     image.ReadImage()           ## Create working copy of image (don't edit raw file!)
     image.GetHeader()           ## Extract values from header
-    image.MakeJPEG(FullFrameJPEG, rotate=True, binning=2)
+    image.MakeJPEG(FullFrameJPEG, rotate=True, markPointing=True, binning=2)
     if not image.imageWCS:      ## If no WCS found in header ...
         image.SolveAstrometry() ## Solve Astrometry
         image.GetHeader()       ## Refresh Header
@@ -223,7 +224,7 @@ def main():
     image.GetHeader()           ## Refresh Header
     image.RunSExtractor()       ## Run SExtractor
     image.DetermineFWHM()       ## Determine FWHM from SExtractor results
-    image.MakeJPEG(CropFrameJPEG, marked=True, binning=1)
+    image.MakeJPEG(CropFrameJPEG, markStars=True, markPointing=True, rotate=True, binning=1)
     image.CleanUp()             ## Cleanup (delete) temporary files.
     image.CalculateProcessTime()## Calculate how long it took to process this image
     image.AddWebLogEntry(htmlImageList) ## Add line for this image to HTML table

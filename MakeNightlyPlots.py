@@ -15,6 +15,7 @@ import string
 import fnmatch
 import time
 import datetime
+import logging
 import math
 import numpy
 import matplotlib.pyplot as pyplot
@@ -47,17 +48,19 @@ def ConvertHSTtoUTString(TimeString):
 ## DateString
 ## FoundACPLog (should be output)
 ## ACPdata (output)
-def ReadACPLog(DateString, VYSOSDATAPath, PixelScale):
+def ReadACPLog(DateString, VYSOSDATAPath, PixelScale, logger):
     MatchStartOfImage  = re.compile("(\d{2}:\d{2}:\d{2})\s*Imaging\sto\s([a-zA-Z0-9@\-_\+]*)")
     MatchPointingError = re.compile("(\d{2}:\d{2}:\d{2})\s*Pointing\serror\sis\s([0-9\.]+)\sarcmin.*")
     MatchImageFWHM     = re.compile("(\d{2}:\d{2}:\d{2})\s*Image\sFWHM\sis\s[0-9\.]{2,5}\sarcsec\s\(([0-9\.]{2,5})\spixels\)")
     MatchAvgFWHM       = re.compile("(\d{2}:\d{2}:\d{2})\s*\(avg\sFWHM\s=\s([0-9\.]{2,5})\sarcsec\)")
     MatchRunComplete   = re.compile("(\d{2}:\d{2}:\d{2})\s*Run\scomplete")
     ACPLogDirectory = os.path.join(VYSOSDATAPath, "Logs", DateString)
-    ACPdata = []
     if os.path.exists(ACPLogDirectory):
-        print "  Found ACP Log Directory: "+ACPLogDirectory
+        logger.debug("Found ACP Log Directory: "+ACPLogDirectory)
         FoundACPLog = True
+        colNames = ('TimeDecimal', 'ImageFile', 'TimeString', 'ImageFWHM', 'AvgFWHM', 'PointingError')
+        colTypes = ('f4', 'S80', 'S8', 'f4', 'f4', 'f4')
+        ACPdata = table.Table(names=colNames, dtypes=colTypes)
         ACPLogFiles = os.listdir(ACPLogDirectory)
         ## Loop through all log files
         for LogFile in ACPLogFiles:
@@ -73,7 +76,8 @@ def ReadACPLog(DateString, VYSOSDATAPath, PixelScale):
                     IsStartOfImage = MatchStartOfImage.match(line)
                     if IsStartOfImage:
                         if (ImageFile != "") and (not re.match(".*Empty.*", ImageFile)):
-                            ACPdata.append([TimeDecimal, ImageFile, TimeString, ImageFWHM, AvgFWHM, ACPPointingError])
+                            ACPdata.add_row((TimeDecimal, ImageFile, TimeString, ImageFWHM, AvgFWHM, ACPPointingError))
+#                             ACPdata.append([TimeDecimal, ImageFile, TimeString, ImageFWHM, AvgFWHM, ACPPointingError])
                         ImageFile = IsStartOfImage.group(2)
                         TimeString = IsStartOfImage.group(1)
                         TimeDecimal = TimeStringToDecimal(TimeString)
@@ -88,13 +92,14 @@ def ReadACPLog(DateString, VYSOSDATAPath, PixelScale):
                         AvgFWHM = float(IsAvgFWHM.group(2))/PixelScale
                     IsRunComplete = MatchRunComplete.match(line)
                     if IsRunComplete:
-                        ACPdata.append([TimeDecimal, ImageFile, TimeString, ImageFWHM, AvgFWHM, ACPPointingError])
+                        ACPdata.add_row((TimeDecimal, ImageFile, TimeString, ImageFWHM, AvgFWHM, ACPPointingError))
+#                         ACPdata.append([TimeDecimal, ImageFile, TimeString, ImageFWHM, AvgFWHM, ACPPointingError])
                 input.close()
         nACPImages = len(ACPdata)
-        print "    Data for %d images (Empty filter images excluded) extracted from ACP Logs." % nACPImages
+        logger.info("Data for %d images (Empty filter images excluded) extracted from ACP Logs." % nACPImages)
     else:
-        print "  Failed to Find ACP Log Directory: "+ACPLogDirectory
-        ACPdata = []
+        logger.warning("Failed to Find ACP Log Directory: "+ACPLogDirectory)
+        ACPdata = None
 
     return ACPdata
 
@@ -102,13 +107,15 @@ def ReadACPLog(DateString, VYSOSDATAPath, PixelScale):
 ###########################################################
 ## Read IQMon Logs
 ## - extract IQMon FWHM, ellipticity, pointing error
-def ReadIQMonLog(config, telescope, DateString):
-    FoundIQMonFile = False
+def ReadIQMonLog(config, telescope, DateString, logger):
+    IQMonTable = None
     if telescope == "V5":
         telname = "VYSOS-5"
     if telescope == "V20":
         telname = "VYSOS-20"
     if os.path.exists(os.path.join(config.pathLog, telname)):
+        FoundIQMonFile = True
+        logger.debug("Found directory with IQMon summary files.")
         Files = os.listdir(os.path.join(config.pathLog, telname))
         if telescope == "V5":
             MatchIQMonFile = re.compile("([0-9]{8}UT)_V5_Summary\.txt")
@@ -120,7 +127,7 @@ def ReadIQMonLog(config, telescope, DateString):
                 FullIQMonFile = os.path.join(config.pathLog, telname, File)
                 IQMonFileDate = IsIQMonFile.group(1)
                 if IQMonFileDate == DateString:
-                    print "    IQMon Summary file for "+DateString+" is "+File
+                    logger.debug("IQMon Summary file for "+DateString+" is "+File)
                     FoundIQMonFile = True
                     try:
                         IQMonTable = ascii.read(FullIQMonFile, fill_values=("--", float("nan")))
@@ -128,107 +135,27 @@ def ReadIQMonLog(config, telescope, DateString):
                         for i in range(0,len(IQMonTable),1):
                             IQMonTimeDecimals.append(TimeStringToDecimal(IQMonTable[i]['ExpStart'][11:19]))
                         IQMonTable.add_column(table.MaskedColumn(data=IQMonTimeDecimals, name='Time'))
-                        print "    Data for %d images extracted from IQMon summary file." % len(IQMonTable)
+                        logger.info("Data for %d images extracted from IQMon summary file." % len(IQMonTable))
                     except:
-                        print "    Failed to Read IQMon Log File"
-                        IQMonTable = table.Table(names=ColNames)
-    if not FoundIQMonFile:
-        print "  Failed to Find IQMon Logs: "+os.path.join(config.pathLog, telname)
-        IQMonTable = table.Table()
+                        logger.critical("Failed to Read IQMon Log File")
+                        IQMonTable = table.Table()
+    if not IQMonTable:
+        logger.critical("Failed to Find IQMon Logs: "+os.path.join(config.pathLog, telname))
 
     return IQMonTable
-    
-    
-    
-###########################################################
-## Read FocusMax Logs
-## - extract times of focus operations
-def ReadFocusMaxLog(VYSOSDATAPath, DateString):
-    FocusRuns = []
-    UTDate = int(DateString[0:8])
-    LocalNight = UTDate-1
-    LocalNightString = str(LocalNight)
-    FocusMaxLogPath = os.path.join(VYSOSDATAPath, "Logs", "FocusMax")
-    if os.path.exists(FocusMaxLogPath):
-        FMLogFiles = os.listdir(FocusMaxLogPath)
-        MatchLogFile = re.compile(LocalNightString+"_([0-9]{5,6})\.log")
-        RightLogFiles = []
-        for file in FMLogFiles:
-            IsRightLogFile = MatchLogFile.match(file)
-            if IsRightLogFile:
-                FoundFocusMaxFile = True
-                RightLogFiles.append(file)
-        for FocusMaxLogFileName in RightLogFiles:
-            print "  Found FocusMax Log File: "+FocusMaxLogFileName
-            FocusMaxLogFile = open(os.path.join(FocusMaxLogPath, FocusMaxLogFileName), 'r')
-            MatchStartingAS  = re.compile("\s?([0-9]{1,2}:[0-9]{2}:[0-9]{2})\s\s\s\*\*\sStarting AcquireStar Sequence")
-            MatchBestFocus   = re.compile("\s?([0-9]{1,2}:[0-9]{2}:[0-9]{2})\s\s\sBest Focus is:\s([0-9]{1,5})")
-            MatchTemperature = re.compile("\s?([0-9]{1,2}:[0-9]{2}:[0-9]{2})\s\s\sTemperature = ([0-9]{1,3}\.[0-9]{1,3})")
-            MatchASCompleted = re.compile("\s?([0-9]{1,2}:[0-9]{2}:[0-9]{2})\s\s\sAcquireStar completed")
-            MatchASnotCompleted = re.compile("\s?([0-9]{1,2}:[0-9]{2}:[0-9]{2})\s\s\sAcquireStar not completed")
-            Sequence = 0
-            FocusRuns = []
-            for line in FocusMaxLogFile:
-                IsStartingAS = MatchStartingAS.match(line)
-                if IsStartingAS:
-                    Sequence = 1
-                    StartTime = IsStartingAS.group(1)
-                    StartUT = TimeStringToDecimal(StartTime)+10.0
-                    if StartUT >= 24.0: StartUT = StartUT - 24.0
-                if Sequence == 1:
-                    IsBestFocus = MatchBestFocus.match(line)
-                    if IsBestFocus:
-                        BestFocus = int(IsBestFocus.group(2))
-                        Sequence = 2
-                    IsASnotCompleted = MatchASnotCompleted.match(line)
-                    if IsASnotCompleted:
-                        EndTime = IsASnotCompleted.group(1)
-                        EndUT = TimeStringToDecimal(EndTime)+10.0
-                        if EndUT >= 24.0: EndUT = EndUT - 24.0                    
-                        Sequence = 0
-                if Sequence == 2:
-                    IsTemperature = MatchTemperature.match(line)
-                    if IsTemperature:
-                        FocusMaxTemperature = float(IsTemperature.group(2))
-                        Sequence = 3
-                    IsASnotCompleted = MatchASnotCompleted.match(line)
-                    if IsASnotCompleted:
-                        EndTime = IsASnotCompleted.group(1)
-                        EndUT = TimeStringToDecimal(EndTime)+10.0
-                        if EndUT >= 24.0: EndUT = EndUT - 24.0
-                        Sequence = 0
-                if Sequence == 3:
-                    IsASCompleted = MatchASCompleted.match(line)
-                    if IsASCompleted:
-                        EndTime = IsASCompleted.group(1)
-                        EndUT = TimeStringToDecimal(EndTime)+10.0
-                        if EndUT >= 24.0: EndUT = EndUT - 24.0
-                        Sequence = 4
-                    IsASnotCompleted = MatchASnotCompleted.match(line)
-                    if IsASnotCompleted:
-                        Sequence = 0
-                if Sequence == 4:
-                    FocusRuns.append([StartTime, EndTime, StartUT, EndUT, BestFocus, FocusMaxTemperature])
-                    print "      Focus: %8s %8s %5d %8.2f" % (StartTime, EndTime, BestFocus, FocusMaxTemperature)
-                    Sequence = 0
-    else:
-        print "  Failed to Find FocusMax Log File"
-        FocusRuns = []
-
-    return FocusRuns
 
 
 ###########################################################
 ## Read Environmental Logs
-def ReadEnvironmentalLogs(DateString, telescope, V5DataPath, V20DataPath):
-    print "  Reading Environmental Logs"
+def ReadEnvironmentalLogs(DateString, telescope, V5DataPath, V20DataPath, logger):
+    logger.info("Reading Environmental Logs")
     V20EnvLogFileName = os.path.join(V20DataPath, "Logs", DateString, "EnvironmentalLog.txt")
     V5EnvLogFileName  = os.path.join(V5DataPath,  "Logs", DateString, "EnvironmentalLog.txt")
     FoundV20EnvLogFile = False
     FoundV5EnvLogFile  = False
     FoundOtherLogFile = False
     if os.path.exists(V20EnvLogFileName):
-        print "  Found VYSOS-20 Environmental Logs"
+        logger.debug("Found VYSOS-20 Environmental Logs")
         FoundV20EnvLogFile = True
         ColStarts = [ 0, 11, 22, 32, 42, 52, 62, 72, 82,  92, 102, 112, 122, 132, 142, 152, 162]
         ColEnds   = [ 9, 18, 31, 41, 51, 61, 71, 81, 91, 101, 111, 121, 131, 141, 151, 161, 171]
@@ -254,7 +181,6 @@ def ReadEnvironmentalLogs(DateString, telescope, V5DataPath, V20DataPath):
                 V20Cloudiness.append(ConditionMatch.group(2))
                 V20Windiness.append(ConditionMatch.group(3))
             else:
-                # print "no match to |"+str(V20EnvTable[i]['Condition'])+"| in V20 Env Log"
                 V20Wetness.append("-1")
                 V20Cloudiness.append("-1")
                 V20Windiness.append("-1")
@@ -277,7 +203,7 @@ def ReadEnvironmentalLogs(DateString, telescope, V5DataPath, V20DataPath):
         V20EnvTable = table.Table(names=ColNames)
 
     if os.path.exists(V5EnvLogFileName):
-        print "  Found VYSOS-5 Environmental Logs"
+        logger.debug("Found VYSOS-5 Environmental Logs")
         FoundV5EnvLogFile = True
         ColStarts = [ 0, 11, 22, 32, 42, 52, 62, 72, 82,  92, 102, 112]
         ColEnds   = [ 9, 18, 31, 41, 51, 61, 71, 81, 91, 101, 111, 121]
@@ -302,7 +228,6 @@ def ReadEnvironmentalLogs(DateString, telescope, V5DataPath, V20DataPath):
                 V5Cloudiness.append(ConditionMatch.group(2))
                 V5Windiness.append(ConditionMatch.group(3))
             else:
-                # print "no match to |"+str(V5EnvTable[i]['Condition'])+"| in V5 Env Log"
                 V5Wetness.append("-1")
                 V5Cloudiness.append("-1")
                 V5Windiness.append("-1")
@@ -322,8 +247,8 @@ def ReadEnvironmentalLogs(DateString, telescope, V5DataPath, V20DataPath):
 
 ###########################################################
 ## Make Plots
-def MakePlots(DateString, telescope):
-    print "#### Making Nightly Plots for "+telescope+" on the Night of "+DateString+" ####"
+def MakePlots(DateString, telescope, logger):
+    logger.info("#### Making Nightly Plots for "+telescope+" on the Night of "+DateString+" ####")
 
     FoundACPLog       = False
     FoundIQMonFile    = False
@@ -426,59 +351,62 @@ def MakePlots(DateString, telescope):
 
     ###########################################################
     ## Read ACP Logs
-    ACPdata = ReadACPLog(DateString, VYSOSDATAPath, PixelScale)
+    ACPdata = ReadACPLog(DateString, VYSOSDATAPath, PixelScale, logger)
     if len(ACPdata) > 1: FoundACPLog = True
 
     ###########################################################
     ## Read IQMon Logs
     ## - extract IQMon FWHM, ellipticity, pointing error
-    IQMonTable = ReadIQMonLog(config, telescope, DateString)
-    if len(IQMonTable) > 1: FoundIQMonFile = True
-    # IQMonTable = IQMonTable.sort('Time')
-
-    ###########################################################
-    ## Read FocusMax Logs
-    ## - extract times of focus operations
-    FocusRuns = ReadFocusMaxLog(VYSOSDATAPath, DateString)
-    if len(FocusRuns) > 1: FoundFocusMaxFile = True
+    IQMonTable = ReadIQMonLog(config, telescope, DateString, logger)
+    if IQMonTable and len(IQMonTable) > 1: FoundIQMonFile = True
 
     ###########################################################
     ## Get Environmental Data
-    V20EnvTable, V5EnvTable = ReadEnvironmentalLogs(DateString, telescope, V5DataPath, V20DataPath)
+    V20EnvTable, V5EnvTable = ReadEnvironmentalLogs(DateString, telescope, V5DataPath, V20DataPath, logger)
     if len(V20EnvTable) > 1: FoundV20Env = True
     if len(V5EnvTable) > 1:  FoundV5Env = True
-    # V20EnvTable = V20EnvTable.sort('Time')
-    # V5EnvTable = V5EnvTable.sort('Time')
 
     ###########################################################
     ## Match up ACP Log and IQMon Results Based on filename
-    print "  Matching IQMon and ACP data"
     if FoundIQMonFile and FoundACPLog:
+        logger.info("Matching IQMon and ACP data with {0} and {1} lines respectively".format(len(IQMonTable), len(ACPdata)))
         MatchedData = table.Table(
                       names=('ACP Time', 'ACP File', 'ACP FWHM', 'ACP PErr', 'IQMon Time', 'IQMon File', 'IQMon FWHM', 'IQMon PErr'),
                       dtypes=('f',       'S',        'f',        'f',        'S',           'S',         'f',          'f'),
                       masked=True
                       )
         for ACPentry in ACPdata:
+            FindID = re.compile(".*(\d{8}at\d{6}).*")
+            FindACPID = FindID.match(ACPentry['ImageFile'])
+            if FindACPID:
+                ACPID = FindACPID.group(1)
+            else:
+                logger.warning("Could not find ID for ACP file: {0}".format(ACPentry['ImageFile']))
             FoundIQMonMatch = False
             for IQMonEntry in IQMonTable:
-                if re.match(IQMonEntry['File']+".*", ACPentry[1]+".fts"):
-                    FoundIQMonMatch = True
-                    MatchedData.add_row([ACPentry[0], ACPentry[1], ACPentry[3], ACPentry[5],
-                                         IQMonEntry['ExpStart'], IQMonEntry['File'], IQMonEntry['FWHM (pix)'], IQMonEntry['PointingError (arcmin)']])
-            if not FoundIQMonMatch:
-                ACPFile = os.path.join(VYSOSDATAPath, "Images", DateString, ACPentry[1]+".fts")
-                if os.path.exists(ACPFile):
-                    print "  - Could not find IQMon results for "+ACPentry[1]+".fts."
+                FindIQMonID = FindID.match(IQMonEntry['File'])
+                if FindIQMonID:
+                    IQMonID = FindIQMonID.group(1)
                 else:
-                    print "  - Could not find file for ACP log entry "+ACPentry[1]+".fts."
-    # MatchedData = MatchedData.sort('ACP Time')
+                    logger.warning("Could not find ID for IQMon file: {0}".format(IQMonEntry['File']))
+                if IQMonID == ACPID:
+                    logger.debug("{0} in IQMon results matched to {1} in ACP results.".format(IQMonEntry['File'], ACPentry['ImageFile']))
+                    FoundIQMonMatch = True
+                    MatchedData.add_row([ACPentry['TimeDecimal'], ACPentry['ImageFile'], ACPentry['ImageFWHM'], ACPentry['PointingError'],
+                                         IQMonEntry['ExpStart'], IQMonEntry['File'], IQMonEntry['FWHM (pix)'], IQMonEntry['PointingError (arcmin)']])
+                    break
+            if not FoundIQMonMatch:
+                ACPFile = os.path.join(VYSOSDATAPath, "Images", DateString, ACPentry['ImageFile']+".fts")
+                if os.path.exists(ACPFile):
+                    logger.warning("Could not find IQMon results for "+ACPentry['ImageFile']+".fts.")
+                else:
+                    logger.warning("Could not find IQMon result or file for ACP log entry "+ACPentry['ImageFile']+".fts.")
 
 
     ###########################################################
     ## Make Nightly Sumamry Plot (show only night time)
     ###########################################################
-    print "  Writing Output File: "+PlotFileName
+    logger.info("Writing Output File: "+PlotFileName)
     dpi=100
     Figure = pyplot.figure(figsize=(11,11), dpi=dpi)
 
@@ -728,7 +656,7 @@ def MakePlots(DateString, telescope):
     ###########################################################
     ## Make Environmental Plot (show entire day)
     ###########################################################
-    print "  Writing Output File: "+EnvPlotFileName
+    logger.info("Writing Output File: "+EnvPlotFileName)
     dpi=100
     Figure = pyplot.figure(figsize=(11,11), dpi=dpi)
     PlotStartUT = 0
@@ -884,7 +812,7 @@ def MakePlots(DateString, telescope):
     ###########################################################
     ## Make Recent Conditions Plot (Last 2 hours)
     ###########################################################
-    print "  Writing Output File: "+RecentPlotFileName
+    logger.info("Writing Output File: "+RecentPlotFileName)
     dpi=100
     Figure = pyplot.figure(figsize=(11.2,5.8), dpi=dpi)
     now = datetime.datetime.utcnow()
@@ -1061,7 +989,25 @@ def main(argv=None):
     parser.add_argument("-d", "--date", 
         dest="date", required=False, default="", type=str,
         help="UT date of night to analyze. (i.e. '20130805UT')")
+    parser.add_argument("-v", "--verbose",
+        action="store_true", dest="verbose",
+        default=False, help="Be verbose! (default = False)")
     args = parser.parse_args()
+
+    ##-------------------------------------------------------------------------
+    ## Make logger
+    ##-------------------------------------------------------------------------
+    logger = logging.getLogger('MakeNightlyPlotsLogger')
+    logger.setLevel(logging.DEBUG)
+    LogConsoleHandler = logging.StreamHandler()
+    if args.verbose:
+        LogConsoleHandler.setLevel(logging.DEBUG)
+    else:
+        LogConsoleHandler.setLevel(logging.INFO)
+    LogFormat = logging.Formatter('%(asctime)23s %(levelname)8s: %(message)s')
+    LogConsoleHandler.setFormatter(LogFormat)
+    logger.addHandler(LogConsoleHandler)
+
 
     ##-------------------------------------------------------------------------
     ## Set date to tonight if not specified
@@ -1072,7 +1018,7 @@ def main(argv=None):
         args.date = DateString
 
     ## Run MakePlots Function
-    Success = MakePlots(args.date, args.telescope)
+    Success = MakePlots(args.date, args.telescope, logger)
 
 
 if __name__ == '__main__':
