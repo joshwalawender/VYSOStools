@@ -623,7 +623,7 @@ def MakePlots(DateString, telescope, logger):
     ## Ellipticity vs. Time
     if FoundIQMonFile:
         Figure.add_axes([0.54, 0.255, 0.46, 0.235])
-        pyplot.plot(IQMonTable['Time'], IQMonTable['Ellipticity'], 'b.-', drawstyle="steps-post", label="Ellipticity")
+        pyplot.plot(IQMonTable['Time'], IQMonTable['Ellipticity'], 'b.', drawstyle="steps-post", label="Ellipticity")
         pyplot.xlabel("Time in Hours UT")
         pyplot.xticks(numpy.linspace(PlotStartUT,PlotEndUT,nUTHours,endpoint=True))
         pyplot.xlim(PlotStartUT,PlotEndUT)
