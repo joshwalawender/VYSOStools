@@ -114,7 +114,7 @@ def main(argv=None):
                         for line in MIoutput.split("\n"):
                             print line
                     except:
-                        print "Call to MeasureImage.py Failed"
+                        print "Call to MeasureImage.py Failed: {0} {1} {2}".format(sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2])
         else:
             print "No image files found in directory: "+ImagesDirectory
     else:
