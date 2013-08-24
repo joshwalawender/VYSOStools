@@ -36,7 +36,7 @@ def TestDevice(address, nPings):
         PacketLoss = None
         AvgRT = None
     if not math.isnan(PacketLoss):
-        if PacketLoss <= 2./7.*100.:
+        if PacketLoss <= 50.:
             Status = "up"
         else:
             Status = "down"
@@ -96,7 +96,7 @@ def main():
     names = ['Router', 'Switch', 'OldRouter', 'Panoptes', 'Altair', 'CCTV', 'MLOAllSky']
     IPs = ['192.168.1.1', '192.168.1.2', '192.168.1.10', '192.168.1.50', '192.168.1.102', '192.168.1.103', '192.168.1.104']
     Addresses = dict(zip(names, IPs))
-    nPings = 4
+    nPings = 3
     ## Loop through devices and get ping results
     DeviceStatusList = []
     for Device in names:
@@ -116,7 +116,6 @@ def main():
     converters = {}
     for idx in range(0, len(ColNames)):
         converters[ColNames[idx]] = ascii.convert_numpy(Types[idx])
-    print(converters)
     if not os.path.exists(ResultsFile):    
         ResultsTable = table.Table(names=tuple(ColNames), dtypes=tuple(Types))
     else:
@@ -125,7 +124,6 @@ def main():
                                   header_start=0, data_start=1,
                                   Reader=ascii.basic.Basic,
                                   delimiter="\s",
-                                  fill_values=('--', '0'),
                                   converters=converters)
     ## Add line to table
     newResults = [TimeString, CPU_5m, TempCPU]
@@ -138,8 +136,7 @@ def main():
     ##-------------------------------------------------------------------------
     ## Read Results File and Make Plot of System Status for Today
     ##-------------------------------------------------------------------------
-    ResultsTable = ascii.read(ResultsFile,
-
+    
 
 if __name__ == '__main__':
     main()
