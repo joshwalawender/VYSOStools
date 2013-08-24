@@ -108,15 +108,25 @@ def main():
     ## Write Results to Astropy Table and Save to ASCII File
     ##-------------------------------------------------------------------------
     ResultsFile = os.path.join(homePath, "IQMon", "Logs", "SystemStatus", DateString+".txt")
+    ColNames = ["time", "CPU Load", "CPU Temperature"]
+    Types = ['a24', 'f4', 'f4']
+    for Device in names:
+        ColNames.append(Device)
+        Types.append('a6')
+    converters = {}
+    for idx in range(0, len(ColNames)):
+        converters[ColNames[idx]] = ascii.convert_numpy(Types[idx])
+    print(converters)
     if not os.path.exists(ResultsFile):    
-        ColNames = ["time", "CPU Load", "CPU Temperature"]
-        Types = ['a24', 'f4', 'f4']
-        for Device in names:
-            ColNames.append(Device)
-            Types.append('a6')
         ResultsTable = table.Table(names=tuple(ColNames), dtypes=tuple(Types))
     else:
-        ResultsTable = ascii.read(ResultsFile)
+        ResultsTable = ascii.read(ResultsFile,
+                                  guess=False,
+                                  header_start=0, data_start=1,
+                                  Reader=ascii.basic.Basic,
+                                  delimiter="\s",
+                                  fill_values=('--', '0'),
+                                  converters=converters)
     ## Add line to table
     newResults = [TimeString, CPU_5m, TempCPU]
     for DeviceStatus in DeviceStatusList:
@@ -128,6 +138,8 @@ def main():
     ##-------------------------------------------------------------------------
     ## Read Results File and Make Plot of System Status for Today
     ##-------------------------------------------------------------------------
+    ResultsTable = ascii.read(ResultsFile,
+
 
 if __name__ == '__main__':
     main()
