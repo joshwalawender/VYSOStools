@@ -167,6 +167,7 @@ def main():
         tel.fRatio = tel.focalLength.to(u.mm)/tel.aperture.to(u.mm)
         tel.SExtractorPhotAperture = 6.0*u.pix
         tel.SExtractorSeeing = 2.0*u.arcsec
+        tel.SExtractorSaturation = 50000.*u.adu
     if tel.name == "V20":
         tel.longName = "VYSOS-20"
         tel.focalLength = 4175.*u.mm
@@ -182,6 +183,7 @@ def main():
         tel.fRatio = tel.focalLength.to(u.mm)/tel.aperture.to(u.mm)
         tel.SExtractorPhotAperture = 16.0*u.pix
         tel.SExtractorSeeing = 2.0*u.arcsec
+        tel.SExtractorSaturation = 50000.*u.adu
     ## Define Site (ephem site object)
     tel.site = ephem.Observer()
     tel.CheckUnits()
@@ -200,6 +202,7 @@ def main():
     summaryFile = os.path.join(config.pathLog, tel.longName, DataNightString+"_"+tel.name+"_Summary.txt")
     FullFrameJPEG = image.rawFileBasename+"_full.jpg"
     CropFrameJPEG = image.rawFileBasename+"_crop.jpg"
+    BackgroundJPEG = image.rawFileBasename+"_bkgnd.jpg"
     if args.clobber:
         if os.path.exists(IQMonLogFileName): os.remove(IQMonLogFileName)
         if os.path.exists(htmlImageList): os.remove(htmlImageList)
@@ -213,7 +216,7 @@ def main():
     image.logger.info("Setting telescope variable to %s", telescope)
     image.ReadImage()           ## Create working copy of image (don't edit raw file!)
     image.GetHeader()           ## Extract values from header
-    image.MakeJPEG(FullFrameJPEG, rotate=True, markPointing=True, binning=2)
+    image.MakeJPEG(FullFrameJPEG, rotate=True, markPointing=True, binning=4)
     if not image.imageWCS:      ## If no WCS found in header ...
         image.SolveAstrometry() ## Solve Astrometry
         image.GetHeader()       ## Refresh Header
@@ -224,7 +227,8 @@ def main():
     image.GetHeader()           ## Refresh Header
     image.RunSExtractor()       ## Run SExtractor
     image.DetermineFWHM()       ## Determine FWHM from SExtractor results
-    image.MakeJPEG(CropFrameJPEG, markStars=True, markPointing=True, rotate=True, binning=1)
+    image.MakeJPEG(CropFrameJPEG, markStars=True, markPointing=True, rotate=True, binning=1, backgroundSubtracted=False)
+    image.MakeJPEG(BackgroundJPEG, markStars=True, markPointing=False, rotate=True, binning=1, backgroundSubtracted=True)
     image.CleanUp()             ## Cleanup (delete) temporary files.
     image.CalculateProcessTime()## Calculate how long it took to process this image
     image.AddWebLogEntry(htmlImageList) ## Add line for this image to HTML table
