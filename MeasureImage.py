@@ -231,8 +231,8 @@ def main():
     image.GetHeader()           ## Refresh Header
     image.RunSExtractor()       ## Run SExtractor
     image.DetermineFWHM()       ## Determine FWHM from SExtractor results
-    image.MakeJPEG(CropFrameJPEG, markStars=True, markPointing=True, rotate=True, binning=1, backgroundSubtracted=False)
-    image.MakeJPEG(BackgroundJPEG, markStars=True, markPointing=False, rotate=True, binning=1, backgroundSubtracted=True)
+    image.MakeJPEG(CropFrameJPEG, markStars=True, markPointing=True, rotate=True, binning=1)
+#     image.MakeJPEG(BackgroundJPEG, markStars=True, markPointing=False, rotate=True, binning=1, backgroundSubtracted=True)
     image.CleanUp()             ## Cleanup (delete) temporary files.
     image.CalculateProcessTime()## Calculate how long it took to process this image
     image.AddWebLogEntry(htmlImageList) ## Add line for this image to HTML table
