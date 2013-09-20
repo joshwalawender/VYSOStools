@@ -139,10 +139,13 @@ def main():
     else:
         V5match = re.match("V5.*\.fi?ts", FitsFilename)
         V20match = re.match("V20.*\.fi?ts", FitsFilename)
+        NoTelMatch = re.match(".*\d{8}at\d{6}\.fts")
         if V5match and not V20match:
             telescope = "V5"
         elif V20match and not V5match:
             telescope = "V20"
+        elif NoTelMatch:
+            telescope = "V5"  ## Assume telescope is VYSOS-5
         else:
             raise ParseError("Can not determine valid telescope from arguments or filename.")
 
