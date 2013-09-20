@@ -225,7 +225,7 @@ def main():
         image.GetHeader()       ## Refresh Header
     image.DeterminePointingError()            ## Calculate Pointing Error
     darks = ListDarks(image)    ## List dark files
-    if len(darks) > 0:
+    if darks and len(darks) > 0:
         image.DarkSubtract(darks)   ## Dark Subtract Image
     image.Crop()                ## Crop Image
     image.GetHeader()           ## Refresh Header
