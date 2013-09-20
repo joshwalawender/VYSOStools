@@ -139,7 +139,7 @@ def main():
     else:
         V5match = re.match("V5.*\.fi?ts", FitsFilename)
         V20match = re.match("V20.*\.fi?ts", FitsFilename)
-        NoTelMatch = re.match(".*\d{8}at\d{6}\.fts")
+        NoTelMatch = re.match(".*\d{8}at\d{6}\.fts", FitsFilename)
         if V5match and not V20match:
             telescope = "V5"
         elif V20match and not V5match:
