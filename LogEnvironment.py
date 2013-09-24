@@ -516,14 +516,13 @@ def main(argv=None):
         logger.info("  Safety Conditions (CWRDR): %d%d%d%d%d" % (CloudCondition, WindCondition, RainCondition, DayCondition, RoofClose))
 
         ##
-        ## Copy Current Clarity Data File to Altair for Web Access
+        ## Wite Boltwood Data to File
         ##
-        ClarityDataFile = os.path.join("C:\\", "Users", "vysosuser", "Documents", "ClarityII", "ClarityData.txt")
-        if telescope == "V5":
-            CopiedClarityDataFile = os.path.join("C:\\", "Data_V5", "ClarityData.txt")
-        if telescope == "V20":
-            CopiedClarityDataFile = os.path.join("C:\\", "Data_V20", "ClarityData.txt")
-        shutil.copy2(ClarityDataFile, CopiedClarityDataFile)
+        OutputClarityDataFile = os.path.join("C:\\", "Data_"+telescope, "ClarityData.txt")
+        OutputClarityDataFO = open(OutputClarityDataFile, 'w')
+        OutputClarityDataFO.write("{:9s} {:9s} {:9s} {:9s} {:9s} {:9s} {:1s} {:1s} {:1s} {:1s} {:1s}\n".format("SkyTemp", "AmbTemp", "WindSpd", "Humidity", "DewPoint", "C", "W", "R", "D", "R"))
+        OutputClarityDataFO.write("{:9.1f} {:9.1f} {:9.1f} {:9.1f} {:9.1f} {:9.1f} {:1d} {:1d} {:1d} {:1d} {:1d}\n".format(ClaritySkyTemp, ClarityAmbTemp, ClarityWindSpeed, ClarityHumidity, ClarityDewPoint, CloudCondition, WindCondition, RainCondition, DayCondition, RoofClose))
+        OutputClarityDataFO.close()
 
         ##
         ## Get Temperature Module Info
