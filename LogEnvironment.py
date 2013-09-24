@@ -515,7 +515,15 @@ def main(argv=None):
         logger.info("  Sky=%.1f, Ambient=%.1f" % (ClaritySkyTemp, ClarityAmbTemp))
         logger.info("  Safety Conditions (CWRDR): %d%d%d%d%d" % (CloudCondition, WindCondition, RainCondition, DayCondition, RoofClose))
 
-        # print CloudCondition, WindCondition, RainCondition, DayCondition, RoofClose
+        ##
+        ## Copy Current Clarity Data File to Altair for Web Access
+        ##
+        ClarityDataFile = os.path.join("C:\\", "Users", "vysosuser", "Documents", "ClarityII", "ClarityData.txt")
+        if telescope == "V5":
+            CopiedClarityDataFile = os.path.join("C:\\", "Data_V5", "ClarityData.txt")
+        if telescope == "V20":
+            CopiedClarityDataFile = os.path.join("C:\\", "Data_V20", "ClarityData.txt")
+        shutil.copy2(ClarityDataFile, CopiedClarityDataFile)
 
         ##
         ## Get Temperature Module Info
