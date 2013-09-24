@@ -518,6 +518,7 @@ def main(argv=None):
         ##
         ## Wite Boltwood Data to File
         ##
+        logger.info("Writing Clarity/Boltwood Data to File for Web")
         OutputClarityDataFile = os.path.join("C:\\", "Data_"+telescope, "ClarityData.txt")
         OutputClarityDataFO = open(OutputClarityDataFile, 'w')
         OutputClarityDataFO.write("{:9s} {:9s} {:9s} {:9s} {:9s} {:9s} {:1s} {:1s} {:1s} {:1s} {:1s}\n".format("SkyTemp", "AmbTemp", "WindSpd", "Humidity", "DewPoint", "C", "W", "R", "D", "R"))
