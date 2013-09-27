@@ -518,14 +518,14 @@ def main(argv=None):
         logger.info("  Safety Conditions (CWRDR): %d%d%d%d%d" % (CloudCondition, WindCondition, RainCondition, DayCondition, RoofClose))
 
         ##
-        ## Wite Boltwood Data to File
+        ## Write Boltwood Data to File
         ##
-#         logger.info("Writing Clarity/Boltwood Data to File for Web")
-#         OutputClarityDataFile = os.path.join("C:\\", "Data_"+telescope, "ClarityData_"+telescope+".txt")
-#         OutputClarityDataFO = open(OutputClarityDataFile, 'w')
-#         OutputClarityDataFO.write("# {:-7s} {:-9s} {:-9s} {:-9s} {:-9s} {:1s} {:1s} {:1s} {:1s} {:1s}\n".format("SkyTemp", "AmbTemp", "WindSpd", "Humidity", "DewPoint", "C", "W", "R", "D", "R"))
-#         OutputClarityDataFO.write("{:9.1f} {:9.1f} {:9.1f} {:9.1f} {:9.1f} {:1d} {:1d} {:1d} {:1d} {:1d}\n".format(ClaritySkyTemp, ClarityAmbTemp, ClarityWindSpeed, ClarityHumidity, ClarityDewPoint, CloudCondition, WindCondition, RainCondition, DayCondition, RoofClose))
-#         OutputClarityDataFO.close()
+        logger.info("Writing Clarity/Boltwood Data to File for Web")
+        OutputClarityDataFile = os.path.join("C:\\", "Data_"+telescope, "ClarityData_"+telescope+".txt")
+        OutputClarityDataFO = open(OutputClarityDataFile, 'w')
+        OutputClarityDataFO.write("# {:-7s} {:-9s} {:-9s} {:-9s} {:-9s} {:1s} {:1s} {:1s} {:1s} {:1s}\n".format("SkyTemp", "AmbTemp", "WindSpd", "Humidity", "DewPoint", "C", "W", "R", "D", "R"))
+        OutputClarityDataFO.write("{:9.1f} {:9.1f} {:9.1f} {:9.1f} {:9.1f} {:1d} {:1d} {:1d} {:1d} {:1d}\n".format(ClaritySkyTemp, ClarityAmbTemp, ClarityWindSpeed, ClarityHumidity, ClarityDewPoint, CloudCondition, WindCondition, RainCondition, DayCondition, RoofClose))
+        OutputClarityDataFO.close()
 
         ##
         ## Get Temperature Module Info
