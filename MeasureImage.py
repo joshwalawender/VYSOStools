@@ -169,7 +169,7 @@ def main():
         tel.pixelScale = tel.pixelSize.to(u.mm)/tel.focalLength.to(u.mm)*u.radian.to(u.arcsec)*u.arcsec/u.pix
         tel.fRatio = tel.focalLength.to(u.mm)/tel.aperture.to(u.mm)
         tel.SExtractorPhotAperture = 6.0*u.pix
-        tel.SExtractorSeeing = 2.0*u.arcsec
+        tel.SExtractorSeeing = 2.5*u.arcsec
         tel.SExtractorSaturation = 50000.*u.adu
     if tel.name == "V20":
         tel.longName = "VYSOS-20"
@@ -232,10 +232,11 @@ def main():
     image.RunSExtractor()       ## Run SExtractor
     image.DetermineFWHM()       ## Determine FWHM from SExtractor results
     image.MakeJPEG(CropFrameJPEG, markStars=True, markPointing=True, rotate=True, binning=1)
-#     image.MakeJPEG(BackgroundJPEG, markStars=True, markPointing=False, rotate=True, binning=1, backgroundSubtracted=True)
+    image.MakeJPEG(BackgroundJPEG, markStars=True, markPointing=False, rotate=True, binning=1, backgroundSubtracted=True)
     image.CleanUp()             ## Cleanup (delete) temporary files.
     image.CalculateProcessTime()## Calculate how long it took to process this image
-    image.AddWebLogEntry(htmlImageList) ## Add line for this image to HTML table
+    fields=["Date and Time", "Filename", "Alt", "Az", "Airmass", "MoonSep", "MoonIllum", "FWHM", "ellipticity", "Background", "PErr", "PosAng", "nStars", "ProcessTime"]
+    image.AddWebLogEntry(htmlImageList, fields=fields) ## Add line for this image to HTML table
     image.AddSummaryEntry(summaryFile)  ## Add line for this image to text table
     
 
