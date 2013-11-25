@@ -401,6 +401,7 @@ def MakePlots(DateString, telescope, logger):
                     logger.warning("Could not find IQMon results for "+ACPentry['ImageFile']+".fts.")
                 else:
                     logger.warning("Could not find IQMon result or file for ACP log entry "+ACPentry['ImageFile']+".fts.")
+        logger.info("Matched {} images between ACP logs and IQMon results.".format(len(MatchedData)))
 
 
     ###########################################################
@@ -417,6 +418,7 @@ def MakePlots(DateString, telescope, logger):
         pyplot.title("Environmental Data for "+telescope + " on the Night of " + DateString)
 
         if telescope == "V20" and FoundV20Env:
+            logger.debug("Found {} lines in VYSOS-20 Environment Log.".format(len(V20EnvTable)))
             if FoundV5Env:
                 pyplot.plot(V5EnvTable['Time'], V5EnvTable['OutsideTemp'], 'k-', alpha=0.5, drawstyle="steps-post", label="Outside Temp ("+OtherTelescope+")")
             pyplot.plot(V20EnvTable['Time'], V20EnvTable['TubeTemp'], 'g-', drawstyle="steps-post", label="Tube Temp")
@@ -425,6 +427,7 @@ def MakePlots(DateString, telescope, logger):
             pyplot.plot(V20EnvTable['Time'], V20EnvTable['DomeTemp'], 'c-', drawstyle="steps-post", label="Dome Temp")
 
         if telescope == "V5" and FoundV5Env:
+            logger.debug("Found {} lines in VYSOS-5 Environment Log.".format(len(V5EnvTable)))
             if FoundV20Env:
                 pyplot.plot(V20EnvTable['Time'], V20EnvTable['OutsideTemp'], 'k-', alpha=0.5, drawstyle="steps-post", label="Outside Temp ("+OtherTelescope+")")
             pyplot.plot(V5EnvTable['Time'], V5EnvTable['TubeTemp'], 'g-', drawstyle="steps-post", label="Tube Temp")
@@ -457,7 +460,7 @@ def MakePlots(DateString, telescope, logger):
         pyplot.fill_between(MoonTimes, 0, MoonAlts, where=MoonAlts>0, color='yellow', alpha=MoonFill)
 
         ## Add Fan Power (if VYSOS-20)
-        if telescope == "V20":
+        if telescope == "V20" and FoundV20Env:
             Figure.add_axes([0.0, 0.675, 0.46, 0.07], xticklabels=[])
             pyplot.plot(V20EnvTable['Time'], V20EnvTable['DomeFan'], 'c-', drawstyle="steps-post", label="Dome Fan State")
             pyplot.plot(V20EnvTable['Time'], V20EnvTable['FanPower'], 'b-', drawstyle="steps-post", label="Mirror Fans (%)")
@@ -556,13 +559,13 @@ def MakePlots(DateString, telescope, logger):
     if FoundIQMonFile:
         Figure.add_axes([0.54, 0.765, 0.46, 0.235])
         pyplot.title("IQ Mon Results for "+telescope + " on the Night of " + DateString)
-        if FoundACPLog:
-            if telescope == "V5":
-                pyplot.plot(MatchedData['ACP Time'], MatchedData['ACP FWHM'], 'g.', drawstyle="steps-post", label="FWHM (ACP Image)", alpha=0.5)
-                pyplot.ylabel("FWHM (pixels)")
-            if telescope == "V20":
-                pyplot.plot(MatchedData['ACP Time'], MatchedData['ACP FWHM']*PixelScale, 'g.', drawstyle="steps-post", label="FWHM (ACP Image)", alpha=0.5)
-                pyplot.ylabel("FWHM (arcsec)")
+#         if FoundACPLog:
+#             if telescope == "V5":
+#                 pyplot.plot(MatchedData['ACP Time'], MatchedData['ACP FWHM'], 'g.', drawstyle="steps-post", label="FWHM (ACP Image)", alpha=0.5)
+#                 pyplot.ylabel("FWHM (pixels)")
+#             if telescope == "V20":
+#                 pyplot.plot(MatchedData['ACP Time'], MatchedData['ACP FWHM']*PixelScale, 'g.', drawstyle="steps-post", label="FWHM (ACP Image)", alpha=0.5)
+#                 pyplot.ylabel("FWHM (arcsec)")
         pyplot.plot(MatchedData['ACP Time'], MatchedData['IQMon FWHM'], 'k.', drawstyle="steps-post", label="FWHM (IQMon)")
         pyplot.yticks(numpy.linspace(0,15,16,endpoint=True))
         pyplot.ylim(0,5)
@@ -709,7 +712,7 @@ def MakePlots(DateString, telescope, logger):
         pyplot.fill_between(MoonTimes, 0, MoonAlts, where=MoonAlts>0, color='yellow', alpha=MoonFill)        
 
         ## Add Fan Power (if VYSOS-20)
-        if telescope == "V20":
+        if telescope == "V20" and FoundV20Env:
             Figure.add_axes([0.0, 0.675, 1.0, 0.07], xticklabels=[])
             pyplot.plot(V20EnvTable['Time'], V20EnvTable['DomeFan'], 'c-', drawstyle="steps-post", label="Dome Fan State")
             pyplot.plot(V20EnvTable['Time'], V20EnvTable['FanPower'], 'b-', drawstyle="steps-post", label="Mirror Fans (%)")
