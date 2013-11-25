@@ -566,7 +566,7 @@ def MakePlots(DateString, telescope, logger):
 #             if telescope == "V20":
 #                 pyplot.plot(MatchedData['ACP Time'], MatchedData['ACP FWHM']*PixelScale, 'g.', drawstyle="steps-post", label="FWHM (ACP Image)", alpha=0.5)
 #                 pyplot.ylabel("FWHM (arcsec)")
-        pyplot.plot(MatchedData['ACP Time'], MatchedData['IQMon FWHM'], 'k.', drawstyle="steps-post", label="FWHM (IQMon)")
+        pyplot.plot(MatchedData['ACP Time'], MatchedData['IQMon FWHM']*PixelScale, 'k.', drawstyle="steps-post", label="FWHM (IQMon)")
         pyplot.yticks(numpy.linspace(0,15,16,endpoint=True))
         pyplot.ylim(0,5)
         pyplot.xticks(numpy.linspace(PlotStartUT,PlotEndUT,nUTHours,endpoint=True))
