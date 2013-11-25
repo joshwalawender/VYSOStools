@@ -566,7 +566,12 @@ def MakePlots(DateString, telescope, logger):
 #             if telescope == "V20":
 #                 pyplot.plot(MatchedData['ACP Time'], MatchedData['ACP FWHM']*PixelScale, 'g.', drawstyle="steps-post", label="FWHM (ACP Image)", alpha=0.5)
 #                 pyplot.ylabel("FWHM (arcsec)")
-        pyplot.plot(MatchedData['ACP Time'], MatchedData['IQMon FWHM']*PixelScale, 'k.', drawstyle="steps-post", label="FWHM (IQMon)")
+        if telescope == "V20":
+            pyplot.plot(MatchedData['ACP Time'], MatchedData['IQMon FWHM']*PixelScale, 'k.', drawstyle="steps-post", label="FWHM (IQMon)")
+            pyplot.ylabel("FWHM (arcsec)")
+        if telescope == "V5":
+            pyplot.plot(MatchedData['ACP Time'], MatchedData['IQMon FWHM'], 'k.', drawstyle="steps-post", label="FWHM (IQMon)")
+            pyplot.ylabel("FWHM (pixels)")
         pyplot.yticks(numpy.linspace(0,15,16,endpoint=True))
         pyplot.ylim(0,5)
         pyplot.xticks(numpy.linspace(PlotStartUT,PlotEndUT,nUTHours,endpoint=True))
@@ -575,8 +580,8 @@ def MakePlots(DateString, telescope, logger):
         if FoundFocusMaxFile:
             for FocusRun in FocusRuns:
                 pyplot.axvspan(FocusRun[2], FocusRun[3], color="gray", alpha=0.7)
-        pyplot.legend(loc='best', prop={'size':10})
-        # pyplot.xlabel("Time in Hours UT")
+#         pyplot.legend(loc='best', prop={'size':10})
+#         pyplot.xlabel("Time in Hours UT")
 
         ## Overplot Twilights
         pyplot.axvspan(SunsetDecimal, EveningCivilTwilightDecimal, ymin=0, ymax=1, color='blue', alpha=0.1)
@@ -645,6 +650,7 @@ def MakePlots(DateString, telescope, logger):
         pyplot.xticks(numpy.linspace(PlotStartUT,PlotEndUT,nUTHours,endpoint=True))
         pyplot.xlim(PlotStartUT,PlotEndUT)
         pyplot.ylabel("Pointing Error (arcmin)")
+        pyplot.xlabel("Time in Hours UT")
         if telescope == "V5":
             PErrPlotMax = 10
         if telescope == "V20":
