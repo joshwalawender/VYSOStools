@@ -171,6 +171,7 @@ def main():
         tel.SExtractorPhotAperture = 6.0*u.pix
         tel.SExtractorSeeing = 2.5*u.arcsec
         tel.SExtractorSaturation = 50000.*u.adu
+        tel.pointingMarkerSize = 3*u.arcmin
     if tel.name == "V20":
         tel.longName = "VYSOS-20"
         tel.focalLength = 4175.*u.mm
@@ -187,6 +188,7 @@ def main():
         tel.SExtractorPhotAperture = 16.0*u.pix
         tel.SExtractorSeeing = 2.0*u.arcsec
         tel.SExtractorSaturation = 50000.*u.adu
+        tel.pointingMarkerSize = 1*u.arcmin
     ## Define Site (ephem site object)
     tel.site = ephem.Observer()
     tel.CheckUnits()
@@ -219,11 +221,11 @@ def main():
     image.logger.info("Setting telescope variable to %s", telescope)
     image.ReadImage()           ## Create working copy of image (don't edit raw file!)
     image.GetHeader()           ## Extract values from header
-    image.MakeJPEG(FullFrameJPEG, rotate=True, markPointing=True, binning=4)
     if not image.imageWCS:      ## If no WCS found in header ...
         image.SolveAstrometry() ## Solve Astrometry
         image.GetHeader()       ## Refresh Header
     image.DeterminePointingError()            ## Calculate Pointing Error
+    image.MakeJPEG(FullFrameJPEG, rotate=True, markPointing=True, binning=4)
     darks = ListDarks(image)    ## List dark files
     if darks and len(darks) > 0:
         image.DarkSubtract(darks)   ## Dark Subtract Image
