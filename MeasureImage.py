@@ -171,7 +171,7 @@ def main():
         tel.SExtractorPhotAperture = 6.0*u.pix
         tel.SExtractorSeeing = 2.5*u.arcsec
         tel.SExtractorSaturation = 50000.*u.adu
-        tel.pointingMarkerSize = 3*u.arcmin
+        tel.pointingMarkerSize = 4*u.arcmin
     if tel.name == "V20":
         tel.longName = "VYSOS-20"
         tel.focalLength = 4175.*u.mm
