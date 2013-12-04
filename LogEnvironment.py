@@ -350,8 +350,8 @@ def GetTemperatureModuleInfo():
 ## - if InsideTemp < OutsideTemp + DeadbandLow:  Change State to Off
 def SetTemperatureModuleState(InsideTemp, OutsideTemp, RelayState, Enable, logger):
     IPaddress = "192.168.1.115"
-    DeadbandHigh = 3.0
-    DeadbandLow = 0.25
+    DeadbandHigh = 2.0
+    DeadbandLow = 0.0
     Day = False
     
     ## Use pyephem determine sunrise and sunset times
