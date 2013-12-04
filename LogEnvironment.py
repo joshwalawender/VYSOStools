@@ -183,10 +183,11 @@ def GetRCOSData(RCOST, RCOSF):
 
 ################################################################
 ## GetClarity
-def GetClarity(DecimalTime):
+def GetClarity(DecimalTime, telescope):
     ClarityDataFile = os.path.join("C:\\", "Users", "vysosuser", "Documents", "ClarityII", "ClarityData.txt")
     ClarityCopy = os.path.join("C:\\", "Users", "Public", "Documents", "ACP Web Data", "Doc root", "logs", "atlas", "ClarityData.txt")
-    shutil.copy2(ClarityDataFile, ClarityCopy)
+    if telescope == "V5":
+        shutil.copy2(ClarityDataFile, ClarityCopy)
     
     SkyTempValues = []
     AmbTempValues = []
@@ -368,7 +369,7 @@ def SetTemperatureModuleState(InsideTemp, OutsideTemp, RelayState, Enable, logge
     # SunriseTime = Observatory.next_rising(ephem.Sun()).datetime()
     # SunsetDecimal = float(datetime.datetime.strftime(SunsetTime, "%H"))+float(datetime.datetime.strftime(SunsetTime, "%M"))/60.+float(datetime.datetime.strftime(SunsetTime, "%S"))/3600.
     # SunriseDecimal = float(datetime.datetime.strftime(SunriseTime, "%H"))+float(datetime.datetime.strftime(SunriseTime, "%M"))/60.+float(datetime.datetime.strftime(SunriseTime, "%S"))/3600.
-    SunsetDecimal = 5.0
+    SunsetDecimal = 7.0
     SunriseDecimal = 16.0
     
     ## Is it Daytime
@@ -512,7 +513,7 @@ def main(argv=None):
         ## Get Clarity Data
         ##
         logger.info("Getting Clarity/Boltwood Data")
-        ClaritySkyTemp, ClarityAmbTemp, ClarityWindSpeed, ClarityHumidity, ClarityDewPoint, CloudCondition, WindCondition, RainCondition, DayCondition, RoofClose = GetClarity(DecimalTime)
+        ClaritySkyTemp, ClarityAmbTemp, ClarityWindSpeed, ClarityHumidity, ClarityDewPoint, CloudCondition, WindCondition, RainCondition, DayCondition, RoofClose = GetClarity(DecimalTime, telescope)
         TempDiff = ClaritySkyTemp - ClarityAmbTemp
         logger.info("  Sky=%.1f, Ambient=%.1f" % (ClaritySkyTemp, ClarityAmbTemp))
         logger.info("  Safety Conditions (CWRDR): %d%d%d%d%d" % (CloudCondition, WindCondition, RainCondition, DayCondition, RoofClose))
