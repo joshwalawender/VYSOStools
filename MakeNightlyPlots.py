@@ -211,7 +211,22 @@ def ReadEnvironmentalLogs(DateString, telescope, V5DataPath, V20DataPath, logger
                      'SkyTemp', 'OutsideTemp', 'WindSpeed', 'Humidity', 'DewPoint', 'Alt', 'Az', 'Condition']
         V5EnvTable = ascii.read(V5EnvLogFileName, data_start=2, Reader=ascii.FixedWidth, 
                      col_starts=ColStarts, col_ends=ColEnds, names=ColNames, 
-                     guess=False, comment=";", header_start=0)
+                     guess=False, comment=";", header_start=0,
+                     converters={
+                     'Date': [ascii.convert_numpy('S10')],
+                     'TimeString': [ascii.convert_numpy('S10')],
+                     'TubeTemp': [ascii.convert_numpy('f4')],
+                     'FocusPos': [ascii.convert_numpy('i4')],
+                     'SkyTemp': [ascii.convert_numpy('f4')],
+                     'OutsideTemp': [ascii.convert_numpy('f4')],
+                     'WindSpeed': [ascii.convert_numpy('f4')],
+                     'Humidity': [ascii.convert_numpy('i4')],
+                     'DewPoint': [ascii.convert_numpy('f4')],
+                     'Alt': [ascii.convert_numpy('f4')],
+                     'Az': [ascii.convert_numpy('f4')],
+                     'Condition': [ascii.convert_numpy('i4')]
+                     }
+                     )
         V5SkyDiff   = V5EnvTable['SkyTemp'] - V5EnvTable['OutsideTemp']
         V5EnvTable.add_column(table.Column(data=V5SkyDiff, name='SkyDiff'))
         V5TimeDecimal = []
