@@ -82,7 +82,7 @@ def GetFMPos(FocusMax):
         try:
             FocusMax.Link = True
         except:
-            return None
+            return float("NaN")
         
     FocuserPositions = []
     for i in range(0,4,1):
@@ -187,7 +187,10 @@ def GetClarity(DecimalTime, telescope):
     ClarityDataFile = os.path.join("C:\\", "Users", "vysosuser", "Documents", "ClarityII", "ClarityData.txt")
     ClarityCopy = os.path.join("C:\\", "Users", "Public", "Documents", "ACP Web Data", "Doc root", "logs", "atlas", "ClarityData.txt")
     if telescope == "V5":
-        shutil.copy2(ClarityDataFile, ClarityCopy)
+        try:
+            shutil.copy2(ClarityDataFile, ClarityCopy)
+        except:
+            print "## Could not copy clarity file."
     
     SkyTempValues = []
     AmbTempValues = []
@@ -201,7 +204,7 @@ def GetClarity(DecimalTime, telescope):
     RoofCloseValues = []
     
     
-    nAverage = 6
+    nAverage = 4
     for i in range(0,nAverage,1):
         ClarityGood = False
         ClarityData = asciitable.read(ClarityDataFile, guess=False, delimiter=" ", comment="#", data_start=0, Reader=asciitable.NoHeader)
@@ -303,20 +306,30 @@ def GetClarity(DecimalTime, telescope):
 ################################################################
 ## GetACPStatus
 def GetACPStatus(ACP):
-    Connected = ACP.Connected
     try:
-        Altitude = ACP.Altitude
-        Azimuth  = ACP.Azimuth
-        AtPark   = ACP.AtPark
-        Slewing  = ACP.Slewing
-        Tracking = ACP.Tracking
+        Connected = ACP.Connected
     except:
+        Connected = False
+    if Connected:
+        try:
+            Altitude = ACP.Altitude
+            Azimuth  = ACP.Azimuth
+            AtPark   = ACP.AtPark
+            Slewing  = ACP.Slewing
+            Tracking = ACP.Tracking
+        except:
+            Altitude = float("NaN")
+            Azimuth  = float("NaN")
+            AtPark   = "Unknown"
+            Slewing  = "Unknown"
+            Tracking = "Unknown"
+    else:
         Altitude = float("NaN")
         Azimuth  = float("NaN")
         AtPark   = "Unknown"
         Slewing  = "Unknown"
         Tracking = "Unknown"
-        
+
     return [Altitude, Azimuth, AtPark, Slewing, Tracking, Connected]
         
         
@@ -343,6 +356,7 @@ def GetTemperatureModuleInfo():
         return [units, temp1, temp2, r1state, r2state]
     except:
         return ["", float("nan"), float("nan"), -1, -1]
+
 
 ################################################################
 ## SetTemperatureModuleState
