@@ -160,10 +160,30 @@ def ReadEnvironmentalLogs(DateString, telescope, V5DataPath, V20DataPath, logger
         ColStarts = [ 0, 11, 22, 32, 42, 52, 62, 72, 82,  92, 102, 112, 122, 132, 142, 152, 162]
         ColEnds   = [ 9, 18, 31, 41, 51, 61, 71, 81, 91, 101, 111, 121, 131, 141, 151, 161, 171]
         ColNames  = ['Date', 'TimeString', 'TubeTemp', 'PrimaryTemp', 'SecTemp', 'FanPower', 'FocusPos',
-                     'SkyTemp', 'OutsideTemp', 'WindSpeed', 'Humidity', 'DewPoint', 'Alt', 'Az', 'Condition', 'DomeTemp', 'DomeFanState']
+                     'SkyTemp', 'OutsideTemp', 'WindSpeed', 'Humidity', 'DewPoint', 'Altitude', 'Azimuth',
+                     'Condition', 'DomeTemp', 'DomeFanState']
         V20EnvTable = ascii.read(V20EnvLogFileName, data_start=2, Reader=ascii.FixedWidth,
-                      col_starts=ColStarts, col_ends=ColEnds, names=ColNames, 
-                      guess=False, comment=";", header_start=0)
+                      col_starts=ColStarts, col_ends=ColEnds, names=ColNames,
+                      guess=False, comment=";", header_start=0,
+                      converters={
+                      'Date': [ascii.convert_numpy('S10')],
+                      'TimeString': [ascii.convert_numpy('S10')],
+                      'TubeTemp': [ascii.convert_numpy('f4')],
+                      'SecTemp': [ascii.convert_numpy('f4')],
+                      'FanPower': [ascii.convert_numpy('f4')],
+                      'FocusPos': [ascii.convert_numpy('i4')],
+                      'SkyTemp': [ascii.convert_numpy('f4')],
+                      'OutsideTemp': [ascii.convert_numpy('f4')],
+                      'WindSpeed': [ascii.convert_numpy('f4')],
+                      'Humidity': [ascii.convert_numpy('i4')],
+                      'DewPoint': [ascii.convert_numpy('f4')],
+                      'Altitude': [ascii.convert_numpy('f4')],
+                      'Azimuth': [ascii.convert_numpy('f4')],
+                      'Condition': [ascii.convert_numpy('i4')],
+                      'DomeTemp': [ascii.convert_numpy('f4')],
+                      'DomeFanState': [ascii.convert_numpy('i4')]
+                      }
+                      )
         V20SkyDiff   = V20EnvTable['SkyTemp'] #- V20EnvTable['OutsideTemp']
         V20EnvTable.add_column(table.Column(data=V20SkyDiff, name='SkyDiff'))
         V20DomeFan = []
@@ -199,7 +219,7 @@ def ReadEnvironmentalLogs(DateString, telescope, V5DataPath, V20DataPath, logger
         V20EnvTable.add_column(table.Column(data=V20DomeFan, name='DomeFan'))
     else:
         ColNames  = ['Date', 'TimeString', 'TubeTemp', 'PrimaryTemp', 'SecTemp', 'FanPower', 'FocusPos',
-                     'SkyTemp', 'OutsideTemp', 'WindSpeed', 'Humidity', 'DewPoint', 'Alt', 'Az', 'Condition', 'DomeTemp', 'DomeFanState']
+                     'SkyTemp', 'OutsideTemp', 'WindSpeed', 'Humidity', 'DewPoint', 'Altitude', 'Azimuth', 'Condition', 'DomeTemp', 'DomeFanState']
         V20EnvTable = table.Table(names=ColNames)
 
     if os.path.exists(V5EnvLogFileName):
@@ -208,7 +228,7 @@ def ReadEnvironmentalLogs(DateString, telescope, V5DataPath, V20DataPath, logger
         ColStarts = [ 0, 11, 22, 32, 42, 52, 62, 72, 82,  92, 102, 112]
         ColEnds   = [ 9, 18, 31, 41, 51, 61, 71, 81, 91, 101, 111, 121]
         ColNames  = ['Date', 'TimeString', 'TubeTemp', 'FocusPos', 
-                     'SkyTemp', 'OutsideTemp', 'WindSpeed', 'Humidity', 'DewPoint', 'Alt', 'Az', 'Condition']
+                     'SkyTemp', 'OutsideTemp', 'WindSpeed', 'Humidity', 'DewPoint', 'Altitude', 'Azimuth', 'Condition']
         V5EnvTable = ascii.read(V5EnvLogFileName, data_start=2, Reader=ascii.FixedWidth, 
                      col_starts=ColStarts, col_ends=ColEnds, names=ColNames, 
                      guess=False, comment=";", header_start=0,
@@ -222,8 +242,8 @@ def ReadEnvironmentalLogs(DateString, telescope, V5DataPath, V20DataPath, logger
                      'WindSpeed': [ascii.convert_numpy('f4')],
                      'Humidity': [ascii.convert_numpy('i4')],
                      'DewPoint': [ascii.convert_numpy('f4')],
-                     'Alt': [ascii.convert_numpy('f4')],
-                     'Az': [ascii.convert_numpy('f4')],
+                     'Altitude': [ascii.convert_numpy('f4')],
+                     'Azimuth': [ascii.convert_numpy('f4')],
                      'Condition': [ascii.convert_numpy('i4')]
                      }
                      )
@@ -254,7 +274,7 @@ def ReadEnvironmentalLogs(DateString, telescope, V5DataPath, V20DataPath, logger
         V5EnvTable.add_column(table.Column(data=V5Windiness, name='WindCondition'))
     else:
         ColNames  = ['Date', 'TimeString', 'TubeTemp', 'FocusPos', 
-                     'SkyTemp', 'OutsideTemp', 'WindSpeed', 'Humidity', 'DewPoint', 'Alt', 'Az', 'Condition']
+                     'SkyTemp', 'OutsideTemp', 'WindSpeed', 'Humidity', 'DewPoint', 'Altitude', 'Azimuth', 'Condition']
         V5EnvTable = table.Table(names=ColNames)
 
     return V20EnvTable, V5EnvTable
