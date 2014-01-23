@@ -93,9 +93,9 @@ def main(argv=None):
                             MIoutput = subprocess32.check_output(ProcessCall, stderr=subprocess32.STDOUT, timeout=150)
                             print("Call to MeasureImage.py Succeeded")
                         except subprocess.CalledProcessError as e:
-                            print("Call to MeasureImage.py Failed.  Returncode: {}'.format(e.returncode))
-                            print("Call to MeasureImage.py Failed.  Command: {}'.format(e.cmd))
-                            print("Call to MeasureImage.py Failed.  Output: {}'.format(e.output))
+                            print("Call to MeasureImage.py Failed.  Returncode: {}".format(e.returncode))
+                            print("Call to MeasureImage.py Failed.  Command: {}".format(e.cmd))
+                            print("Call to MeasureImage.py Failed.  Output: {}".format(e.output))
                         except:
                             print("Call to MeasureImage.py Failed")
         PreviousFiles = Files

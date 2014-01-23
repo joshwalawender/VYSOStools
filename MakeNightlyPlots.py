@@ -527,7 +527,7 @@ def MakePlots(DateString, telescope, logger):
             pyplot.fill_between(V5EnvTable['Time'], -140, V5EnvTable['SkyTemp'], where=(V5EnvTable['CloudCondition']=="2"), color='yellow', alpha=0.8)
             pyplot.fill_between(V5EnvTable['Time'], -140, V5EnvTable['SkyTemp'], where=(V5EnvTable['CloudCondition']=="3"), color='red', alpha=0.8)
         pyplot.legend(loc='best', prop={'size':10})
-        pyplot.ylabel("Temperature Difference (F)")
+        pyplot.ylabel("Cloudiness (Delta T) (F)")
         pyplot.xticks(numpy.linspace(PlotStartUT,PlotEndUT,nUTHours,endpoint=True))
         pyplot.xlim(PlotStartUT,PlotEndUT)
         pyplot.ylim(-100,-20)
@@ -788,7 +788,7 @@ def MakePlots(DateString, telescope, logger):
             pyplot.fill_between(V5EnvTable['Time'], -140, V5EnvTable['SkyTemp'], where=(V5EnvTable['CloudCondition']=="3"), color='red', alpha=0.8)
 
         pyplot.legend(loc='best', prop={'size':10})
-        pyplot.ylabel("Temperature Difference (F)")
+        pyplot.ylabel("Cloudiness (Delta T) (F)")
         pyplot.xticks(numpy.linspace(PlotStartUT,PlotEndUT,nUTHours,endpoint=True))
         pyplot.xlim(PlotStartUT,PlotEndUT)
         pyplot.ylim(-100,-20)
@@ -976,7 +976,7 @@ def MakePlots(DateString, telescope, logger):
                 pyplot.fill_between(V5EnvTable['Time'], -140, V5EnvTable['SkyTemp'], where=(V5EnvTable['CloudCondition']=="3"), color='red', alpha=0.8)
 
             pyplot.legend(loc='best', prop={'size':10})
-            pyplot.ylabel("Temperature Difference (F)")
+            pyplot.ylabel("Cloudiness (Delta T) (F)")
             pyplot.xticks(numpy.arange(math.floor(PlotStartUT),math.ceil(PlotEndUT),0.25))
             pyplot.xlim(PlotStartUT,PlotEndUT)
             pyplot.ylim(-100,-20)
