@@ -8,6 +8,7 @@ import os
 import shutil
 import argparse
 import logging
+import time
 import datetime
 
 import asciitable
@@ -243,8 +244,11 @@ def main():
     ## Set up file output
     now = datetime.datetime.utcnow()
     DateString = now.strftime("%Y%m%dUT")
-    LogFileName = os.path.join('C:\\', 'Data_'+telescope, 'Logs', DateString, 'GetEnvironment.log')
-    LogFileHandler = logging.FileHandler(LogFileName)
+    LogFilePath = os.path.join('C:\\', 'Data_'+telescope, 'Logs', DateString)
+    if not os.path.exists(LogFilePath):
+        os.mkdir(LogFilePath)
+    LogFile = os.path.join(LogFilePath, 'GetEnvironment.log')
+    LogFileHandler = logging.FileHandler(LogFile)
     LogFileHandler.setLevel(logging.DEBUG)
     LogFileHandler.setFormatter(LogFormat)
     logger.addHandler(LogFileHandler)
@@ -318,13 +322,16 @@ def main():
             for i in range(0,5,1):
                 try:
                     new_Truss_Temp = RCOST.AmbientTemp
-                    RCOS_Truss_Temps.append(new_Truss_Temp)
+                    if new_Truss_Temp > 20 and new_Truss_Temp < 120:
+                        RCOS_Truss_Temps.append(new_Truss_Temp)
                     logger.debug('  RCOS Truss Temperature {} = {:.1f}'.format(i, new_Truss_Temp))
                     new_Pri_Temp = RCOST.PrimaryTemp
-                    RCOS_Primary_Temps.append(new_Pri_Temp)
+                    if new_Pri_Temp > 20 and new_Pri_Temp < 120:
+                        RCOS_Primary_Temps.append(new_Pri_Temp)
                     logger.debug('  RCOS Primary Temperature {} = {:.1f}'.format(i, new_Pri_Temp))
                     new_Sec_Temp = RCOST.SecondaryTemp
-                    RCOS_Secondary_Temps.append(new_Sec_Temp)
+                    if new_Sec_Temp > 20 and new_Sec_Temp < 120:
+                        RCOS_Secondary_Temps.append(new_Sec_Temp)
                     logger.debug('  RCOS Secondary Temperature {} = {:.1f}'.format(i, new_Sec_Temp))
                     new_Fan_Speed = RCOST.FanSpeed
                     RCOS_Fan_Speeds.append(new_Fan_Speed)
@@ -334,11 +341,27 @@ def main():
                     logger.debug('  RCOS Focus Position {} = {:d}'.format(i, new_Focus_Pos))
                 except:
                     pass
-            RCOS_Truss_Temp = float(np.median(RCOS_Truss_Temps))
-            RCOS_Primary_Temp = float(np.median(RCOS_Primary_Temps))
-            RCOS_Secondary_Temp = float(np.median(RCOS_Secondary_Temps))
-            RCOS_Fan_Speed = int(np.median(RCOS_Fan_Speeds))
-            RCOS_Focus_Position = int(np.median(RCOS_Focus_Positions))
+                time.sleep(1)
+            if len(RCOS_Truss_Temps) >= 3:
+                RCOS_Truss_Temp = float(np.median(RCOS_Truss_Temps))
+            else:
+                RCOS_Truss_Temp = float('nan')
+            if len(RCOS_Primary_Temps) >= 3:
+                RCOS_Primary_Temp = float(np.median(RCOS_Primary_Temps))
+            else:
+                RCOS_Primary_Temps = float('nan')
+            if len(RCOS_Secondary_Temps) >= 3:
+                RCOS_Secondary_Temp = float(np.median(RCOS_Secondary_Temps))
+            else:
+                RCOS_Secondary_Temps = float('nan')
+            if len(RCOS_Fan_Speeds) >= 3:
+                RCOS_Fan_Speed = int(np.median(RCOS_Fan_Speeds))
+            else:
+                RCOS_Fan_Speeds = float('nan')
+            if len(RCOS_Focus_Positions) >= 3:
+                RCOS_Focus_Position = int(np.median(RCOS_Focus_Positions))
+            else:
+                RCOS_Focus_Positions = float('nan')
             logger.info('  RCOS Truss Temperature = {:.1f}'.format(RCOS_Truss_Temp))
             logger.info('  RCOS Primary Temperature = {:.1f}'.format(RCOS_Primary_Temp))
             logger.info('  RCOS Secondary Temperature = {:.1f}'.format(RCOS_Secondary_Temp))
@@ -381,14 +404,14 @@ def main():
     ##-------------------------------------------------------------------------
     ## Query Clarity Data File for Boltwood Stats
     ##-------------------------------------------------------------------------
+    logger.info('Clarity Data:')
     ClarityDataFile = os.path.join("C:\\", "Users", "vysosuser", "Documents", "ClarityII", "ClarityData.txt")
     ClarityCopy = os.path.join("C:\\", "Users", "Public", "Documents", "ACP Web Data", "Doc Root", "logs", "atlas", "ClarityData.txt")
     try:
-        logger.debug('Copying Clarity file to ftp directory.')
+        logger.debug('  Copying Clarity file to ftp directory.')
         shutil.copy2(ClarityDataFile, ClarityCopy)
     except:
-        logger.warning('Could not copy Clarity file.')
-    logger.info('Clarity Data:')
+        logger.warning('  Could not copy Clarity file.')
     ClarityArray = GetClarity(ClarityDataFile, logger)
     if ClarityArray:
         logger.info('  Boltwood Sky Temp = {:.1f} F'.format(ClarityArray[1]))
