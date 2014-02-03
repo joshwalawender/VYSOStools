@@ -406,7 +406,7 @@ def main():
     ##-------------------------------------------------------------------------
     logger.info('Clarity Data:')
     ClarityDataFile = os.path.join("C:\\", "Users", "vysosuser", "Documents", "ClarityII", "ClarityData.txt")
-    ClarityCopy = os.path.join("C:\\", "Users", "Public", "Documents", "ACP Web Data", "Doc Root", "logs", "atlas", "ClarityData.txt")
+    ClarityCopy = os.path.join("C:\\", "Data_"+telescope, "ClarityData_raw_"+telescope+".txt")
     try:
         logger.debug('  Copying Clarity file to ftp directory.')
         shutil.copy2(ClarityDataFile, ClarityCopy)
