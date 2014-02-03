@@ -406,12 +406,6 @@ def main():
     ##-------------------------------------------------------------------------
     logger.info('Clarity Data:')
     ClarityDataFile = os.path.join("C:\\", "Users", "vysosuser", "Documents", "ClarityII", "ClarityData.txt")
-    ClarityCopy = os.path.join("C:\\", "Data_"+telescope, "ClarityData_raw_"+telescope+".txt")
-    try:
-        logger.debug('  Copying Clarity file to ftp directory.')
-        shutil.copy2(ClarityDataFile, ClarityCopy)
-    except:
-        logger.warning('  Could not copy Clarity file.')
     ClarityArray = GetClarity(ClarityDataFile, logger)
     if ClarityArray:
         logger.info('  Boltwood Sky Temp = {:.1f} F'.format(ClarityArray[1]))
@@ -429,8 +423,28 @@ def main():
 
 
     ##-------------------------------------------------------------------------
-    ## Write Boltwood Data to File for Web Access (for ATLAS)
+    ## Make Copies of Clarity Data for ATLAS
     ##-------------------------------------------------------------------------
+    ## Make Copy of Clarity's daily log
+    HSTnow = datetime.datetime.now()
+    if HSTnow.hour == 8 and HSTnow.minute < 10:
+        HSTyesterday = HSTnow - datetime.timedelta(1)
+        yesterdays_log_file = os.path.join("C:\\", "Users", "vysosuser", "Documents", "ClarityII", HSTyesterday.strftime('%Y-%m-%d')+'.txt')
+        yesterdays_log_copy = os.path.join("C:\\", "Data_"+telescope, "Logs", DateString, "ClarityLog_"+HSTyesterday.strftime('%Y-%m-%d')+'.txt')
+        if not os.path.exists(yesterdays_log_copy):
+            try:
+                logger.debug('Copying yesterday\'s Clarity logs to Logs directory.')
+                shutil.copy2(yesterdays_log_file, yesterdays_log_copy)
+            except:
+                logger.warning('  Could not copy Clarity logs.')
+    ## Make copy of raw ClarityData.txt
+    ClarityCopy = os.path.join("C:\\", "Data_"+telescope, "ClarityData_raw_"+telescope+".txt")
+    try:
+        logger.debug('Copying Clarity file to ftp directory.')
+        shutil.copy2(ClarityDataFile, ClarityCopy)
+    except:
+        logger.warning('  Could not copy Clarity file.')
+    ## Make Processed Data Line for Web
     logger.info("Writing Boltwood Data File for Web Access.")
     TimeString = now.strftime("%Y/%m/%d %H:%M:%SUT")
     OutputClarityDataFile = os.path.join("C:\\", "Data_"+telescope, "ClarityData_"+telescope+".txt")
