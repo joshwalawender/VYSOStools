@@ -257,12 +257,14 @@ def main():
     ##-------------------------------------------------------------------------
     ## Setup File to Recieve Data
     ##-------------------------------------------------------------------------
+    logger.info('#### Starting GetEnvironment.py ####')
     DataFilePath = os.path.join("C:\\", "Data_"+telescope, "Logs", DateString)
     if not os.path.exists(DataFilePath):
         logger.debug('  Making directory: {}'.format(DataFilePath))
         os.mkdir(DataFilePath)
     DataFileName = "EnvironmentalLog.txt"
     DataFile = os.path.join(DataFilePath, DataFileName)
+    logger.info('  Writing data to {}'.format(DataFile))
 
 
     ##-------------------------------------------------------------------------
@@ -319,26 +321,29 @@ def main():
             RCOS_Secondary_Temps = []
             RCOS_Fan_Speeds = []
             RCOS_Focus_Positions = []
+            logger.debug(' RCOS Data:  {:>7s}, {:>7s}, {:>7s}, {:>7s}, {:>5s}'.format('Truss', 'Pri', 'Sec', 'Fan', 'Foc'))
             for i in range(0,5,1):
                 try:
                     new_Truss_Temp = RCOST.AmbientTemp
                     if new_Truss_Temp > 20 and new_Truss_Temp < 120:
                         RCOS_Truss_Temps.append(new_Truss_Temp)
-                    logger.debug('  RCOS Truss Temperature {} = {:.1f}'.format(i, new_Truss_Temp))
+                    else:
+                        new_Truss_Temp = float('nan')
                     new_Pri_Temp = RCOST.PrimaryTemp
                     if new_Pri_Temp > 20 and new_Pri_Temp < 120:
                         RCOS_Primary_Temps.append(new_Pri_Temp)
-                    logger.debug('  RCOS Primary Temperature {} = {:.1f}'.format(i, new_Pri_Temp))
+                    else:
+                        new_Pri_Temp = float('nan')
                     new_Sec_Temp = RCOST.SecondaryTemp
                     if new_Sec_Temp > 20 and new_Sec_Temp < 120:
                         RCOS_Secondary_Temps.append(new_Sec_Temp)
-                    logger.debug('  RCOS Secondary Temperature {} = {:.1f}'.format(i, new_Sec_Temp))
+                    else:
+                        new_Sec_Temp = float('nan')
                     new_Fan_Speed = RCOST.FanSpeed
                     RCOS_Fan_Speeds.append(new_Fan_Speed)
-                    logger.debug('  RCOS Fan Speed {} = {:.2f}'.format(i, new_Fan_Speed))
                     new_Focus_Pos = RCOSF.Position
                     RCOS_Focus_Positions.append(new_Focus_Pos)
-                    logger.debug('  RCOS Focus Position {} = {:d}'.format(i, new_Focus_Pos))
+                    logger.debug('  RCOS Data:  {:5.1f} F, {:5.1f} F, {:5.1f} F, {:5.0f} %, {:5d}'.format(new_Truss_Temp, new_Pri_Temp, new_Sec_Temp, new_Fan_Speed, new_Focus_Pos))
                 except:
                     pass
                 time.sleep(1)
@@ -365,7 +370,7 @@ def main():
             logger.info('  RCOS Truss Temperature = {:.1f}'.format(RCOS_Truss_Temp))
             logger.info('  RCOS Primary Temperature = {:.1f}'.format(RCOS_Primary_Temp))
             logger.info('  RCOS Secondary Temperature = {:.1f}'.format(RCOS_Secondary_Temp))
-            logger.info('  RCOS Fan Speed = {:.1f}'.format(RCOS_Fan_Speed))
+            logger.info('  RCOS Fan Speed = {:.0f}'.format(RCOS_Fan_Speed))
             logger.info('  RCOS Focus Position = {:.1f}'.format(RCOS_Focus_Position))
     if telescope == "V5":
         logger.info('FocusMax Data:')
@@ -427,10 +432,10 @@ def main():
     ##-------------------------------------------------------------------------
     ## Make Copy of Clarity's daily log
     HSTnow = datetime.datetime.now()
-    if HSTnow.hour == 8 and HSTnow.minute < 10:
+    if HSTnow.hour == 8 and HSTnow.minute < 15:
         HSTyesterday = HSTnow - datetime.timedelta(1)
         yesterdays_log_file = os.path.join("C:\\", "Users", "vysosuser", "Documents", "ClarityII", HSTyesterday.strftime('%Y-%m-%d')+'.txt')
-        yesterdays_log_copy = os.path.join("C:\\", "Data_"+telescope, "Logs", DateString, "ClarityLog_"+HSTyesterday.strftime('%Y-%m-%d')+'.txt')
+        yesterdays_log_copy = os.path.join("C:\\", "Data_"+telescope, "Logs", DateString, "ClarityLog_"+HSTyesterday.strftime('%Y%m%d')+'HST.txt')
         if not os.path.exists(yesterdays_log_copy):
             try:
                 logger.debug('Copying yesterday\'s Clarity logs to Logs directory.')
@@ -440,7 +445,7 @@ def main():
     ## Make copy of raw ClarityData.txt
     ClarityCopy = os.path.join("C:\\", "Data_"+telescope, "ClarityData_raw_"+telescope+".txt")
     try:
-        logger.debug('Copying Clarity file to ftp directory.')
+        logger.debug('Copying Clarity file to altair for serving to web.')
         shutil.copy2(ClarityDataFile, ClarityCopy)
     except:
         logger.warning('  Could not copy Clarity file.')
@@ -494,7 +499,7 @@ def main():
         logger.info('Setting dome fan state.')
         if CBW_fans and CBW_enable and CBW_temp1 and ClarityArray and RCOST:
             InsideTemp = RCOS_Truss_Temp
-            OutsideTemp = ClarityArray[1]
+            OutsideTemp = ClarityArray[2]
             logger.debug('  Inside Temp = {:.1f}'.format(InsideTemp))
             logger.debug('  Outside Temp = {:.1f}'.format(OutsideTemp))
             DeltaT = InsideTemp - OutsideTemp
