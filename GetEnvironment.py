@@ -270,15 +270,15 @@ def main():
     ##-------------------------------------------------------------------------
     ## Query ASCOM ACPHub for Telescope Position and State
     ##-------------------------------------------------------------------------
-    logger.info('ACP Status:')
+#     logger.info('ACP Status:')
     ACP = None
     ACP_is_connected = None
-    try:
-        ACP = win32com.client.Dispatch("ACP.Telescope")
-        ACP_is_connected = ACP.Connected
-    except:
-        ACP = False
-        ACP_is_connected = False
+#     try:
+#         ACP = win32com.client.Dispatch("ACP.Telescope")
+#         ACP_is_connected = ACP.Connected
+#     except:
+#         ACP = False
+#         ACP_is_connected = False
     if ACP and ACP_is_connected:
         try:
             ACP_AtPark   = ACP.AtPark
@@ -299,7 +299,7 @@ def main():
         ACP_Azimuth  = float('nan')
         ACP_Slewing  = None
         ACP_Tracking = None
-        logger.info('  ACP is not connected.')
+#         logger.info('  ACP is not connected.')
 
 
 

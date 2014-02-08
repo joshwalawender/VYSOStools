@@ -353,10 +353,6 @@ def MakePlots(DateString, telescope, logger):
     EveningAstronomicalTwilightDecimal = float(datetime.datetime.strftime(EveningAstronomicalTwilightTime, "%H"))+float(datetime.datetime.strftime(EveningAstronomicalTwilightTime, "%M"))/60.+float(datetime.datetime.strftime(EveningAstronomicalTwilightTime, "%S"))/3600.
     MorningAstronomicalTwilightDecimal = float(datetime.datetime.strftime(MorningAstronomicalTwilightTime, "%H"))+float(datetime.datetime.strftime(MorningAstronomicalTwilightTime, "%M"))/60.+float(datetime.datetime.strftime(MorningAstronomicalTwilightTime, "%S"))/3600.
 
-    PlotStartUT = math.floor(SunsetDecimal)
-    PlotEndUT = math.ceil(SunriseDecimal)
-    nUTHours = PlotEndUT-PlotStartUT+1
-
     Observatory.date = DateString[0:4]+"/"+DateString[4:6]+"/"+DateString[6:8]+" 0:00:01.0"
     TheMoon = ephem.Moon()
     TheMoon.compute(Observatory)
@@ -444,7 +440,15 @@ def MakePlots(DateString, telescope, logger):
     ###########################################################
     ## Make Nightly Sumamry Plot (show only night time)
     ###########################################################
-    if DecimalTime > SunsetDecimal:
+    now = time.gmtime()
+    NowString = time.strftime("%Y%m%dUT", now)
+
+    if (DateString != NowString) or (DecimalTime > SunsetDecimal):
+        PlotStartUT = math.floor(SunsetDecimal)
+        PlotEndUT = math.ceil(SunriseDecimal)
+        nUTHours = PlotEndUT-PlotStartUT+1
+        time_ticks_values = numpy.linspace(PlotStartUT,PlotEndUT,nUTHours,endpoint=True)
+        
         if telescope == "V20":
             plot_positions = [ ( [0.000, 0.765, 0.460, 0.235], [0.540, 0.765, 0.460, 0.235] ),
                                ( [0.000, 0.675, 0.460, 0.070], [0.540, 0.510, 0.460, 0.235] ),
@@ -470,22 +474,39 @@ def MakePlots(DateString, telescope, logger):
             if telescope == "V20" and FoundV20Env:
                 logger.debug("Found {} lines in VYSOS-20 Environment Log.".format(len(V20EnvTable)))
                 if FoundV5Env:
-                    pyplot.plot(V5EnvTable['Time'], V5EnvTable['OutsideTemp'], 'k-', alpha=0.5, drawstyle="steps-post", label="Outside Temp ("+OtherTelescope+")")
-                pyplot.plot(V20EnvTable['Time'], V20EnvTable['TubeTemp'], 'g-', drawstyle="steps-post", label="Tube Temp")
-                pyplot.plot(V20EnvTable['Time'], V20EnvTable['OutsideTemp'], 'k-', drawstyle="steps-post", label="Outside Temp ("+telescope+")")
-                pyplot.plot(V20EnvTable['Time'], V20EnvTable['PrimaryTemp'], 'r-', drawstyle="steps-post", label="Mirror Temp")
-                pyplot.plot(V20EnvTable['Time'], V20EnvTable['DomeTemp'], 'c-', drawstyle="steps-post", label="Dome Temp")
+                    pyplot.plot(V5EnvTable['Time'], V5EnvTable['OutsideTemp'], 'ko-', alpha=0.2, \
+                                markersize=2, markeredgewidth=0, drawstyle="default", \
+                                label="Outside Temp ("+OtherTelescope+")")
+                pyplot.plot(V20EnvTable['Time'], V20EnvTable['TubeTemp'], 'go-', \
+                            markersize=2, markeredgewidth=0, drawstyle="default", \
+                            label="Tube Temp")
+                pyplot.plot(V20EnvTable['Time'], V20EnvTable['OutsideTemp'], 'ko-', \
+                            markersize=2, markeredgewidth=0, drawstyle="default", \
+                            label="Outside Temp ("+telescope+")")
+                pyplot.plot(V20EnvTable['Time'], V20EnvTable['PrimaryTemp'], 'ro-', \
+                            markersize=2, markeredgewidth=0, drawstyle="default", \
+                            label="Mirror Temp")
+                pyplot.plot(V20EnvTable['Time'], V20EnvTable['DomeTemp'], 'co-', \
+                            markersize=2, markeredgewidth=0, drawstyle="default", \
+                            label="Dome Temp")
 
             if telescope == "V5" and FoundV5Env:
                 logger.debug("Found {} lines in VYSOS-5 Environment Log.".format(len(V5EnvTable)))
                 if FoundV20Env:
-                    pyplot.plot(V20EnvTable['Time'], V20EnvTable['OutsideTemp'], 'k-', alpha=0.5, drawstyle="steps-post", label="Outside Temp ("+OtherTelescope+")")
-                pyplot.plot(V5EnvTable['Time'], V5EnvTable['TubeTemp'], 'g-', drawstyle="steps-post", label="Tube Temp")
-                pyplot.plot(V5EnvTable['Time'], V5EnvTable['OutsideTemp'], 'k-', drawstyle="steps-post", label="Outside Temp ("+telescope+")")
+                    pyplot.plot(V20EnvTable['Time'], V20EnvTable['OutsideTemp'], 'ko-', alpha=0.2, \
+                                markersize=2, markeredgewidth=0, drawstyle="default", \
+                                label="Outside Temp ("+OtherTelescope+")")
+                pyplot.plot(V5EnvTable['Time'], V5EnvTable['TubeTemp'], 'go-', \
+                            markersize=2, markeredgewidth=0, drawstyle="default", \
+                            label="Tube Temp")
+                pyplot.plot(V5EnvTable['Time'], V5EnvTable['OutsideTemp'], 'ko-', \
+                            markersize=2, markeredgewidth=0, drawstyle="default", \
+                            label="Outside Temp ("+telescope+")")
 
             pyplot.legend(loc='best', prop={'size':10})
             pyplot.ylabel("Temperature (F)")
-            pyplot.xticks(numpy.linspace(PlotStartUT,PlotEndUT,nUTHours,endpoint=True))
+            pyplot.xticks(time_ticks_values)
+            
             pyplot.xlim(PlotStartUT,PlotEndUT)
             pyplot.grid()
 
@@ -511,8 +532,12 @@ def MakePlots(DateString, telescope, logger):
             ## Add Fan Power (if VYSOS-20)
             if telescope == "V20" and FoundV20Env:
                 Figure.add_axes(plot_positions[1][0], xticklabels=[])
-                pyplot.plot(V20EnvTable['Time'], V20EnvTable['DomeFan'], 'c-', drawstyle="steps-post", label="Dome Fan")
-                pyplot.plot(V20EnvTable['Time'], V20EnvTable['FanPower'], 'b-', drawstyle="steps-post", label="Mirror Fans")
+                pyplot.plot(V20EnvTable['Time'], V20EnvTable['DomeFan'], 'co-', \
+                            markersize=2, markeredgewidth=0, drawstyle="default", \
+                            label="Dome Fan")
+                pyplot.plot(V20EnvTable['Time'], V20EnvTable['FanPower'], 'bo-', \
+                            markersize=2, markeredgewidth=0, drawstyle="default", \
+                            label="Mirror Fans")
                 pyplot.xticks(numpy.linspace(PlotStartUT,PlotEndUT,nUTHours,endpoint=True))
                 pyplot.xlim(PlotStartUT,PlotEndUT)
                 pyplot.ylim(-10,110)
@@ -526,15 +551,23 @@ def MakePlots(DateString, telescope, logger):
             Figure.add_axes(plot_positions[2][0], xticklabels=[])
             if telescope == "V20" and FoundV20Env:
                 if FoundV5Env:
-                    pyplot.plot(V5EnvTable['Time'], V5EnvTable['SkyTemp'], 'k-', alpha=0.5, drawstyle="steps-post", label="Cloudiness ("+OtherTelescope+")")
-                pyplot.plot(V20EnvTable['Time'], V20EnvTable['SkyTemp'], 'b-', drawstyle="steps-post", label="Cloudiness ("+telescope+")")
+                    pyplot.plot(V5EnvTable['Time'], V5EnvTable['SkyTemp'], 'ko-', alpha=0.2, \
+                                markersize=2, markeredgewidth=0, drawstyle="default", \
+                                label="Cloudiness ("+OtherTelescope+")")
+                pyplot.plot(V20EnvTable['Time'], V20EnvTable['SkyTemp'], 'bo-', \
+                            markersize=2, markeredgewidth=0, drawstyle="default", \
+                            label="Cloudiness ("+telescope+")")
                 pyplot.fill_between(V20EnvTable['Time'], -140, V20EnvTable['SkyTemp'], where=(V20EnvTable['CloudCondition']=="1"), color='green', alpha=0.5)
                 pyplot.fill_between(V20EnvTable['Time'], -140, V20EnvTable['SkyTemp'], where=(V20EnvTable['CloudCondition']=="2"), color='yellow', alpha=0.8)
                 pyplot.fill_between(V20EnvTable['Time'], -140, V20EnvTable['SkyTemp'], where=(V20EnvTable['CloudCondition']=="3"), color='red', alpha=0.8)
             if telescope == "V5" and FoundV5Env:
                 if FoundV20Env:
-                    pyplot.plot(V20EnvTable['Time'], V20EnvTable['SkyTemp'], 'k-', alpha=0.5, drawstyle="steps-post", label="Cloudiness ("+OtherTelescope+")")
-                pyplot.plot(V5EnvTable['Time'], V5EnvTable['SkyTemp'], 'b-', drawstyle="steps-post", label="Cloudiness ("+telescope+")")
+                    pyplot.plot(V20EnvTable['Time'], V20EnvTable['SkyTemp'], 'ko-', alpha=0.2, \
+                                markersize=2, markeredgewidth=0, drawstyle="default", \
+                                label="Cloudiness ("+OtherTelescope+")")
+                pyplot.plot(V5EnvTable['Time'], V5EnvTable['SkyTemp'], 'bo-', \
+                            markersize=2, markeredgewidth=0, drawstyle="default", \
+                            label="Cloudiness ("+telescope+")")
                 pyplot.fill_between(V5EnvTable['Time'], -140, V5EnvTable['SkyTemp'], where=(V5EnvTable['CloudCondition']=="1"), color='green', alpha=0.5)
                 pyplot.fill_between(V5EnvTable['Time'], -140, V5EnvTable['SkyTemp'], where=(V5EnvTable['CloudCondition']=="2"), color='yellow', alpha=0.8)
                 pyplot.fill_between(V5EnvTable['Time'], -140, V5EnvTable['SkyTemp'], where=(V5EnvTable['CloudCondition']=="3"), color='red', alpha=0.8)
@@ -549,16 +582,24 @@ def MakePlots(DateString, telescope, logger):
         if FoundV20Env or FoundV5Env:
             Figure.add_axes(plot_positions[3][0], xticklabels=[])
             if telescope == "V5" and FoundV5Env:
-                pyplot.plot(V5EnvTable['Time'], V5EnvTable['Humidity'], 'b-', drawstyle="steps-post", label="Humidity ("+telescope+")")
+                pyplot.plot(V5EnvTable['Time'], V5EnvTable['Humidity'], 'bo-', \
+                            markersize=2, markeredgewidth=0, drawstyle="default", \
+                            label="Humidity ("+telescope+")")
                 if FoundV20Env:
-                    pyplot.plot(V20EnvTable['Time'], V20EnvTable['Humidity'], 'k-', alpha=0.5, drawstyle="steps-post", label="Humidity ("+OtherTelescope+")")
+                    pyplot.plot(V20EnvTable['Time'], V20EnvTable['Humidity'], 'ko-', alpha=0.2, \
+                                markersize=2, markeredgewidth=0, drawstyle="default", \
+                                label="Humidity ("+OtherTelescope+")")
                 pyplot.fill_between(V5EnvTable['Time'], -5, V5EnvTable['Humidity'], where=(V5EnvTable['WetCondition']=="1"), color='green', alpha=0.5)
                 pyplot.fill_between(V5EnvTable['Time'], -5, V5EnvTable['Humidity'], where=(V5EnvTable['WetCondition']=="2"), color='red', alpha=0.5)
                 pyplot.fill_between(V5EnvTable['Time'], -5, V5EnvTable['Humidity'], where=(V5EnvTable['WetCondition']=="3"), color='red', alpha=0.8)            
             if telescope == "V20" and FoundV20Env:
-                pyplot.plot(V20EnvTable['Time'], V20EnvTable['Humidity'], 'b-', drawstyle="steps-post", label="Humidity ("+telescope+")")
+                pyplot.plot(V20EnvTable['Time'], V20EnvTable['Humidity'], 'bo-', 
+                            markersize=2, markeredgewidth=0, drawstyle="default", \
+                            label="Humidity ("+telescope+")")
                 if FoundV5Env:
-                    pyplot.plot(V5EnvTable['Time'], V5EnvTable['Humidity'], 'k-', drawstyle="steps-post", alpha=0.5, label="Humidity ("+OtherTelescope+")")
+                    pyplot.plot(V5EnvTable['Time'], V5EnvTable['Humidity'], 'ko-', alpha=0.2, \
+                                markersize=2, markeredgewidth=0, drawstyle="default", \
+                                label="Humidity ("+OtherTelescope+")")
                 pyplot.fill_between(V20EnvTable['Time'], -5, V20EnvTable['Humidity'], where=(V20EnvTable['WetCondition']=="1"), color='green', alpha=0.5)
                 pyplot.fill_between(V20EnvTable['Time'], -5, V20EnvTable['Humidity'], where=(V20EnvTable['WetCondition']=="2"), color='red', alpha=0.5)
                 pyplot.fill_between(V20EnvTable['Time'], -5, V20EnvTable['Humidity'], where=(V20EnvTable['WetCondition']=="3"), color='red', alpha=0.8)
@@ -574,15 +615,21 @@ def MakePlots(DateString, telescope, logger):
             Figure.add_axes(plot_positions[4][0])
             if telescope == "V20" and FoundV20Env:
                 if FoundV5Env:
-                    pyplot.plot(V5EnvTable['Time'], V5EnvTable['WindSpeed'], 'k-', alpha=0.5, drawstyle="steps-post", label="Wind Speed ("+OtherTelescope+")")
-                pyplot.plot(V20EnvTable['Time'], V20EnvTable['WindSpeed'], 'b-', drawstyle="steps-post", label="Wind Speed ("+telescope+")")
+                    pyplot.plot(V5EnvTable['Time'], V5EnvTable['WindSpeed'], 'ko-', alpha=0.2, \
+                                markersize=2, markeredgewidth=0, drawstyle="default", \
+                                label="Wind Speed ("+OtherTelescope+")")
+                pyplot.plot(V20EnvTable['Time'], V20EnvTable['WindSpeed'], 'bo-', \
+                            markersize=2, markeredgewidth=0, drawstyle="default", \
+                            label="Wind Speed ("+telescope+")")
                 pyplot.ylim(0,max([max(V20EnvTable['WindSpeed'])*1.1,35.]))
                 pyplot.fill_between(V20EnvTable['Time'], 0, V20EnvTable['WindSpeed'], where=(V20EnvTable['WindCondition']=="1"), color='green', alpha=0.5)
                 pyplot.fill_between(V20EnvTable['Time'], 0, V20EnvTable['WindSpeed'], where=(V20EnvTable['WindCondition']=="2"), color='yellow', alpha=0.8)
                 pyplot.fill_between(V20EnvTable['Time'], 0, V20EnvTable['WindSpeed'], where=(V20EnvTable['WindCondition']=="3"), color='red', alpha=0.8)
             if telescope == "V5" and FoundV5Env:
                 if FoundV20Env:
-                    pyplot.plot(V20EnvTable['Time'], V20EnvTable['WindSpeed'], 'k-', alpha=0.5, label="Wind Speed ("+OtherTelescope+")")
+                    pyplot.plot(V20EnvTable['Time'], V20EnvTable['WindSpeed'], 'ko-', alpha=0.2, \
+                                markersize=2, markeredgewidth=0, drawstyle="default", \
+                                label="Wind Speed ("+OtherTelescope+")")
                 pyplot.plot(V5EnvTable['Time'], V5EnvTable['WindSpeed'], 'b-', label="Wind Speed ("+telescope+")")
                 pyplot.ylim(0,max([max(V5EnvTable['WindSpeed'])*1.1,35.]))
                 pyplot.fill_between(V5EnvTable['Time'], 0, V5EnvTable['WindSpeed'], where=(V5EnvTable['WindCondition']=="1"), color='green', alpha=0.5)
@@ -628,7 +675,9 @@ def MakePlots(DateString, telescope, logger):
         ## Focus Position (if VYSOS-5) or Temperature Differences (if VYSOS-20)
         Figure.add_axes(plot_positions[1][1], xticklabels=[])
         if (telescope == "V5" and FoundV5Env and FoundIQMonFile):
-            pyplot.plot(V5EnvTable['Time'], V5EnvTable['FocusPos'], 'b-', drawstyle="steps-post", label="Focus Position")
+            pyplot.plot(V5EnvTable['Time'], V5EnvTable['FocusPos'], 'bo-', \
+                        markersize=2, markeredgewidth=0, drawstyle="default", \
+                        label="Focus Position")
             pyplot.xticks(numpy.linspace(PlotStartUT,PlotEndUT,nUTHours,endpoint=True))
             pyplot.xlim(PlotStartUT,PlotEndUT)
             ## Clip the extreme values off of the focus position list (bad values?)
@@ -643,9 +692,15 @@ def MakePlots(DateString, telescope, logger):
             pyplot.legend(loc='best', prop={'size':10})
             pyplot.grid()
         if (telescope == "V20" and FoundV20Env):
-            pyplot.plot(V20EnvTable['Time'], V20EnvTable['TubeTemp']-V20EnvTable['OutsideTemp'], 'g-', drawstyle="steps-post", label="Tube Temp")
-            pyplot.plot(V20EnvTable['Time'], V20EnvTable['PrimaryTemp']-V20EnvTable['OutsideTemp'], 'r-', drawstyle="steps-post", label="Mirror Temp")
-            pyplot.plot(V20EnvTable['Time'], V20EnvTable['DomeTemp']-V20EnvTable['OutsideTemp'], 'c-', drawstyle="steps-post", label="Dome Temp")
+            pyplot.plot(V20EnvTable['Time'], V20EnvTable['TubeTemp']-V20EnvTable['OutsideTemp'], 'go-', \
+                        markersize=2, markeredgewidth=0, drawstyle="default", \
+                        label="Tube Temp")
+            pyplot.plot(V20EnvTable['Time'], V20EnvTable['PrimaryTemp']-V20EnvTable['OutsideTemp'], 'ro-', \
+                        markersize=2, markeredgewidth=0, drawstyle="default", \
+                        label="Mirror Temp")
+            pyplot.plot(V20EnvTable['Time'], V20EnvTable['DomeTemp']-V20EnvTable['OutsideTemp'], 'co-', \
+                        markersize=2, markeredgewidth=0, drawstyle="default", \
+                        label="Dome Temp")
             pyplot.plot([PlotStartUT,PlotEndUT], [0,0], 'k-')
             pyplot.xticks(numpy.linspace(PlotStartUT,PlotEndUT,nUTHours,endpoint=True))
             pyplot.xlim(PlotStartUT,PlotEndUT)
@@ -656,8 +711,12 @@ def MakePlots(DateString, telescope, logger):
 
             ## Add Fan Power (if VYSOS-20)
             Figure.add_axes(plot_positions[2][1], xticklabels=[])
-            pyplot.plot(V20EnvTable['Time'], V20EnvTable['DomeFan'], 'c-', drawstyle="steps-post", label="Dome Fan")
-            pyplot.plot(V20EnvTable['Time'], V20EnvTable['FanPower'], 'b-', drawstyle="steps-post", label="Mirror Fans")
+            pyplot.plot(V20EnvTable['Time'], V20EnvTable['DomeFan'], 'co-', \
+                        markersize=2, markeredgewidth=0, drawstyle="default", \
+                        label="Dome Fan")
+            pyplot.plot(V20EnvTable['Time'], V20EnvTable['FanPower'], 'bo-', \
+                        markersize=2, markeredgewidth=0, drawstyle="default", \
+                        label="Mirror Fans")
             pyplot.xticks(numpy.linspace(PlotStartUT,PlotEndUT,nUTHours,endpoint=True))
             pyplot.xlim(PlotStartUT,PlotEndUT)
             pyplot.ylim(-10,110)
@@ -712,17 +771,33 @@ def MakePlots(DateString, telescope, logger):
 
         if telescope == "V20" and FoundV20Env:
             if FoundV5Env:
-                pyplot.plot(V5EnvTable['Time'], V5EnvTable['OutsideTemp'], 'k-', alpha=0.5, drawstyle="steps-post", label="Outside Temp ("+OtherTelescope+")")
-            pyplot.plot(V20EnvTable['Time'], V20EnvTable['TubeTemp'], 'g-', drawstyle="steps-post", label="Tube Temp")
-            pyplot.plot(V20EnvTable['Time'], V20EnvTable['OutsideTemp'], 'k-', drawstyle="steps-post", label="Outside Temp ("+telescope+")")
-            pyplot.plot(V20EnvTable['Time'], V20EnvTable['PrimaryTemp'], 'r-', drawstyle="steps-post", label="Mirror Temp")
-            pyplot.plot(V20EnvTable['Time'], V20EnvTable['DomeTemp'], 'c-', drawstyle="steps-post", label="Dome Temp")
+                pyplot.plot(V5EnvTable['Time'], V5EnvTable['OutsideTemp'], 'ko-', alpha=0.2, \
+                            markersize=2, markeredgewidth=0, drawstyle="default", \
+                            label="Outside Temp ("+OtherTelescope+")")
+            pyplot.plot(V20EnvTable['Time'], V20EnvTable['TubeTemp'], 'go-', \
+                        markersize=2, markeredgewidth=0, drawstyle="default", \
+                        label="Tube Temp")
+            pyplot.plot(V20EnvTable['Time'], V20EnvTable['OutsideTemp'], 'ko-', 
+                            markersize=2, markeredgewidth=0, drawstyle="default", \
+                            label="Outside Temp ("+telescope+")")
+            pyplot.plot(V20EnvTable['Time'], V20EnvTable['PrimaryTemp'], 'ro-', \
+                        markersize=2, markeredgewidth=0, drawstyle="default", \
+                        label="Mirror Temp")
+            pyplot.plot(V20EnvTable['Time'], V20EnvTable['DomeTemp'], 'co-', \
+                        markersize=2, markeredgewidth=0, drawstyle="default", \
+                        label="Dome Temp")
 
         if telescope == "V5" and FoundV5Env:
             if FoundV20Env:
-                pyplot.plot(V20EnvTable['Time'], V20EnvTable['OutsideTemp'], 'k-', alpha=0.5, drawstyle="steps-post", label="Outside Temp ("+OtherTelescope+")")
-            pyplot.plot(V5EnvTable['Time'], V5EnvTable['TubeTemp'], 'g-', drawstyle="steps-post", label="Tube Temp")
-            pyplot.plot(V5EnvTable['Time'], V5EnvTable['OutsideTemp'], 'k-', drawstyle="steps-post", label="Outside Temp ("+telescope+")")
+                pyplot.plot(V20EnvTable['Time'], V20EnvTable['OutsideTemp'], 'ko-', alpha=0.2, \
+                            markersize=2, markeredgewidth=0, drawstyle="default", \
+                            label="Outside Temp ("+OtherTelescope+")")
+            pyplot.plot(V5EnvTable['Time'], V5EnvTable['TubeTemp'], 'go-', \
+                        markersize=2, markeredgewidth=0, drawstyle="default", \
+                        label="Tube Temp")
+            pyplot.plot(V5EnvTable['Time'], V5EnvTable['OutsideTemp'], 'ko-', \
+                        markersize=2, markeredgewidth=0, drawstyle="default", \
+                        label="Outside Temp ("+telescope+")")
 
         pyplot.legend(loc='best', prop={'size':10})
         pyplot.ylabel("Temperature (F)")
@@ -752,8 +827,12 @@ def MakePlots(DateString, telescope, logger):
         ## Add Fan Power (if VYSOS-20)
         if telescope == "V20" and FoundV20Env:
             Figure.add_axes([0.0, 0.675, 1.0, 0.07], xticklabels=[])
-            pyplot.plot(V20EnvTable['Time'], V20EnvTable['DomeFan'], 'c-', drawstyle="steps-post", label="Dome Fan State")
-            pyplot.plot(V20EnvTable['Time'], V20EnvTable['FanPower'], 'b-', drawstyle="steps-post", label="Mirror Fans (%)")
+            pyplot.plot(V20EnvTable['Time'], V20EnvTable['DomeFan'], 'co-', \
+                        markersize=2, markeredgewidth=0, drawstyle="default", \
+                        label="Dome Fan State")
+            pyplot.plot(V20EnvTable['Time'], V20EnvTable['FanPower'], 'bo-', \
+                        markersize=2, markeredgewidth=0, drawstyle="default", \
+                        label="Mirror Fans (%)")
             
             pyplot.xticks(numpy.linspace(PlotStartUT,PlotEndUT,nUTHours,endpoint=True))
             pyplot.xlim(PlotStartUT,PlotEndUT)
@@ -770,16 +849,24 @@ def MakePlots(DateString, telescope, logger):
         if telescope == "V20" and FoundV20Env:
             Figure.add_axes([0.0, 0.430, 1.0, 0.235])
             if FoundV5Env:
-                pyplot.plot(V5EnvTable['Time'], V5EnvTable['SkyTemp'], 'k-', drawstyle="steps-post", alpha=0.5, label="Cloudiness ("+OtherTelescope+")")
-            pyplot.plot(V20EnvTable['Time'], V20EnvTable['SkyTemp'], 'b-', drawstyle="steps-post", label="Cloudiness ("+telescope+")")
+                pyplot.plot(V5EnvTable['Time'], V5EnvTable['SkyTemp'], 'ko-', alpha=0.2, \
+                            markersize=2, markeredgewidth=0, drawstyle="default", \
+                            label="Cloudiness ("+OtherTelescope+")")
+            pyplot.plot(V20EnvTable['Time'], V20EnvTable['SkyTemp'], 'bo-', \
+                        markersize=2, markeredgewidth=0, drawstyle="default", \
+                        label="Cloudiness ("+telescope+")")
             pyplot.fill_between(V20EnvTable['Time'], -140, V20EnvTable['SkyTemp'], where=(V20EnvTable['CloudCondition']=="1"), color='green', alpha=0.5)
             pyplot.fill_between(V20EnvTable['Time'], -140, V20EnvTable['SkyTemp'], where=(V20EnvTable['CloudCondition']=="2"), color='yellow', alpha=0.8)
             pyplot.fill_between(V20EnvTable['Time'], -140, V20EnvTable['SkyTemp'], where=(V20EnvTable['CloudCondition']=="3"), color='red', alpha=0.8)
         if telescope == "V5" and FoundV5Env:
             Figure.add_axes([0.0, 0.510, 1.0, 0.235])
             if FoundV20Env:
-                pyplot.plot(V20EnvTable['Time'], V20EnvTable['SkyTemp'], 'k-', drawstyle="steps-post", alpha=0.5, label="Cloudiness ("+OtherTelescope+")")
-            pyplot.plot(V5EnvTable['Time'], V5EnvTable['SkyTemp'], 'b-', drawstyle="steps-post", label="Cloudiness ("+telescope+")")
+                pyplot.plot(V20EnvTable['Time'], V20EnvTable['SkyTemp'], 'ko-', alpha=0.2, \
+                            markersize=2, markeredgewidth=0, drawstyle="default", \
+                            label="Cloudiness ("+OtherTelescope+")")
+            pyplot.plot(V5EnvTable['Time'], V5EnvTable['SkyTemp'], 'bo-', \
+                        markersize=2, markeredgewidth=0, drawstyle="default", \
+                        label="Cloudiness ("+telescope+")")
             pyplot.fill_between(V5EnvTable['Time'], -140, V5EnvTable['SkyTemp'], where=(V5EnvTable['CloudCondition']=="1"), color='green', alpha=0.5)
             pyplot.fill_between(V5EnvTable['Time'], -140, V5EnvTable['SkyTemp'], where=(V5EnvTable['CloudCondition']=="2"), color='yellow', alpha=0.8)
             pyplot.fill_between(V5EnvTable['Time'], -140, V5EnvTable['SkyTemp'], where=(V5EnvTable['CloudCondition']=="3"), color='red', alpha=0.8)
@@ -798,8 +885,12 @@ def MakePlots(DateString, telescope, logger):
             # Figure.add_axes([0.0, 0.510, 1.0, 0.235])
             Figure.add_axes([0.0, 0.255, 1.0, 0.235])
             if FoundV20Env:
-                pyplot.plot(V20EnvTable['Time'], V20EnvTable['Humidity'], 'k-', drawstyle="steps-post", alpha=0.5, label="Humidity ("+OtherTelescope+")")
-            pyplot.plot(V5EnvTable['Time'], V5EnvTable['Humidity'], 'b-', drawstyle="steps-post", label="Humidity ("+telescope+")")
+                pyplot.plot(V20EnvTable['Time'], V20EnvTable['Humidity'], 'ko-', alpha=0.2, \
+                            markersize=2, markeredgewidth=0, drawstyle="default", \
+                            label="Humidity ("+OtherTelescope+")")
+            pyplot.plot(V5EnvTable['Time'], V5EnvTable['Humidity'], 'bo-', \
+                        markersize=2, markeredgewidth=0, drawstyle="default", \
+                        label="Humidity ("+telescope+")")
             pyplot.fill_between(V5EnvTable['Time'], -5, V5EnvTable['Humidity'], where=(V5EnvTable['WetCondition']=="1"), color='green', alpha=0.5)
             pyplot.fill_between(V5EnvTable['Time'], -5, V5EnvTable['Humidity'], where=(V5EnvTable['WetCondition']=="2"), color='red', alpha=0.5)
             pyplot.fill_between(V5EnvTable['Time'], -5, V5EnvTable['Humidity'], where=(V5EnvTable['WetCondition']=="3"), color='red', alpha=0.8)            
@@ -807,8 +898,12 @@ def MakePlots(DateString, telescope, logger):
             # Figure.add_axes([0.0, 0.510, 1.0, 0.155])
             Figure.add_axes([0.0, 0.255, 1.0, 0.155])
             if FoundV5Env:
-                pyplot.plot(V5EnvTable['Time'], V5EnvTable['Humidity'], 'k-', drawstyle="steps-post", alpha=0.5, label="Humidity ("+OtherTelescope+")")            
-            pyplot.plot(V20EnvTable['Time'], V20EnvTable['Humidity'], 'b-', drawstyle="steps-post", label="Humidity ("+telescope+")")
+                pyplot.plot(V5EnvTable['Time'], V5EnvTable['Humidity'], 'ko-', alpha=0.2, \
+                            markersize=2, markeredgewidth=0, drawstyle="default", \
+                            label="Humidity ("+OtherTelescope+")")            
+            pyplot.plot(V20EnvTable['Time'], V20EnvTable['Humidity'], 'bo-', \
+                        markersize=2, markeredgewidth=0, drawstyle="default", \
+                        label="Humidity ("+telescope+")")
             pyplot.fill_between(V20EnvTable['Time'], -5, V20EnvTable['Humidity'], where=(V20EnvTable['WetCondition']=="1"), color='green', alpha=0.5)
             pyplot.fill_between(V20EnvTable['Time'], -5, V20EnvTable['Humidity'], where=(V20EnvTable['WetCondition']=="2"), color='red', alpha=0.5)
             pyplot.fill_between(V20EnvTable['Time'], -5, V20EnvTable['Humidity'], where=(V20EnvTable['WetCondition']=="3"), color='red', alpha=0.8)            
@@ -825,16 +920,24 @@ def MakePlots(DateString, telescope, logger):
         Figure.add_axes([0.0, 0.000, 1.0, 0.235])
         if telescope == "V20" and FoundV20Env:
             if FoundV5Env:
-                pyplot.plot(V5EnvTable['Time'], V5EnvTable['WindSpeed'], 'k-', drawstyle="steps-post", alpha=0.5, label="Wind Speed ("+OtherTelescope+")")
-            pyplot.plot(V20EnvTable['Time'], V20EnvTable['WindSpeed'], 'b-', drawstyle="steps-post", label="Wind Speed ("+telescope+")")
+                pyplot.plot(V5EnvTable['Time'], V5EnvTable['WindSpeed'], 'ko-', alpha=0.2, \
+                            markersize=2, markeredgewidth=0, drawstyle="default", \
+                            label="Wind Speed ("+OtherTelescope+")")
+            pyplot.plot(V20EnvTable['Time'], V20EnvTable['WindSpeed'], 'bo-', \
+                        markersize=2, markeredgewidth=0, drawstyle="default", \
+                        label="Wind Speed ("+telescope+")")
             pyplot.ylim(0,max([max(V20EnvTable['WindSpeed'])*1.1,35.]))
             pyplot.fill_between(V20EnvTable['Time'], 0, V20EnvTable['WindSpeed'], where=(V20EnvTable['WindCondition']=="1"), color='green', alpha=0.5)
             pyplot.fill_between(V20EnvTable['Time'], 0, V20EnvTable['WindSpeed'], where=(V20EnvTable['WindCondition']=="2"), color='yellow', alpha=0.8)
             pyplot.fill_between(V20EnvTable['Time'], 0, V20EnvTable['WindSpeed'], where=(V20EnvTable['WindCondition']=="3"), color='red', alpha=0.8)
         if telescope == "V5" and FoundV5Env:
             if FoundV20Env:
-                pyplot.plot(V20EnvTable['Time'], V20EnvTable['WindSpeed'], 'k-', drawstyle="steps-post", alpha=0.5, label="Wind Speed ("+OtherTelescope+")")
-            pyplot.plot(V5EnvTable['Time'], V5EnvTable['WindSpeed'], 'b-', drawstyle="steps-post", label="Wind Speed ("+telescope+")")
+                pyplot.plot(V20EnvTable['Time'], V20EnvTable['WindSpeed'], 'ko-', alpha=0.2, \
+                            markersize=2, markeredgewidth=0, drawstyle="default", \
+                            label="Wind Speed ("+OtherTelescope+")")
+            pyplot.plot(V5EnvTable['Time'], V5EnvTable['WindSpeed'], 'bo-', \
+                        markersize=2, markeredgewidth=0, drawstyle="default", \
+                        label="Wind Speed ("+telescope+")")
             pyplot.ylim(0,max([max(V5EnvTable['WindSpeed'])*1.1,35.]))
             pyplot.fill_between(V5EnvTable['Time'], 0, V5EnvTable['WindSpeed'], where=(V5EnvTable['WindCondition']=="1"), color='green', alpha=0.5)
             pyplot.fill_between(V5EnvTable['Time'], 0, V5EnvTable['WindSpeed'], where=(V5EnvTable['WindCondition']=="2"), color='yellow', alpha=0.8)
@@ -853,162 +956,198 @@ def MakePlots(DateString, telescope, logger):
     ###########################################################
     ## Make Recent Conditions Plot (Last 2 hours)
     ###########################################################
-    logger.info("Writing Output File: "+RecentPlotFileName)
-    dpi=100
-    Figure = pyplot.figure(figsize=(11.2,5.8), dpi=dpi)
-    now = datetime.datetime.utcnow()
-    nowDateString = "%04d%02d%02dUT" % (now.year, now.month, now.day)
-    nowDecimal = now.hour + now.minute/60. + now.second/3600.
+    if (DateString == NowString):
+        logger.info("Writing Output File: "+RecentPlotFileName)
+        dpi=100
+        Figure = pyplot.figure(figsize=(11.2,5.8), dpi=dpi)
+        now = datetime.datetime.utcnow()
+        nowDateString = "%04d%02d%02dUT" % (now.year, now.month, now.day)
+        nowDecimal = now.hour + now.minute/60. + now.second/3600.
 
-    if nowDateString == DateString:
-        if nowDecimal < 2:
-            PlotStartUT = 0
-            PlotEndUT = 2
-        else:
-            PlotStartUT = nowDecimal-2.
-            PlotEndUT = nowDecimal
-        nUTHours = 3
+        if nowDateString == DateString:
+            if nowDecimal < 2:
+                PlotStartUT = 0
+                PlotEndUT = 2
+            else:
+                PlotStartUT = nowDecimal-2.
+                PlotEndUT = nowDecimal
+            nUTHours = 3
 
-        ###########################################################
-        ## Temperatures
-        if FoundV20Env or FoundV5Env:
-            TemperatureAxes = pyplot.axes([0.0, 0.53, 0.45, 0.47])
-            pyplot.title("Recent Environmental Data for "+telescope)
+            time_ticks_values = numpy.arange(math.floor(PlotStartUT),math.ceil(PlotEndUT),0.25)
+            time_tick_labels = ['{:d}:{:02d}'.format(int(math.floor(value)), int((value % 1)*60)) for value in time_ticks_values]
 
-            if telescope == "V20" and FoundV20Env:
-                pyplot.plot(V20EnvTable['Time'], V20EnvTable['TubeTemp'], 'g-', drawstyle="steps-post", label="Tube Temp")
-                pyplot.plot(V20EnvTable['Time'], V20EnvTable['OutsideTemp'], 'k-', drawstyle="steps-post", label="Outside Temp ("+telescope+")")
-                pyplot.plot(V20EnvTable['Time'], V20EnvTable['PrimaryTemp'], 'r-', drawstyle="steps-post", label="Mirror Temp")
-                pyplot.plot(V20EnvTable['Time'], V20EnvTable['DomeTemp'], 'c-', drawstyle="steps-post", label="Dome Temp")
+            ###########################################################
+            ## Temperatures
+            if FoundV20Env or FoundV5Env:
+                TemperatureAxes = pyplot.axes([0.0, 0.53, 0.45, 0.47])
+                TemperatureAxes.set_xticklabels(time_tick_labels)
+                pyplot.title("Recent Environmental Data for "+telescope)
 
-            if telescope == "V5" and FoundV5Env:
-                if FoundV20Env:
-                    pyplot.plot(V20EnvTable['Time'], V20EnvTable['OutsideTemp'], 'k-', alpha=0.5, drawstyle="steps-post", label="Outside Temp ("+OtherTelescope+")")
-                pyplot.plot(V5EnvTable['Time'], V5EnvTable['TubeTemp'], 'g-', drawstyle="steps-post", label="Tube Temp")
-                pyplot.plot(V5EnvTable['Time'], V5EnvTable['OutsideTemp'], 'k-', drawstyle="steps-post", label="Outside Temp ("+telescope+")")
+                if telescope == "V20" and FoundV20Env:
+                    pyplot.plot(V20EnvTable['Time'], V20EnvTable['TubeTemp'], 'go-', \
+                                markersize=3, markeredgewidth=0, drawstyle="default", \
+                                label="Tube Temp")
+                    pyplot.plot(V20EnvTable['Time'], V20EnvTable['OutsideTemp'], 'ko-', \
+                                markersize=3, markeredgewidth=0, drawstyle="default", \
+                                label="Outside Temp ("+telescope+")")
+                    pyplot.plot(V20EnvTable['Time'], V20EnvTable['PrimaryTemp'], 'ro-', \
+                                markersize=3, markeredgewidth=0, drawstyle="default", \
+                                label="Mirror Temp")
+                    pyplot.plot(V20EnvTable['Time'], V20EnvTable['DomeTemp'], 'co-', \
+                                markersize=3, markeredgewidth=0, drawstyle="default", \
+                                label="Dome Temp")
 
-            pyplot.legend(loc='best', prop={'size':10})
-            pyplot.ylabel("Temperature (F)")
-            pyplot.xticks(numpy.arange(math.floor(PlotStartUT),math.ceil(PlotEndUT),0.25))
-            pyplot.xlim(PlotStartUT,PlotEndUT)
-            pyplot.grid()
+                if telescope == "V5" and FoundV5Env:
+#                     if FoundV20Env:
+#                         pyplot.plot(V20EnvTable['Time'], V20EnvTable['OutsideTemp'], 'ko-', alpha=0.2, \
+#                                     markersize=3, markeredgewidth=0, drawstyle="default", \
+#                                     label="Outside Temp ("+OtherTelescope+")")
+                    pyplot.plot(V5EnvTable['Time'], V5EnvTable['TubeTemp'], 'go-', \
+                                markersize=3, markeredgewidth=0, drawstyle="default", \
+                                label="Tube Temp")
+                    pyplot.plot(V5EnvTable['Time'], V5EnvTable['OutsideTemp'], 'ko-', \
+                                markersize=3, markeredgewidth=0, drawstyle="default", \
+                                label="Outside Temp ("+telescope+")")
 
-            ## Overplot Twilights
-            pyplot.axvspan(SunsetDecimal, EveningCivilTwilightDecimal, ymin=0, ymax=1, color='blue', alpha=0.1)
-            pyplot.axvspan(EveningCivilTwilightDecimal, EveningNauticalTwilightDecimal, ymin=0, ymax=1, color='blue', alpha=0.2)
-            pyplot.axvspan(EveningNauticalTwilightDecimal, EveningAstronomicalTwilightDecimal, ymin=0, ymax=1, color='blue', alpha=0.3)
-            pyplot.axvspan(EveningAstronomicalTwilightDecimal, MorningAstronomicalTwilightDecimal, ymin=0, ymax=1, color='blue', alpha=0.5)
-            pyplot.axvspan(MorningAstronomicalTwilightDecimal, MorningNauticalTwilightDecimal, ymin=0, ymax=1, color='blue', alpha=0.3)
-            pyplot.axvspan(MorningNauticalTwilightDecimal, MorningCivilTwilightDecimal, ymin=0, ymax=1, color='blue', alpha=0.2)
-            pyplot.axvspan(MorningCivilTwilightDecimal, SunriseDecimal, ymin=0, ymax=1, color='blue', alpha=0.1)
-
-            # ## Overplot Moon Up Time
-            # MoonAxes = TemperatureAxes.twinx()
-            # MoonAxes.set_yticklabels([])
-            # # MoonAxes.set_ylabel('Moon Alt (%.0f%% full)' % MoonPhase, color='y')
-            # pyplot.plot(MoonTimes, MoonAlts, 'y-')
-            # pyplot.ylim(0,100)
-            # pyplot.yticks([10,30,50,70,90], color='y')
-            # pyplot.xticks(numpy.arange(math.floor(PlotStartUT),math.ceil(PlotEndUT),0.25))
-            # pyplot.xlim(PlotStartUT,PlotEndUT)
-            # pyplot.fill_between(MoonTimes, 0, MoonAlts, where=MoonAlts>0, color='yellow', alpha=MoonFill)        
-
-            ## Add Fan Power (if VYSOS-20)
-            if telescope == "V20":
-                Figure.add_axes([0.0, 0.34, 0.45, 0.13], xticklabels=[])
-                pyplot.plot(V20EnvTable['Time'], V20EnvTable['DomeFan'], 'c-', drawstyle="steps-post", label="Dome Fan State")
-                pyplot.plot(V20EnvTable['Time'], V20EnvTable['FanPower'], 'b-', drawstyle="steps-post", label="Mirror Fans (%)")
-
-                pyplot.xticks(numpy.arange(math.floor(PlotStartUT),math.ceil(PlotEndUT),0.25))
+                pyplot.legend(loc='best', prop={'size':10})
+                pyplot.ylabel("Temperature (F)")
+                pyplot.xticks(time_ticks_values)
                 pyplot.xlim(PlotStartUT,PlotEndUT)
-                pyplot.ylim(-10,110)
-                pyplot.yticks(numpy.linspace(0,100,3,endpoint=True))
-                pyplot.legend(loc='center left', prop={'size':10})
                 pyplot.grid()
 
+                ## Overplot Twilights
+                pyplot.axvspan(SunsetDecimal, EveningCivilTwilightDecimal, ymin=0, ymax=1, color='blue', alpha=0.1)
+                pyplot.axvspan(EveningCivilTwilightDecimal, EveningNauticalTwilightDecimal, ymin=0, ymax=1, color='blue', alpha=0.2)
+                pyplot.axvspan(EveningNauticalTwilightDecimal, EveningAstronomicalTwilightDecimal, ymin=0, ymax=1, color='blue', alpha=0.3)
+                pyplot.axvspan(EveningAstronomicalTwilightDecimal, MorningAstronomicalTwilightDecimal, ymin=0, ymax=1, color='blue', alpha=0.5)
+                pyplot.axvspan(MorningAstronomicalTwilightDecimal, MorningNauticalTwilightDecimal, ymin=0, ymax=1, color='blue', alpha=0.3)
+                pyplot.axvspan(MorningNauticalTwilightDecimal, MorningCivilTwilightDecimal, ymin=0, ymax=1, color='blue', alpha=0.2)
+                pyplot.axvspan(MorningCivilTwilightDecimal, SunriseDecimal, ymin=0, ymax=1, color='blue', alpha=0.1)
 
-        ###########################################################
-        ## Humidity
-        if FoundV20Env or FoundV5Env:
-            if telescope == "V5" and FoundV5Env:
-                Figure.add_axes([0.0, 0.0, 0.45, 0.47])
-                if FoundV20Env:
-                    pyplot.plot(V20EnvTable['Time'], V20EnvTable['Humidity'], 'k-', drawstyle="steps-post", alpha=0.5, label="Humidity ("+OtherTelescope+")")
-                pyplot.plot(V5EnvTable['Time'], V5EnvTable['Humidity'], 'b-', drawstyle="steps-post", label="Humidity ("+telescope+")")
-                pyplot.fill_between(V5EnvTable['Time'], -5, V5EnvTable['Humidity'], where=(V5EnvTable['WetCondition']=="1"), color='green', alpha=0.5)
-                pyplot.fill_between(V5EnvTable['Time'], -5, V5EnvTable['Humidity'], where=(V5EnvTable['WetCondition']=="2"), color='red', alpha=0.5)
-                pyplot.fill_between(V5EnvTable['Time'], -5, V5EnvTable['Humidity'], where=(V5EnvTable['WetCondition']=="3"), color='red', alpha=0.8)            
-            if telescope == "V20" and FoundV20Env:
-                Figure.add_axes([0.0, 0.0, 0.45, 0.33])
-                if FoundV5Env:
-                    pyplot.plot(V5EnvTable['Time'], V5EnvTable['Humidity'], 'k-', drawstyle="steps-post", alpha=0.5, label="Humidity ("+OtherTelescope+")")            
-                pyplot.plot(V20EnvTable['Time'], V20EnvTable['Humidity'], 'b-', drawstyle="steps-post", label="Humidity ("+telescope+")")
-                pyplot.fill_between(V20EnvTable['Time'], -5, V20EnvTable['Humidity'], where=(V20EnvTable['WetCondition']=="1"), color='green', alpha=0.5)
-                pyplot.fill_between(V20EnvTable['Time'], -5, V20EnvTable['Humidity'], where=(V20EnvTable['WetCondition']=="2"), color='red', alpha=0.5)
-                pyplot.fill_between(V20EnvTable['Time'], -5, V20EnvTable['Humidity'], where=(V20EnvTable['WetCondition']=="3"), color='red', alpha=0.8)            
-            pyplot.legend(loc='best', prop={'size':10})
-            pyplot.ylabel("Humidity (%)")
-            pyplot.xticks(numpy.arange(math.floor(PlotStartUT),math.ceil(PlotEndUT),0.25))
-            pyplot.xlim(PlotStartUT,PlotEndUT)
-            pyplot.ylim(-5,105)
-            pyplot.grid()
+                ## Add Fan Power (if VYSOS-20)
+                if telescope == "V20":
+                    Figure.add_axes([0.0, 0.34, 0.45, 0.13], xticklabels=[])
+                    pyplot.plot(V20EnvTable['Time'], V20EnvTable['DomeFan'], 'co-', \
+                                markersize=3, markeredgewidth=0, drawstyle="default", \
+                                label="Dome Fan State")
+                    pyplot.plot(V20EnvTable['Time'], V20EnvTable['FanPower'], 'bo-', 
+                                markersize=3, markeredgewidth=0, drawstyle="default", \
+                                label="Mirror Fans (%)")
+                    pyplot.xticks(time_ticks_values)
+                    pyplot.xlim(PlotStartUT,PlotEndUT)
+                    pyplot.ylim(-10,110)
+                    pyplot.yticks(numpy.linspace(0,100,3,endpoint=True))
+                    pyplot.legend(loc='center left', prop={'size':10})
+                    pyplot.grid()
 
-        ###########################################################
-        ## Sky Condition (Cloudiness)
-        if FoundV20Env or FoundV5Env:
-            Figure.add_axes([0.53, 0.53, 0.45, 0.47])
-            if telescope == "V20" and FoundV20Env:
-                if FoundV5Env:
-                    pyplot.plot(V5EnvTable['Time'], V5EnvTable['SkyTemp'], 'k-', drawstyle="steps-post", alpha=0.5, label="Cloudiness ("+OtherTelescope+")")
-                pyplot.plot(V20EnvTable['Time'], V20EnvTable['SkyTemp'], 'b-', drawstyle="steps-post", label="Cloudiness ("+telescope+")")
-                pyplot.fill_between(V20EnvTable['Time'], -140, V20EnvTable['SkyTemp'], where=(V20EnvTable['CloudCondition']=="1"), color='green', alpha=0.5)
-                pyplot.fill_between(V20EnvTable['Time'], -140, V20EnvTable['SkyTemp'], where=(V20EnvTable['CloudCondition']=="2"), color='yellow', alpha=0.8)
-                pyplot.fill_between(V20EnvTable['Time'], -140, V20EnvTable['SkyTemp'], where=(V20EnvTable['CloudCondition']=="3"), color='red', alpha=0.8)
-            if telescope == "V5" and FoundV5Env:
-                if FoundV20Env:
-                    pyplot.plot(V20EnvTable['Time'], V20EnvTable['SkyTemp'], 'k-', drawstyle="steps-post", alpha=0.5, label="Cloudiness ("+OtherTelescope+")")
-                pyplot.plot(V5EnvTable['Time'], V5EnvTable['SkyTemp'], 'b-', drawstyle="steps-post", label="Cloudiness ("+telescope+")")
-                pyplot.fill_between(V5EnvTable['Time'], -140, V5EnvTable['SkyTemp'], where=(V5EnvTable['CloudCondition']=="1"), color='green', alpha=0.5)
-                pyplot.fill_between(V5EnvTable['Time'], -140, V5EnvTable['SkyTemp'], where=(V5EnvTable['CloudCondition']=="2"), color='yellow', alpha=0.8)
-                pyplot.fill_between(V5EnvTable['Time'], -140, V5EnvTable['SkyTemp'], where=(V5EnvTable['CloudCondition']=="3"), color='red', alpha=0.8)
 
-            pyplot.legend(loc='best', prop={'size':10})
-            pyplot.ylabel("Cloudiness (Delta T) (F)")
-            pyplot.xticks(numpy.arange(math.floor(PlotStartUT),math.ceil(PlotEndUT),0.25))
-            pyplot.xlim(PlotStartUT,PlotEndUT)
-            pyplot.ylim(-100,-20)
-            pyplot.grid()
+            ###########################################################
+            ## Humidity
+            if FoundV20Env or FoundV5Env:
+                if telescope == "V5" and FoundV5Env:
+                    Figure.add_axes([0.0, 0.0, 0.45, 0.47], xticklabels=time_tick_labels)
+                    if FoundV20Env:
+                        pyplot.plot(V20EnvTable['Time'], V20EnvTable['Humidity'], 'ko-', alpha=0.2, \
+                                    markersize=3, markeredgewidth=0, drawstyle="default", \
+                                    label="Humidity ("+OtherTelescope+")")
+                    pyplot.plot(V5EnvTable['Time'], V5EnvTable['Humidity'], 'bo-', \
+                                markersize=3, markeredgewidth=0, drawstyle="default", \
+                                label="Humidity ("+telescope+")")
+                    pyplot.fill_between(V5EnvTable['Time'], -5, V5EnvTable['Humidity'], where=(V5EnvTable['WetCondition']=="1"), color='green', alpha=0.5)
+                    pyplot.fill_between(V5EnvTable['Time'], -5, V5EnvTable['Humidity'], where=(V5EnvTable['WetCondition']=="2"), color='red', alpha=0.5)
+                    pyplot.fill_between(V5EnvTable['Time'], -5, V5EnvTable['Humidity'], where=(V5EnvTable['WetCondition']=="3"), color='red', alpha=0.8)            
+                if telescope == "V20" and FoundV20Env:
+                    Figure.add_axes([0.0, 0.0, 0.45, 0.33])
+                    if FoundV5Env:
+                        pyplot.plot(V5EnvTable['Time'], V5EnvTable['Humidity'], 'ko-', alpha=0.2, \
+                                    markersize=3, markeredgewidth=0, drawstyle="default", \
+                                    label="Humidity ("+OtherTelescope+")")            
+                    pyplot.plot(V20EnvTable['Time'], V20EnvTable['Humidity'], 'bo-', \
+                                markersize=3, markeredgewidth=0, drawstyle="default", \
+                                label="Humidity ("+telescope+")")
+                    pyplot.fill_between(V20EnvTable['Time'], -5, V20EnvTable['Humidity'], where=(V20EnvTable['WetCondition']=="1"), color='green', alpha=0.5)
+                    pyplot.fill_between(V20EnvTable['Time'], -5, V20EnvTable['Humidity'], where=(V20EnvTable['WetCondition']=="2"), color='red', alpha=0.5)
+                    pyplot.fill_between(V20EnvTable['Time'], -5, V20EnvTable['Humidity'], where=(V20EnvTable['WetCondition']=="3"), color='red', alpha=0.8)            
+                pyplot.legend(loc='best', prop={'size':10})
+                pyplot.ylabel("Humidity (%)")
+                pyplot.xticks(time_ticks_values)
+                pyplot.xlim(PlotStartUT,PlotEndUT)
+                pyplot.ylim(-5,105)
+                pyplot.grid()
 
-        ###########################################################
-        ## Wind Speed
-        if FoundV20Env or FoundV5Env:
-            Figure.add_axes([0.53, 0.0, 0.45, 0.47])
-            if telescope == "V20" and FoundV20Env:
-                if FoundV5Env:
-                    pyplot.plot(V5EnvTable['Time'], V5EnvTable['WindSpeed'], 'k-', alpha=0.5, drawstyle="steps-post", label="Wind Speed ("+OtherTelescope+")")
-                pyplot.plot(V20EnvTable['Time'], V20EnvTable['WindSpeed'], 'b-', drawstyle="steps-post", label="Wind Speed ("+telescope+")")
-                pyplot.ylim(0,max([max(V20EnvTable['WindSpeed'])*1.1,35.]))
-                pyplot.fill_between(V20EnvTable['Time'], 0, V20EnvTable['WindSpeed'], where=(V20EnvTable['WindCondition']=="1"), color='green', alpha=0.5)
-                pyplot.fill_between(V20EnvTable['Time'], 0, V20EnvTable['WindSpeed'], where=(V20EnvTable['WindCondition']=="2"), color='yellow', alpha=0.8)
-                pyplot.fill_between(V20EnvTable['Time'], 0, V20EnvTable['WindSpeed'], where=(V20EnvTable['WindCondition']=="3"), color='red', alpha=0.8)
-            if telescope == "V5" and FoundV5Env:
-                if FoundV20Env:
-                    pyplot.plot(V20EnvTable['Time'], V20EnvTable['WindSpeed'], 'k-', alpha=0.5, drawstyle="steps-post", label="Wind Speed ("+OtherTelescope+")")
-                pyplot.plot(V5EnvTable['Time'], V5EnvTable['WindSpeed'], 'b-', drawstyle="steps-post", label="Wind Speed ("+telescope+")")
-                pyplot.ylim(0,max([max(V5EnvTable['WindSpeed'])*1.1,35.]))
-                pyplot.fill_between(V5EnvTable['Time'], 0, V5EnvTable['WindSpeed'], where=(V5EnvTable['WindCondition']=="1"), color='green', alpha=0.5)
-                pyplot.fill_between(V5EnvTable['Time'], 0, V5EnvTable['WindSpeed'], where=(V5EnvTable['WindCondition']=="2"), color='yellow', alpha=0.8)
-                pyplot.fill_between(V5EnvTable['Time'], 0, V5EnvTable['WindSpeed'], where=(V5EnvTable['WindCondition']=="3"), color='red', alpha=0.8)
+            ###########################################################
+            ## Sky Condition (Cloudiness)
+            if FoundV20Env or FoundV5Env:
+                Figure.add_axes([0.53, 0.53, 0.45, 0.47], xticklabels=time_tick_labels)
+                if telescope == "V20" and FoundV20Env:
+                    if FoundV5Env:
+                        pyplot.plot(V5EnvTable['Time'], V5EnvTable['SkyTemp'], 'ko-', alpha=0.2, \
+                                    markersize=3, markeredgewidth=0, drawstyle="default", \
+                                    label="Cloudiness ("+OtherTelescope+")")
+                    pyplot.plot(V20EnvTable['Time'], V20EnvTable['SkyTemp'], 'bo-', \
+                                markersize=3, markeredgewidth=0, drawstyle="default", \
+                                label="Cloudiness ("+telescope+")")
+                    pyplot.fill_between(V20EnvTable['Time'], -140, V20EnvTable['SkyTemp'], where=(V20EnvTable['CloudCondition']=="1"), color='green', alpha=0.5)
+                    pyplot.fill_between(V20EnvTable['Time'], -140, V20EnvTable['SkyTemp'], where=(V20EnvTable['CloudCondition']=="2"), color='yellow', alpha=0.8)
+                    pyplot.fill_between(V20EnvTable['Time'], -140, V20EnvTable['SkyTemp'], where=(V20EnvTable['CloudCondition']=="3"), color='red', alpha=0.8)
+                if telescope == "V5" and FoundV5Env:
+                    if FoundV20Env:
+                        pyplot.plot(V20EnvTable['Time'], V20EnvTable['SkyTemp'], 'ko-', alpha=0.2, \
+                                    markersize=3, markeredgewidth=0, drawstyle="default", \
+                                    label="Cloudiness ("+OtherTelescope+")")
+                    pyplot.plot(V5EnvTable['Time'], V5EnvTable['SkyTemp'], 'bo-', \
+                                markersize=3, markeredgewidth=0, drawstyle="default", \
+                                label="Cloudiness ("+telescope+")")
+                    pyplot.fill_between(V5EnvTable['Time'], -140, V5EnvTable['SkyTemp'], where=(V5EnvTable['CloudCondition']=="1"), color='green', alpha=0.5)
+                    pyplot.fill_between(V5EnvTable['Time'], -140, V5EnvTable['SkyTemp'], where=(V5EnvTable['CloudCondition']=="2"), color='yellow', alpha=0.8)
+                    pyplot.fill_between(V5EnvTable['Time'], -140, V5EnvTable['SkyTemp'], where=(V5EnvTable['CloudCondition']=="3"), color='red', alpha=0.8)
 
-            pyplot.legend(loc='best', prop={'size':10})
-            pyplot.ylabel("Wind Speed (mph)")
-            pyplot.xlabel("Time in Hours UT")
-            pyplot.xticks(numpy.arange(math.floor(PlotStartUT),math.ceil(PlotEndUT),0.25))
-            pyplot.xlim(PlotStartUT,PlotEndUT)
-            pyplot.grid()
+                pyplot.legend(loc='best', prop={'size':10})
+                pyplot.ylabel("Cloudiness (Delta T) (F)")
+                pyplot.xticks(time_ticks_values)
+                pyplot.xlim(PlotStartUT,PlotEndUT)
+                pyplot.ylim(-100,-20)
+                pyplot.grid()
 
-        pyplot.savefig(RecentPlotFile, dpi=dpi, bbox_inches='tight', pad_inches=0.10)
+            ###########################################################
+            ## Wind Speed
+            if FoundV20Env or FoundV5Env:
+                Figure.add_axes([0.53, 0.0, 0.45, 0.47], xticklabels=time_tick_labels)
+                if telescope == "V20" and FoundV20Env:
+                    if FoundV5Env:
+                        pyplot.plot(V5EnvTable['Time'], V5EnvTable['WindSpeed'], 'ko-', alpha=0.2, \
+                                    markersize=3, markeredgewidth=0, drawstyle="default", \
+                                    label="Wind Speed ("+OtherTelescope+")")
+                    pyplot.plot(V20EnvTable['Time'], V20EnvTable['WindSpeed'], 'bo-', \
+                                markersize=3, markeredgewidth=0, drawstyle="default", \
+                                label="Wind Speed ("+telescope+")")
+                    pyplot.fill_between(V20EnvTable['Time'], 0, V20EnvTable['WindSpeed'], where=(V20EnvTable['WindCondition']=="1"), color='green', alpha=0.5)
+                    pyplot.fill_between(V20EnvTable['Time'], 0, V20EnvTable['WindSpeed'], where=(V20EnvTable['WindCondition']=="2"), color='yellow', alpha=0.8)
+                    pyplot.fill_between(V20EnvTable['Time'], 0, V20EnvTable['WindSpeed'], where=(V20EnvTable['WindCondition']=="3"), color='red', alpha=0.8)
+                    pyplot.ylim(0,max([max(V20EnvTable['WindSpeed'])*1.1,35.]))
+                if telescope == "V5" and FoundV5Env:
+                    if FoundV20Env:
+                        pyplot.plot(V20EnvTable['Time'], V20EnvTable['WindSpeed'], 'ko-', alpha=0.2, \
+                                    markersize=3, markeredgewidth=0, drawstyle="default", \
+                                    label="Wind Speed ("+OtherTelescope+")")
+                    pyplot.plot(V5EnvTable['Time'], V5EnvTable['WindSpeed'], 'bo-', \
+                                markersize=3, markeredgewidth=0, drawstyle="default", \
+                                label="Wind Speed ("+telescope+")")
+                    pyplot.fill_between(V5EnvTable['Time'], 0, V5EnvTable['WindSpeed'], where=(V5EnvTable['WindCondition']=="1"), color='green', alpha=0.5)
+                    pyplot.fill_between(V5EnvTable['Time'], 0, V5EnvTable['WindSpeed'], where=(V5EnvTable['WindCondition']=="2"), color='yellow', alpha=0.8)
+                    pyplot.fill_between(V5EnvTable['Time'], 0, V5EnvTable['WindSpeed'], where=(V5EnvTable['WindCondition']=="3"), color='red', alpha=0.8)
+                    pyplot.ylim(0,max([max(V5EnvTable['WindSpeed'])*1.1,35.]))
 
+                pyplot.legend(loc='best', prop={'size':10})
+                pyplot.ylabel("Wind Speed (mph)")
+                pyplot.xlabel("Time in Hours UT")
+                pyplot.xticks(time_ticks_values)
+                pyplot.xlim(PlotStartUT,PlotEndUT)
+                pyplot.grid()
+
+            pyplot.savefig(RecentPlotFile, dpi=dpi, bbox_inches='tight', pad_inches=0.10)
+
+    logger.info('Done.')
 
     if os.path.exists(PlotFile):
         return True
