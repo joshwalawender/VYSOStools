@@ -497,7 +497,7 @@ def main():
         DeadbandHigh = 0.1
         DeadbandLow = 2.0
         logger.info('Setting dome fan state.')
-        if CBW_fans and CBW_enable and CBW_temp1 and ClarityArray and RCOST:
+        if CBW_enable and CBW_temp1 and ClarityArray and RCOST:
             InsideTemp = RCOS_Truss_Temp
             OutsideTemp = ClarityArray[2]
             logger.debug('  Inside Temp = {:.1f}'.format(InsideTemp))

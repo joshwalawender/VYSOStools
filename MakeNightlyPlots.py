@@ -463,7 +463,7 @@ def MakePlots(DateString, telescope, logger):
                                ( [0.000, 0.000, 0.460, 0.235], [0.540, 0.000, 0.460, 0.235] ) ]
         logger.info("Writing Output File: "+PlotFileName)
         dpi=100
-        Figure = pyplot.figure(figsize=(11,11), dpi=dpi)
+        Figure = pyplot.figure(figsize=(13,9.5), dpi=dpi)
 
         ###########################################################
         ## Temperatures
@@ -758,7 +758,7 @@ def MakePlots(DateString, telescope, logger):
     ###########################################################
     logger.info("Writing Output File: "+EnvPlotFileName)
     dpi=100
-    Figure = pyplot.figure(figsize=(11,11), dpi=dpi)
+    Figure = pyplot.figure(figsize=(13,9.5), dpi=dpi)
     PlotStartUT = 0
     PlotEndUT = 24
     nUTHours = 25
@@ -959,7 +959,7 @@ def MakePlots(DateString, telescope, logger):
     if (DateString == NowString):
         logger.info("Writing Output File: "+RecentPlotFileName)
         dpi=100
-        Figure = pyplot.figure(figsize=(11.2,5.8), dpi=dpi)
+        Figure = pyplot.figure(figsize=(13,6.7), dpi=dpi)
         now = datetime.datetime.utcnow()
         nowDateString = "%04d%02d%02dUT" % (now.year, now.month, now.day)
         nowDecimal = now.hour + now.minute/60. + now.second/3600.

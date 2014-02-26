@@ -126,7 +126,7 @@ def main(argv=None):
             HTML.write("      <td style='text-align:center'></td>\n")
         ## Write Link to Environmental Plots
         if DateInfo[2] != "":
-            HTML.write("      <td style='text-align:center'><a href='%s'>%-50s</a></td>\n" % (DateInfo[2], "Environmantal Graphs"))
+            HTML.write("      <td style='text-align:center'><a href='%s'>%-50s</a></td>\n" % (DateInfo[2], "Environmental Graphs"))
         else:
             HTML.write("      <td style='text-align:center'></td>\n")
         ## Write Link to HTML Summary
