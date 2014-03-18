@@ -403,7 +403,7 @@ def main():
             logger.info('  FocusMax Position = {:d}'.format(FocusMax_Pos))
         else:
             FocusMax_Temp = float('nan')
-            FocusMax_Pos = float('nan')
+            FocusMax_Pos = -1
 
 
     ##-------------------------------------------------------------------------
@@ -580,6 +580,7 @@ def main():
                      TimeString, FocusMax_Temp, FocusMax_Pos, \
                      ClarityArray[1], ClarityArray[2], ClarityArray[3], ClarityArray[4], ClarityArray[5], \
                      ACP_Altitude, ACP_Azimuth, WetCldWnd)
+    logger.debug('  Data line: {}'.format(data_line))
     output = open(DataFile, 'a')
     output.write(data_line+'\n')
     output.close()

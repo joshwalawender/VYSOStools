@@ -221,6 +221,8 @@ def main():
     image.logger.info("Setting telescope variable to %s", telescope)
     image.ReadImage()           ## Create working copy of image (don't edit raw file!)
     image.GetHeader()           ## Extract values from header
+    image.ColumnFix()
+
     if not image.imageWCS:      ## If no WCS found in header ...
         image.SolveAstrometry() ## Solve Astrometry
         image.GetHeader()       ## Refresh Header
@@ -231,11 +233,11 @@ def main():
         image.DarkSubtract(darks)   ## Dark Subtract Image
     image.Crop()                ## Crop Image
     image.GetHeader()           ## Refresh Header
-    image.RunSExtractor()       ## Run SExtractor
+    image.RunSExtractor(threshold=6)       ## Run SExtractor
     image.DetermineFWHM()       ## Determine FWHM from SExtractor results
     image.MakeJPEG(CropFrameJPEG, markStars=True, markPointing=True, rotate=True, binning=1)
     image.MakeJPEG(BackgroundJPEG, markStars=True, markPointing=False, rotate=True, binning=1, backgroundSubtracted=True)
-    image.CleanUp()             ## Cleanup (delete) temporary files.
+#     image.CleanUp()             ## Cleanup (delete) temporary files.
     image.CalculateProcessTime()## Calculate how long it took to process this image
     fields=["Date and Time", "Filename", "Alt", "Az", "Airmass", "MoonSep", "MoonIllum", "FWHM", "ellipticity", "Background", "PErr", "PosAng", "nStars", "ProcessTime"]
     image.AddWebLogEntry(htmlImageList, fields=fields) ## Add line for this image to HTML table
