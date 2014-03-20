@@ -62,17 +62,16 @@ def main():
     config = IQMon.Config()
     days_to_keep = 60
     logger.info('Examining {} for files that are {} days old.'.format(config.pathPlots, days_to_keep))
-    now = datetime.datetime.utcnow()
-    delta_days = datetime.timedelta(days_to_keep)
-    then = now - delta_days
-    ThenString = then.strftime("%Y%m%d")
-    file_pattern = 'V*'+ThenString+'at*jpg'
-    logger.info('  Looking for files with filename matching {}'.format(file_pattern))
-    files = glob.glob(os.path.join(config.pathPlots, file_pattern))
-    logger.info('  Found {} files to remove.'.format(len(files)))
+    now = datetime.datetime.today()
+    files = glob.glob(os.path.join(config.pathPlots, '*'))
+    n_removed = 0
     for file in files:
-        os.remove(file)
-    logger.info('  Removed {} files.'.format(len(files)))
+        file_mod = datetime.datetime.fromtimestamp(os.stat(file).st_mtime)
+        age = now - file_mod
+        if age.days >= days_to_keep:
+            n_removed += 1
+            os.remove(file)
+    logger.info('  Removed {} files from Plots directory.'.format(n_removed))
 
 
     ##-------------------------------------------------------------------------
@@ -81,14 +80,14 @@ def main():
     tmp_days_to_keep = 1
     logger.info('Examining {} for files that are {} days old.'.format(config.pathTemp, tmp_days_to_keep))
     tmp_files = glob.glob(os.path.join(config.pathTemp, '*'))
+    n_tmp_removed = 0
     for tmp_file in tmp_files:
         file_mod = datetime.datetime.fromtimestamp(os.stat(tmp_file).st_mtime)
-        now = datetime.datetime.today()
         age = now - file_mod
         if age.days >= tmp_days_to_keep:
-            logger.debug('  Removing {}'.format(tmp_file))
+            n_tmp_removed += 1
             os.remove(tmp_file)
-
+    logger.info('  Removed {} files from tmp directory.'.format(n_tmp_removed))
 
 
 
