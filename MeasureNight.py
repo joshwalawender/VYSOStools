@@ -9,7 +9,7 @@ Copyright (c) 2012 . All rights reserved.
 
 import sys
 import os
-import subprocess32
+import subprocess
 import re
 import fnmatch
 import numpy
@@ -110,7 +110,7 @@ def main(argv=None):
                     ProcessCall.append(os.path.join(ImagesDirectory, Image))
                     print "%s Calling MeasureImage.py with %s" % (TimeString, ProcessCall)
                     try:
-                        MIoutput = subprocess32.check_output(ProcessCall, stderr=subprocess32.STDOUT, timeout=150)
+                        MIoutput = subprocess.check_output(ProcessCall, stderr=subprocess.STDOUT)
                         for line in MIoutput.split("\n"):
                             print line
                     except:
