@@ -653,7 +653,10 @@ def MakePlots(DateString, telescope, logger):
                 pyplot.plot(MatchedData['ACP Time'], MatchedData['IQMon FWHM'], 'k.', drawstyle="steps-post", label="FWHM (IQMon)")
                 pyplot.ylabel("FWHM (pixels)")
             pyplot.yticks(numpy.linspace(0,15,16,endpoint=True))
-            pyplot.ylim(0,5)
+            if telescope == "V20":
+                pyplot.ylim(0,6)
+            if telescope == "V5":
+                pyplot.ylim(0,4)
             pyplot.xticks(numpy.linspace(PlotStartUT,PlotEndUT,nUTHours,endpoint=True))
             pyplot.xlim(PlotStartUT,PlotEndUT)
             pyplot.grid()
