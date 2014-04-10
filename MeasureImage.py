@@ -221,7 +221,6 @@ def main():
     IQMonLogFileName = os.path.join(config.pathLog, tel.longName, DataNightString+"_"+tel.name+"_IQMonLog.txt")
     htmlImageList = os.path.join(config.pathLog, tel.longName, DataNightString+"_"+tel.name+".html")
     summaryFile = os.path.join(config.pathLog, tel.longName, DataNightString+"_"+tel.name+"_Summary.txt")
-    CatalogJPEG = image.rawFileBasename+"_catstars.jpg"
     if args.clobber:
         if os.path.exists(IQMonLogFileName): os.remove(IQMonLogFileName)
         if os.path.exists(htmlImageList): os.remove(htmlImageList)
@@ -245,19 +244,23 @@ def main():
         image.DarkSubtract(darks)   ## Dark Subtract Image
     image.RunSExtractor()       ## Run SExtractor
     image.DetermineFWHM()       ## Determine FWHM from SExtractor results
+#     DetectedJPEG = image.rawFileBasename+"_detectedstars.jpg"
+#     image.MakeJPEG(DetectedJPEG, markDetectedStars=True, markPointing=True, binning=2)
 
     image.RunSCAMP(catalog='UCAC-3')
     image.RunSWarp()
     image.GetHeader()           ## Extract values from header
-    image.GetLocalUCAC4()
+    image.GetLocalUCAC4(local_UCAC_command="/Users/joshw/Data/UCAC4/access/u4test", local_UCAC_data="/Users/joshw/Data/UCAC4/u4b")
     image.RunSExtractor(assoc=True)
     image.DetermineFWHM()       ## Determine FWHM from SExtractor results
+    image.MakePSFplot()
     image.MeasureZeroPoint(plot=True)
-    image.MakeJPEG(CatalogJPEG, markDetectedStars=True, markPointing=True, binning=2)
+    CatalogJPEG = image.rawFileBasename+"_catstars.jpg"
+    image.MakeJPEG(CatalogJPEG, markCatalogStars=True, markPointing=True, binning=2)
 
-#     image.CleanUp()             ## Cleanup (delete) temporary files.
+    image.CleanUp()             ## Cleanup (delete) temporary files.
     image.CalculateProcessTime()## Calculate how long it took to process this image
-    fields=["Date and Time", "Filename", "Alt", "Az", "Airmass", "MoonSep", "MoonIllum", "FWHM", "ellipticity", "Background", "PErr", "PosAng", "nStars", "ProcessTime"]
+    fields=["Date and Time", "Filename", "Alt", "Az", "Airmass", "MoonSep", "MoonIllum", "FWHM", "ellipticity", "ZeroPoint", "PErr", "PosAng", "nStars", "ProcessTime"]
     image.AddWebLogEntry(htmlImageList, fields=fields) ## Add line for this image to HTML table
     image.AddSummaryEntry(summaryFile)  ## Add line for this image to text table
     
