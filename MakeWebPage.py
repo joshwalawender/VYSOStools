@@ -109,6 +109,8 @@ def main(argv=None):
     HTMLheader = open(os.path.join(pathHome, "bin", "VYSOS", "ListOfNights.html"), 'r')
     header = HTMLheader.read()
     header = header.replace("telescopename", telname)
+    imagenumbers = {"VYSOS-20": '0', "VYSOS-5": '4'}
+    header = header.replace("imagenumber", imagenumbers[telname])
     HTMLheader.close()
     HTML.write(header)
 
