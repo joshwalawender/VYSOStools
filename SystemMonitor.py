@@ -3,7 +3,7 @@
 
 import sys
 import os
-import subprocess32
+import subprocess
 import time
 import math
 import re
@@ -19,7 +19,7 @@ def TestDevice(address, nPings):
     MatchPingResult = re.compile(".*([0-9]+)\spackets\stransmitted,\s([0-9]+)\spackets received,\s([0-9\.]+).\spacket\sloss.*")
     MatchPingStats  = re.compile(".*round\-trip\smin/avg/max/stddev\s=\s([0-9\.]+)/([0-9\.]+)/([0-9\.]+)/([0-9\.]+)\sms.*")
 
-    result = subprocess32.check_output(["ping", "-c "+str(nPings), address])
+    result = subprocess.check_output(["ping", "-c "+str(nPings), address])
     foo = result.find("statistics ---") + len("statistics ---")
     result = result[foo+1:-1]
     IsMatch = MatchPingResult.match(result)
@@ -73,7 +73,7 @@ def main():
     ##-------------------------------------------------------------------------
     ## Get CPU Load over Last 1 minute
     ##-------------------------------------------------------------------------
-    IOStatOutput = subprocess32.check_output('iostat', timeout=5)
+    IOStatOutput = subprocess.check_output('iostat')
     idx_1m = IOStatOutput.split("\n")[1].split().index("1m")
     CPU_1m = IOStatOutput.split("\n")[2].split()[idx_1m]
     logger.info("CPU Load over last 1 min = {0}".format(CPU_1m))
@@ -84,8 +84,8 @@ def main():
     ##-------------------------------------------------------------------------
     ## Get Temperatures
     ##-------------------------------------------------------------------------
-    TempHeader = subprocess32.check_output(['tempmonitor', '-f', '-th'], timeout=5)
-    TempOutput = subprocess32.check_output(['tempmonitor', '-f', '-tv'], timeout=5)
+    TempHeader = subprocess.check_output(['tempmonitor', '-f', '-th'])
+    TempOutput = subprocess.check_output(['tempmonitor', '-f', '-tv'])
     idx_cpu = TempHeader.split(",").index('"SMC CPU A PROXIMITY"')
     TempCPU = float(TempOutput.split(",")[idx_cpu])
     logger.info("CPU Temperature = {0:.1f} F".format(TempCPU))

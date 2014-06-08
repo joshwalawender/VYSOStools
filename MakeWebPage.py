@@ -12,7 +12,7 @@ import os
 from argparse import ArgumentParser
 import re
 import shutil
-import subprocess32
+import subprocess
 import datetime
 
 import IQMon
@@ -85,7 +85,7 @@ def main(argv=None):
             if IsSummaryFile:
                 print "Found Summary File for "+Date
                 Dates[-1][5] = File
-                wcSTDOUT = subprocess32.check_output(["wc", "-l", os.path.join(NightSummariesDirectory, File)], stderr=subprocess32.STDOUT, timeout=5)
+                wcSTDOUT = subprocess.check_output(["wc", "-l", os.path.join(NightSummariesDirectory, File)], stderr=subprocess.STDOUT)
 
                 try:
                     nLines = int(wcSTDOUT.strip().split(" ")[0])
