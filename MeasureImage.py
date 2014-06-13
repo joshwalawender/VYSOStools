@@ -244,19 +244,23 @@ def main():
         image.DarkSubtract(darks)   ## Dark Subtract Image
     image.RunSExtractor()       ## Run SExtractor
     image.DetermineFWHM()       ## Determine FWHM from SExtractor results
-#     DetectedJPEG = image.rawFileBasename+"_detectedstars.jpg"
-#     image.MakeJPEG(DetectedJPEG, markDetectedStars=True, markPointing=True, binning=2)
+    FullJPEG = image.rawFileBasename+"_fullframe.jpg"
+    image.MakeJPEG(FullJPEG, markDetectedStars=False, markPointing=True, binning=3)
 
-    image.RunSCAMP(catalog='UCAC-3')
-    image.RunSWarp()
-    image.GetHeader()           ## Extract values from header
-    image.GetLocalUCAC4(local_UCAC_command="/Users/joshw/Data/UCAC4/access/u4test", local_UCAC_data="/Users/joshw/Data/UCAC4/u4b")
-    image.RunSExtractor(assoc=True)
-    image.DetermineFWHM()       ## Determine FWHM from SExtractor results
+#     image.RunSCAMP(catalog='UCAC-3')
+#     image.RunSWarp()
+#     image.GetHeader()           ## Extract values from header
+#     image.GetLocalUCAC4(local_UCAC_command="/Users/joshw/Data/UCAC4/access/u4test", local_UCAC_data="/Users/joshw/Data/UCAC4/u4b")
+#     image.RunSExtractor(assoc=True)
+#     image.DetermineFWHM()       ## Determine FWHM from SExtractor results
     image.MakePSFplot()
-    image.MeasureZeroPoint(plot=True)
-    CatalogJPEG = image.rawFileBasename+"_catstars.jpg"
-    image.MakeJPEG(CatalogJPEG, markCatalogStars=True, markPointing=True, binning=2)
+#     image.MeasureZeroPoint(plot=True)
+#     CatalogJPEG = image.rawFileBasename+"_catstars.jpg"
+#     image.MakeJPEG(CatalogJPEG, markCatalogStars=True, markPointing=True, binning=2)
+
+    image.Crop()
+    CropJPEG = image.rawFileBasename+"_crop.jpg"
+    image.MakeJPEG(CropJPEG, markDetectedStars=False, markPointing=True, binning=1)
 
     image.CleanUp()             ## Cleanup (delete) temporary files.
     image.CalculateProcessTime()## Calculate how long it took to process this image

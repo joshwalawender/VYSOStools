@@ -354,19 +354,19 @@ def main():
             if len(RCOS_Primary_Temps) >= 3:
                 RCOS_Primary_Temp = float(np.median(RCOS_Primary_Temps))
             else:
-                RCOS_Primary_Temps = float('nan')
+                RCOS_Primary_Temp = float('nan')
             if len(RCOS_Secondary_Temps) >= 3:
                 RCOS_Secondary_Temp = float(np.median(RCOS_Secondary_Temps))
             else:
-                RCOS_Secondary_Temps = float('nan')
+                RCOS_Secondary_Temp = float('nan')
             if len(RCOS_Fan_Speeds) >= 3:
                 RCOS_Fan_Speed = int(np.median(RCOS_Fan_Speeds))
             else:
-                RCOS_Fan_Speeds = float('nan')
+                RCOS_Fan_Speed = float('nan')
             if len(RCOS_Focus_Positions) >= 3:
                 RCOS_Focus_Position = int(np.median(RCOS_Focus_Positions))
             else:
-                RCOS_Focus_Positions = float('nan')
+                RCOS_Focus_Position = float('nan')
             logger.info('  RCOS Truss Temperature = {:.1f}'.format(RCOS_Truss_Temp))
             logger.info('  RCOS Primary Temperature = {:.1f}'.format(RCOS_Primary_Temp))
             logger.info('  RCOS Secondary Temperature = {:.1f}'.format(RCOS_Secondary_Temp))
