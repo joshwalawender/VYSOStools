@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 # encoding: utf-8
+'''
+This is a program to check the condition of the various computers at VYSOS.  It
+is mostly just a quick and dirty script to play around with.  The script runs
+via crontab once every few minutes.
+'''
 
 import sys
 import os

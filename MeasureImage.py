@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """
-MeasureImage.py
-
-Created by Josh Walawender on 2013-07-25.
-Copyright (c) 2013 __MyCompanyName__. All rights reserved.
+This is the basic tool for analyzing an image using the IQMon toolkit.  This
+script has been customized to the VYSOS telescopes.
 """
 
 from __future__ import division, print_function

@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """
-Monitor.py
-
-Created by Josh Walawender on 2013-07-25.
-Copyright (c) 2013 __MyCompanyName__. All rights reserved.
+Script to watch a directory of images and when a new one appears, run
+MeasureImage.py on it.
 """
 
 from __future__ import division, print_function
