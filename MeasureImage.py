@@ -145,8 +145,8 @@ def main():
     ##-------------------------------------------------------------------------
     ## Create Telescope Object
     ##-------------------------------------------------------------------------
-    path_temp = '/Users/vysosuser/IQMon/tmp'
-    path_plots = '/Users/vysosuser/IQMon/Plots'
+    path_temp = os.path.join(os.path.expanduser('~'), 'IQMon', 'tmp')
+    path_plots = os.path.join(os.path.expanduser('~'), 'IQMon', 'Plots')
     tel = IQMon.Telescope(path_temp, path_plots)
     tel.name = telescope
     if tel.name == "V5":
@@ -212,7 +212,7 @@ def main():
     ##-------------------------------------------------------------------------
     ## Create Filenames
     ##-------------------------------------------------------------------------
-    path_log = '/Users/vysosuser/IQMon/Logs'
+    path_log = os.path.join(os.path.expanduser('~'), 'IQMon', 'Logs')
     IQMonLogFileName = os.path.join(path_log, tel.long_name, DataNightString+"_"+tel.name+"_IQMonLog.txt")
     htmlImageList = os.path.join(path_log, tel.long_name, DataNightString+"_"+tel.name+".html")
     summaryFile = os.path.join(path_log, tel.long_name, DataNightString+"_"+tel.name+"_Summary.txt")
@@ -234,6 +234,18 @@ def main():
         image.solve_astrometry() ## Solve Astrometry
         image.read_header()       ## Refresh Header
     image.determine_pointing_error()            ## Calculate Pointing Error
+
+    SmallJPEG = image.raw_file_basename+"_small.jpg"
+    image.new_make_JPEG(SmallJPEG, binning=1, p1=0.15, p2=0.5,\
+                        mark_pointing=True,\
+                        mark_detected_stars=False,\
+                        mark_catalog_stars=False,\
+                        transform=None)
+
+    sys.exit(0)
+
+
+
     darks = ListDarks(image)    ## List dark files
     if darks and len(darks) > 0:
         image.dark_subtract(darks)   ## Dark Subtract Image
