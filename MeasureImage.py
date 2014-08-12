@@ -235,45 +235,36 @@ def main():
         image.read_header()       ## Refresh Header
     image.determine_pointing_error()            ## Calculate Pointing Error
 
-    SmallJPEG = image.raw_file_basename+"_small.jpg"
-    image.new_make_JPEG(SmallJPEG, binning=1, p1=0.15, p2=0.5,\
-                        mark_pointing=True,\
-                        mark_detected_stars=False,\
-                        mark_catalog_stars=False,\
-                        transform=None)
-
-    sys.exit(0)
-
-
-
     darks = ListDarks(image)    ## List dark files
     if darks and len(darks) > 0:
         image.dark_subtract(darks)   ## Dark Subtract Image
     image.run_SExtractor()       ## Run SExtractor
     image.determine_FWHM()       ## Determine FWHM from SExtractor results
-    FullJPEG = image.raw_file_basename+"_fullframe.jpg"
-    image.make_JPEG(FullJPEG, markDetectedStars=False, markPointing=True, binning=3)
 
-#     image.RunSCAMP(catalog='UCAC-3')
-#     image.RunSWarp()
-#     image.GetHeader()           ## Extract values from header
-#     image.GetLocalUCAC4(local_UCAC_command="/Users/joshw/Data/UCAC4/access/u4test", local_UCAC_data="/Users/joshw/Data/UCAC4/u4b")
-#     image.RunSExtractor(assoc=True)
-#     image.DetermineFWHM()       ## Determine FWHM from SExtractor results
+
+    image.run_SCAMP(catalog='UCAC-3')
+    image.run_SWarp()
+    image.read_header()           ## Extract values from header
+    image.get_local_UCAC4(local_UCAC_command="/Volumes/Data/UCAC4/access/u4test", local_UCAC_data="/Volumes/Data/UCAC4/u4b")
+    image.run_SExtractor(assoc=True)
+    image.determine_FWHM()       ## Determine FWHM from SExtractor results
     image.make_PSF_plot()
-#     image.MeasureZeroPoint(plot=True)
-#     CatalogJPEG = image.rawFileBasename+"_catstars.jpg"
-#     image.MakeJPEG(CatalogJPEG, markCatalogStars=True, markPointing=True, binning=2)
+    image.measure_zero_point(plot=True)
 
-    image.crop()
-    CropJPEG = image.raw_file_basename+"_crop.jpg"
-    image.make_JPEG(CropJPEG, markDetectedStars=False, markPointing=True, binning=1)
+    SmallJPEG = image.raw_file_basename+"_small.jpg"
+    image.new_make_JPEG(SmallJPEG, binning=1, p1=0.15, p2=0.5,\
+                        mark_pointing=True,\
+                        mark_detected_stars=False,\
+                        mark_catalog_stars=True,\
+                        transform='flip_vertical')
+
+    sys.exit(0)
 
     image.clean_up()             ## Cleanup (delete) temporary files.
     image.calculate_process_time()## Calculate how long it took to process this image
-    fields=["Date and Time", "Filename", "Alt", "Az", "Airmass", "MoonSep", "MoonIllum", "FWHM", "ellipticity", "ZeroPoint", "PErr", "PosAng", "nStars", "ProcessTime"]
-    image.add_web_log_entry(htmlImageList, fields=fields) ## Add line for this image to HTML table
-    image.add_summary_entry(summaryFile)  ## Add line for this image to text table
+#     fields=["Date and Time", "Filename", "Alt", "Az", "Airmass", "MoonSep", "MoonIllum", "FWHM", "ellipticity", "ZeroPoint", "PErr", "PosAng", "nStars", "ProcessTime"]
+#     image.add_web_log_entry(htmlImageList, fields=fields) ## Add line for this image to HTML table
+#     image.add_summary_entry(summaryFile)  ## Add line for this image to text table
     
 
 if __name__ == '__main__':
