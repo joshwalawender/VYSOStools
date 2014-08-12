@@ -242,29 +242,35 @@ def main():
     image.determine_FWHM()       ## Determine FWHM from SExtractor results
 
 
-    image.run_SCAMP(catalog='UCAC-3')
-    image.run_SWarp()
-    image.read_header()           ## Extract values from header
-    image.get_local_UCAC4(local_UCAC_command="/Volumes/Data/UCAC4/access/u4test", local_UCAC_data="/Volumes/Data/UCAC4/u4b")
-    image.run_SExtractor(assoc=True)
-    image.determine_FWHM()       ## Determine FWHM from SExtractor results
+#     image.run_SCAMP(catalog='UCAC-3')
+#     image.run_SWarp()
+#     image.read_header()           ## Extract values from header
+#     image.get_local_UCAC4(local_UCAC_command="/Volumes/Data/UCAC4/access/u4test", local_UCAC_data="/Volumes/Data/UCAC4/u4b")
+#     image.run_SExtractor(assoc=True)
+#     image.determine_FWHM()       ## Determine FWHM from SExtractor results
     image.make_PSF_plot()
-    image.measure_zero_point(plot=True)
+#     image.measure_zero_point(plot=True)
 
-    SmallJPEG = image.raw_file_basename+"_small.jpg"
-    image.new_make_JPEG(SmallJPEG, binning=1, p1=0.15, p2=0.5,\
+    small_JPEG = image.raw_file_basename+"_fullframe.jpg"
+    image.new_make_JPEG(small_JPEG, binning=2,\
                         mark_pointing=True,\
                         mark_detected_stars=False,\
-                        mark_catalog_stars=True,\
+                        mark_catalog_stars=False,\
                         transform='flip_vertical')
 
-    sys.exit(0)
+    cropped_JPEG = image.raw_file_basename+"_crop.jpg"
+    image.new_make_JPEG(cropped_JPEG,\
+                        mark_pointing=True,\
+                        mark_detected_stars=True,\
+                        mark_catalog_stars=False,\
+                        crop=(1024, 1024, 3072, 3072),
+                        transform='flip_vertical')
 
     image.clean_up()             ## Cleanup (delete) temporary files.
     image.calculate_process_time()## Calculate how long it took to process this image
-#     fields=["Date and Time", "Filename", "Alt", "Az", "Airmass", "MoonSep", "MoonIllum", "FWHM", "ellipticity", "ZeroPoint", "PErr", "PosAng", "nStars", "ProcessTime"]
-#     image.add_web_log_entry(htmlImageList, fields=fields) ## Add line for this image to HTML table
-#     image.add_summary_entry(summaryFile)  ## Add line for this image to text table
+    fields=["Date and Time", "Filename", "Alt", "Az", "Airmass", "MoonSep", "MoonIllum", "FWHM", "ellipticity", "PErr", "PosAng", "ZeroPoint", "nStars", "ProcessTime"]
+    image.add_web_log_entry(htmlImageList, fields=fields) ## Add line for this image to HTML table
+    image.add_summary_entry(summaryFile)  ## Add line for this image to text table
     
 
 if __name__ == '__main__':
