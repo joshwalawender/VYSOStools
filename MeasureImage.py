@@ -173,7 +173,7 @@ def main():
                                 'FILTER': 'N',
                                 }
         tel.distortionOrder = 5
-        tel.pointing_marker_size = 4*u.arcmin
+        tel.pointing_marker_size = 3*u.arcmin
     if tel.name == "V20":
         tel.long_name = "VYSOS-20"
 #         tel.SCAMP_aheader = os.path.join(config.pathConfig, 'VYSOS20.ahead')

@@ -60,7 +60,7 @@ def ReadACPLog(DateString, VYSOSDATAPath, PixelScale, logger):
         FoundACPLog = True
         colNames = ('TimeDecimal', 'ImageFile', 'TimeString', 'ImageFWHM', 'AvgFWHM', 'PointingError')
         colTypes = ('f4', 'S80', 'S8', 'f4', 'f4', 'f4')
-        ACPdata = table.Table(names=colNames, dtypes=colTypes)
+        ACPdata = table.Table(names=colNames, dtype=colTypes)
         ACPLogFiles = os.listdir(ACPLogDirectory)
         ## Loop through all log files
         for LogFile in ACPLogFiles:
@@ -107,16 +107,16 @@ def ReadACPLog(DateString, VYSOSDATAPath, PixelScale, logger):
 ###########################################################
 ## Read IQMon Logs
 ## - extract IQMon FWHM, ellipticity, pointing error
-def ReadIQMonLog(config, telescope, DateString, logger):
+def ReadIQMonLog(logs_path, telescope, DateString, logger):
     IQMonTable = None
     if telescope == "V5":
         telname = "VYSOS-5"
     if telescope == "V20":
         telname = "VYSOS-20"
-    if os.path.exists(os.path.join(config.pathLog, telname)):
+    if os.path.exists(os.path.join(logs_path, telname)):
         FoundIQMonFile = True
         logger.debug("Found directory with IQMon summary files.")
-        Files = os.listdir(os.path.join(config.pathLog, telname))
+        Files = os.listdir(os.path.join(logs_path, telname))
         if telescope == "V5":
             MatchIQMonFile = re.compile("([0-9]{8}UT)_V5_Summary\.txt")
         if telescope == "V20":
@@ -124,7 +124,7 @@ def ReadIQMonLog(config, telescope, DateString, logger):
         for File in Files:
             IsIQMonFile = MatchIQMonFile.match(File)
             if IsIQMonFile:
-                FullIQMonFile = os.path.join(config.pathLog, telname, File)
+                FullIQMonFile = os.path.join(logs_path, telname, File)
                 IQMonFileDate = IsIQMonFile.group(1)
                 if IQMonFileDate == DateString:
                     logger.debug("IQMon Summary file for "+DateString+" is "+File)
@@ -140,7 +140,7 @@ def ReadIQMonLog(config, telescope, DateString, logger):
                         logger.critical("Failed to Read IQMon Log File")
                         IQMonTable = table.Table()
     if not IQMonTable:
-        logger.critical("Failed to Find IQMon Logs: "+os.path.join(config.pathLog, telname))
+        logger.critical("Failed to Find IQMon Logs: "+os.path.join(logs_path, telname))
 
     return IQMonTable
 
@@ -293,13 +293,10 @@ def MakePlots(DateString, telescope, logger):
     pyplot.ioff()
 
     ##############################################################
-    ## Read Configuration File to get the following items
-    config = IQMon.Config()
-
-    ##############################################################
     ## Set up pathnames and filenames
     V5DataPath = os.path.join("/Volumes", "Data_V5")
     V20DataPath = os.path.join("/Volumes", "Data_V20")
+    logs_path = os.path.join(os.path.expanduser('~'), 'IQMon', 'Logs')
     if telescope == "V5":
         VYSOSDATAPath = V5DataPath
         PixelScale = 2.53
@@ -313,11 +310,11 @@ def MakePlots(DateString, telescope, logger):
 
     ## Set File Name
     PlotFileName = DateString+"_"+telescope+".png"
-    PlotFile = os.path.join(config.pathLog, telname, PlotFileName)
+    PlotFile = os.path.join(logs_path, telname, PlotFileName)
     EnvPlotFileName = DateString+"_"+telescope+"_Env.png"
-    EnvPlotFile = os.path.join(config.pathLog, telname, EnvPlotFileName)
+    EnvPlotFile = os.path.join(logs_path, telname, EnvPlotFileName)
     RecentPlotFileName = "Recent_"+telname+"_Conditions.png"
-    RecentPlotFile = os.path.join(config.pathLog, telname, RecentPlotFileName)
+    RecentPlotFile = os.path.join(logs_path, telname, RecentPlotFileName)
 
     ## Compile Various Regular Expressions for File Name Matching and ACP Log Parsing
     MatchDir = re.compile(DateString)
@@ -390,7 +387,7 @@ def MakePlots(DateString, telescope, logger):
     ###########################################################
     ## Read IQMon Logs
     ## - extract IQMon FWHM, ellipticity, pointing error
-    IQMonTable = ReadIQMonLog(config, telescope, DateString, logger)
+    IQMonTable = ReadIQMonLog(logs_path, telescope, DateString, logger)
     if IQMonTable and len(IQMonTable) > 1: FoundIQMonFile = True
 
     ###########################################################
@@ -405,7 +402,7 @@ def MakePlots(DateString, telescope, logger):
         logger.info("Matching IQMon and ACP data with {0} and {1} lines respectively".format(len(IQMonTable), len(ACPdata)))
         MatchedData = table.Table(
                       names=('ACP Time', 'ACP File', 'ACP FWHM', 'ACP PErr', 'IQMon Time', 'IQMon File', 'IQMon FWHM', 'IQMon PErr'),
-                      dtypes=('f',       'S',        'f',        'f',        'S',           'S',         'f',          'f'),
+                      dtype=('f',       'S',        'f',        'f',        'S',           'S',         'f',          'f'),
                       masked=True
                       )
         for ACPentry in ACPdata:
