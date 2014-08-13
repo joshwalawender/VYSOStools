@@ -33,13 +33,10 @@ def main(argv=None):
 
     telescope = args.telescope
 
-    ##-------------------------------------------------------------------------
-    ## Establish IQMon Configuration
-    ##-------------------------------------------------------------------------
-    config = IQMon.Config()
+    logs_path = os.path.join(os.path.expanduser('~'), 'IQMon', 'Logs')
     if telescope == "V20": telname = "VYSOS-20"
     if telescope == "V5":  telname = "VYSOS-5"
-    NightSummariesDirectory = os.path.join(config.pathLog, telname)
+    NightSummariesDirectory = os.path.join(logs_path, telname)
     SummaryHTMLFile = os.path.join(NightSummariesDirectory, "index.html")
     TemporaryHTMLFile = os.path.join(NightSummariesDirectory, "index_tmp.html")
 

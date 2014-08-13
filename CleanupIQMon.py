@@ -1,4 +1,9 @@
 #!/usr/env/python
+'''
+This script cleans up the IQMon directories where the Logs, Plots, and temporary
+files are kept.  This deletes old files so that data products which are easily
+reproduced don't fill up the drive.
+'''
 
 from __future__ import division, print_function
 

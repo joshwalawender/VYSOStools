@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """
-MeasureImage.py
-
-Created by Josh Walawender on 2013-07-25.
-Copyright (c) 2013 __MyCompanyName__. All rights reserved.
+This is the basic tool for analyzing an image using the IQMon toolkit.  This
+script has been customized to the VYSOS telescopes.
 """
 
 from __future__ import division, print_function
@@ -45,7 +43,7 @@ def ListDarks(image):
     SearchNDays = 10 ## Number of days back in time to look for dark frames
     image.logger.info("Looking for master dark frame or darks to combine.")
     ## Extract night data was taken from path
-    DataPath = os.path.split(image.rawFile)[0]
+    DataPath = os.path.split(image.raw_file)[0]
     BaseDirectory, DataNightString = os.path.split(DataPath)
     DataNight = datetime.datetime.strptime(DataNightString, "%Y%m%dUT")
 
@@ -56,7 +54,7 @@ def ListDarks(image):
     
     ## Check to see if MasterDark Exists for this Observation Date
     MasterDarkFilename = "MasterDark_"+image.tel.name+"_"+DataNightString+"_"+str(int(math.floor(image.exptime.to(u.s).value)))+".fits"
-    MasterDarkFile  = os.path.join(image.config.pathTemp, MasterDarkFilename)    
+    MasterDarkFile  = os.path.join(image.tel.temp_file_path, MasterDarkFilename)    
     ## Is that Master Dark File does not exist, see if the raw files exit to build one.
     if os.path.exists(MasterDarkFile):
         image.logger.info("Found Master Dark: %s" % MasterDarkFilename)
@@ -126,12 +124,6 @@ def main():
 
 
     ##-------------------------------------------------------------------------
-    ## Establish IQMon Configuration
-    ##-------------------------------------------------------------------------
-    config = IQMon.Config()
-
-
-    ##-------------------------------------------------------------------------
     ## Determine which VYSOS Telescope Image is from
     ##-------------------------------------------------------------------------
     if args.telescope == 'V5' or args.telescope == 'V20':
@@ -153,23 +145,25 @@ def main():
     ##-------------------------------------------------------------------------
     ## Create Telescope Object
     ##-------------------------------------------------------------------------
-    tel = IQMon.Telescope()
+    path_temp = os.path.join(os.path.expanduser('~'), 'IQMon', 'tmp')
+    path_plots = os.path.join(os.path.expanduser('~'), 'IQMon', 'Plots')
+    tel = IQMon.Telescope(path_temp, path_plots)
     tel.name = telescope
     if tel.name == "V5":
-        tel.longName = "VYSOS-5"
-        tel.aheader = os.path.join(config.pathConfig, 'VYSOS5.ahead')
-        tel.focalLength = 735.*u.mm
-        tel.pixelSize = 9.0*u.micron
+        tel.long_name = "VYSOS-5"
+#         tel.SCAMP_aheader = os.path.join(config.pathConfig, 'VYSOS5.ahead')
+        tel.focal_length = 735.*u.mm
+        tel.pixel_size = 9.0*u.micron
         tel.aperture = 135.*u.mm
         tel.gain = 1.6 / u.adu
-        tel.unitsForFWHM = 1.*u.pix
+        tel.units_for_FWHM = 1.*u.pix
         tel.ROI = "[1024:3072,1024:3072]"
-        tel.thresholdFWHM = 2.5*u.pix
-        tel.thresholdPointingErr = 5.0*u.arcmin
-        tel.thresholdEllipticity = 0.30*u.dimensionless_unscaled
-        tel.pixelScale = tel.pixelSize.to(u.mm)/tel.focalLength.to(u.mm)*u.radian.to(u.arcsec)*u.arcsec/u.pix
-        tel.fRatio = tel.focalLength.to(u.mm)/tel.aperture.to(u.mm)
-        tel.SExtractorParams = {'PHOT_APERTURES': '6.0',
+        tel.threshold_FWHM = 2.5*u.pix
+        tel.threshold_pointing_err = 5.0*u.arcmin
+        tel.threshold_ellipticity = 0.30*u.dimensionless_unscaled
+        tel.pixel_scale = tel.pixel_size.to(u.mm)/tel.focal_length.to(u.mm)*u.radian.to(u.arcsec)*u.arcsec/u.pix
+        tel.fRatio = tel.focal_length.to(u.mm)/tel.aperture.to(u.mm)
+        tel.SExtractor_params = {'PHOT_APERTURES': '6.0',
                                 'BACK_SIZE': '16',
                                 'SEEING_FWHM': '2.5',
                                 'SATUR_LEVEL': '50000',
@@ -179,22 +173,22 @@ def main():
                                 'FILTER': 'N',
                                 }
         tel.distortionOrder = 5
-        tel.pointingMarkerSize = 4*u.arcmin
+        tel.pointing_marker_size = 3*u.arcmin
     if tel.name == "V20":
-        tel.longName = "VYSOS-20"
-        tel.aheader = os.path.join(config.pathConfig, 'VYSOS20.ahead')
-        tel.focalLength = 4175.*u.mm
-        tel.pixelSize = 9.0*u.micron
+        tel.long_name = "VYSOS-20"
+#         tel.SCAMP_aheader = os.path.join(config.pathConfig, 'VYSOS20.ahead')
+        tel.focal_length = 4175.*u.mm
+        tel.pixel_size = 9.0*u.micron
         tel.aperture = 508.*u.mm
         tel.gain = 1.6 / u.adu
-        tel.unitsForFWHM = 1.*u.arcsec
+        tel.units_for_FWHM = 1.*u.arcsec
         tel.ROI = "[1024:3072,1024:3072]"
-        tel.thresholdFWHM = 2.5*u.arcsec
-        tel.thresholdPointingErr = 5.0*u.arcmin
-        tel.thresholdEllipticity = 0.30*u.dimensionless_unscaled
-        tel.pixelScale = tel.pixelSize.to(u.mm)/tel.focalLength.to(u.mm)*u.radian.to(u.arcsec)*u.arcsec/u.pix
-        tel.fRatio = tel.focalLength.to(u.mm)/tel.aperture.to(u.mm)
-        tel.SExtractorParams = {'PHOT_APERTURES': '16.0',
+        tel.threshold_FWHM = 2.5*u.arcsec
+        tel.threshold_pointing_err = 5.0*u.arcmin
+        tel.threshold_ellipticity = 0.30*u.dimensionless_unscaled
+        tel.pixel_scale = tel.pixel_size.to(u.mm)/tel.focal_length.to(u.mm)*u.radian.to(u.arcsec)*u.arcsec/u.pix
+        tel.fRatio = tel.focal_length.to(u.mm)/tel.aperture.to(u.mm)
+        tel.SExtractor_params = {'PHOT_APERTURES': '16.0',
                                 'BACK_SIZE': '16',
                                 'SEEING_FWHM': '2.5',
                                 'SATUR_LEVEL': '50000',
@@ -204,23 +198,24 @@ def main():
                                 'FILTER': 'N',
                                 }
         tel.distortionOrder = 1
-        tel.pointingMarkerSize = 1*u.arcmin
+        tel.pointing_marker_size = 1*u.arcmin
     ## Define Site (ephem site object)
     tel.site = ephem.Observer()
-    tel.CheckUnits()
-    tel.DefinePixelScale()
+    tel.check_units()
+    tel.define_pixel_scale()
 
     ##-------------------------------------------------------------------------
     ## Create IQMon.Image Object
     ##-------------------------------------------------------------------------
-    image = IQMon.Image(FitsFile, tel, config)  ## Create image object
+    image = IQMon.Image(FitsFile, tel=tel)  ## Create image object
 
     ##-------------------------------------------------------------------------
     ## Create Filenames
     ##-------------------------------------------------------------------------
-    IQMonLogFileName = os.path.join(config.pathLog, tel.longName, DataNightString+"_"+tel.name+"_IQMonLog.txt")
-    htmlImageList = os.path.join(config.pathLog, tel.longName, DataNightString+"_"+tel.name+".html")
-    summaryFile = os.path.join(config.pathLog, tel.longName, DataNightString+"_"+tel.name+"_Summary.txt")
+    path_log = os.path.join(os.path.expanduser('~'), 'IQMon', 'Logs')
+    IQMonLogFileName = os.path.join(path_log, tel.long_name, DataNightString+"_"+tel.name+"_IQMonLog.txt")
+    htmlImageList = os.path.join(path_log, tel.long_name, DataNightString+"_"+tel.name+".html")
+    summaryFile = os.path.join(path_log, tel.long_name, DataNightString+"_"+tel.name+"_Summary.txt")
     if args.clobber:
         if os.path.exists(IQMonLogFileName): os.remove(IQMonLogFileName)
         if os.path.exists(htmlImageList): os.remove(htmlImageList)
@@ -229,44 +224,53 @@ def main():
     ##-------------------------------------------------------------------------
     ## Perform Actual Image Analysis
     ##-------------------------------------------------------------------------
-    image.MakeLogger(IQMonLogFileName, args.verbose)
+    image.make_logger(IQMonLogFileName, args.verbose)
     image.logger.info("###### Processing Image:  %s ######", FitsFilename)
     image.logger.info("Setting telescope variable to %s", telescope)
-    image.ReadImage()           ## Create working copy of image (don't edit raw file!)
-    image.GetHeader()           ## Extract values from header
+    image.read_image()           ## Create working copy of image (don't edit raw file!)
+    image.read_header()           ## Extract values from header
 
-    if not image.imageWCS:      ## If no WCS found in header ...
-        image.SolveAstrometry() ## Solve Astrometry
-        image.GetHeader()       ## Refresh Header
-    image.DeterminePointingError()            ## Calculate Pointing Error
+    if not image.image_WCS:      ## If no WCS found in header ...
+        image.solve_astrometry() ## Solve Astrometry
+        image.read_header()       ## Refresh Header
+    image.determine_pointing_error()            ## Calculate Pointing Error
+
     darks = ListDarks(image)    ## List dark files
     if darks and len(darks) > 0:
-        image.DarkSubtract(darks)   ## Dark Subtract Image
-    image.RunSExtractor()       ## Run SExtractor
-    image.DetermineFWHM()       ## Determine FWHM from SExtractor results
-    FullJPEG = image.rawFileBasename+"_fullframe.jpg"
-    image.MakeJPEG(FullJPEG, markDetectedStars=False, markPointing=True, binning=3)
+        image.dark_subtract(darks)   ## Dark Subtract Image
+    image.run_SExtractor()       ## Run SExtractor
+    image.determine_FWHM()       ## Determine FWHM from SExtractor results
 
-#     image.RunSCAMP(catalog='UCAC-3')
-#     image.RunSWarp()
-#     image.GetHeader()           ## Extract values from header
-#     image.GetLocalUCAC4(local_UCAC_command="/Users/joshw/Data/UCAC4/access/u4test", local_UCAC_data="/Users/joshw/Data/UCAC4/u4b")
-#     image.RunSExtractor(assoc=True)
-#     image.DetermineFWHM()       ## Determine FWHM from SExtractor results
-    image.MakePSFplot()
-#     image.MeasureZeroPoint(plot=True)
-#     CatalogJPEG = image.rawFileBasename+"_catstars.jpg"
-#     image.MakeJPEG(CatalogJPEG, markCatalogStars=True, markPointing=True, binning=2)
 
-    image.Crop()
-    CropJPEG = image.rawFileBasename+"_crop.jpg"
-    image.MakeJPEG(CropJPEG, markDetectedStars=False, markPointing=True, binning=1)
+#     image.run_SCAMP(catalog='UCAC-3')
+#     image.run_SWarp()
+#     image.read_header()           ## Extract values from header
+#     image.get_local_UCAC4(local_UCAC_command="/Volumes/Data/UCAC4/access/u4test", local_UCAC_data="/Volumes/Data/UCAC4/u4b")
+#     image.run_SExtractor(assoc=True)
+#     image.determine_FWHM()       ## Determine FWHM from SExtractor results
+    image.make_PSF_plot()
+#     image.measure_zero_point(plot=True)
 
-    image.CleanUp()             ## Cleanup (delete) temporary files.
-    image.CalculateProcessTime()## Calculate how long it took to process this image
-    fields=["Date and Time", "Filename", "Alt", "Az", "Airmass", "MoonSep", "MoonIllum", "FWHM", "ellipticity", "ZeroPoint", "PErr", "PosAng", "nStars", "ProcessTime"]
-    image.AddWebLogEntry(htmlImageList, fields=fields) ## Add line for this image to HTML table
-    image.AddSummaryEntry(summaryFile)  ## Add line for this image to text table
+    small_JPEG = image.raw_file_basename+"_fullframe.jpg"
+    image.new_make_JPEG(small_JPEG, binning=2,\
+                        mark_pointing=True,\
+                        mark_detected_stars=False,\
+                        mark_catalog_stars=False,\
+                        transform='flip_vertical')
+
+    cropped_JPEG = image.raw_file_basename+"_crop.jpg"
+    image.new_make_JPEG(cropped_JPEG,\
+                        mark_pointing=True,\
+                        mark_detected_stars=True,\
+                        mark_catalog_stars=False,\
+                        crop=(1024, 1024, 3072, 3072),
+                        transform='flip_vertical')
+
+    image.clean_up()             ## Cleanup (delete) temporary files.
+    image.calculate_process_time()## Calculate how long it took to process this image
+    fields=["Date and Time", "Filename", "Alt", "Az", "Airmass", "MoonSep", "MoonIllum", "FWHM", "ellipticity", "PErr", "PosAng", "ZeroPoint", "nStars", "ProcessTime"]
+    image.add_web_log_entry(htmlImageList, fields=fields) ## Add line for this image to HTML table
+    image.add_summary_entry(summaryFile)  ## Add line for this image to text table
     
 
 if __name__ == '__main__':

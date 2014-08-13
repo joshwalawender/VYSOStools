@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """
-AdjustFocus.py
-
-Created by Josh Walawender on 2012-11-26.
-Copyright (c) 2012 . All rights reserved.
+Prototype code to adjust focus using ASCOM to control the focuser.  The idea was
+to make focus moves based on the image quality reported by IQMon.  This is
+mostly abandoned at this point as development has gone in to other areas and
+this worked only with a very early version of IQMon.
 """
 
 import sys
