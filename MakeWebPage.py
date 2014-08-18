@@ -103,7 +103,7 @@ def main(argv=None):
     ## Make index.html file
     HTML = open(SummaryHTMLFile, 'w')
     pathHome = homePath = os.path.expandvars("$HOME")
-    HTMLheader = open(os.path.join(pathHome, "bin", "VYSOS", "ListOfNights.html"), 'r')
+    HTMLheader = open(os.path.join(pathHome, "git", "VYSOS", "ListOfNights.html"), 'r')
     header = HTMLheader.read()
     header = header.replace("telescopename", telname)
     imagenumbers = {"VYSOS-20": '0', "VYSOS-5": '4'}

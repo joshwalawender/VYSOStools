@@ -423,7 +423,7 @@ def MakePlots(DateString, telescope, logger):
                     logger.debug("{0} in IQMon results matched to {1} in ACP results.".format(IQMonEntry['File'], ACPentry['ImageFile']))
                     FoundIQMonMatch = True
                     MatchedData.add_row([ACPentry['TimeDecimal'], ACPentry['ImageFile'], ACPentry['ImageFWHM'], ACPentry['PointingError'],
-                                         IQMonEntry['ExpStart'], IQMonEntry['File'], IQMonEntry['FWHM (pix)'], IQMonEntry['PointingError (arcmin)']])
+                                         IQMonEntry['ExpStart'], IQMonEntry['File'], IQMonEntry['FWHM (pix)'], IQMonEntry['pointing_error (arcmin)']])
                     break
             if not FoundIQMonMatch:
                 ACPFile = os.path.join(VYSOSDATAPath, "Images", DateString, ACPentry['ImageFile']+".fts")
