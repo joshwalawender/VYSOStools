@@ -99,7 +99,7 @@ def main(argv=None):
                     TimeString = time.strftime("%Y/%m/%d %H:%M:%S UT -", now)
                     DateString = time.strftime("%Y%m%dUT", now)
 
-                    ProcessCall = ["/Users/vysosuser/bin/VYSOS/MeasureImage.py"]
+                    ProcessCall = ['/sw/bin/python2.7', "/Users/vysosuser/git/VYSOS/MeasureImage.py"]
                     if args.clobber and Image == SortedImageFiles[0]:
                         ProcessCall.append("--clobber")
                     ProcessCall.append(os.path.join(ImagesDirectory, Image))

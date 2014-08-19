@@ -61,7 +61,7 @@ def main(argv=None):
     ##-------------------------------------------------------------------------
     PythonString = os.path.join("/sw", "bin", "python")
     homePath = os.path.expandvars("$HOME")
-    MeasureImageString = os.path.join(homePath, "bin", "VYSOS", "MeasureImage.py")
+    MeasureImageString = os.path.join(homePath, "git", "VYSOS", "MeasureImage.py")
     Operate = True
     while Operate:
         ## Set date to tonight
