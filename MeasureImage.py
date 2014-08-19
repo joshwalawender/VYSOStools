@@ -172,7 +172,7 @@ def main():
                                 'ANALYSIS_THRESH': '5.0',
                                 'FILTER': 'N',
                                 }
-        tel.distortionOrder = 5
+        tel.distortion_order = 5
         tel.pointing_marker_size = 3*u.arcmin
     if tel.name == "V20":
         tel.long_name = "VYSOS-20"
@@ -197,7 +197,7 @@ def main():
                                 'ANALYSIS_THRESH': '5.0',
                                 'FILTER': 'N',
                                 }
-        tel.distortionOrder = 1
+        tel.distortion_order = 1
         tel.pointing_marker_size = 1*u.arcmin
     ## Define Site (ephem site object)
     tel.site = ephem.Observer()
