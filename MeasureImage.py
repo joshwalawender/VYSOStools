@@ -172,6 +172,7 @@ def main():
                                 'ANALYSIS_THRESH': '5.0',
                                 'FILTER': 'N',
                                 }
+        tel.PSF_measurement_radius = 1024
         tel.pointing_marker_size = 3*u.arcmin
     if tel.name == "V20":
         tel.long_name = "VYSOS-20"
@@ -196,6 +197,7 @@ def main():
                                 'ANALYSIS_THRESH': '5.0',
                                 'FILTER': 'N',
                                 }
+        tel.PSF_measurement_radius = 2048
         tel.pointing_marker_size = 1*u.arcmin
     ## Define Site (ephem site object)
     tel.site = ephem.Observer()
@@ -237,7 +239,7 @@ def main():
     if darks and len(darks) > 0:
         image.dark_subtract(darks)   ## Dark Subtract Image
     image.run_SExtractor()       ## Run SExtractor
-    image.determine_FWHM()       ## Determine FWHM from SExtractor results
+    image.determine_FWHM() ## Determine FWHM from SExtractor results
 
 
 #     image.run_SCAMP(catalog='UCAC-3')
@@ -250,19 +252,19 @@ def main():
 #     image.measure_zero_point(plot=True)
 
     small_JPEG = image.raw_file_basename+"_fullframe.jpg"
-    image.new_make_JPEG(small_JPEG, binning=2,\
-                        mark_pointing=True,\
-                        mark_detected_stars=False,\
-                        mark_catalog_stars=False,\
-                        transform='flip_vertical')
+    image.make_JPEG(small_JPEG, binning=3,\
+                    mark_pointing=True,\
+                    mark_detected_stars=False,\
+                    mark_catalog_stars=False,\
+                    transform='rotate90')
 
     cropped_JPEG = image.raw_file_basename+"_crop.jpg"
-    image.new_make_JPEG(cropped_JPEG,\
-                        mark_pointing=True,\
-                        mark_detected_stars=True,\
-                        mark_catalog_stars=False,\
-                        crop=(1024, 1024, 3072, 3072),
-                        transform='flip_vertical')
+    image.make_JPEG(cropped_JPEG,\
+                    mark_pointing=True,\
+                    mark_detected_stars=True,\
+                    mark_catalog_stars=False,\
+                    crop=(1024, 1024, 3072, 3072),
+                    transform='rotate90')
 
     image.clean_up()             ## Cleanup (delete) temporary files.
     image.calculate_process_time()## Calculate how long it took to process this image
