@@ -199,6 +199,7 @@ def main():
                                 }
         tel.PSF_measurement_radius = 2048
         tel.pointing_marker_size = 1*u.arcmin
+        tel.saturation = 10000 * u.adu
     ## Define Site (ephem site object)
     tel.site = ephem.Observer()
     tel.check_units()
@@ -251,20 +252,33 @@ def main():
     image.make_PSF_plot()
 #     image.measure_zero_point(plot=True)
 
+    if tel.name == 'V5':
+        p1, p2 = (0.15, 0.50)
+    if tel.name == 'V20':
+        p1, p2 = (3.0, 0.50)
+
     small_JPEG = image.raw_file_basename+"_fullframe.jpg"
     image.make_JPEG(small_JPEG, binning=3,\
+                    p1=p1, p2=p2,\
+                    make_hist=False,\
                     mark_pointing=True,\
                     mark_detected_stars=False,\
                     mark_catalog_stars=False,\
-                    transform='rotate90')
+                    mark_saturated=True,\
+#                     transform='rotate90')
+                    transform=None)
 
     cropped_JPEG = image.raw_file_basename+"_crop.jpg"
     image.make_JPEG(cropped_JPEG,\
+                    p1=p1, p2=p2,\
+                    make_hist=False,\
                     mark_pointing=True,\
                     mark_detected_stars=True,\
                     mark_catalog_stars=False,\
+                    mark_saturated=True,\
                     crop=(1024, 1024, 3072, 3072),
-                    transform='rotate90')
+#                     transform='rotate90')
+                    transform=None)
 
     image.clean_up()             ## Cleanup (delete) temporary files.
     image.calculate_process_time()## Calculate how long it took to process this image
