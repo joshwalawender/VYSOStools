@@ -174,6 +174,7 @@ def main():
                                 }
         tel.PSF_measurement_radius = 1024
         tel.pointing_marker_size = 3*u.arcmin
+        tel.saturation = 30000 * u.adu
     if tel.name == "V20":
         tel.long_name = "VYSOS-20"
 #         tel.SCAMP_aheader = os.path.join(config.pathConfig, 'VYSOS20.ahead')
@@ -199,7 +200,7 @@ def main():
                                 }
         tel.PSF_measurement_radius = 2048
         tel.pointing_marker_size = 1*u.arcmin
-        tel.saturation = 10000 * u.adu
+        tel.saturation = 30000 * u.adu
     ## Define Site (ephem site object)
     tel.site = ephem.Observer()
     tel.check_units()
