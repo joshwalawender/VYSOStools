@@ -88,34 +88,14 @@ def ListDarks(image):
 
 
 ##-------------------------------------------------------------------------
-## Main Program
+## Measure Image
 ##-------------------------------------------------------------------------
-def main():
-    ##-------------------------------------------------------------------------
-    ## Parse Command Line Arguments
-    ##-------------------------------------------------------------------------
-    ## create a parser object for understanding command-line arguments
-    parser = ArgumentParser(description="Describe the script")
-    ## add flags
-    parser.add_argument("-v", "--verbose",
-        action="store_true", dest="verbose",
-        default=False, help="Be verbose! (default = False)")
-    parser.add_argument("-c", "--clobber",
-        action="store_true", dest="clobber",
-        default=False, help="Delete previous logs and summary files for this image. (default = False)")
-    ## add arguments
-    parser.add_argument("filename",
-        type=str,
-        help="File Name of Input Image File")
-    parser.add_argument("-t", dest="telescope",
-        required=False, type=str,
-        help="Telescope which tool the data ('V5' or 'V20')")
-    args = parser.parse_args()
-    
+def MeasureImage(filename, telescope=None, clobber=False, verbose=False):
+
     ##-------------------------------------------------------------------------
     ## Deconstruct input filename in to path, filename and extension
     ##-------------------------------------------------------------------------
-    FitsFile = os.path.abspath(args.filename)
+    FitsFile = os.path.abspath(filename)
     if not os.path.exists(FitsFile):
         raise IOError("Unable to find input file: %s" % FitsFile)
     FitsFileDirectory, FitsFilename = os.path.split(FitsFile)
@@ -126,8 +106,8 @@ def main():
     ##-------------------------------------------------------------------------
     ## Determine which VYSOS Telescope Image is from
     ##-------------------------------------------------------------------------
-    if args.telescope == 'V5' or args.telescope == 'V20':
-        telescope = args.telescope
+    if telescope == 'V5' or telescope == 'V20':
+        pass
     else:
         V5match = re.match("V5.*\.fi?ts", FitsFilename)
         V20match = re.match("V20.*\.fi?ts", FitsFilename)
@@ -218,7 +198,7 @@ def main():
     IQMonLogFileName = os.path.join(path_log, tel.long_name, DataNightString+"_"+tel.name+"_IQMonLog.txt")
     htmlImageList = os.path.join(path_log, tel.long_name, DataNightString+"_"+tel.name+".html")
     summaryFile = os.path.join(path_log, tel.long_name, DataNightString+"_"+tel.name+"_Summary.txt")
-    if args.clobber:
+    if clobber:
         if os.path.exists(IQMonLogFileName): os.remove(IQMonLogFileName)
         if os.path.exists(htmlImageList): os.remove(htmlImageList)
         if os.path.exists(summaryFile): os.remove(summaryFile)
@@ -226,7 +206,7 @@ def main():
     ##-------------------------------------------------------------------------
     ## Perform Actual Image Analysis
     ##-------------------------------------------------------------------------
-    image.make_logger(IQMonLogFileName, args.verbose)
+    image.make_logger(IQMonLogFileName, verbose)
     image.logger.info("###### Processing Image:  %s ######", FitsFilename)
     image.logger.info("Setting telescope variable to %s", telescope)
     image.read_image()           ## Create working copy of image (don't edit raw file!)
@@ -289,4 +269,25 @@ def main():
     
 
 if __name__ == '__main__':
-    main()
+    ##-------------------------------------------------------------------------
+    ## Parse Command Line Arguments
+    ##-------------------------------------------------------------------------
+    ## create a parser object for understanding command-line arguments
+    parser = ArgumentParser(description="Describe the script")
+    ## add flags
+    parser.add_argument("-v", "--verbose",
+        action="store_true", dest="verbose",
+        default=False, help="Be verbose! (default = False)")
+    parser.add_argument("-c", "--clobber",
+        action="store_true", dest="clobber",
+        default=False, help="Delete previous logs and summary files for this image. (default = False)")
+    ## add arguments
+    parser.add_argument("filename",
+        type=str,
+        help="File Name of Input Image File")
+    parser.add_argument("-t", dest="telescope",
+        required=False, type=str,
+        help="Telescope which tool the data ('V5' or 'V20')")
+    args = parser.parse_args()
+
+    MeasureImage(args.filename, telescope=args.telescope, clobber=args.clobber, verbose=args.verbose)
