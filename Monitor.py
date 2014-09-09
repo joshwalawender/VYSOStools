@@ -12,8 +12,9 @@ import os
 from argparse import ArgumentParser
 import re
 import time
-import subprocess
+import numpy
 
+import MeasureImage
 
 help_message = '''
 The help message goes here.
@@ -63,41 +64,39 @@ def main(argv=None):
     homePath = os.path.expandvars("$HOME")
     MeasureImageString = os.path.join(homePath, "git", "VYSOS", "MeasureImage.py")
     Operate = True
+    MatchFilename = re.compile("(.*)\-([0-9]{8})at([0-9]{6})\.fts")
+    MatchEmpty = re.compile(".*\-Empty\-.*\.fts")
+    PreviousFiles = []
     while Operate:
         ## Set date to tonight
         now = time.gmtime()
         nowDecimalHours = now.tm_hour + now.tm_min/60. + now.tm_sec/3600.
-        DateString = time.strftime("%Y%m%dUT", now)
-        TimeString = time.strftime("%Y/%m/%d %H:%M:%S UT -", now)
-        
         Files = os.listdir(DataPath)
-        FilesTime = now
-        
         time.sleep(1)
-                
+
         if len(Files) > len(PreviousFiles):
+            NewFiles = []
+            Properties = []
             for File in Files:
-                FileFound = False
-                for PreviousFile in PreviousFiles:
-                    if File == PreviousFile:
-                        FileFound = True
-                if not FileFound:
-                    if re.match(".*\.fi?ts", File) and not re.match(".*\-Empty\-.*\.fts", File):
-                        print("New fits File Found:  %s" % File)
-                        Focus = False
-                        ProcessCall = [PythonString, MeasureImageString, os.path.join(DataPath, File)]
-                        print("  %s Calling MeasureImage.py with %s" % (TimeString, ProcessCall[2:]))
-                        try:
-                            MIoutput = subprocess.check_output(ProcessCall, stderr=subprocess.STDOUT)
-                            print("Call to MeasureImage.py Succeeded")
-                        except subprocess.CalledProcessError as e:
-                            print("Call to MeasureImage.py Failed.  Returncode: {}".format(e.returncode))
-                            print("Call to MeasureImage.py Failed.  Command: {}".format(e.cmd))
-                            print("Call to MeasureImage.py Failed.  Output: {}".format(e.output))
-                        except:
-                            print("Call to MeasureImage.py Failed")
-        PreviousFiles = Files
-        PreviousFilesTime = now
+                IsMatch = MatchFilename.match(File)
+                IsEmpty = MatchEmpty.match(File)
+                if not (File in PreviousFiles) and IsMatch and not IsEmpty:
+                    print('Selecting {}'.format(File))
+                    target = IsMatch.group(1)
+                    FNdate = IsMatch.group(2)
+                    FNtime = IsMatch.group(3)
+                    Properties.append([FNtime, FNdate, target, File])
+
+            SortedImageFiles   = numpy.array([row[3] for row in sorted(Properties)])
+            for Image in SortedImageFiles:
+                print('Analyzing {}'.format(Image))
+                if len(PreviousFiles) == 0:
+                    clobber = True
+                else:
+                    clobber = False
+                MeasureImage.MeasureImage(os.path.join(DataPath, Image), clobber=clobber)
+                PreviousFiles.append(File)
+
         time.sleep(5)
         if nowDecimalHours > 18.0:
             Operate = False

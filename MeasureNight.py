@@ -17,6 +17,7 @@ import time
 from argparse import ArgumentParser
 
 import IQMon
+import MeasureImage
 
 help_message = '''
 The help message goes here.
@@ -99,17 +100,23 @@ def main(argv=None):
                     TimeString = time.strftime("%Y/%m/%d %H:%M:%S UT -", now)
                     DateString = time.strftime("%Y%m%dUT", now)
 
-                    ProcessCall = ['/sw/bin/python2.7', "/Users/vysosuser/git/VYSOS/MeasureImage.py"]
                     if args.clobber and Image == SortedImageFiles[0]:
-                        ProcessCall.append("--clobber")
-                    ProcessCall.append(os.path.join(ImagesDirectory, Image))
-                    print "%s Calling MeasureImage.py with %s" % (TimeString, ProcessCall)
-                    try:
-                        MIoutput = subprocess.check_output(ProcessCall, stderr=subprocess.STDOUT)
-                        for line in MIoutput.split("\n"):
-                            print line
-                    except:
-                        print "Call to MeasureImage.py Failed: {0} {1} {2}".format(sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2])
+                        clobber = True
+                    else:
+                        clobber = False
+                    MeasureImage.MeasureImage(os.path.join(ImagesDirectory, Image), clobber=clobber)
+
+#                     ProcessCall = ['/sw/bin/python2.7', "/Users/vysosuser/git/VYSOS/MeasureImage.py"]
+#                     if args.clobber and Image == SortedImageFiles[0]:
+#                         ProcessCall.append("--clobber")
+#                     ProcessCall.append(os.path.join(ImagesDirectory, Image))
+#                     print "%s Calling MeasureImage.py with %s" % (TimeString, ProcessCall)
+#                     try:
+#                         MIoutput = subprocess.check_output(ProcessCall, stderr=subprocess.STDOUT)
+#                         for line in MIoutput.split("\n"):
+#                             print line
+#                     except:
+#                         print "Call to MeasureImage.py Failed: {0} {1} {2}".format(sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2])
         else:
             print "No image files found in directory: "+ImagesDirectory
     else:
