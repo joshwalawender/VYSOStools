@@ -104,7 +104,10 @@ def main(argv=None):
                         clobber = True
                     else:
                         clobber = False
-                    MeasureImage.MeasureImage(os.path.join(ImagesDirectory, Image), clobber=clobber)
+                    try:
+                        MeasureImage.MeasureImage(os.path.join(ImagesDirectory, Image), clobber=clobber)
+                    except:
+                        print('WARNING:  MeasureImage failed on {}'.format(Image))
 
 #                     ProcessCall = ['/sw/bin/python2.7', "/Users/vysosuser/git/VYSOS/MeasureImage.py"]
 #                     if args.clobber and Image == SortedImageFiles[0]:
