@@ -60,9 +60,6 @@ def main(argv=None):
     ##-------------------------------------------------------------------------
     ## Operation Loop
     ##-------------------------------------------------------------------------
-    PythonString = os.path.join("/sw", "bin", "python")
-    homePath = os.path.expandvars("$HOME")
-    MeasureImageString = os.path.join(homePath, "git", "VYSOS", "MeasureImage.py")
     Operate = True
     MatchFilename = re.compile("(.*)\-([0-9]{8})at([0-9]{6})\.fts")
     MatchEmpty = re.compile(".*\-Empty\-.*\.fts")
@@ -94,7 +91,10 @@ def main(argv=None):
                     clobber = True
                 else:
                     clobber = False
-                MeasureImage.MeasureImage(os.path.join(DataPath, Image), clobber=clobber)
+                try:
+                    MeasureImage.MeasureImage(os.path.join(DataPath, Image), clobber=clobber)
+                except:
+                    print('WARNING:  MeasureImage failed on {}'.format(Image))
                 PreviousFiles.append(File)
 
         time.sleep(5)
