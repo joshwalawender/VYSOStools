@@ -129,12 +129,19 @@ def main():
             logger.info("{0:10s} is {1:4s}".format(Device, Status))
 
     ##-------------------------------------------------------------------------
+    ## Check for NFS Mounts
+    ##-------------------------------------------------------------------------
+    V5_mount = os.path.exists(os.path.join('/', 'Volumes', 'Data_V5'))
+    V20_mount = os.path.exists(os.path.join('/', 'Volumes', 'Data_V20'))
+
+
+    ##-------------------------------------------------------------------------
     ## Write Results to Astropy Table and Save to ASCII File
     ##-------------------------------------------------------------------------
     ResultsFile = os.path.join(homePath, "IQMon", "Logs", "SystemStatus", DateString+".txt")
     
-    names = ['time', 'CPU Load(1m)', 'CPU Load(5m)', 'CPU Temperature']
-    types = ['a24',  'f4',           'f4',           'f4']
+    names = ['time', 'CPU Load(1m)', 'CPU Load(5m)', 'CPU Temperature', 'V5 NFS Mount', 'V20 NFS Mount']
+    types = ['a24',  'f4',           'f4',           'f4',              'a6',           'a6']
     TypesDict = dict(zip(names, types))
     for Device in StatusValues.keys():
         names.append(Device)
@@ -153,7 +160,7 @@ def main():
                                   delimiter="\s",
                                   converters=converters)
     ## Add line to table
-    newResults = [TimeString, CPU_1m, CPU_5m, TempCPU]
+    newResults = [TimeString, CPU_1m, CPU_5m, TempCPU, V5_mount, V20_mount]
     for Device in StatusValues.keys():
         newResults.append(StatusValues[Device])
     ResultsTable.add_row(tuple(newResults))
