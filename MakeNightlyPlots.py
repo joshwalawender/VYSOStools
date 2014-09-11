@@ -644,16 +644,20 @@ def MakePlots(DateString, telescope, logger):
             Figure.add_axes(plot_positions[0][1])
             pyplot.title("IQ Mon Results for "+telescope + " on the Night of " + DateString)
             if telescope == "V20":
+                ymax = 6
                 pyplot.plot(MatchedData['ACP Time'], MatchedData['IQMon FWHM']*PixelScale, 'k.', drawstyle="steps-post", label="FWHM (IQMon)")
                 pyplot.ylabel("FWHM (arcsec)")
             if telescope == "V5":
+                ymax = 4
                 pyplot.plot(MatchedData['ACP Time'], MatchedData['IQMon FWHM'], 'k.', drawstyle="steps-post", label="FWHM (IQMon)")
                 pyplot.ylabel("FWHM (pixels)")
+
+            ypoints_above_plot = [ymax-0.1 for entry in MatchedData if entry['IQMon FWHM'] > ymax]
+            xpoints_above_plot = [entry['ACP Time'] for entry in MatchedData if entry['IQMon FWHM'] > ymax]
+            pyplot.plot(xpoints_above_plot, ypoints_above_plot, 'r^', mew=0, ms=4)
+
             pyplot.yticks(numpy.linspace(0,15,16,endpoint=True))
-            if telescope == "V20":
-                pyplot.ylim(0,6)
-            if telescope == "V5":
-                pyplot.ylim(0,4)
+            pyplot.ylim(0,ymax)
             pyplot.xticks(numpy.linspace(PlotStartUT,PlotEndUT,nUTHours,endpoint=True))
             pyplot.xlim(PlotStartUT,PlotEndUT)
             pyplot.grid()
