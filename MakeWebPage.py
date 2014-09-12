@@ -14,6 +14,7 @@ import re
 import shutil
 import subprocess
 import datetime
+import yaml
 
 import IQMon
 
@@ -82,13 +83,21 @@ def main(argv=None):
             if IsSummaryFile:
                 print "Found Summary File for "+Date
                 Dates[-1][5] = File
-                wcSTDOUT = subprocess.check_output(["wc", "-l", os.path.join(NightSummariesDirectory, File)], stderr=subprocess.STDOUT)
-
+                with open(os.path.join(NightSummariesDirectory, File)) as summary_lines:
+                    try:
+                        yaml_list = yaml.load(summary_lines)
+                    except:
+                        yaml_list = []
                 try:
-                    nLines = int(wcSTDOUT.strip().split(" ")[0])
-                    nImages = nLines - 1
+                    firstfile = yaml_list[0]['filename']
+                    nImages = len(yaml_list)
                 except:
-                    nImages = 0
+                    wcSTDOUT = subprocess.check_output(["wc", "-l", os.path.join(NightSummariesDirectory, File)], stderr=subprocess.STDOUT)
+                    try:
+                        nLines = int(wcSTDOUT.strip().split(" ")[0])
+                        nImages = nLines - 1
+                    except:
+                        nImages = 0
                 Dates[-1][6] = nImages
                 
             
