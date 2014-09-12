@@ -16,6 +16,7 @@ import fnmatch
 import time
 import datetime
 import logging
+import yaml
 import math
 import numpy
 import matplotlib.pyplot as pyplot
@@ -108,6 +109,62 @@ def ReadACPLog(DateString, VYSOSDATAPath, PixelScale, logger):
 ## Read IQMon Logs
 ## - extract IQMon FWHM, ellipticity, pointing error
 def ReadIQMonLog(logs_path, telescope, DateString, logger):
+    IQMonTable = None
+    if telescope == "V5":
+        telname = "VYSOS-5"
+    if telescope == "V20":
+        telname = "VYSOS-20"
+    if os.path.exists(os.path.join(logs_path, telname)):
+        FoundIQMonFile = True
+        logger.debug("Found directory with IQMon summary files.")
+        Files = os.listdir(os.path.join(logs_path, telname))
+        if telescope == "V5":
+            MatchIQMonFile = re.compile("([0-9]{8}UT)_V5_Summary\.txt")
+        if telescope == "V20":
+            MatchIQMonFile = re.compile("([0-9]{8}UT)_V20_Summary\.txt")
+        for File in Files:
+            IsIQMonFile = MatchIQMonFile.match(File)
+            if IsIQMonFile:
+                FullIQMonFile = os.path.join(logs_path, telname, File)
+                IQMonFileDate = IsIQMonFile.group(1)
+                if IQMonFileDate == DateString:
+                    logger.debug("IQMon Summary file for "+DateString+" is "+File)
+                    FoundIQMonFile = True
+                    try:
+                        with open(FullIQMonFile, 'r') as yaml_string:
+                            image_list = yaml.load(yaml_string)
+                    except:
+                        logger.critical("Failed to Read IQMon Results File")
+                        image_list = []
+                    else:
+                        names = ('ExpStart', 'File', "FWHM (pix)", 'Ellipticity',\
+                                 "Alt (deg)", "Az (deg)", 'Airmass',\
+                                 "pointing_error (arcmin)", 'ZeroPoint', 'nStars',\
+                                 'Background', "Background RMS")
+                        dtypes = ('a24', 'a24', 'f4', 'f4',\
+                                  'f4', 'f4', 'f4',\
+                                  'f4', 'f4', 'i4',\
+                                  'f4', 'f4')
+                        IQMonTable = table.Table(names=names, dtype=dtypes)
+                        for entry in image_list:
+                            decimal_time = TimeStringToDecimal(entry['exposure_start'][11:])
+                            if entry['zero_point'] == 'None':
+                                entry['zero_point'] = float('nan')
+                            if (entry['FWHM_pix'] != 'None') and (entry['ellipticity'] != 'None') and\
+                               (entry['pointing_error_arcmin'] != 'None'):
+                                row = [decimal_time, entry['filename'],\
+                                       entry['FWHM_pix'], entry['ellipticity'],\
+                                       entry['alt'], entry['az'], entry['airmass'],\
+                                       entry['pointing_error_arcmin'],\
+                                       entry['zero_point'], entry['n_stars'],\
+                                       entry['background'], entry['background_rms']]
+                                IQMonTable.add_row(row)
+                            else:
+                                print('Skipping: {}'.format(entry))
+    return IQMonTable
+
+
+def old_ReadIQMonLog(logs_path, telescope, DateString, logger):
     IQMonTable = None
     if telescope == "V5":
         telname = "VYSOS-5"
@@ -380,11 +437,6 @@ def MakePlots(DateString, telescope, logger):
     DecimalTime = now.hour+now.minute/60.+now.second/3600.
 
     ###########################################################
-    ## Read ACP Logs
-    ACPdata = ReadACPLog(DateString, VYSOSDATAPath, PixelScale, logger)
-    if len(ACPdata) > 1: FoundACPLog = True
-
-    ###########################################################
     ## Read IQMon Logs
     ## - extract IQMon FWHM, ellipticity, pointing error
     IQMonTable = ReadIQMonLog(logs_path, telescope, DateString, logger)
@@ -395,43 +447,6 @@ def MakePlots(DateString, telescope, logger):
     V20EnvTable, V5EnvTable = ReadEnvironmentalLogs(DateString, telescope, V5DataPath, V20DataPath, logger)
     if len(V20EnvTable) > 1: FoundV20Env = True
     if len(V5EnvTable) > 1:  FoundV5Env = True
-
-    ###########################################################
-    ## Match up ACP Log and IQMon Results Based on filename
-    if FoundIQMonFile and FoundACPLog:
-        logger.info("Matching IQMon and ACP data with {0} and {1} lines respectively".format(len(IQMonTable), len(ACPdata)))
-        MatchedData = table.Table(
-                      names=('ACP Time', 'ACP File', 'ACP FWHM', 'ACP PErr', 'IQMon Time', 'IQMon File', 'IQMon FWHM', 'IQMon PErr'),
-                      dtype=('f',       'S',        'f',        'f',        'S',           'S',         'f',          'f'),
-                      masked=True
-                      )
-        for ACPentry in ACPdata:
-            FindID = re.compile(".*(\d{8}at\d{6}).*")
-            FindACPID = FindID.match(ACPentry['ImageFile'])
-            if FindACPID:
-                ACPID = FindACPID.group(1)
-            else:
-                logger.warning("Could not find ID for ACP file: {0}".format(ACPentry['ImageFile']))
-            FoundIQMonMatch = False
-            for IQMonEntry in IQMonTable:
-                FindIQMonID = FindID.match(IQMonEntry['File'])
-                if FindIQMonID:
-                    IQMonID = FindIQMonID.group(1)
-                else:
-                    logger.warning("Could not find ID for IQMon file: {0}".format(IQMonEntry['File']))
-                if IQMonID == ACPID:
-                    logger.debug("{0} in IQMon results matched to {1} in ACP results.".format(IQMonEntry['File'], ACPentry['ImageFile']))
-                    FoundIQMonMatch = True
-                    MatchedData.add_row([ACPentry['TimeDecimal'], ACPentry['ImageFile'], ACPentry['ImageFWHM'], ACPentry['PointingError'],
-                                         IQMonEntry['ExpStart'], IQMonEntry['File'], IQMonEntry['FWHM (pix)'], IQMonEntry['pointing_error (arcmin)']])
-                    break
-            if not FoundIQMonMatch:
-                ACPFile = os.path.join(VYSOSDATAPath, "Images", DateString, ACPentry['ImageFile']+".fts")
-                if os.path.exists(ACPFile):
-                    logger.warning("Could not find IQMon results for "+ACPentry['ImageFile']+".fts.")
-                else:
-                    logger.warning("Could not find IQMon result or file for ACP log entry "+ACPentry['ImageFile']+".fts.")
-        logger.info("Matched {} images between ACP logs and IQMon results.".format(len(MatchedData)))
 
 
     ###########################################################
@@ -645,15 +660,15 @@ def MakePlots(DateString, telescope, logger):
             pyplot.title("IQ Mon Results for "+telescope + " on the Night of " + DateString)
             if telescope == "V20":
                 ymax = 6
-                pyplot.plot(MatchedData['ACP Time'], MatchedData['IQMon FWHM']*PixelScale, 'k.', drawstyle="steps-post", label="FWHM (IQMon)")
+                pyplot.plot(IQMonTable['ExpStart'], IQMonTable['FWHM (pix)']*PixelScale, 'k.', drawstyle="steps-post", label="FWHM (IQMon)")
                 pyplot.ylabel("FWHM (arcsec)")
             if telescope == "V5":
                 ymax = 4
-                pyplot.plot(MatchedData['ACP Time'], MatchedData['IQMon FWHM'], 'k.', drawstyle="steps-post", label="FWHM (IQMon)")
+                pyplot.plot(IQMonTable['ExpStart'], IQMonTable['FWHM (pix)'], 'k.', drawstyle="steps-post", label="FWHM (IQMon)")
                 pyplot.ylabel("FWHM (pixels)")
 
-            ypoints_above_plot = [ymax-0.1 for entry in MatchedData if entry['IQMon FWHM'] > ymax]
-            xpoints_above_plot = [entry['ACP Time'] for entry in MatchedData if entry['IQMon FWHM'] > ymax]
+            ypoints_above_plot = [ymax-0.1 for entry in IQMonTable if entry['FWHM (pix)'] > ymax]
+            xpoints_above_plot = [entry['ExpStart'] for entry in IQMonTable if entry['FWHM (pix)'] > ymax]
             pyplot.plot(xpoints_above_plot, ypoints_above_plot, 'r^', mew=0, ms=4)
 
             pyplot.yticks(numpy.linspace(0,15,16,endpoint=True))
@@ -685,13 +700,11 @@ def MakePlots(DateString, telescope, logger):
             pyplot.xticks(numpy.linspace(PlotStartUT,PlotEndUT,nUTHours,endpoint=True))
             pyplot.xlim(PlotStartUT,PlotEndUT)
             ## Clip the extreme values off of the focus position list (bad values?)
-            nFocusPos = len(V5EnvTable['FocusPos'])
-            ClippingFactor = 0.02
-            nClipped = int(nFocusPos*ClippingFactor)
-            ylimlower = (sorted(V5EnvTable['FocusPos']))[nClipped]
-            ylimupper = (sorted(V5EnvTable['FocusPos']))[nFocusPos-nClipped]
+            focus_values = [entry['FocusPos'] for entry in V5EnvTable if entry['Time'] > PlotStartUT and entry['Time'] < PlotEndUT]
+            ylimlower = numpy.percentile(focus_values, 0.5)
+            ylimupper = numpy.percentile(focus_values, 99.5)
             ylimrange = max([100 , ylimupper - ylimlower])
-            pyplot.ylim(ylimlower-0.15*ylimrange, ylimupper+0.15*ylimrange)
+            pyplot.ylim(ylimlower-0.2*ylimrange, ylimupper+0.2*ylimrange)
             pyplot.ylabel("Focus Position (steps)")
             pyplot.legend(loc='best', prop={'size':10})
             pyplot.grid()
@@ -733,7 +746,7 @@ def MakePlots(DateString, telescope, logger):
         ## Ellipticity vs. Time
         if FoundIQMonFile:
             Figure.add_axes(plot_positions[3][1], xticklabels=[])
-            pyplot.plot(IQMonTable['Time'], IQMonTable['Ellipticity'], 'b.', drawstyle="steps-post", label="Ellipticity")
+            pyplot.plot(IQMonTable['ExpStart'], IQMonTable['Ellipticity'], 'b.', drawstyle="steps-post", label="Ellipticity")
             pyplot.xticks(numpy.linspace(PlotStartUT,PlotEndUT,nUTHours,endpoint=True))
             pyplot.xlim(PlotStartUT,PlotEndUT)
             pyplot.ylabel("Ellipticity")
@@ -745,7 +758,7 @@ def MakePlots(DateString, telescope, logger):
         ## Pointing Error vs. Time
         if FoundIQMonFile:
             Figure.add_axes(plot_positions[4][1])
-            pyplot.plot(MatchedData['ACP Time'], MatchedData['IQMon PErr'], 'b.', drawstyle="steps-post", label="IQMon")
+            pyplot.plot(IQMonTable['ExpStart'], IQMonTable['pointing_error (arcmin)'], 'b.', drawstyle="steps-post", label="IQMon")
             pyplot.xticks(numpy.linspace(PlotStartUT,PlotEndUT,nUTHours,endpoint=True))
             pyplot.xlim(PlotStartUT,PlotEndUT)
             pyplot.ylabel("Pointing Error (arcmin)")
