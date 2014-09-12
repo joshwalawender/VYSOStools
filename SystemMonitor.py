@@ -133,6 +133,12 @@ def main():
     ##-------------------------------------------------------------------------
     V5_mount = os.path.exists(os.path.join('/', 'Volumes', 'Data_V5'))
     V20_mount = os.path.exists(os.path.join('/', 'Volumes', 'Data_V20'))
+    if not (V5_mount and V20_mount):
+        subprocess.call(['open', os.path.join(os.path.expanduser('~vysosuser'), 'bin', 'ConnectToData.app')])
+#         time.sleep(30)
+#         V5_mount = os.path.exists(os.path.join('/', 'Volumes', 'Data_V5'))
+#         V20_mount = os.path.exists(os.path.join('/', 'Volumes', 'Data_V20'))
+
 
 
     ##-------------------------------------------------------------------------
