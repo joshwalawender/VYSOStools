@@ -700,9 +700,9 @@ def MakePlots(DateString, telescope, logger):
             pyplot.xticks(numpy.linspace(PlotStartUT,PlotEndUT,nUTHours,endpoint=True))
             pyplot.xlim(PlotStartUT,PlotEndUT)
             ## Clip the extreme values off of the focus position list (bad values?)
-            focus_values = [entry['FocusPos'] for entry in V5EnvTable if entry['Time'] > PlotStartUT and entry['Time'] < PlotEndUT]
-            ylimlower = numpy.percentile(focus_values, 0.5)
-            ylimupper = numpy.percentile(focus_values, 99.5)
+            focus_values = [entry['FocusPos'] for entry in V5EnvTable if entry['Time'] > PlotStartUT and entry['Time'] < PlotEndUT and entry['FocusPos'] > 0]
+            ylimlower = numpy.percentile(focus_values, 1)
+            ylimupper = numpy.percentile(focus_values, 99)
             ylimrange = max([100 , ylimupper - ylimlower])
             pyplot.ylim(ylimlower-0.2*ylimrange, ylimupper+0.2*ylimrange)
             pyplot.ylabel("Focus Position (steps)")
