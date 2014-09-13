@@ -144,9 +144,9 @@ def MeasureImage(filename,\
     ##-------------------------------------------------------------------------
     ## Create Filenames
     ##-------------------------------------------------------------------------
-    logs_file = os.path.join(tel.logs_file_path, DataNightString+"_"+tel.name+"_IQMonLog.txt")
-    html_file = os.path.join(tel.logs_file_path, DataNightString+"_"+tel.name+".html")
-    yaml_file = os.path.join(tel.logs_file_path, DataNightString+"_"+tel.name+"_Summary.txt")
+    logs_file = os.path.join(tel.logs_file_path, DataNightString+"_"+telescope+"_IQMonLog.txt")
+    html_file = os.path.join(tel.logs_file_path, DataNightString+"_"+telescope+".html")
+    yaml_file = os.path.join(tel.logs_file_path, DataNightString+"_"+telescope+"_Summary.txt")
     if clobber:
         if os.path.exists(logs_file): os.remove(logs_file)
         if os.path.exists(html_file): os.remove(html_file)
