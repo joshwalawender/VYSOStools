@@ -130,9 +130,10 @@ def MeasureImage(filename,\
     ## Create Telescope Object
     ##-------------------------------------------------------------------------
     if telescope == 'V5':
-        tel = IQMon.Telescope(os.path.expanduser('~', 'IQMon', 'config_VYSOS-5.yaml')
+        config_file = os.path.join(os.path.expanduser('~'), 'IQMon', 'config_VYSOS-5.yaml')
     if telescope == 'V20':
-        tel = IQMon.Telescope(os.path.expanduser('~', 'IQMon', 'config_VYSOS-20.yaml')
+        config_file = os.path.join(os.path.expanduser('~'), 'IQMon', 'config_VYSOS-20.yaml')
+    tel = IQMon.Telescope(config_file)
 
 
     ##-------------------------------------------------------------------------
@@ -159,19 +160,19 @@ def MeasureImage(filename,\
     image.logger.info("###### Processing Image: {} ######".format(FitsFilename))
     image.logger.info("Setting telescope variable to {}".format(telescope))
     if analyze_image:
-        image.read_image()           ## Create working copy of image (don't edit raw file!)
-        image.read_header()           ## Extract values from header
+        image.read_image()
+        image.read_header()
 
-        if not image.image_WCS:      ## If no WCS found in header ...
-            image.solve_astrometry() ## Solve Astrometry
-            image.read_header()       ## Refresh Header
-        image.determine_pointing_error()            ## Calculate Pointing Error
+        if not image.image_WCS:
+            image.solve_astrometry()
+            image.read_header()
+        image.determine_pointing_error()
 
-        darks = ListDarks(image)    ## List dark files
+        darks = ListDarks(image)
         if darks and len(darks) > 0:
-            image.dark_subtract(darks)   ## Dark Subtract Image
-        image.run_SExtractor()       ## Run SExtractor
-        image.determine_FWHM() ## Determine FWHM from SExtractor results
+            image.dark_subtract(darks)
+        image.run_SExtractor()
+        image.determine_FWHM()
 
 
 #         image.run_SCAMP(catalog='UCAC-3')
@@ -186,9 +187,9 @@ def MeasureImage(filename,\
         if not nographics:
             image.make_PSF_plot()
 
-            if tel.name == 'V5':
+            if tel.name == 'VYSOS-5':
                 p1, p2 = (0.15, 0.50)
-            if tel.name == 'V20':
+            if tel.name == 'VYSOS-20':
                 p1, p2 = (3.0, 0.50)
             small_JPEG = image.raw_file_basename+"_fullframe.jpg"
             image.make_JPEG(small_JPEG, binning=3,\
