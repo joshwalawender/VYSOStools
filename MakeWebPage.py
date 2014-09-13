@@ -75,10 +75,10 @@ def main(argv=None):
             if IsHTMLFile:
                 print "Found HTML File for "+Date
                 Dates[-1][3] = File
-            IsIQMonFile   = re.match(Date+"_"+telescope+"_IQMonLog\.txt", File)
-            if IsIQMonFile:
-                print "Found IQMonLog File for "+Date
-                Dates[-1][4] = File
+#             IsIQMonFile   = re.match(Date+"_"+telescope+"_IQMonLog\.txt", File)
+#             if IsIQMonFile:
+#                 print "Found IQMonLog File for "+Date
+#                 Dates[-1][4] = File
             IsSummaryFile = re.match(Date+"_"+telescope+"_Summary\.txt", File)
             if IsSummaryFile:
                 print "Found Summary File for "+Date
@@ -143,10 +143,10 @@ def main(argv=None):
         else:
             HTML.write("      <td style='text-align:center'></td>\n")
         ## Write Link to IQMon Log
-        if DateInfo[4] != "":
-            HTML.write("      <td style='text-align:center'><a href='%s'>%-50s</a></td>\n" % (DateInfo[4], "IQMon Log"))
-        else:
-            HTML.write("      <td style='text-align:center'></td>\n")
+#         if DateInfo[4] != "":
+#             HTML.write("      <td style='text-align:center'><a href='%s'>%-50s</a></td>\n" % (DateInfo[4], "IQMon Log"))
+#         else:
+#             HTML.write("      <td style='text-align:center'></td>\n")
         ## Write Link to Text Summary
         if DateInfo[5] != "":
             HTML.write("      <td style='text-align:center'><a href='%s'>%-50s</a></td>\n" % (DateInfo[5], "Text Summary"))
