@@ -21,13 +21,6 @@ import astropy.units as u
 import IQMon
 
 
-class ParseError(Exception):
-    def __init__(self, value):
-        self.value = value
-    def __str__(self):
-        return repr(self.value)
-
-
 ##############################################################
 ## Obtain Master Dark Frame
 ## - look for raw dark frames from previous night
@@ -129,103 +122,42 @@ def MeasureImage(filename,\
         elif NoTelMatch:
             telescope = "V5"  ## Assume telescope is VYSOS-5
         else:
-            raise ParseError("Can not determine valid telescope from arguments or filename.")
+            print("Can not determine valid telescope from arguments or filename.")
+            sys.exit(1)
 
 
     ##-------------------------------------------------------------------------
     ## Create Telescope Object
     ##-------------------------------------------------------------------------
-    path_temp = os.path.join(os.path.expanduser('~'), 'IQMon', 'tmp')
-    path_plots = os.path.join(os.path.expanduser('~'), 'IQMon', 'Plots')
-    tel = IQMon.Telescope(path_temp, path_plots)
-    tel.name = telescope
-    if tel.name == "V5":
-        ## Physical Properties
-        tel.long_name = "VYSOS-5"
-        tel.focal_length = 735.*u.mm
-        tel.pixel_size = 9.0*u.micron
-        tel.aperture = 135.*u.mm
-        tel.gain = 1.6 / u.adu
-        tel.saturation = 30000 * u.adu
-        tel.pixel_scale = tel.pixel_size.to(u.mm)/tel.focal_length.to(u.mm)*u.radian.to(u.arcsec)*u.arcsec/u.pix
-        tel.fRatio = tel.focal_length.to(u.mm)/tel.aperture.to(u.mm)
-        ## Preferences
-        tel.threshold_FWHM = 2.5*u.pix
-        tel.threshold_pointing_err = 5.0*u.arcmin
-        tel.threshold_ellipticity = 0.30*u.dimensionless_unscaled
-        tel.threshold_zeropoint = None
-#         tel.SCAMP_aheader = os.path.join(config.pathConfig, 'VYSOS5.ahead')
-        tel.units_for_FWHM = 1.*u.pix
-        tel.ROI = "[1024:3072,1024:3072]"
-        tel.SExtractor_params = {'PHOT_APERTURES': '6.0',
-                                'BACK_SIZE': '16',
-                                'SEEING_FWHM': '2.5',
-                                'SATUR_LEVEL': '50000',
-                                'DETECT_MINAREA': '5',
-                                'DETECT_THRESH': '5.0',
-                                'ANALYSIS_THRESH': '5.0',
-                                'FILTER': 'N',
-                                }
-        tel.PSF_measurement_radius = 1024
-        tel.pointing_marker_size = 3*u.arcmin
-    if tel.name == "V20":
-        ## Physical Properties
-        tel.long_name = "VYSOS-20"
-        tel.focal_length = 4175.*u.mm
-        tel.pixel_size = 9.0*u.micron
-        tel.aperture = 508.*u.mm
-        tel.gain = 1.6 / u.adu
-        tel.saturation = 30000 * u.adu
-        tel.pixel_scale = tel.pixel_size.to(u.mm)/tel.focal_length.to(u.mm)*u.radian.to(u.arcsec)*u.arcsec/u.pix
-        tel.fRatio = tel.focal_length.to(u.mm)/tel.aperture.to(u.mm)
-        ## Preferences
-        tel.threshold_FWHM = 2.5*u.arcsec
-        tel.threshold_pointing_err = 5.0*u.arcmin
-        tel.threshold_ellipticity = 0.30*u.dimensionless_unscaled
-        tel.threshold_zeropoint = None
-#         tel.SCAMP_aheader = os.path.join(config.pathConfig, 'VYSOS20.ahead')
-        tel.units_for_FWHM = 1.*u.arcsec
-        tel.ROI = "[1024:3072,1024:3072]"
-        tel.SExtractor_params = {'PHOT_APERTURES': '16.0',
-                                'BACK_SIZE': '16',
-                                'SEEING_FWHM': '2.5',
-                                'SATUR_LEVEL': '50000',
-                                'DETECT_MINAREA': '5',
-                                'DETECT_THRESH': '5.0',
-                                'ANALYSIS_THRESH': '5.0',
-                                'FILTER': 'N',
-                                }
-        tel.PSF_measurement_radius = 2048
-        tel.pointing_marker_size = 1*u.arcmin
-    ## Define Site (ephem site object)
-    tel.site = ephem.Observer()
-    tel.check_units()
-    tel.define_pixel_scale()
+    if telescope == 'V5':
+        tel = IQMon.Telescope(os.path.expanduser('~', 'IQMon', 'config_VYSOS-5.yaml')
+    if telescope == 'V20':
+        tel = IQMon.Telescope(os.path.expanduser('~', 'IQMon', 'config_VYSOS-20.yaml')
+
 
     ##-------------------------------------------------------------------------
     ## Create IQMon.Image Object
     ##-------------------------------------------------------------------------
-    image = IQMon.Image(FitsFile, tel=tel)  ## Create image object
+    image = IQMon.Image(FitsFile, tel)  ## Create image object
 
     ##-------------------------------------------------------------------------
     ## Create Filenames
     ##-------------------------------------------------------------------------
-    path_log = os.path.join(os.path.expanduser('~'), 'IQMon', 'Logs')
-    IQMonLogFileName = os.path.join(path_log, tel.long_name, DataNightString+"_"+tel.name+"_IQMonLog.txt")
-    htmlImageList = os.path.join(path_log, tel.long_name, DataNightString+"_"+tel.name+".html")
-    summaryFile = os.path.join(path_log, tel.long_name, DataNightString+"_"+tel.name+"_Summary.txt")
+    logs_file = os.path.join(tel.logs_file_path, DataNightString+"_"+tel.name+"_IQMonLog.txt")
+    html_file = os.path.join(tel.logs_file_path, DataNightString+"_"+tel.name+".html")
+    yaml_file = os.path.join(tel.logs_file_path, DataNightString+"_"+tel.name+"_Summary.txt")
     if clobber:
-        if os.path.exists(IQMonLogFileName): os.remove(IQMonLogFileName)
-        if os.path.exists(htmlImageList): os.remove(htmlImageList)
-        if os.path.exists(summaryFile): os.remove(summaryFile)
+        if os.path.exists(logs_file): os.remove(logs_file)
+        if os.path.exists(html_file): os.remove(html_file)
+        if os.path.exists(yaml_file): os.remove(yaml_file)
 
     ##-------------------------------------------------------------------------
     ## Perform Actual Image Analysis
     ##-------------------------------------------------------------------------
-    image.make_logger(IQMonLogFileName, verbose)
+    image.make_logger(logfile=logs_file, verbose=verbose)
     image.logger.info("")
     image.logger.info("###### Processing Image: {} ######".format(FitsFilename))
-    image.logger.info("Setting telescope variable to %s", telescope)
+    image.logger.info("Setting telescope variable to {}".format(telescope))
     if analyze_image:
         image.read_image()           ## Create working copy of image (don't edit raw file!)
         image.read_header()           ## Extract values from header
@@ -242,13 +174,13 @@ def MeasureImage(filename,\
         image.determine_FWHM() ## Determine FWHM from SExtractor results
 
 
-    #     image.run_SCAMP(catalog='UCAC-3')
-    #     image.run_SWarp()
-    #     image.read_header()           ## Extract values from header
-    #     image.get_local_UCAC4(local_UCAC_command="/Volumes/Data/UCAC4/access/u4test", local_UCAC_data="/Volumes/Data/UCAC4/u4b")
-    #     image.run_SExtractor(assoc=True)
-    #     image.determine_FWHM()       ## Determine FWHM from SExtractor results
-    #     image.measure_zero_point(plot=True)
+#         image.run_SCAMP(catalog='UCAC-3')
+#         image.run_SWarp()
+#         image.read_header()
+#         image.get_local_UCAC4(local_UCAC_command="/Volumes/Data/UCAC4/access/u4test", local_UCAC_data="/Volumes/Data/UCAC4/u4b")
+#         image.run_SExtractor(assoc=True)
+#         image.determine_FWHM()
+#         image.measure_zero_point(plot=True)
 
 
         if not nographics:
@@ -266,8 +198,8 @@ def MeasureImage(filename,\
                             mark_detected_stars=False,\
                             mark_catalog_stars=False,\
                             mark_saturated=True,\
-        #                     transform='rotate90')
-                            transform=None)
+#                             transform='rotate90')
+                            )
             cropped_JPEG = image.raw_file_basename+"_crop.jpg"
             image.make_JPEG(cropped_JPEG,\
                             p1=p1, p2=p2,\
@@ -276,16 +208,16 @@ def MeasureImage(filename,\
                             mark_detected_stars=True,\
                             mark_catalog_stars=False,\
                             mark_saturated=True,\
-                            crop=(1024, 1024, 3072, 3072),
-        #                     transform='rotate90')
-                            transform=None)
+                            crop=(1024, 1024, 3072, 3072),\
+#                             transform='rotate90')
+                            )
 
-        image.clean_up()             ## Cleanup (delete) temporary files.
-        image.calculate_process_time()## Calculate how long it took to process this image
+        image.clean_up()
+        image.calculate_process_time()
 
     fields=["Date and Time", "Filename", "Alt", "Az", "Airmass", "MoonSep", "MoonIllum", "FWHM", "ellipticity", "PErr", "PosAng", "ZeroPoint", "nStars", "ProcessTime"]
-    image.add_web_log_entry(htmlImageList, fields=fields) ## Add line for this image to HTML table
-    image.add_yaml_entry(summaryFile)
+    image.add_web_log_entry(html_file, fields=fields)
+    image.add_yaml_entry(yaml_file)
 
 
 if __name__ == '__main__':
