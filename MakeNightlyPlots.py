@@ -160,7 +160,7 @@ def ReadIQMonLog(logs_path, telescope, DateString, logger):
                                        entry['background'], entry['background_rms']]
                                 IQMonTable.add_row(row)
                             else:
-                                print('Skipping: {}'.format(entry))
+                                print('Skipping: {}'.format(entry['filename']))
     return IQMonTable
 
 
@@ -765,6 +765,9 @@ def MakePlots(DateString, telescope, logger):
         if FoundIQMonFile:
             Figure.add_axes(plot_positions[3][1], xticklabels=[])
             pyplot.plot(IQMonTable['ExpStart'], IQMonTable['Ellipticity'], 'b.', drawstyle="steps-post", label="Ellipticity")
+            pyplot.plot([PlotStartUT,PlotEndUT],\
+                        [tel.config['threshold_ellipticity'], tel.config['threshold_ellipticity']],\
+                        'r-')
             pyplot.xticks(numpy.linspace(PlotStartUT,PlotEndUT,nUTHours,endpoint=True))
             pyplot.xlim(PlotStartUT,PlotEndUT)
             pyplot.ylabel("Ellipticity")
@@ -777,6 +780,9 @@ def MakePlots(DateString, telescope, logger):
         if FoundIQMonFile:
             Figure.add_axes(plot_positions[4][1])
             pyplot.plot(IQMonTable['ExpStart'], IQMonTable['pointing_error (arcmin)'], 'b.', drawstyle="steps-post", label="IQMon")
+            pyplot.plot([PlotStartUT,PlotEndUT],\
+                        [tel.config['threshold_pointing_err'], tel.config['threshold_pointing_err']],\
+                        'r-')
             pyplot.xticks(numpy.linspace(PlotStartUT,PlotEndUT,nUTHours,endpoint=True))
             pyplot.xlim(PlotStartUT,PlotEndUT)
             pyplot.ylabel("Pointing Error (arcmin)")
