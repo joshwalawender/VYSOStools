@@ -376,6 +376,15 @@ def MakePlots(DateString, telescope, logger):
     ## Compile Various Regular Expressions for File Name Matching and ACP Log Parsing
     MatchDir = re.compile(DateString)
 
+
+    if telescope == 'V5':
+        config_file = os.path.join(os.path.expanduser('~'), 'IQMon', 'config_VYSOS-5.yaml')
+    if telescope == 'V20':
+        config_file = os.path.join(os.path.expanduser('~'), 'IQMon', 'config_VYSOS-20.yaml')
+    tel = IQMon.Telescope(config_file)
+
+
+
     ##############################################################
     ## Use pyephem determine sunrise and sunset times
     Observatory = ephem.Observer()
@@ -659,17 +668,26 @@ def MakePlots(DateString, telescope, logger):
             Figure.add_axes(plot_positions[0][1])
             pyplot.title("IQ Mon Results for "+telescope + " on the Night of " + DateString)
             if telescope == "V20":
-                ymax = 6
+                ymax = 6  ## arcsec for V20
                 pyplot.plot(IQMonTable['ExpStart'], IQMonTable['FWHM (pix)']*PixelScale, 'k.', drawstyle="steps-post", label="FWHM (IQMon)")
+                ypoints_above_plot = [ymax-0.1 for entry in IQMonTable if entry['FWHM (pix)']*PixelScale > ymax]
+                xpoints_above_plot = [entry['ExpStart'] for entry in IQMonTable if entry['FWHM (pix)']*PixelScale > ymax]
+                pyplot.plot([PlotStartUT,PlotEndUT],\
+                            [tel.config['threshold_FWHM']*PixelScale, tel.config['threshold_FWHM']*PixelScale],\
+                            'r-')
                 pyplot.ylabel("FWHM (arcsec)")
             if telescope == "V5":
-                ymax = 4
+                ymax = 4  ## pix for V5
                 pyplot.plot(IQMonTable['ExpStart'], IQMonTable['FWHM (pix)'], 'k.', drawstyle="steps-post", label="FWHM (IQMon)")
+                ypoints_above_plot = [ymax-0.1 for entry in IQMonTable if entry['FWHM (pix)'] > ymax]
+                xpoints_above_plot = [entry['ExpStart'] for entry in IQMonTable if entry['FWHM (pix)'] > ymax]
+                pyplot.plot([PlotStartUT,PlotEndUT],\
+                            [tel.config['threshold_FWHM'], tel.config['threshold_FWHM']],\
+                            'r-')
                 pyplot.ylabel("FWHM (pixels)")
 
-            ypoints_above_plot = [ymax-0.1 for entry in IQMonTable if entry['FWHM (pix)'] > ymax]
-            xpoints_above_plot = [entry['ExpStart'] for entry in IQMonTable if entry['FWHM (pix)'] > ymax]
             pyplot.plot(xpoints_above_plot, ypoints_above_plot, 'r^', mew=0, ms=4)
+
 
             pyplot.yticks(numpy.linspace(0,15,16,endpoint=True))
             pyplot.ylim(0,ymax)
