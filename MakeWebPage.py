@@ -40,13 +40,22 @@ def main(argv=None):
     NightSummariesDirectory = os.path.join(logs_path, telname)
     SummaryHTMLFile = os.path.join(NightSummariesDirectory, "index.html")
     TemporaryHTMLFile = os.path.join(NightSummariesDirectory, "index_tmp.html")
-
+    SystemLogPath = os.path.join(logs_path, 'SystemStatus')
 
     ##############################################################
     ## Read Contents of Night Summaries Directory
     Files = os.listdir(NightSummariesDirectory)
     MatchDateOnFile  = re.compile("([0-9]{8}UT)_"+telescope+".*")
-    
+
+
+    sysfiles = os.listdir(SystemLogPath)
+    MatchPNGandDate  = re.compile("([0-9]{8}UT)\.png")
+    SystemStatusCharts = []
+    for sysfile in sysfiles:
+        IsPNG = MatchPNGandDate.match(sysfile)
+        if IsPNG:
+            print('Found system status graph for {}'.format(IsPNG.group(1)))
+            SystemStatusCharts.append(IsPNG.group(1))
     ## Make List of Dates for Files in Directory
     ## - loop through files, extract date
     ## - compare against list of dates already recorded
@@ -61,7 +70,7 @@ def main(argv=None):
                 if ListedDate[0] == Date:
                     DateAlreadyListed = True
             if not DateAlreadyListed:
-                Dates.append([Date, "", "", "", "", "", 0])
+                Dates.append([Date, "", "", "", "", "", 0, False])
 
             IsPNGFile     = re.match(Date+"_"+telescope+"\.png", File)
             if IsPNGFile:
@@ -99,7 +108,7 @@ def main(argv=None):
                     except:
                         nImages = 0
                 Dates[-1][6] = nImages
-                
+            Dates[-1][7] = (Date in SystemStatusCharts)
             
     # for Date in Dates:
     #     print Date
@@ -154,6 +163,12 @@ def main(argv=None):
             HTML.write("      <td style='text-align:center'></td>\n")
         ## Write Number of Images
         HTML.write("      <td style='text-align:center'>%-5d</td>\n" % (DateInfo[6]))
+        ## Write Link to System Status Chart
+        if DateInfo[7]:
+            link = '../SystemStatus/{}.png'.format(DateInfo[0])
+            HTML.write("      <td style='text-align:center'><a href='{}'>Status Graph</a></td>\n".format(link))
+        else:
+            HTML.write("      <td style='text-align:center'>{}</td>\n".format(''))
 
     HTML.write("    </tr>\n")
     HTML.write("    </table>\n")
