@@ -14,6 +14,8 @@ import time
 import math
 import re
 import logging
+import numpy as np
+import copy
 
 from astropy import table
 from astropy.io import ascii
@@ -28,7 +30,7 @@ def TestDevice(address, nPings):
     MatchPingStats  = re.compile(".*round\-trip\smin/avg/max/stddev\s=\s([0-9\.]+)/([0-9\.]+)/([0-9\.]+)/([0-9\.]+)\sms.*")
 
     try:
-        result = subprocess.check_output(["ping", "-c "+str(nPings), address])
+        result = subprocess.check_output(["ping", "-c "+str(nPings), '-t 3', address])
     except:
         return 'down', 100, None
     else:
@@ -67,15 +69,8 @@ def main():
     ##-------------------------------------------------------------------------
     now = datetime.datetime.utcnow()
     DateString = now.strftime("%Y%m%dUT")
-    TimeString = now.strftime("%Y%m%dUTat%H:%M:%S", now)
-#     now = time.gmtime()
-#     DateString = time.strftime("%Y%m%dUT", now)
-#     TimeString = time.strftime("%Y%m%dUTat%H:%M:%S", now)
+    TimeString = now.strftime("%Y%m%dUTat%H:%M:%S")
     HourDecimal = now.hour + now.minute/60. + now.second/3600.
-    if HourDecimal > 10:
-        HSTDecimal = HourDecimal - 10.
-    else:
-        HSTDecimal = HourDecimal + 24. - 10.
     homePath = os.path.expandvars("$HOME")
     LogFileName = os.path.join(homePath, "IQMon", "Logs", "SystemStatus", DateString+"_Log.txt")
     logger = logging.getLogger('Logger')
@@ -156,8 +151,8 @@ def main():
     ## Write Results to Astropy Table and Save to ASCII File
     ##-------------------------------------------------------------------------
     ResultsFile = os.path.join(homePath, "IQMon", "Logs", "SystemStatus", DateString+".txt")
-    names = ['time', 'HST_hour', 'CPU Load(1m)', 'CPU Load(5m)', 'CPU Temperature', 'V5 NFS Mount', 'V20 NFS Mount']
-    types = ['a24',  'f4',       'f4',           'f4',           'f4',              'a6',           'a6']
+    names = ['time', 'CPU Load(1m)', 'CPU Load(5m)', 'CPU Temperature', 'V5 NFS Mount', 'V20 NFS Mount']
+    types = ['a24',  'f4',           'f4',           'f4',              'a6',           'a6']
     TypesDict = dict(zip(names, types))
     for Device in StatusValues.keys():
         names.append(Device)
@@ -176,7 +171,7 @@ def main():
                                   delimiter="\s",
                                   converters=converters)
     ## Add line to table
-    newResults = [TimeString, HSTDecimal, CPU_1m, CPU_5m, TempCPU, V5_mount, V20_mount]
+    newResults = [TimeString, CPU_1m, CPU_5m, TempCPU, V5_mount, V20_mount]
     for Device in StatusValues.keys():
         newResults.append(StatusValues[Device])
     ResultsTable.add_row(tuple(newResults))
@@ -188,11 +183,162 @@ def main():
     ## Read Results File and Make Plot of System Status for Today
     ##-------------------------------------------------------------------------
     plot_file = os.path.join(homePath, "IQMon", "Logs", "SystemStatus", DateString+".png")
-#     logger.info('Making plot: {}'.format(plot_file))
-#     fig = plt.fig()
-#     plt.plot(
-    logger.info('Done')
+    plot_positions = [ [0.050, 0.480, 0.700, 0.470], [0.760, 0.480, 0.190, 0.470],\
+                       [0.050, 0.280, 0.700, 0.180], [0.760, 0.280, 0.190, 0.180],\
+                       [0.050, 0.080, 0.700, 0.180], [0.760, 0.080, 0.190, 0.180] ]
 
+    logger.info('Making plot: {}'.format(plot_file))
+    dpi=100
+    fig = plt.figure(figsize=(12,6), dpi=dpi)
+
+    time = [datetime.datetime.strptime(entry['time'], "%Y%m%dUTat%H:%M:%S") for entry in ResultsTable]
+    time_decimal = [(val.hour + val.minute/60. + val.second/3600.) for val in time]
+    V5_NFSmount = [(val == True) for val in ResultsTable['V5 NFS Mount']]
+    V20_NFSmount = [(val == True) for val in ResultsTable['V20 NFS Mount']]
+    router_up = [(val == 'up') for val in ResultsTable['Router']]
+    altair_up = [(val == 'up') for val in ResultsTable['Altair']]
+    vega_up = [(val == 'up') for val in ResultsTable['Vega']]
+    black_up = [(val == 'up') for val in ResultsTable['Black']]
+    panoptes_up = [(val == 'up') for val in ResultsTable['Panoptes']]
+    cctv_up = [(val == 'up') for val in ResultsTable['CCTV']]
+
+    ## CPU Load
+    CPU_load_axes = plt.axes(plot_positions[0], xticklabels=[])
+    plt.title('System Status for {}'.format(DateString), size=10)
+    plt.plot(time_decimal, ResultsTable['CPU Load(1m)'], 'g,-', label='CPU Load (1m)')
+    plt.plot(time_decimal, ResultsTable['CPU Load(5m)'], 'b,-', label='CPU Load (5m)')
+    plt.xticks(np.linspace(0,24,25,endpoint=True))
+    plt.xlim(0,24)
+    plt.ylim(0,4)
+    plt.grid()
+    plt.ylabel('CPU Load', size=10)
+    plt.legend(loc='best', fontsize=10)
+
+    ## CPU Temperature
+    CPU_temp_axes = CPU_load_axes.twinx()
+    plt.plot(time_decimal, ResultsTable['CPU Temperature'], 'r,-')
+    plt.ylim(0,200)
+    plt.yticks([])
+    plt.xticks(np.linspace(0,24,25,endpoint=True))
+    plt.xlim(0,24)
+
+    ## Recent CPU Load
+    CPU_load_axes2 = plt.axes(plot_positions[1], xticklabels=[], yticklabels=[])
+    plt.plot(time_decimal, ResultsTable['CPU Load(1m)'], 'g,-', label='CPU Load (1m)')
+    plt.plot(time_decimal, ResultsTable['CPU Load(5m)'], 'b,-', label='CPU Load (5m)')
+    plt.xticks(np.linspace(0,24,25,endpoint=True))
+    if HourDecimal > 1:
+        plt.xlim(HourDecimal-1,HourDecimal+0.1)
+    else:
+        plt.xlim(0,1.1)
+    plt.ylim(0,4)
+    plt.grid()
+
+    ## Recent CPU Temperature
+    CPU_temp_axes2 = CPU_load_axes2.twinx()
+    CPU_temp_axes2.set_ylabel('CPU Temperature', color='r', size=10)
+    plt.plot(time_decimal, ResultsTable['CPU Temperature'], 'r,-')
+    plt.ylim(0,200)
+    plt.yticks(np.linspace(0,200,11,endpoint=True), color='r', size=10)
+    plt.xticks(np.linspace(0,24,25,endpoint=True))
+    if HourDecimal > 1:
+        plt.xlim(HourDecimal-1,HourDecimal+0.1)
+    else:
+        plt.xlim(0,1.1)
+
+
+
+    ## Computer Status
+    fig.add_axes(plot_positions[2], xticklabels=[], yticklabels=['Dn', 'Up'])
+    plt.plot(time_decimal, router_up, 'b^',\
+             alpha=0.5,mew=0,\
+             label='Router')
+    plt.plot(time_decimal, vega_up, 'bv',\
+             alpha=0.5,mew=0,\
+             label='Vega (V5)')
+    plt.plot(time_decimal, black_up, 'b>',\
+             alpha=0.5,mew=0,\
+             label='Black (V20)')
+    plt.plot(time_decimal, cctv_up, 'bs',\
+             alpha=0.5,mew=0,\
+             label='CCTV')
+    plt.plot(time_decimal, panoptes_up, 'g<',\
+             alpha=0.5,mew=0,\
+             label='Panoptes')
+    plt.xticks(np.linspace(0,24,25,endpoint=True))
+    plt.xlim(0,24)
+    plt.ylim(-0.2,1.2)
+    plt.yticks([0,1])
+    plt.legend(loc='best', fontsize=8)
+    plt.grid()
+    plt.ylabel('Computer Status', size=10)
+
+    ## Recent Computer Status
+    fig.add_axes(plot_positions[3], xticklabels=[], yticklabels=[])
+    plt.plot(time_decimal, router_up, 'b^',\
+             alpha=0.5,mew=0,\
+             label='Router')
+    plt.plot(time_decimal, vega_up, 'bv',\
+             alpha=0.5,mew=0,\
+             label='Vega (V5)')
+    plt.plot(time_decimal, black_up, 'b>',\
+             alpha=0.5,mew=0,\
+             label='Black (V20)')
+    plt.plot(time_decimal, cctv_up, 'bs',\
+             alpha=0.5,mew=0,\
+             label='CCTV')
+    plt.plot(time_decimal, panoptes_up, 'g<',\
+             alpha=0.5,mew=0,\
+             label='Panoptes')
+    plt.xticks(np.linspace(0,24,25,endpoint=True))
+    if HourDecimal > 1:
+        plt.xlim(HourDecimal-1,HourDecimal+0.1)
+    else:
+        plt.xlim(0,1.1)
+    plt.ylim(-0.2,1.2)
+    plt.yticks([0,1])
+    plt.grid()
+
+
+    ## NFS Mount Status
+    fig.add_axes(plot_positions[4], yticklabels=['N', 'Y'])
+    plt.plot(time_decimal, V5_NFSmount, 'b^',\
+             alpha=0.5,mew=0,\
+             label='V5 NFS Mount')
+    plt.plot(time_decimal, V20_NFSmount, 'bv',\
+             alpha=0.5,mew=0,\
+             label='V20 NFS Mount')
+    plt.xticks(np.linspace(0,24,25,endpoint=True))
+    plt.xlim(0,24)
+    plt.ylim(-0.2,1.2)
+    plt.yticks([0,1])
+    plt.legend(loc='best', fontsize=10)
+    plt.grid()
+    plt.ylabel('NFS Mounts', size=10)
+    plt.xlabel('Time (UT Hours)', size=10)
+
+    ## Recent NFS Mount Status
+    fig.add_axes(plot_positions[5], yticklabels=[])
+    plt.plot(time_decimal, V5_NFSmount, 'b^',\
+             alpha=0.5,mew=0,\
+             label='V5 NFS Mount')
+    plt.plot(time_decimal, V20_NFSmount, 'bv',\
+             alpha=0.5,mew=0,\
+             label='V20 NFS Mount')
+    plt.xticks(np.linspace(0,24,25,endpoint=True))
+    if HourDecimal > 1:
+        plt.xlim(HourDecimal-1,HourDecimal+0.1)
+    else:
+        plt.xlim(0,1.1)
+    plt.ylim(-0.2,1.2)
+    plt.yticks([0,1])
+    plt.grid()
+    plt.xlabel('Time (UT Hours)', size=10)
+
+
+
+    plt.savefig(plot_file, dpi=dpi)
+    logger.info('Done')
 
 
 
