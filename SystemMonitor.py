@@ -137,13 +137,16 @@ def main():
     ##-------------------------------------------------------------------------
     ## Check for NFS Mounts
     ##-------------------------------------------------------------------------
-    V5_mount = os.path.exists(os.path.join('/', 'Volumes', 'Data_V5'))
-    V20_mount = os.path.exists(os.path.join('/', 'Volumes', 'Data_V20'))
-    if not (V5_mount and V20_mount):
+    if os.path.exists(os.path.join('/', 'Volumes', 'Data_V5')):
+        V5_mount = 'up'
+    else:
+        V5_mount = 'down'
+    if os.path.exists(os.path.join('/', 'Volumes', 'Data_V20')):
+        V20_mount = 'up'
+    else:
+        V20_mount = 'down'
+    if (V5_mount == 'down') or (V20_mount == 'down'):
         subprocess.call(['open', os.path.join(os.path.expanduser('~vysosuser'), 'bin', 'ConnectToData.app')])
-#         time.sleep(30)
-#         V5_mount = os.path.exists(os.path.join('/', 'Volumes', 'Data_V5'))
-#         V20_mount = os.path.exists(os.path.join('/', 'Volumes', 'Data_V20'))
 
 
 
@@ -193,8 +196,10 @@ def main():
 
     time = [datetime.datetime.strptime(entry['time'], "%Y%m%dUTat%H:%M:%S") for entry in ResultsTable]
     time_decimal = [(val.hour + val.minute/60. + val.second/3600.) for val in time]
-    V5_NFSmount = [(val == True) for val in ResultsTable['V5 NFS Mount']]
-    V20_NFSmount = [(val == True) for val in ResultsTable['V20 NFS Mount']]
+
+    V5_NFSmount = [(val == 'up') for val in ResultsTable['V5 NFS Mount']]
+    V20_NFSmount = [(val == 'up') for val in ResultsTable['V20 NFS Mount']]
+
     router_up = [(val == 'up') for val in ResultsTable['Router']]
     altair_up = [(val == 'up') for val in ResultsTable['Altair']]
     vega_up = [(val == 'up') for val in ResultsTable['Vega']]
