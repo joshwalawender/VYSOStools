@@ -115,5 +115,7 @@ def main(argv=None):
     else:
         print "No Images or Logs directory for this night"
 
+
 if __name__ == "__main__":
-    sys.exit(main())
+    main()
+
