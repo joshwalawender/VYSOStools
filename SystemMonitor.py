@@ -86,7 +86,7 @@ def main():
     logger.addHandler(LogFileHandler)
 
     ##-------------------------------------------------------------------------
-    ## Get CPU Load over Last 1 minute
+    ## Get CPU Load
     ##-------------------------------------------------------------------------
     IOStatOutput = subprocess.check_output('iostat')
     idx_1m = IOStatOutput.split("\n")[1].split().index("1m")
@@ -186,9 +186,9 @@ def main():
     ## Read Results File and Make Plot of System Status for Today
     ##-------------------------------------------------------------------------
     plot_file = os.path.join(homePath, "IQMon", "Logs", "SystemStatus", DateString+".png")
-    plot_positions = [ [0.050, 0.480, 0.700, 0.470], [0.760, 0.480, 0.190, 0.470],\
-                       [0.050, 0.280, 0.700, 0.180], [0.760, 0.280, 0.190, 0.180],\
-                       [0.050, 0.080, 0.700, 0.180], [0.760, 0.080, 0.190, 0.180] ]
+    plot_positions = [ [0.050, 0.480, 0.650, 0.470], [0.720, 0.480, 0.230, 0.470],\
+                       [0.050, 0.280, 0.650, 0.180], [0.720, 0.280, 0.230, 0.180],\
+                       [0.050, 0.080, 0.650, 0.180], [0.720, 0.080, 0.230, 0.180] ]
 
     logger.info('Making plot: {}'.format(plot_file))
     dpi=100
@@ -209,43 +209,48 @@ def main():
 
     ## CPU Load
     CPU_load_axes = plt.axes(plot_positions[0], xticklabels=[])
+    CPU_load_ylims = (0,6)
     plt.title('System Status for {}'.format(DateString), size=10)
     plt.plot(time_decimal, ResultsTable['CPU Load(1m)'], 'g,-', label='CPU Load (1m)')
     plt.plot(time_decimal, ResultsTable['CPU Load(5m)'], 'b,-', label='CPU Load (5m)')
+    plt.plot(time_decimal, ResultsTable['CPU Temperature'], 'r,-', label='CPU Temperature')
+    plt.plot([HourDecimal, HourDecimal], [-100,100], 'g-', alpha=0.4)
     plt.xticks(np.linspace(0,24,25,endpoint=True))
     plt.xlim(0,24)
-    plt.ylim(0,4)
+    plt.ylim(CPU_load_ylims)
     plt.grid()
     plt.ylabel('CPU Load', size=10)
     plt.legend(loc='best', fontsize=10)
 
     ## CPU Temperature
     CPU_temp_axes = CPU_load_axes.twinx()
+    CPU_temp_ylims = (80,200)
     plt.plot(time_decimal, ResultsTable['CPU Temperature'], 'r,-')
-    plt.ylim(0,200)
     plt.yticks([])
     plt.xticks(np.linspace(0,24,25,endpoint=True))
+    plt.ylim(CPU_temp_ylims)
     plt.xlim(0,24)
 
     ## Recent CPU Load
     CPU_load_axes2 = plt.axes(plot_positions[1], xticklabels=[], yticklabels=[])
     plt.plot(time_decimal, ResultsTable['CPU Load(1m)'], 'g,-', label='CPU Load (1m)')
     plt.plot(time_decimal, ResultsTable['CPU Load(5m)'], 'b,-', label='CPU Load (5m)')
-    plt.xticks(np.linspace(0,24,25,endpoint=True))
+    plt.plot([HourDecimal, HourDecimal], [-100,100], 'g-', alpha=0.4)
+    plt.xticks(np.arange(0,24,0.25))
     if HourDecimal > 1:
         plt.xlim(HourDecimal-1,HourDecimal+0.1)
     else:
         plt.xlim(0,1.1)
-    plt.ylim(0,4)
+    plt.ylim(CPU_load_ylims)
     plt.grid()
 
     ## Recent CPU Temperature
     CPU_temp_axes2 = CPU_load_axes2.twinx()
     CPU_temp_axes2.set_ylabel('CPU Temperature', color='r', size=10)
     plt.plot(time_decimal, ResultsTable['CPU Temperature'], 'r,-')
-    plt.ylim(0,200)
     plt.yticks(np.linspace(0,200,11,endpoint=True), color='r', size=10)
-    plt.xticks(np.linspace(0,24,25,endpoint=True))
+    plt.xticks(np.arange(0,24,0.25))
+    plt.ylim(CPU_temp_ylims)
     if HourDecimal > 1:
         plt.xlim(HourDecimal-1,HourDecimal+0.1)
     else:
@@ -270,6 +275,7 @@ def main():
     plt.plot(time_decimal, panoptes_up, 'g<',\
              alpha=0.5,mew=0,\
              label='Panoptes')
+    plt.plot([HourDecimal, HourDecimal], [-100,100], 'g-', alpha=0.4)
     plt.xticks(np.linspace(0,24,25,endpoint=True))
     plt.xlim(0,24)
     plt.ylim(-0.2,1.2)
@@ -295,7 +301,8 @@ def main():
     plt.plot(time_decimal, panoptes_up, 'g<',\
              alpha=0.5,mew=0,\
              label='Panoptes')
-    plt.xticks(np.linspace(0,24,25,endpoint=True))
+    plt.plot([HourDecimal, HourDecimal], [-100,100], 'g-', alpha=0.4)
+    plt.xticks(np.arange(0,24,0.25))
     if HourDecimal > 1:
         plt.xlim(HourDecimal-1,HourDecimal+0.1)
     else:
@@ -306,13 +313,14 @@ def main():
 
 
     ## NFS Mount Status
-    fig.add_axes(plot_positions[4], yticklabels=['N', 'Y'])
+    fig.add_axes(plot_positions[4], yticklabels=['Dn', 'Up'])
     plt.plot(time_decimal, V5_NFSmount, 'b^',\
              alpha=0.5,mew=0,\
              label='V5 NFS Mount')
     plt.plot(time_decimal, V20_NFSmount, 'bv',\
              alpha=0.5,mew=0,\
              label='V20 NFS Mount')
+    plt.plot([HourDecimal, HourDecimal], [-100,100], 'g-', alpha=0.4)
     plt.xticks(np.linspace(0,24,25,endpoint=True))
     plt.xlim(0,24)
     plt.ylim(-0.2,1.2)
@@ -330,7 +338,8 @@ def main():
     plt.plot(time_decimal, V20_NFSmount, 'bv',\
              alpha=0.5,mew=0,\
              label='V20 NFS Mount')
-    plt.xticks(np.linspace(0,24,25,endpoint=True))
+    plt.plot([HourDecimal, HourDecimal], [-100,100], 'g-', alpha=0.4)
+    plt.xticks(np.arange(0,24,0.5))
     if HourDecimal > 1:
         plt.xlim(HourDecimal-1,HourDecimal+0.1)
     else:
