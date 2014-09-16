@@ -9,6 +9,7 @@ via crontab once every few minutes.
 import sys
 import os
 import subprocess
+import datetime
 import time
 import math
 import re
@@ -16,6 +17,8 @@ import logging
 
 from astropy import table
 from astropy.io import ascii
+
+import matplotlib.pyplot as plt
 
 ##-----------------------------------------------------------------------------
 ## Function to Ping and Address and Return Stats
@@ -62,9 +65,17 @@ def main():
     ##-------------------------------------------------------------------------
     ## Create Logger Object
     ##-------------------------------------------------------------------------
-    now = time.gmtime()
-    DateString = time.strftime("%Y%m%dUT", now)
-    TimeString = time.strftime("%Y%m%dUTat%H:%M:%S", now)
+    now = datetime.datetime.utcnow()
+    DateString = now.strftime("%Y%m%dUT")
+    TimeString = now.strftime("%Y%m%dUTat%H:%M:%S", now)
+#     now = time.gmtime()
+#     DateString = time.strftime("%Y%m%dUT", now)
+#     TimeString = time.strftime("%Y%m%dUTat%H:%M:%S", now)
+    HourDecimal = now.hour + now.minute/60. + now.second/3600.
+    if HourDecimal > 10:
+        HSTDecimal = HourDecimal - 10.
+    else:
+        HSTDecimal = HourDecimal + 24. - 10.
     homePath = os.path.expandvars("$HOME")
     LogFileName = os.path.join(homePath, "IQMon", "Logs", "SystemStatus", DateString+"_Log.txt")
     logger = logging.getLogger('Logger')
@@ -103,7 +114,7 @@ def main():
     ## Ping Devices
     ##-------------------------------------------------------------------------
     Addresses = {'Router': '192.168.1.1',\
-                 'Switch': '192.168.1.2',\
+#                  'Switch': '192.168.1.2',\
                  'OldRouter': '192.168.1.10',\
                  'Vega': '192.168.1.122',\
                  'Black': '192.168.1.112',\
@@ -145,9 +156,8 @@ def main():
     ## Write Results to Astropy Table and Save to ASCII File
     ##-------------------------------------------------------------------------
     ResultsFile = os.path.join(homePath, "IQMon", "Logs", "SystemStatus", DateString+".txt")
-    
-    names = ['time', 'CPU Load(1m)', 'CPU Load(5m)', 'CPU Temperature', 'V5 NFS Mount', 'V20 NFS Mount']
-    types = ['a24',  'f4',           'f4',           'f4',              'a6',           'a6']
+    names = ['time', 'HST_hour', 'CPU Load(1m)', 'CPU Load(5m)', 'CPU Temperature', 'V5 NFS Mount', 'V20 NFS Mount']
+    types = ['a24',  'f4',       'f4',           'f4',           'f4',              'a6',           'a6']
     TypesDict = dict(zip(names, types))
     for Device in StatusValues.keys():
         names.append(Device)
@@ -166,17 +176,25 @@ def main():
                                   delimiter="\s",
                                   converters=converters)
     ## Add line to table
-    newResults = [TimeString, CPU_1m, CPU_5m, TempCPU, V5_mount, V20_mount]
+    newResults = [TimeString, HSTDecimal, CPU_1m, CPU_5m, TempCPU, V5_mount, V20_mount]
     for Device in StatusValues.keys():
         newResults.append(StatusValues[Device])
     ResultsTable.add_row(tuple(newResults))
+    logger.info('Writing results to table: {}'.format(ResultsFile))
     ascii.write(ResultsTable, ResultsFile, Writer=ascii.basic.Basic)
 
 
     ##-------------------------------------------------------------------------
     ## Read Results File and Make Plot of System Status for Today
     ##-------------------------------------------------------------------------
-    
+    plot_file = os.path.join(homePath, "IQMon", "Logs", "SystemStatus", DateString+".png")
+#     logger.info('Making plot: {}'.format(plot_file))
+#     fig = plt.fig()
+#     plt.plot(
+    logger.info('Done')
+
+
+
 
 if __name__ == '__main__':
     main()
