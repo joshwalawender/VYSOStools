@@ -221,7 +221,7 @@ def MeasureImage(filename,\
     image.add_yaml_entry(yaml_file)
 
 
-if __name__ == '__main__':
+def main():
     ##-------------------------------------------------------------------------
     ## Parse Command Line Arguments
     ##-------------------------------------------------------------------------
@@ -251,3 +251,7 @@ if __name__ == '__main__':
                  clobber=args.clobber,\
                  nographics=args.nographics,\
                  verbose=args.verbose)
+
+
+if __name__ == '__main__':
+    main()
