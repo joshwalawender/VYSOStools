@@ -171,17 +171,27 @@ def MeasureImage(filename,\
         darks = ListDarks(image)
         if darks and len(darks) > 0:
             image.dark_subtract(darks)
+
+        image.tel.SExtractor_params['ANALYSIS_THRESH'] = 4.0
+        image.tel.SExtractor_params['DETECT_THRESH'] = 4.0        
         image.run_SExtractor()
         image.determine_FWHM()
 
 
-        image.run_SCAMP(catalog='UCAC-3')
-        image.run_SWarp()
-        image.read_header()
-        image.get_local_UCAC4(local_UCAC_command="/Users/vysosuser/UCAC4/access/u4test", local_UCAC_data="/Users/vysosuser/UCAC4/u4b")
-        image.run_SExtractor(assoc=True)
-        image.determine_FWHM()
-        image.measure_zero_point(plot=True)
+        if telescope == 'V20':
+            image.run_SCAMP(catalog='UCAC-3')
+            image.run_SWarp()
+            image.read_header()
+            image.get_local_UCAC4(local_UCAC_command="/Users/vysosuser/UCAC4/access/u4test", local_UCAC_data="/Users/vysosuser/UCAC4/u4b")
+            image.tel.SExtractor_params['ANALYSIS_THRESH'] = 1.5
+            image.tel.SExtractor_params['DETECT_THRESH'] = 1.5
+            image.run_SExtractor(assoc=True)
+            image.determine_FWHM()
+            image.measure_zero_point(plot=True)
+            mark_catalog = True
+        else:
+            mark_catalog = False
+
 
 
         if not nographics:
@@ -197,7 +207,7 @@ def MeasureImage(filename,\
                             make_hist=False,\
                             mark_pointing=True,\
                             mark_detected_stars=False,\
-                            mark_catalog_stars=False,\
+                            mark_catalog_stars=mark_catalog,\
                             mark_saturated=True,\
 #                             transform='rotate90')
                             )
@@ -207,7 +217,7 @@ def MeasureImage(filename,\
                             make_hist=False,\
                             mark_pointing=True,\
                             mark_detected_stars=True,\
-                            mark_catalog_stars=False,\
+                            mark_catalog_stars=mark_catalog,\
                             mark_saturated=True,\
                             crop=(1024, 1024, 3072, 3072),\
 #                             transform='rotate90')
