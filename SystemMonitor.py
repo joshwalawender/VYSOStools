@@ -101,9 +101,32 @@ def main():
     ##-------------------------------------------------------------------------
     TempHeader = subprocess.check_output(['tempmonitor', '-f', '-th'])
     TempOutput = subprocess.check_output(['tempmonitor', '-f', '-tv'])
-    idx_cpu = TempHeader.split(",").index('"SMC CPU A PROXIMITY"')
-    TempCPU = float(TempOutput.split(",")[idx_cpu])
-    logger.info("CPU Temperature = {0:.1f} F".format(TempCPU))
+
+    junk = dict(zip(TempHeader.split(","), TempOutput.split(",")))
+    temperatures = {}
+    for item in junk.keys():
+        name = item.strip('\n').strip('"')
+        if name in temperatures.keys():
+            name += ' 2'
+        if name == 'DATE AND TIME':
+            temperatures[name] = junk[item].strip('"')
+        else:
+            temperatures[name] = float(junk[item])
+            logger.debug('Temperature: {} = {:.1f}'.format(name, temperatures[name]))
+
+    try:
+        TempCPU = np.mean([temperatures['SMC CPU A PROXIMITY'],\
+                           temperatures['SMB NORTHBRIDGE CHIP DIE'],\
+                           temperatures['SMC CPU A HEAT SINK'],\
+                           temperatures['SMC CPU A DIODE'],\
+                           ])
+    except:
+        TempCPU = temperatures['SMC CPU A PROXIMITY']
+    logger.info("Average CPU Temperature = {0:.1f} F".format(TempCPU))
+
+    AmbTemp = temperatures['SMC AMBIENT AIR']
+    logger.info("Ambient Temperature = {0:.1f} F".format(AmbTemp))
+
 
     ##-------------------------------------------------------------------------
     ## Ping Devices
@@ -154,8 +177,8 @@ def main():
     ## Write Results to Astropy Table and Save to ASCII File
     ##-------------------------------------------------------------------------
     ResultsFile = os.path.join(homePath, "IQMon", "Logs", "SystemStatus", DateString+".txt")
-    names = ['time', 'CPU Load(1m)', 'CPU Load(5m)', 'CPU Temperature', 'V5 NFS Mount', 'V20 NFS Mount']
-    types = ['a24',  'f4',           'f4',           'f4',              'a6',           'a6']
+    names = ['time', 'CPU Load(1m)', 'CPU Load(5m)', 'CPU Temperature', 'Ambient Temperature', 'V5 NFS Mount', 'V20 NFS Mount']
+    types = ['a24',  'f4',           'f4',           'f4',              'f4',                  'a6',           'a6']
     TypesDict = dict(zip(names, types))
     for Device in StatusValues.keys():
         names.append(Device)
@@ -174,7 +197,7 @@ def main():
                                   delimiter="\s",
                                   converters=converters)
     ## Add line to table
-    newResults = [TimeString, CPU_1m, CPU_5m, TempCPU, V5_mount, V20_mount]
+    newResults = [TimeString, CPU_1m, CPU_5m, TempCPU, AmbTemp, V5_mount, V20_mount]
     for Device in StatusValues.keys():
         newResults.append(StatusValues[Device])
     ResultsTable.add_row(tuple(newResults))
@@ -214,18 +237,20 @@ def main():
     plt.plot(time_decimal, ResultsTable['CPU Load(1m)'], 'g,-', label='CPU Load (1m)')
     plt.plot(time_decimal, ResultsTable['CPU Load(5m)'], 'b,-', label='CPU Load (5m)')
     plt.plot(time_decimal, ResultsTable['CPU Temperature'], 'r,-', label='CPU Temperature')
+    plt.plot(time_decimal, ResultsTable['Ambient Temperature'], 'k,-', label='Ambient Temperature')
     plt.plot([HourDecimal, HourDecimal], [-100,100], 'g-', alpha=0.4)
     plt.xticks(np.linspace(0,24,25,endpoint=True))
     plt.xlim(0,24)
     plt.ylim(CPU_load_ylims)
     plt.grid()
     plt.ylabel('CPU Load', size=10)
-    plt.legend(loc='best', fontsize=10)
+    plt.legend(loc='best', fontsize=9)
 
     ## CPU Temperature
     CPU_temp_axes = CPU_load_axes.twinx()
     CPU_temp_ylims = (80,200)
     plt.plot(time_decimal, ResultsTable['CPU Temperature'], 'r,-')
+    plt.plot(time_decimal, ResultsTable['Ambient Temperature'], 'k,-')
     plt.yticks([])
     plt.xticks(np.linspace(0,24,25,endpoint=True))
     plt.ylim(CPU_temp_ylims)
@@ -246,8 +271,9 @@ def main():
 
     ## Recent CPU Temperature
     CPU_temp_axes2 = CPU_load_axes2.twinx()
-    CPU_temp_axes2.set_ylabel('CPU Temperature', color='r', size=10)
+    CPU_temp_axes2.set_ylabel('Temperature', color='r', size=10)
     plt.plot(time_decimal, ResultsTable['CPU Temperature'], 'r,-')
+    plt.plot(time_decimal, ResultsTable['Ambient Temperature'], 'k,-')
     plt.yticks(np.linspace(0,200,11,endpoint=True), color='r', size=10)
     plt.xticks(np.arange(0,24,0.25))
     plt.ylim(CPU_temp_ylims)
@@ -325,7 +351,7 @@ def main():
     plt.xlim(0,24)
     plt.ylim(-0.2,1.2)
     plt.yticks([0,1])
-    plt.legend(loc='best', fontsize=10)
+    plt.legend(loc='best', fontsize=9)
     plt.grid()
     plt.ylabel('NFS Mounts', size=10)
     plt.xlabel('Time (UT Hours)', size=10)
