@@ -178,15 +178,14 @@ def MeasureImage(filename,\
         image.run_SExtractor()
         image.determine_FWHM()
 
-
         if telescope == 'V20':
             image.run_SCAMP(catalog='UCAC-3')
             image.run_SWarp()
             image.read_header()
-            image.get_local_UCAC4(local_UCAC_command="/Users/vysosuser/UCAC4/access/u4test", local_UCAC_data="/Users/vysosuser/UCAC4/u4b")
+            image.get_catalog()
             image.tel.SExtractor_params['ANALYSIS_THRESH'] = 1.5
             image.tel.SExtractor_params['DETECT_THRESH'] = 1.5
-            image.run_SExtractor(assoc=True)
+            image.run_SExtractor(assoc=True, filter='I')
             image.determine_FWHM()
             image.measure_zero_point(plot=True)
             mark_catalog = True
