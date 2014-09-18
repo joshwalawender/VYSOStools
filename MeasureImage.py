@@ -193,43 +193,43 @@ def MeasureImage(filename,\
         else:
             mark_catalog = False
 
-
-
         if not nographics:
             image.make_PSF_plot()
 
-            if tel.name == 'VYSOS-5':
-                p1, p2 = (0.15, 0.50)
-            if tel.name == 'VYSOS-20':
-                p1, p2 = (3.0, 0.50)
-            small_JPEG = image.raw_file_basename+"_fullframe.jpg"
-            image.make_JPEG(small_JPEG, binning=3,\
-                            p1=p1, p2=p2,\
-                            make_hist=False,\
-                            mark_pointing=True,\
-                            mark_detected_stars=False,\
-                            mark_catalog_stars=mark_catalog,\
-                            mark_saturated=True,\
-#                             transform='rotate90')
-                            )
-            cropped_JPEG = image.raw_file_basename+"_crop.jpg"
-            image.make_JPEG(cropped_JPEG,\
-                            p1=p1, p2=p2,\
-                            make_hist=False,\
-                            mark_pointing=True,\
-                            mark_detected_stars=True,\
-                            mark_catalog_stars=mark_catalog,\
-                            mark_saturated=True,\
-                            crop=(1024, 1024, 3072, 3072),\
-#                             transform='rotate90')
-                            )
 
-        image.clean_up()
-        image.calculate_process_time()
+        if tel.name == 'VYSOS-5':
+            p1, p2 = (0.15, 0.50)
+        if tel.name == 'VYSOS-20':
+            p1, p2 = (3.0, 0.50)
+        small_JPEG = image.raw_file_basename+"_fullframe.jpg"
+        image.make_JPEG(small_JPEG, binning=3,\
+                        p1=p1, p2=p2,\
+                        make_hist=False,\
+                        mark_pointing=True,\
+                        mark_detected_stars=False,\
+                        mark_catalog_stars=True,\
+                        mark_saturated=True,\
+#                             transform='rotate90')
+                        )
+        cropped_JPEG = image.raw_file_basename+"_crop.jpg"
+        image.make_JPEG(cropped_JPEG,\
+                        p1=p1, p2=p2,\
+                        make_hist=False,\
+                        mark_pointing=True,\
+                        mark_detected_stars=True,\
+                        mark_catalog_stars=True,\
+                        mark_saturated=True,\
+                        crop=(1024, 1024, 3072, 3072),\
+#                             transform='rotate90')
+                        )
+
+    image.clean_up()
+    image.calculate_process_time()
 
     fields=["Date and Time", "Filename", "Alt", "Az", "Airmass", "MoonSep", "MoonIllum", "FWHM", "ellipticity", "PErr", "PosAng", "ZeroPoint", "nStars", "ProcessTime"]
     image.add_web_log_entry(html_file, fields=fields)
     image.add_yaml_entry(yaml_file)
+    image.logger.info('Done.')
 
 
 def main():
@@ -254,7 +254,7 @@ def main():
         help="File Name of Input Image File")
     parser.add_argument("-t", dest="telescope",
         required=False, type=str,
-        help="Telescope which tool the data ('V5' or 'V20')")
+        help="Telescope which took the data ('V5' or 'V20')")
     args = parser.parse_args()
 
     MeasureImage(args.filename,\
