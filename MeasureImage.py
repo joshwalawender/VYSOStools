@@ -54,17 +54,17 @@ def ListDarks(image):
     MasterDarkFile  = os.path.join(image.tel.temp_file_path, MasterDarkFilename)    
     ## Is that Master Dark File does not exist, see if the raw files exit to build one.
     if os.path.exists(MasterDarkFile):
-        image.logger.info("Found Master Dark: %s" % MasterDarkFilename)
+        image.logger.info("  Found Master Dark: %s" % MasterDarkFilename)
         return [MasterDarkFile]
     else:
-        image.logger.info("Could Not Find Master Dark.  Looking for raw frames.")
+        image.logger.info("  Could Not Find Master Dark.  Looking for raw frames.")
         Darks = []
         while NewDate > DateLimit:
             ## Look for this directory
             SearchPath = os.path.join(BaseDirectory, NewDateString, "Calibration")
             if os.path.exists(SearchPath):
                 ## Now look for darks in that directory
-                image.logger.debug("Looking for darks in {0}".format(SearchPath))
+                image.logger.debug("  Looking for darks in {0}".format(SearchPath))
                 Files = os.listdir(SearchPath)
                 for File in Files:
                     IsDark = re.match("Dark\-([0-9]{3})\-([0-9]{8})at([0-9]{6})\.fi?ts", File)
@@ -74,14 +74,14 @@ def ListDarks(image):
                             Darks.append(os.path.join(SearchPath, File))
                 if len(Darks) >= nDarksMin:
                     ## Once we have found enough dark files, return the list of dark files
-                    image.logger.info("Found %d dark files in %s" % (len(Darks), SearchPath))
+                    image.logger.info("  Found %d dark files in %s" % (len(Darks), SearchPath))
                     for Dark in Darks:
-                        image.logger.debug("Found Dark File: {0}".format(Dark))
+                        image.logger.debug("  Found Dark File: {0}".format(Dark))
                     return Darks
             NewDate = NewDate - OneDay
             NewDateString = datetime.datetime.strftime(NewDate, "%Y%m%dUT")
         if len(Darks) == 0:
-            image.logger.warning("No darks found to combine.")
+            image.logger.warning("  No darks found to combine.")
 
 
 ##-------------------------------------------------------------------------
@@ -225,7 +225,7 @@ def MeasureImage(filename,\
     image.clean_up()
     image.calculate_process_time()
 
-    fields=["Date and Time", "Filename", "Alt", "Az", "Airmass", "MoonSep", "MoonIllum", "FWHM", "ellipticity", "PErr", "PosAng", "ZeroPoint", "nStars", "ProcessTime"]
+    fields=["Date and Time", "Filename", "Alt", "Az", "Airmass", "MoonSep", "MoonIllum", "FWHM", "ellipticity", "PErr", "ZeroPoint", "nStars", "ProcessTime"]
     image.add_web_log_entry(html_file, fields=fields)
     image.add_yaml_entry(yaml_file)
     image.logger.info('Done.')
