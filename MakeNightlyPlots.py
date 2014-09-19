@@ -133,6 +133,8 @@ def ReadIQMonLog(logs_path, telescope, DateString, logger):
                     try:
                         with open(FullIQMonFile, 'r') as yaml_string:
                             image_list = yaml.load(yaml_string)
+                        assert isinstance(image_list, list)
+                        logger.info('  Read {} entries from {}'.format(len(image_list), File))
                     except:
                         logger.critical("Failed to Read IQMon Results File")
                         image_list = []
@@ -146,6 +148,7 @@ def ReadIQMonLog(logs_path, telescope, DateString, logger):
                                   'f4', 'f4', 'i4',\
                                   'f4', 'f4')
                         IQMonTable = table.Table(names=names, dtype=dtypes)
+                        
                         for entry in image_list:
                             decimal_time = TimeStringToDecimal(entry['exposure_start'][11:])
                             if entry['zero_point'] == 'None':
@@ -471,25 +474,20 @@ def MakePlots(DateString, telescope, logger):
         time_ticks_values = numpy.linspace(PlotStartUT,PlotEndUT,nUTHours,endpoint=True)
         
         if telescope == "V20":
-            plot_positions = [ ( [0.000, 0.760, 0.470, 0.240], [0.530, 0.760, 0.470, 0.240] ),
-                               ( [0.000, 0.580, 0.470, 0.155], [0.530, 0.495, 0.470, 0.240] ),
-                               ( [0.000, 0.495, 0.470, 0.075], [0.530, 0.245, 0.470, 0.240] ),
-                               ( [0.000, 0.330, 0.470, 0.155], [0.530, 0.000, 0.470, 0.235] ),
-                               ( [0.000, 0.165, 0.470, 0.155], None                         ),
-                               ( [0.000, 0.000, 0.470, 0.155], None                         ) ]
+            plot_positions = [ ( [0.000, 0.760, 0.465, 0.240], [0.535, 0.760, 0.465, 0.240] ),
+                               ( [0.000, 0.580, 0.465, 0.155], [0.535, 0.495, 0.465, 0.240] ),
+                               ( [0.000, 0.495, 0.465, 0.075], [0.535, 0.245, 0.465, 0.240] ),
+                               ( [0.000, 0.330, 0.465, 0.155], [0.535, 0.000, 0.465, 0.235] ),
+                               ( [0.000, 0.165, 0.465, 0.155], None                         ),
+                               ( [0.000, 0.000, 0.465, 0.155], None                         ) ]
         if telescope == "V5":
-            plot_positions = [ ( [0.000, 0.760, 0.460, 0.240], [0.540, 0.760, 0.460, 0.240] ),
-                               ( None                        , [0.540, 0.495, 0.460, 0.240] ),
-                               ( None                        , [0.540, 0.245, 0.460, 0.240] ),
-                               ( [0.000, 0.495, 0.460, 0.240], [0.540, 0.000, 0.460, 0.235] ),
-                               ( [0.000, 0.245, 0.460, 0.240], None                         ),
-                               ( [0.000, 0.000, 0.460, 0.235], None                         ) ]
+            plot_positions = [ ( [0.000, 0.760, 0.465, 0.240], [0.535, 0.760, 0.465, 0.240] ),
+                               ( None                        , [0.535, 0.495, 0.465, 0.240] ),
+                               ( None                        , [0.535, 0.245, 0.465, 0.240] ),
+                               ( [0.000, 0.495, 0.465, 0.240], [0.535, 0.000, 0.465, 0.235] ),
+                               ( [0.000, 0.245, 0.465, 0.240], None                         ),
+                               ( [0.000, 0.000, 0.465, 0.235], None                         ) ]
 
-#             plot_positions = [ ( [0.000, 0.765, 0.460, 0.235], [0.540, 0.765, 0.460, 0.235] ),
-#                                ( [0.000, 0.000, 0.000, 0.000], [0.540, 0.510, 0.460, 0.235] ),
-#                                ( [0.000, 0.510, 0.460, 0.235], [0.000, 0.000, 0.000, 0.000] ),
-#                                ( [0.000, 0.255, 0.460, 0.235], [0.540, 0.255, 0.460, 0.235] ),
-#                                ( [0.000, 0.000, 0.460, 0.235], [0.540, 0.000, 0.460, 0.235] ) ]
         logger.info("Writing Output File: "+PlotFileName)
         dpi=100
         Figure = pyplot.figure(figsize=(13,9.5), dpi=dpi)
