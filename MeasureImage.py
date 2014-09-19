@@ -93,6 +93,7 @@ def MeasureImage(filename,\
                  verbose=False,\
                  nographics=False,\
                  analyze_image=True,\
+                 zero_point=False,\
                  ):
 
     ##-------------------------------------------------------------------------
@@ -178,24 +179,33 @@ def MeasureImage(filename,\
         image.run_SExtractor()
         image.determine_FWHM()
 
-        if telescope == 'V20':
-            image.run_SCAMP(catalog='UCAC-3')
+        if zero_point:
+            if telescope == 'V20':
+                do = 1
+            if telescope == 'V5':
+                do = 5
+
+            image.run_SCAMP(catalog='UCAC-3', distortion_order=do)
             image.run_SWarp()
             image.read_header()
-            image.get_catalog()
+
             image.tel.SExtractor_params['ANALYSIS_THRESH'] = 1.5
             image.tel.SExtractor_params['DETECT_THRESH'] = 1.5
-            image.run_SExtractor(assoc=True, filter='I')
+            if telescope == 'V20':
+                image.get_catalog()
+                image.run_SExtractor(assoc=True, filter='I')
+            if telescope == 'V5':
+                image.get_local_UCAC4(local_UCAC_command='/Users/vysosuser/UCAC4/access/u4test',\
+                                      local_UCAC_data='/Users/vysosuser/UCAC4/u4b')
+                image.run_SExtractor(assoc=True, filter='i')
             image.determine_FWHM()
             image.measure_zero_point(plot=True)
             mark_catalog = True
-        else:
-            mark_catalog = False
 
         if not nographics:
             image.make_PSF_plot()
 
-
+    if not nographics:
         if tel.name == 'VYSOS-5':
             p1, p2 = (0.15, 0.50)
         if tel.name == 'VYSOS-20':
@@ -208,7 +218,6 @@ def MeasureImage(filename,\
                         mark_detected_stars=False,\
                         mark_catalog_stars=True,\
                         mark_saturated=True,\
-#                             transform='rotate90')
                         )
         cropped_JPEG = image.raw_file_basename+"_crop.jpg"
         image.make_JPEG(cropped_JPEG,\
@@ -219,7 +228,6 @@ def MeasureImage(filename,\
                         mark_catalog_stars=True,\
                         mark_saturated=True,\
                         crop=(1024, 1024, 3072, 3072),\
-#                             transform='rotate90')
                         )
 
     image.clean_up()
@@ -244,6 +252,9 @@ def main():
     parser.add_argument("--no-graphics",
         action="store_true", dest="nographics",
         default=False, help="Turn off generation of graphics")
+    parser.add_argument("-z", "--zp",
+        action="store_true", dest="zero_point",
+        default=False, help="Calculate zero point")
     parser.add_argument("-c", "--clobber",
         action="store_true", dest="clobber",
         default=False, help="Delete previous logs and summary files for this image. (default = False)")
@@ -260,6 +271,7 @@ def main():
                  telescope=args.telescope,\
                  clobber=args.clobber,\
                  nographics=args.nographics,\
+                 zero_point=args.zero_point,\
                  verbose=args.verbose)
 
 

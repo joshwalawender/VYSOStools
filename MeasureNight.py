@@ -56,11 +56,13 @@ def main(argv=None):
     ## Set Path to Data for this night
     if re.match("V5", args.telescope):
         VYSOSDATAPath = os.path.join("/Volumes", "Data_V5")
+        zp = False
     elif re.match("V20", args.telescope):
         VYSOSDATAPath = os.path.join("/Volumes", "Data_V20")
+        zp = True
     else:
         print("Telescope {0} does not match 'V5' or 'V20'".format(args.telescope))
-        sys.exit()
+        sys.exit(1)
     ImagesDirectory = os.path.join(VYSOSDATAPath, "Images", args.date)
     LogsDirectory = os.path.join(VYSOSDATAPath, "Logs", args.date)
     
@@ -105,7 +107,7 @@ def main(argv=None):
                     else:
                         clobber = False
                     try:
-                        MeasureImage.MeasureImage(os.path.join(ImagesDirectory, Image), clobber=clobber)
+                        MeasureImage.MeasureImage(os.path.join(ImagesDirectory, Image), clobber=clobber, zero_point=zp)
                     except:
                         print('WARNING:  MeasureImage failed on {}'.format(Image))
                         MeasureImage.MeasureImage(os.path.join(ImagesDirectory, Image), analyze_image=False)
