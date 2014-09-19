@@ -471,17 +471,25 @@ def MakePlots(DateString, telescope, logger):
         time_ticks_values = numpy.linspace(PlotStartUT,PlotEndUT,nUTHours,endpoint=True)
         
         if telescope == "V20":
-            plot_positions = [ ( [0.000, 0.765, 0.460, 0.235], [0.540, 0.765, 0.460, 0.235] ),
-                               ( [0.000, 0.675, 0.460, 0.070], [0.540, 0.510, 0.460, 0.235] ),
-                               ( [0.000, 0.430, 0.460, 0.235], [0.540, 0.420, 0.460, 0.070] ),
-                               ( [0.000, 0.255, 0.460, 0.155], [0.540, 0.255, 0.460, 0.155] ),
-                               ( [0.000, 0.000, 0.460, 0.235], [0.540, 0.000, 0.460, 0.235] ) ]
+            plot_positions = [ ( [0.000, 0.760, 0.470, 0.240], [0.530, 0.760, 0.470, 0.240] ),
+                               ( [0.000, 0.580, 0.470, 0.155], [0.530, 0.495, 0.470, 0.240] ),
+                               ( [0.000, 0.495, 0.470, 0.075], [0.530, 0.245, 0.470, 0.240] ),
+                               ( [0.000, 0.330, 0.470, 0.155], [0.530, 0.000, 0.470, 0.235] ),
+                               ( [0.000, 0.165, 0.470, 0.155], None                         ),
+                               ( [0.000, 0.000, 0.470, 0.155], None                         ) ]
         if telescope == "V5":
-            plot_positions = [ ( [0.000, 0.765, 0.460, 0.235], [0.540, 0.765, 0.460, 0.235] ),
-                               ( [0.000, 0.000, 0.000, 0.000], [0.540, 0.510, 0.460, 0.235] ),
-                               ( [0.000, 0.510, 0.460, 0.235], [0.000, 0.000, 0.000, 0.000] ),
-                               ( [0.000, 0.255, 0.460, 0.235], [0.540, 0.255, 0.460, 0.235] ),
-                               ( [0.000, 0.000, 0.460, 0.235], [0.540, 0.000, 0.460, 0.235] ) ]
+            plot_positions = [ ( [0.000, 0.760, 0.460, 0.240], [0.540, 0.760, 0.460, 0.240] ),
+                               ( None                        , [0.540, 0.495, 0.460, 0.240] ),
+                               ( None                        , [0.540, 0.245, 0.460, 0.240] ),
+                               ( [0.000, 0.495, 0.460, 0.240], [0.540, 0.000, 0.460, 0.235] ),
+                               ( [0.000, 0.245, 0.460, 0.240], None                         ),
+                               ( [0.000, 0.000, 0.460, 0.235], None                         ) ]
+
+#             plot_positions = [ ( [0.000, 0.765, 0.460, 0.235], [0.540, 0.765, 0.460, 0.235] ),
+#                                ( [0.000, 0.000, 0.000, 0.000], [0.540, 0.510, 0.460, 0.235] ),
+#                                ( [0.000, 0.510, 0.460, 0.235], [0.000, 0.000, 0.000, 0.000] ),
+#                                ( [0.000, 0.255, 0.460, 0.235], [0.540, 0.255, 0.460, 0.235] ),
+#                                ( [0.000, 0.000, 0.460, 0.235], [0.540, 0.000, 0.460, 0.235] ) ]
         logger.info("Writing Output File: "+PlotFileName)
         dpi=100
         Figure = pyplot.figure(figsize=(13,9.5), dpi=dpi)
@@ -550,26 +558,47 @@ def MakePlots(DateString, telescope, logger):
             pyplot.xlim(PlotStartUT,PlotEndUT)
             pyplot.fill_between(MoonTimes, 0, MoonAlts, where=MoonAlts>0, color='yellow', alpha=MoonFill)
 
+        ###########################################################
+        ## Temperature Differences
+        if (telescope == "V20" and FoundV20Env):
+            Figure.add_axes(plot_positions[1][0], xticklabels=[])
+            pyplot.plot(V20EnvTable['Time'], V20EnvTable['TubeTemp']-V20EnvTable['OutsideTemp'], 'go-', \
+                        markersize=2, markeredgewidth=0, drawstyle="default", \
+                        label="Tube Temp")
+            pyplot.plot(V20EnvTable['Time'], V20EnvTable['PrimaryTemp']-V20EnvTable['OutsideTemp'], 'ro-', \
+                        markersize=2, markeredgewidth=0, drawstyle="default", \
+                        label="Mirror Temp")
+            pyplot.plot(V20EnvTable['Time'], V20EnvTable['DomeTemp']-V20EnvTable['OutsideTemp'], 'co-', \
+                        markersize=2, markeredgewidth=0, drawstyle="default", \
+                        label="Dome Temp")
+            pyplot.plot([PlotStartUT,PlotEndUT], [0,0], 'k-')
+            pyplot.xticks(numpy.linspace(PlotStartUT,PlotEndUT,nUTHours,endpoint=True))
+            pyplot.xlim(PlotStartUT,PlotEndUT)
+            pyplot.ylim(-2.25,4.5)
+            pyplot.ylabel("Difference (F)")
+#             pyplot.legend(loc='best', prop={'size':10})
+            pyplot.grid()
+
             ## Add Fan Power (if VYSOS-20)
-            if telescope == "V20" and FoundV20Env:
-                Figure.add_axes(plot_positions[1][0], xticklabels=[])
-                pyplot.plot(V20EnvTable['Time'], V20EnvTable['DomeFan'], 'co-', \
-                            markersize=2, markeredgewidth=0, drawstyle="default", \
-                            label="Dome Fan")
-                pyplot.plot(V20EnvTable['Time'], V20EnvTable['FanPower'], 'bo-', \
-                            markersize=2, markeredgewidth=0, drawstyle="default", \
-                            label="Mirror Fans")
-                pyplot.xticks(numpy.linspace(PlotStartUT,PlotEndUT,nUTHours,endpoint=True))
-                pyplot.xlim(PlotStartUT,PlotEndUT)
-                pyplot.ylim(-10,110)
-                pyplot.yticks(numpy.linspace(0,100,3,endpoint=True))
-                pyplot.ylabel('Fan (%)')
-                pyplot.grid()
+            Figure.add_axes(plot_positions[2][0], xticklabels=[])
+            pyplot.plot(V20EnvTable['Time'], V20EnvTable['DomeFan'], 'co-', \
+                        markersize=2, markeredgewidth=0, drawstyle="default", \
+                        label="Dome Fan")
+            pyplot.plot(V20EnvTable['Time'], V20EnvTable['FanPower'], 'bo-', \
+                        markersize=2, markeredgewidth=0, drawstyle="default", \
+                        label="Mirror Fans")
+            pyplot.xticks(numpy.linspace(PlotStartUT,PlotEndUT,nUTHours,endpoint=True))
+            pyplot.xlim(PlotStartUT,PlotEndUT)
+            pyplot.ylim(-10,110)
+            pyplot.yticks(numpy.linspace(0,100,3,endpoint=True))
+            pyplot.ylabel('Fan (%)')
+            pyplot.grid()
+
 
         ###########################################################
         ## Sky Condition (Cloudiness)
         if FoundV20Env or FoundV5Env:
-            Figure.add_axes(plot_positions[2][0], xticklabels=[])
+            Figure.add_axes(plot_positions[3][0], xticklabels=[])
             if telescope == "V20" and FoundV20Env:
                 if FoundV5Env:
                     pyplot.plot(V5EnvTable['Time'], V5EnvTable['SkyTemp'], 'ko-', alpha=0.2, \
@@ -601,7 +630,7 @@ def MakePlots(DateString, telescope, logger):
         ###########################################################
         ## Humidity
         if FoundV20Env or FoundV5Env:
-            Figure.add_axes(plot_positions[3][0], xticklabels=[])
+            Figure.add_axes(plot_positions[4][0], xticklabels=[])
             if telescope == "V5" and FoundV5Env:
                 pyplot.plot(V5EnvTable['Time'], V5EnvTable['Humidity'], 'bo-', \
                             markersize=2, markeredgewidth=0, drawstyle="default", \
@@ -633,7 +662,7 @@ def MakePlots(DateString, telescope, logger):
         ###########################################################
         ## Wind Speed
         if FoundV20Env or FoundV5Env:
-            Figure.add_axes(plot_positions[4][0])
+            Figure.add_axes(plot_positions[5][0])
             if telescope == "V20" and FoundV20Env:
                 if FoundV5Env:
                     pyplot.plot(V5EnvTable['Time'], V5EnvTable['WindSpeed'], 'ko-', alpha=0.2, \
@@ -709,61 +738,49 @@ def MakePlots(DateString, telescope, logger):
 
 
         ###########################################################
-        ## Focus Position (if VYSOS-5) or Temperature Differences (if VYSOS-20)
-        Figure.add_axes(plot_positions[1][1], xticklabels=[])
-        if (telescope == "V5" and FoundV5Env and FoundIQMonFile):
-            pyplot.plot(V5EnvTable['Time'], V5EnvTable['FocusPos'], 'bo-', \
-                        markersize=2, markeredgewidth=0, drawstyle="default", \
-                        label="Focus Position")
-            pyplot.xticks(numpy.linspace(PlotStartUT,PlotEndUT,nUTHours,endpoint=True))
-            pyplot.xlim(PlotStartUT,PlotEndUT)
-            ## Clip the extreme values off of the focus position list (bad values?)
-            focus_values = [entry['FocusPos'] for entry in V5EnvTable if entry['Time'] > PlotStartUT and entry['Time'] < PlotEndUT and entry['FocusPos'] > 0]
-            ylimlower = numpy.percentile(focus_values, 1)
-            ylimupper = numpy.percentile(focus_values, 99)
-            ylimrange = max([100 , ylimupper - ylimlower])
-            pyplot.ylim(ylimlower-0.2*ylimrange, ylimupper+0.2*ylimrange)
-            pyplot.ylabel("Focus Position (steps)")
-            pyplot.legend(loc='best', prop={'size':10})
-            pyplot.grid()
-        if (telescope == "V20" and FoundV20Env):
-            pyplot.plot(V20EnvTable['Time'], V20EnvTable['TubeTemp']-V20EnvTable['OutsideTemp'], 'go-', \
-                        markersize=2, markeredgewidth=0, drawstyle="default", \
-                        label="Tube Temp")
-            pyplot.plot(V20EnvTable['Time'], V20EnvTable['PrimaryTemp']-V20EnvTable['OutsideTemp'], 'ro-', \
-                        markersize=2, markeredgewidth=0, drawstyle="default", \
-                        label="Mirror Temp")
-            pyplot.plot(V20EnvTable['Time'], V20EnvTable['DomeTemp']-V20EnvTable['OutsideTemp'], 'co-', \
-                        markersize=2, markeredgewidth=0, drawstyle="default", \
-                        label="Dome Temp")
-            pyplot.plot([PlotStartUT,PlotEndUT], [0,0], 'k-')
-            pyplot.xticks(numpy.linspace(PlotStartUT,PlotEndUT,nUTHours,endpoint=True))
-            pyplot.xlim(PlotStartUT,PlotEndUT)
-            pyplot.ylim(-2.25,4.5)
-            pyplot.ylabel("Temperature Difference (F)")
-            pyplot.legend(loc='best', prop={'size':10})
-            pyplot.grid()
+        ## Zero Point
+        if FoundIQMonFile:
+            zero_points = [entry['ZeroPoint'] for entry in IQMonTable if entry['ZeroPoint']]
+            times = [entry['ExpStart'] for entry in IQMonTable if entry['ZeroPoint']]
+            if len(zero_points) > 0:
+                Figure.add_axes(plot_positions[1][1], xticklabels=[])
+                pyplot.plot(times, zero_points, 'k.', label="Zero Point")
+                if tel.config['threshold_zeropoint'] != 'None':
+                    pyplot.plot([PlotStartUT,PlotEndUT], [tel.config['threshold_zeropoint'], tel.config['threshold_zeropoint']], 'r-')
+                pyplot.ylabel("Zero Point")
+                pyplot.yticks(numpy.arange(0,25,1))
+                reject_percent = 1.0
+                ymin = math.floor(numpy.percentile(zero_points, reject_percent))-1
+                ymax = math.ceil(numpy.percentile(zero_points, 100-reject_percent))+1
+                if tel.config['threshold_zeropoint'] != 'None':
+                    pyplot.ylim(min([ymin, math.floor(tel.config['threshold_zeropoint']-0.5)]), ymax)
+                else:
+                    pyplot.ylim(ymin, ymax)
+                pyplot.xticks(numpy.linspace(PlotStartUT,PlotEndUT,nUTHours,endpoint=True))
+                pyplot.xlim(PlotStartUT,PlotEndUT)
+                pyplot.grid()
 
-            ## Add Fan Power (if VYSOS-20)
-            Figure.add_axes(plot_positions[2][1], xticklabels=[])
-            pyplot.plot(V20EnvTable['Time'], V20EnvTable['DomeFan'], 'co-', \
-                        markersize=2, markeredgewidth=0, drawstyle="default", \
-                        label="Dome Fan")
-            pyplot.plot(V20EnvTable['Time'], V20EnvTable['FanPower'], 'bo-', \
-                        markersize=2, markeredgewidth=0, drawstyle="default", \
-                        label="Mirror Fans")
-            pyplot.xticks(numpy.linspace(PlotStartUT,PlotEndUT,nUTHours,endpoint=True))
-            pyplot.xlim(PlotStartUT,PlotEndUT)
-            pyplot.ylim(-10,110)
-            pyplot.yticks(numpy.linspace(0,100,3,endpoint=True))
-            pyplot.ylabel('Fan (%)')
-            pyplot.grid()
+
+#         if (telescope == "V5" and FoundV5Env and FoundIQMonFile):
+#             pyplot.plot(V5EnvTable['Time'], V5EnvTable['FocusPos'], 'bo-', \
+#                         markersize=2, markeredgewidth=0, drawstyle="default", \
+#                         label="Focus Position")
+#             pyplot.xticks(numpy.linspace(PlotStartUT,PlotEndUT,nUTHours,endpoint=True))
+#             pyplot.xlim(PlotStartUT,PlotEndUT)
+#             focus_values = [entry['FocusPos'] for entry in V5EnvTable if entry['Time'] > PlotStartUT and entry['Time'] < PlotEndUT and entry['FocusPos'] > 0]
+#             ylimlower = numpy.percentile(focus_values, 1)
+#             ylimupper = numpy.percentile(focus_values, 99)
+#             ylimrange = max([100 , ylimupper - ylimlower])
+#             pyplot.ylim(ylimlower-0.2*ylimrange, ylimupper+0.2*ylimrange)
+#             pyplot.ylabel("Focus Position (steps)")
+#             pyplot.legend(loc='best', prop={'size':10})
+#             pyplot.grid()
 
 
         ###########################################################
         ## Ellipticity vs. Time
         if FoundIQMonFile:
-            Figure.add_axes(plot_positions[3][1], xticklabels=[])
+            Figure.add_axes(plot_positions[2][1], xticklabels=[])
             pyplot.plot(IQMonTable['ExpStart'], IQMonTable['Ellipticity'], 'b.', drawstyle="steps-post", label="Ellipticity")
             pyplot.plot([PlotStartUT,PlotEndUT],\
                         [tel.config['threshold_ellipticity'], tel.config['threshold_ellipticity']],\
@@ -778,7 +795,7 @@ def MakePlots(DateString, telescope, logger):
         ###########################################################
         ## Pointing Error vs. Time
         if FoundIQMonFile:
-            Figure.add_axes(plot_positions[4][1])
+            Figure.add_axes(plot_positions[3][1])
             pyplot.plot(IQMonTable['ExpStart'], IQMonTable['pointing_error (arcmin)'], 'b.', drawstyle="steps-post", label="IQMon")
             pyplot.plot([PlotStartUT,PlotEndUT],\
                         [tel.config['threshold_pointing_err'], tel.config['threshold_pointing_err']],\
@@ -786,9 +803,7 @@ def MakePlots(DateString, telescope, logger):
             pyplot.xticks(numpy.linspace(PlotStartUT,PlotEndUT,nUTHours,endpoint=True))
             pyplot.xlim(PlotStartUT,PlotEndUT)
             pyplot.ylabel("Pointing Error (arcmin)")
-            if telescope == "V5": PErrPlotMax = 10
-            if telescope == "V20": PErrPlotMax = 4
-            pyplot.ylim(0,PErrPlotMax)
+            pyplot.ylim(0,10)
             pyplot.grid()
 
         pyplot.savefig(PlotFile, dpi=dpi, bbox_inches='tight', pad_inches=0.10)
