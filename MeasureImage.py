@@ -180,12 +180,7 @@ def MeasureImage(filename,\
         image.determine_FWHM()
 
         if zero_point:
-            if telescope == 'V20':
-                do = 1
-            if telescope == 'V5':
-                do = 5
-
-            image.run_SCAMP(catalog='UCAC-3', distortion_order=do)
+            image.run_SCAMP(catalog='UCAC-3')
             image.run_SWarp()
             image.read_header()
 
@@ -195,8 +190,9 @@ def MeasureImage(filename,\
                 image.get_catalog()
                 image.run_SExtractor(assoc=True, filter='I')
             if telescope == 'V5':
-                image.get_local_UCAC4(local_UCAC_command='/Users/vysosuser/UCAC4/access/u4test',\
-                                      local_UCAC_data='/Users/vysosuser/UCAC4/u4b')
+                local_UCAC = os.path.join(os.path.expanduser('~'), 'UCAC4')
+                image.get_local_UCAC4(local_UCAC_command=os.path.join(local_UCAC, 'access', 'u4test'),\
+                                      local_UCAC_data=os.path.join(local_UCAC, 'u4b'))
                 image.run_SExtractor(assoc=True, filter='i')
             image.determine_FWHM()
             image.measure_zero_point(plot=True)
@@ -215,8 +211,8 @@ def MeasureImage(filename,\
                         p1=p1, p2=p2,\
                         make_hist=False,\
                         mark_pointing=True,\
-                        mark_detected_stars=False,\
-                        mark_catalog_stars=True,\
+                        mark_detected_stars=True,\
+                        mark_catalog_stars=False,\
                         mark_saturated=True,\
                         )
         cropped_JPEG = image.raw_file_basename+"_crop.jpg"
@@ -225,7 +221,7 @@ def MeasureImage(filename,\
                         make_hist=False,\
                         mark_pointing=True,\
                         mark_detected_stars=True,\
-                        mark_catalog_stars=True,\
+                        mark_catalog_stars=False,\
                         mark_saturated=True,\
                         crop=(1024, 1024, 3072, 3072),\
                         )
