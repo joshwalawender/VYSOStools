@@ -32,3 +32,4 @@ SExtractor_params:
 SCAMP_params:
     DISTORT_DEGREES: 1
     CHECKPLOT_TYPE: 'NONE'
+    ASTREF_CATALOG: 'USNO-B1'

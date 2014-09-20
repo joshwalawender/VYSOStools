@@ -32,3 +32,5 @@ SExtractor_params:
 SCAMP_params:
     DISTORT_DEGREES: 5
     CHECKPLOT_TYPE: 'NONE'
+    ASTREF_CATALOG: 'UCAC-3'
+
