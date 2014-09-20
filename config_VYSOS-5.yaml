@@ -2,7 +2,7 @@
 name: 'VYSOS-5'
 logs_file_path: '~/IQMon/Logs/VYSOS-5'
 plot_file_path: '~/IQMon/Plots'
-temp_file_path: '~/IQMon/tmp'
+temp_file_path: '~/IQMon/tmp/VYSOS-5'
 ## Telescope Properties
 focal_length: 735             # mm
 pixel_size: 9.0               # um
@@ -31,6 +31,7 @@ SExtractor_params:
 ## SCAMP Parameters
 SCAMP_params:
     DISTORT_DEGREES: 5
+    CROSSID_RADIUS: 5
     CHECKPLOT_TYPE: 'NONE'
     ASTREF_CATALOG: 'UCAC-3'
 
