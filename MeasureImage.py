@@ -160,8 +160,8 @@ def MeasureImage(filename,\
     image.logger.info("")
     image.logger.info("###### Processing Image: {} ######".format(FitsFilename))
     image.logger.info("Setting telescope variable to {}".format(telescope))
-    image.read_header()
     image.read_image()
+    image.read_header()
 
     if analyze_image:
         if not image.image_WCS:
