@@ -1,0 +1,34 @@
+HISTORY   Astrometric solution by SCAMP version 2.0.1 (2014-09-16)
+COMMENT   (c) 2010-2013 IAP/CNRS/UPMC
+COMMENT   
+EQUINOX =        2000.00000000 / Mean equinox                                  
+RADESYS = 'ICRS    '           / Astrometric system                            
+CTYPE1  = 'RA---TAN'           / WCS projection type for this axis             
+CTYPE2  = 'DEC--TAN'           / WCS projection type for this axis             
+CUNIT1  = 'deg     '           / Axis unit                                     
+CUNIT2  = 'deg     '           / Axis unit                                     
+CD1_1   =  -1.223761524399E-04 / Linear projection matrix                      
+CD1_2   =   1.543804053420E-06 / Linear projection matrix                      
+CD2_1   =  -1.530894218133E-06 / Linear projection matrix                      
+CD2_2   =  -1.224053320302E-04 / Linear projection matrix                      
+PV1_0   =  -1.177909041584E-05 / Projection distortion parameter               
+PV1_1   =   1.000584771243E+00 / Projection distortion parameter               
+PV1_2   =  -1.149301330370E-04 / Projection distortion parameter               
+PV1_4   =   5.200725584170E-04 / Projection distortion parameter               
+PV1_5   =  -7.797319344700E-04 / Projection distortion parameter               
+PV1_6   =   3.862902300894E-05 / Projection distortion parameter               
+PV1_7   =  -1.082751184709E-02 / Projection distortion parameter               
+PV1_8   =  -4.987520606064E-04 / Projection distortion parameter               
+PV1_9   =  -1.209245911193E-02 / Projection distortion parameter               
+PV1_10  =   2.736334010723E-04 / Projection distortion parameter               
+PV2_0   =   1.626060374623E-05 / Projection distortion parameter               
+PV2_1   =   1.000568323713E+00 / Projection distortion parameter               
+PV2_2   =  -2.600409328255E-05 / Projection distortion parameter               
+PV2_4   =  -7.437746189792E-04 / Projection distortion parameter               
+PV2_5   =   1.024544171479E-03 / Projection distortion parameter               
+PV2_6   =  -5.351977196229E-04 / Projection distortion parameter               
+PV2_7   =  -1.227313075435E-02 / Projection distortion parameter               
+PV2_8   =  -1.083434416260E-03 / Projection distortion parameter               
+PV2_9   =  -1.260327865987E-02 / Projection distortion parameter               
+PV2_10  =   2.326337754688E-03 / Projection distortion parameter               
+END     
