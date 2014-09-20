@@ -747,9 +747,8 @@ def MakePlots(DateString, telescope, logger):
                     pyplot.plot([PlotStartUT,PlotEndUT], [tel.config['threshold_zeropoint'], tel.config['threshold_zeropoint']], 'r-')
                 pyplot.ylabel("Zero Point")
                 pyplot.yticks(numpy.arange(0,25,1))
-                reject_percent = 1.0
-                ymin = math.floor(numpy.percentile(zero_points, reject_percent))-1
-                ymax = math.ceil(numpy.percentile(zero_points, 100-reject_percent))+1
+                ymin = min(zero_points)-0.5
+                ymax = max(zero_points)+0.5
                 if tel.config['threshold_zeropoint'] != 'None':
                     pyplot.ylim(min([ymin, math.floor(tel.config['threshold_zeropoint']-0.5)]), ymax)
                 else:
