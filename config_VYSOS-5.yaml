@@ -1,0 +1,34 @@
+---
+name: 'VYSOS-5'
+logs_file_path: '~/IQMon/Logs/VYSOS-5'
+plot_file_path: '~/IQMon/Plots'
+temp_file_path: '~/IQMon/tmp'
+## Telescope Properties
+focal_length: 735             # mm
+pixel_size: 9.0               # um
+aperture: 135                 # mm
+gain: 1.6                     # 1/ADU
+saturation: 30000             # ADU
+## Preferences
+threshold_FWHM: 2.5           # pix
+threshold_pointing_err: 5.0   # arcmin
+threshold_ellipticity: 0.30
+threshold_zeropoint: None
+SCAMP_aheader: '~/IQMon/VYSOS5.ahead'
+units_for_FWHM: 'pix'
+PSF_measurement_radius: 1024  # pix
+pointing_marker_size: 3       # arcmin
+## Source Extractor Parameters
+SExtractor_params:
+    PHOT_APERTURES: 6.0
+    BACK_SIZE: 16
+    SEEING_FWHM: 2.5
+    SATUR_LEVEL: 50000
+    DETECT_MINAREA: 5
+    DETECT_THRESH: 5.0
+    ANALYSIS_THRESH: 5.0
+    FILTER: 'N'
+## SCAMP Parameters
+SCAMP_params:
+    DISTORT_DEGREES: 5
+    CHECKPLOT_TYPE: 'NONE'
