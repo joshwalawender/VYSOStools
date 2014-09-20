@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 setup(
-    name = "VYSOS_Tools",
+    name = "VYSOS",
     version = "1.0",
     author='Josh Walawender',
     packages = find_packages(),

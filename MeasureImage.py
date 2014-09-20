@@ -179,7 +179,7 @@ def MeasureImage(filename,\
         image.determine_FWHM()
 
         if zero_point:
-            image.run_SCAMP(catalog='UCAC-3')
+            image.run_SCAMP()
             image.run_SWarp()
             image.read_header()
 
@@ -211,7 +211,7 @@ def MeasureImage(filename,\
                         make_hist=False,\
                         mark_pointing=True,\
                         mark_detected_stars=True,\
-                        mark_catalog_stars=False,\
+                        mark_catalog_stars=True,\
                         mark_saturated=True,\
                         )
         cropped_JPEG = image.raw_file_basename+"_crop.jpg"
@@ -220,7 +220,7 @@ def MeasureImage(filename,\
                         make_hist=False,\
                         mark_pointing=True,\
                         mark_detected_stars=True,\
-                        mark_catalog_stars=False,\
+                        mark_catalog_stars=True,\
                         mark_saturated=True,\
                         crop=(1024, 1024, 3072, 3072),\
                         )
