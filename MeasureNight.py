@@ -55,14 +55,25 @@ def main(argv=None):
     
     ## Set Path to Data for this night
     if re.match("V5", args.telescope):
-        VYSOSDATAPath = os.path.join("/Volumes", "Data_V5")
+        paths = [os.path.join("/Volumes", "Data_V5"),\
+                 os.path.expanduser('~/VYSOS-5'),\
+                ]
         zp = False
     elif re.match("V20", args.telescope):
-        VYSOSDATAPath = os.path.join("/Volumes", "Data_V20")
+        paths = [os.path.join("/Volumes", "Data_V20"),\
+                 os.path.expanduser('~/VYSOS-20'),\
+                ]
         zp = True
     else:
         print("Telescope {0} does not match 'V5' or 'V20'".format(args.telescope))
         sys.exit(1)
+
+    for location in paths:
+        if os.path.exists(location):
+            print('Found data at: {}'.format(location))
+            VYSOSDATAPath = location
+    assert VYSOSDATAPath
+
     ImagesDirectory = os.path.join(VYSOSDATAPath, "Images", args.date)
     LogsDirectory = os.path.join(VYSOSDATAPath, "Logs", args.date)
     
