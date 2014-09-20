@@ -34,4 +34,9 @@ SCAMP_params:
     CROSSID_RADIUS: 5
     CHECKPLOT_TYPE: 'NONE'
     ASTREF_CATALOG: 'UCAC-3'
-
+## Photometric Catalog Info
+catalog:
+    name: 'UCAC4'
+    magmax: 15
+    PSi: 'i'
+    PSr: 'r'

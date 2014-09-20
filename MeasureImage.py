@@ -161,6 +161,7 @@ def MeasureImage(filename,\
     image.logger.info("###### Processing Image: {} ######".format(FitsFilename))
     image.logger.info("Setting telescope variable to {}".format(telescope))
     image.read_image()
+    if telescope == 'V5': image.edit_header('FILTER', 'PSi')
     image.read_header()
 
     if analyze_image:
@@ -187,12 +188,12 @@ def MeasureImage(filename,\
             image.tel.SExtractor_params['DETECT_THRESH'] = 1.5
             if telescope == 'V20':
                 image.get_catalog()
-                image.run_SExtractor(assoc=True, filter='I')
+                image.run_SExtractor(assoc=True)
             if telescope == 'V5':
                 local_UCAC = os.path.join(os.path.expanduser('~'), 'UCAC4')
                 image.get_local_UCAC4(local_UCAC_command=os.path.join(local_UCAC, 'access', 'u4test'),\
                                       local_UCAC_data=os.path.join(local_UCAC, 'u4b'))
-                image.run_SExtractor(assoc=True, filter='i')
+                image.run_SExtractor(assoc=True)
             image.determine_FWHM()
             image.measure_zero_point(plot=True)
             mark_catalog = True

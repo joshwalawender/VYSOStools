@@ -32,4 +32,11 @@ SExtractor_params:
 SCAMP_params:
     DISTORT_DEGREES: 1
     CROSSID_RADIUS: 3
+    CHECKPLOT_TYPE: 'NONE'
     ASTREF_CATALOG: 'USNO-B1'
+## Photometric Catalog Info
+catalog:
+    name: 'USNO-B1.0'
+    magmax: 18.0
+    PSi: 'Imag'
+    PSr: 'R2mag'
