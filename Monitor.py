@@ -46,8 +46,10 @@ def main(argv=None):
     ##-------------------------------------------------------------------------
     if telescope == "V5":
         DataPath = os.path.join("/Volumes", "Data_V5", "Images", DateString)
+        zp = False
     if telescope == "V20":
         DataPath = os.path.join("/Volumes", "Data_V20", "Images", DateString)
+        zp = True
 
 
     ##-------------------------------------------------------------------------
@@ -92,7 +94,7 @@ def main(argv=None):
                 else:
                     clobber = False
                 try:
-                    MeasureImage.MeasureImage(os.path.join(DataPath, Image), clobber=clobber)
+                    MeasureImage.MeasureImage(os.path.join(DataPath, Image), clobber=clobber, zero_point=zp)
                 except:
                     print('WARNING:  MeasureImage failed on {}'.format(Image))
                 PreviousFiles.append(File)
