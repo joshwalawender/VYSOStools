@@ -145,11 +145,9 @@ def MeasureImage(filename,\
     ##-------------------------------------------------------------------------
     ## Create Filenames
     ##-------------------------------------------------------------------------
-#     logs_file = os.path.join(tel.logs_file_path, DataNightString+"_"+telescope+"_IQMonLog.txt")
     html_file = os.path.join(tel.logs_file_path, DataNightString+"_"+telescope+".html")
     yaml_file = os.path.join(tel.logs_file_path, DataNightString+"_"+telescope+"_Summary.txt")
     if clobber:
-        if os.path.exists(logs_file): os.remove(logs_file)
         if os.path.exists(html_file): os.remove(html_file)
         if os.path.exists(yaml_file): os.remove(yaml_file)
 
@@ -209,8 +207,8 @@ def MeasureImage(filename,\
                         make_hist=False,\
                         mark_pointing=True,\
                         mark_detected_stars=True,\
-                        mark_catalog_stars=True,\
-                        mark_saturated=True,\
+                        mark_catalog_stars=False,\
+                        mark_saturated=False,\
                         )
         cropped_JPEG = image.raw_file_basename+"_crop.jpg"
         image.make_JPEG(cropped_JPEG,\
@@ -218,8 +216,8 @@ def MeasureImage(filename,\
                         make_hist=False,\
                         mark_pointing=True,\
                         mark_detected_stars=True,\
-                        mark_catalog_stars=True,\
-                        mark_saturated=True,\
+                        mark_catalog_stars=False,\
+                        mark_saturated=False,\
                         crop=(1024, 1024, 3072, 3072),\
                         )
 
