@@ -58,7 +58,7 @@ def main(argv=None):
         paths = [os.path.join("/Volumes", "Data_V5"),\
                  os.path.expanduser('~/VYSOS-5'),\
                 ]
-        zp = True
+        zp = False
     elif re.match("V20", args.telescope):
         paths = [os.path.join("/Volumes", "Data_V20"),\
                  os.path.expanduser('~/VYSOS-20'),\
@@ -118,10 +118,12 @@ def main(argv=None):
                     else:
                         clobber = False
                     try:
-                        MeasureImage.MeasureImage(os.path.join(ImagesDirectory, Image), clobber=clobber, zero_point=zp)
+                        MeasureImage.MeasureImage(os.path.join(ImagesDirectory, Image),\
+                                     clobber=clobber, zero_point=zp)
                     except:
                         print('WARNING:  MeasureImage failed on {}'.format(Image))
-                        MeasureImage.MeasureImage(os.path.join(ImagesDirectory, Image), analyze_image=False)
+                        MeasureImage.MeasureImage(os.path.join(ImagesDirectory, Image),\
+                                     clobber=clobber, zero_point=zp, analyze_image=False)
 
         else:
             print "No image files found in directory: "+ImagesDirectory

@@ -21,7 +21,7 @@ The help message goes here.
 '''
 
 
-def main(argv=None):  
+def main():  
     ##-------------------------------------------------------------------------
     ## Parse Command Line Arguments
     ##-------------------------------------------------------------------------
@@ -46,18 +46,14 @@ def main(argv=None):
     ##-------------------------------------------------------------------------
     if telescope == "V5":
         DataPath = os.path.join("/Volumes", "Data_V5", "Images", DateString)
+        summary_file = os.path.join('/Users/vysosuser/IQMon/Logs/VYSOS-5/', '{}_V5_Summary.txt'.format(DateString))
         zp = False
     if telescope == "V20":
         DataPath = os.path.join("/Volumes", "Data_V20", "Images", DateString)
+        summary_file = os.path.join('/Users/vysosuser/IQMon/Logs/VYSOS-20/', '{}_V20_Summary.txt'.format(DateString))
         zp = True
 
 
-    ##-------------------------------------------------------------------------
-    ## Look for Pre-existing Files
-    ##-------------------------------------------------------------------------
-    if not os.path.exists(DataPath): os.mkdir(DataPath)
-    PreviousFiles = os.listdir(DataPath)
-    PreviousFilesTime = time.gmtime()
 
     ##-------------------------------------------------------------------------
     ## Operation Loop
@@ -65,6 +61,7 @@ def main(argv=None):
     Operate = True
     MatchFilename = re.compile("(.*)\-([0-9]{8})at([0-9]{6})\.fts")
     MatchEmpty = re.compile(".*\-Empty\-.*\.fts")
+    if not os.path.exists(DataPath): os.mkdir(DataPath)
     PreviousFiles = []
     while Operate:
         ## Set date to tonight
@@ -74,7 +71,6 @@ def main(argv=None):
         time.sleep(1)
 
         if len(Files) > len(PreviousFiles):
-            NewFiles = []
             Properties = []
             for File in Files:
                 IsMatch = MatchFilename.match(File)
@@ -85,19 +81,25 @@ def main(argv=None):
                     FNdate = IsMatch.group(2)
                     FNtime = IsMatch.group(3)
                     Properties.append([FNtime, FNdate, target, File])
-
             SortedImageFiles   = numpy.array([row[3] for row in sorted(Properties)])
+
+            with open(summary_file, 'r') as yaml_string:
+                yaml_list = yaml.load(yaml_string)
+            PreviousFiles = [entry['filename'] for entry in yaml_list]
+            
             for Image in SortedImageFiles:
-                print('Analyzing {}'.format(Image))
-                if len(PreviousFiles) == 0:
-                    clobber = True
-                else:
-                    clobber = False
-                try:
-                    MeasureImage.MeasureImage(os.path.join(DataPath, Image), clobber=clobber, zero_point=zp)
-                except:
-                    print('WARNING:  MeasureImage failed on {}'.format(Image))
-                PreviousFiles.append(File)
+                if not Image in PreviousFiles:
+                    print('Analyzing {}'.format(Image))
+                    if len(PreviousFiles) == 0:
+                        clobber = True
+                    else:
+                        clobber = False
+                    PreviousFiles.append(Image)
+                    try:
+                        MeasureImage.MeasureImage(os.path.join(DataPath, Image), clobber=clobber, zero_point=zp)
+                    except:
+                        print('WARNING:  MeasureImage failed on {}'.format(Image))
+                        MeasureImage.MeasureImage(os.path.join(DataPath, Image), clobber=clobber, zero_point=zp, analyze_image=False)
 
         time.sleep(5)
         if nowDecimalHours > 18.0:
