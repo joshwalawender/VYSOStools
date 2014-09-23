@@ -145,7 +145,7 @@ def MeasureImage(filename,\
     ##-------------------------------------------------------------------------
     ## Create Filenames
     ##-------------------------------------------------------------------------
-    logs_file = os.path.join(tel.logs_file_path, DataNightString+"_"+telescope+"_IQMonLog.txt")
+#     logs_file = os.path.join(tel.logs_file_path, DataNightString+"_"+telescope+"_IQMonLog.txt")
     html_file = os.path.join(tel.logs_file_path, DataNightString+"_"+telescope+".html")
     yaml_file = os.path.join(tel.logs_file_path, DataNightString+"_"+telescope+"_Summary.txt")
     if clobber:
@@ -156,10 +156,7 @@ def MeasureImage(filename,\
     ##-------------------------------------------------------------------------
     ## Perform Actual Image Analysis
     ##-------------------------------------------------------------------------
-    image.make_logger(logfile=logs_file, verbose=verbose)
-    image.logger.info("")
-    image.logger.info("###### Processing Image: {} ######".format(FitsFilename))
-    image.logger.info("Setting telescope variable to {}".format(telescope))
+    image.make_logger(verbose=verbose)
     image.read_image()
     if telescope == 'V5': image.edit_header('FILTER', 'PSi')
     image.read_header()
