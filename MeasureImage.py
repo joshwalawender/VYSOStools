@@ -155,6 +155,7 @@ def MeasureImage(filename,\
     ## Perform Actual Image Analysis
     ##-------------------------------------------------------------------------
     image.make_logger(verbose=verbose)
+    print('Logging to {}'.format(image.logfile))
     image.read_image()
     if telescope == 'V5': image.edit_header('FILTER', 'PSi')
     image.read_header()

@@ -83,9 +83,12 @@ def main():
                     Properties.append([FNtime, FNdate, target, File])
             SortedImageFiles   = numpy.array([row[3] for row in sorted(Properties)])
 
-            with open(summary_file, 'r') as yaml_string:
-                yaml_list = yaml.load(yaml_string)
-            PreviousFiles = [entry['filename'] for entry in yaml_list]
+            if os.path.exists(summary_file):
+                with open(summary_file, 'r') as yaml_string:
+                    yaml_list = yaml.load(yaml_string)
+                PreviousFiles = [entry['filename'] for entry in yaml_list]
+            else:
+                PreviousFiles = []
             
             for Image in SortedImageFiles:
                 if not Image in PreviousFiles:
