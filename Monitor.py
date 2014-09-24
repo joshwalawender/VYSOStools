@@ -13,6 +13,7 @@ from argparse import ArgumentParser
 import re
 import time
 import numpy
+import yaml
 
 import MeasureImage
 
