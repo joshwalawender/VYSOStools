@@ -157,10 +157,16 @@ def MeasureImage(filename,\
     image.make_logger(verbose=verbose)
     print('Logging to {}'.format(image.logfile))
     image.read_image()
-    if telescope == 'V5': image.edit_header('FILTER', 'PSi')
+
+    blank_threshold = 5.0
+    blank_minarea = 9.0
+    if telescope == 'V5':
+        image.edit_header('FILTER', 'PSr')
+        blank_threshold = 5.0
+        blank_minarea = 5.0
     image.read_header()
 
-    if analyze_image and not image.is_blank():
+    if analyze_image and not image.is_blank(threshold=blank_threshold, area=blank_minarea):
         if not image.image_WCS:
             image.solve_astrometry()
             image.read_header()
@@ -170,8 +176,6 @@ def MeasureImage(filename,\
         if darks and len(darks) > 0:
             image.dark_subtract(darks)
 
-        image.tel.SExtractor_params['ANALYSIS_THRESH'] = 4.0
-        image.tel.SExtractor_params['DETECT_THRESH'] = 4.0
         image.run_SExtractor()
         image.determine_FWHM()
 
@@ -181,23 +185,24 @@ def MeasureImage(filename,\
                 image.run_SWarp()
                 image.read_header()
 
-                image.tel.SExtractor_params['ANALYSIS_THRESH'] = 1.5
-                image.tel.SExtractor_params['DETECT_THRESH'] = 1.5
                 if telescope == 'V20':
                     image.get_catalog()
-                    image.run_SExtractor(assoc=True)
                 if telescope == 'V5':
+#                     image.get_catalog()
                     local_UCAC = os.path.join(os.path.expanduser('~'), 'UCAC4')
                     image.get_local_UCAC4(local_UCAC_command=os.path.join(local_UCAC, 'access', 'u4test'),\
                                           local_UCAC_data=os.path.join(local_UCAC, 'u4b'))
-                    image.run_SExtractor(assoc=True)
+
+                image.tel.SExtractor_params['ANALYSIS_THRESH'] = 1.5
+                image.tel.SExtractor_params['DETECT_THRESH'] = 1.5
+                image.run_SExtractor(assoc=True)
                 image.determine_FWHM()
                 image.measure_zero_point(plot=True)
                 mark_catalog = True
             else:
                 image.logger.info('  SCAMP failed.  Skipping photometric calculations.')
 
-        if not nographics:
+        if not nographics and image.FWHM:
             image.make_PSF_plot()
 
     if not nographics:

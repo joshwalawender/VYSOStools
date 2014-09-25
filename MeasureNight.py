@@ -58,7 +58,7 @@ def main(argv=None):
         paths = [os.path.join("/Volumes", "Data_V5"),\
                  os.path.expanduser('~/VYSOS-5'),\
                 ]
-        zp = False
+        zp = True
     elif re.match("V20", args.telescope):
         paths = [os.path.join("/Volumes", "Data_V20"),\
                  os.path.expanduser('~/VYSOS-20'),\

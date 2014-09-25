@@ -38,5 +38,5 @@ SCAMP_params:
 catalog:
     name: 'UCAC4'
     magmax: 15
-    PSi: 'i'
-    PSr: 'r'
+    PSi: 'imag'
+    PSr: 'rmag'
