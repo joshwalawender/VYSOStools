@@ -36,7 +36,7 @@ SCAMP_params:
     ASTREF_CATALOG: 'USNO-B1'
 ## Photometric Catalog Info
 catalog:
-    name: 'USNO-B1.0'
+    name: 'UCAC4'
     magmax: 18.0
-    PSi: 'Imag'
-    PSr: 'R2mag'
+    PSi: 'imag'
+    PSr: 'rmag'

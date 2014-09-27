@@ -25,8 +25,8 @@ SExtractor_params:
     SEEING_FWHM: 2.5
     SATUR_LEVEL: 50000
     DETECT_MINAREA: 4
-    DETECT_THRESH: 5.0
-    ANALYSIS_THRESH: 5.0
+    DETECT_THRESH: 9.0
+    ANALYSIS_THRESH: 9.0
     FILTER: 'N'
 ## SCAMP Parameters
 SCAMP_params:
@@ -37,6 +37,6 @@ SCAMP_params:
 ## Photometric Catalog Info
 catalog:
     name: 'UCAC4'
-    magmax: 15
+    magmax: 15.0
     PSi: 'imag'
     PSr: 'rmag'

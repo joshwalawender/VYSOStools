@@ -89,7 +89,8 @@ def ListDarks(image):
 ##-------------------------------------------------------------------------
 def MeasureImage(filename,\
                  telescope=None,\
-                 clobber=False,\
+                 clobber_summary=False,\
+                 clobber_logs=False,\
                  verbose=False,\
                  nographics=False,\
                  analyze_image=True,\
@@ -147,7 +148,7 @@ def MeasureImage(filename,\
     ##-------------------------------------------------------------------------
     html_file = os.path.join(tel.logs_file_path, DataNightString+"_"+telescope+".html")
     yaml_file = os.path.join(tel.logs_file_path, DataNightString+"_"+telescope+"_Summary.txt")
-    if clobber:
+    if clobber_summary:
         if os.path.exists(html_file): os.remove(html_file)
         if os.path.exists(yaml_file): os.remove(yaml_file)
 
@@ -158,14 +159,14 @@ def MeasureImage(filename,\
     print('Logging to {}'.format(image.logfile))
     image.read_image()
 
-    blank_threshold = 5.0
-    blank_minarea = 9.0
     if telescope == 'V5':
         image.edit_header('FILTER', 'PSr')
+        blank_threshold = 7.0
+        blank_minarea = 4
+    elif telescope == 'V20':
         blank_threshold = 5.0
-        blank_minarea = 5.0
+        blank_minarea = 9
     image.read_header()
-
     if analyze_image and not image.is_blank(threshold=blank_threshold, area=blank_minarea):
         if not image.image_WCS:
             image.solve_astrometry()
@@ -186,7 +187,10 @@ def MeasureImage(filename,\
                 image.read_header()
 
                 if telescope == 'V20':
-                    image.get_catalog()
+#                    image.get_catalog()
+                    local_UCAC = os.path.join(os.path.expanduser('~'), 'UCAC4')
+                    image.get_local_UCAC4(local_UCAC_command=os.path.join(local_UCAC, 'access', 'u4test'),\
+                                          local_UCAC_data=os.path.join(local_UCAC, 'u4b'))
                 if telescope == 'V5':
 #                     image.get_catalog()
                     local_UCAC = os.path.join(os.path.expanduser('~'), 'UCAC4')
@@ -255,9 +259,6 @@ def main():
     parser.add_argument("-z", "--zp",
         action="store_true", dest="zero_point",
         default=False, help="Calculate zero point")
-    parser.add_argument("-c", "--clobber",
-        action="store_true", dest="clobber",
-        default=False, help="Delete previous logs and summary files for this image. (default = False)")
     ## add arguments
     parser.add_argument("filename",
         type=str,
@@ -269,7 +270,6 @@ def main():
 
     MeasureImage(args.filename,\
                  telescope=args.telescope,\
-                 clobber=args.clobber,\
                  nographics=args.nographics,\
                  zero_point=args.zero_point,\
                  verbose=args.verbose)
