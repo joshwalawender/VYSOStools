@@ -94,16 +94,21 @@ def main():
             for Image in SortedImageFiles:
                 if not Image in PreviousFiles:
                     print('Analyzing {}'.format(Image))
+                    clobber_summary = False
                     if len(PreviousFiles) == 0:
-                        clobber = True
-                    else:
-                        clobber = False
+                        clobber_summary = True
                     PreviousFiles.append(Image)
                     try:
-                        MeasureImage.MeasureImage(os.path.join(DataPath, Image), clobber=clobber, zero_point=zp)
+                        MeasureImage.MeasureImage(os.path.join(DataPath, Image),\
+                                                  clobber_logs=True,\
+                                                  clobber_summary=clobber_summary,\
+                                                  zero_point=zp, analyze_image=True)
                     except:
                         print('WARNING:  MeasureImage failed on {}'.format(Image))
-                        MeasureImage.MeasureImage(os.path.join(DataPath, Image), clobber=clobber, zero_point=zp, analyze_image=False)
+                        MeasureImage.MeasureImage(os.path.join(DataPath, Image),\
+                                                  clobber_logs=True,\
+                                                  clobber_summary=clobber_summary,\
+                                                  zero_point=zp, analyze_image=False)
 
         time.sleep(5)
         if nowDecimalHours > 18.0:

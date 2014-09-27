@@ -24,7 +24,7 @@ The help message goes here.
 '''
 
 
-def main(argv=None):  
+def main(argv=None):
     ##-------------------------------------------------------------------------
     ## Parse Command Line Arguments
     ##-------------------------------------------------------------------------
@@ -76,7 +76,7 @@ def main(argv=None):
 
     ImagesDirectory = os.path.join(VYSOSDATAPath, "Images", args.date)
     LogsDirectory = os.path.join(VYSOSDATAPath, "Logs", args.date)
-    
+
     print "Analyzing data for night of "+args.date
     if os.path.exists(ImagesDirectory) and os.path.exists(LogsDirectory):
         print "  Found "+ImagesDirectory+" and "+LogsDirectory
@@ -113,17 +113,18 @@ def main(argv=None):
                     TimeString = time.strftime("%Y/%m/%d %H:%M:%S UT -", now)
                     DateString = time.strftime("%Y%m%dUT", now)
 
+                    clobber_summary = False
                     if args.clobber and Image == SortedImageFiles[0]:
-                        clobber = True
-                    else:
-                        clobber = False
+                        clobber_summary = True
                     try:
                         MeasureImage.MeasureImage(os.path.join(ImagesDirectory, Image),\
-                                     clobber=clobber, zero_point=zp)
+                                     clobber_logs=False, clobber_summary=clobber_summary,\
+                                     zero_point=zp, analyze_image=True)
                     except:
                         print('WARNING:  MeasureImage failed on {}'.format(Image))
                         MeasureImage.MeasureImage(os.path.join(ImagesDirectory, Image),\
-                                     clobber=clobber, zero_point=zp, analyze_image=False)
+                                     clobber_logs=False, clobber_summary=clobber_summary,\
+                                     zero_point=zp, analyze_image=False)
 
         else:
             print "No image files found in directory: "+ImagesDirectory
