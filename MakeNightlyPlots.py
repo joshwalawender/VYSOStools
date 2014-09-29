@@ -738,8 +738,12 @@ def MakePlots(DateString, telescope, logger):
         ###########################################################
         ## Zero Point
         if FoundIQMonFile:
-            zero_points = [entry['ZeroPoint'] for entry in IQMonTable if entry['ZeroPoint']]
-            times = [entry['ExpStart'] for entry in IQMonTable if entry['ZeroPoint']]
+            zero_points = [entry['ZeroPoint']\
+                           for entry in IQMonTable\
+                           if entry['ZeroPoint'] and not numpy.isnan(entry['ZeroPoint'])]
+            times = [entry['ExpStart']\
+                     for entry in IQMonTable\
+                     if entry['ZeroPoint'] and not numpy.isnan(entry['ZeroPoint'])]
             if len(zero_points) > 0:
                 Figure.add_axes(plot_positions[1][1], xticklabels=[])
                 pyplot.plot(times, zero_points, 'k.', label="Zero Point")
