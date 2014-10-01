@@ -161,13 +161,8 @@ def MeasureImage(filename,\
 
     if telescope == 'V5':
         image.edit_header('FILTER', 'PSr')
-        blank_threshold = 7.0
-        blank_minarea = 4
-    elif telescope == 'V20':
-        blank_threshold = 5.0
-        blank_minarea = 9
     image.read_header()
-    if analyze_image and not image.is_blank(threshold=blank_threshold, area=blank_minarea):
+    if analyze_image:
         if not image.image_WCS:
             image.solve_astrometry()
             image.read_header()
