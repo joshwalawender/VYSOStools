@@ -111,7 +111,7 @@ def main():
                                                   zero_point=zp, analyze_image=False)
 
         time.sleep(5)
-        if nowDecimalHours > 18.0:
+        if nowDecimalHours > 16.5:
             Operate = False
 
 
