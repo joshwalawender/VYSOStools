@@ -750,7 +750,7 @@ def MakePlots(DateString, telescope, logger):
                 if tel.config['threshold_zeropoint'] != 'None':
                     pyplot.plot([PlotStartUT,PlotEndUT], [tel.config['threshold_zeropoint'], tel.config['threshold_zeropoint']], 'r-')
                 pyplot.ylabel("Zero Point")
-                pyplot.yticks(numpy.arange(0,25,1))
+                pyplot.yticks(numpy.arange(0,30,1))
                 ymin = min(zero_points)-0.5
                 ymax = max(zero_points)+0.5
                 if tel.config['threshold_zeropoint'] != 'None':
