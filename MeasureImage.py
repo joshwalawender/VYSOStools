@@ -162,12 +162,7 @@ def MeasureImage(filename,\
     if telescope == 'V5':
         image.edit_header('FILTER', 'PSr')
     image.read_header()
-    if analyze_image and not image.is_blank(threshold=5.0):
-        if not image.image_WCS:
-            image.solve_astrometry()
-            image.read_header()
-        image.determine_pointing_error()
-
+    if analyze_image:
         darks = ListDarks(image)
         if darks and len(darks) > 0:
             image.dark_subtract(darks)
@@ -175,7 +170,15 @@ def MeasureImage(filename,\
         image.run_SExtractor()
         image.determine_FWHM()
 
-        if zero_point:
+        is_blank = (image.n_stars_SExtracted < 100)
+
+        if not image.image_WCS and not is_blank:
+            image.solve_astrometry()
+            image.read_header()
+        image.determine_pointing_error()
+
+
+        if zero_point and not is_blank:
             image.run_SCAMP()
             if image.SCAMP_successful:
                 image.run_SWarp()
