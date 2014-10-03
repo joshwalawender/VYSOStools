@@ -155,7 +155,7 @@ def MeasureImage(filename,\
     ##-------------------------------------------------------------------------
     ## Perform Actual Image Analysis
     ##-------------------------------------------------------------------------
-    image.make_logger(verbose=verbose)
+    image.make_logger(verbose=verbose, clobber=clobber_logs)
     print('Logging to {}'.format(image.logfile))
     image.read_image()
 
