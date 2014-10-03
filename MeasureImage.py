@@ -162,7 +162,7 @@ def MeasureImage(filename,\
     if telescope == 'V5':
         image.edit_header('FILTER', 'PSr')
     image.read_header()
-    if analyze_image:
+    if analyze_image and not image.is_blank(threshold=5.0):
         if not image.image_WCS:
             image.solve_astrometry()
             image.read_header()
