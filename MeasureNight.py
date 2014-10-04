@@ -115,7 +115,9 @@ def main(argv=None):
                 else:
                     print "  File Rejected: %s" % File
         
-            print(Properties)
+            print('Analyzing images:')
+            for entry in sorted(Properties):
+                print('  {:6s} {:s}'.format(entry[0], entry[1]))
             SortedImageFiles   = numpy.array([row[1] for row in sorted(Properties)])
         
             print "%d out of %d files meet selection criteria." % (len(SortedImageFiles), len(Files))
