@@ -14,7 +14,9 @@ import re
 import fnmatch
 import numpy
 import time
+import glob
 from argparse import ArgumentParser
+import astropy.io.fits as fits
 
 import IQMon
 import MeasureImage
@@ -72,20 +74,20 @@ def main(argv=None):
 
     for location in paths:
         if os.path.exists(location):
-            print('Found data at: {}'.format(location))
+            print('Found data folder at: {}'.format(location))
             VYSOSDATAPath = location
     assert VYSOSDATAPath
 
     ImagesDirectory = os.path.join(VYSOSDATAPath, "Images", args.date)
-    LogsDirectory = os.path.join(VYSOSDATAPath, "Logs", args.date)
 
     print "Analyzing data for night of "+args.date
-    if os.path.exists(ImagesDirectory) and os.path.exists(LogsDirectory):
-        print "  Found "+ImagesDirectory+" and "+LogsDirectory
+    if os.path.exists(ImagesDirectory):
+        print "  Found "+ImagesDirectory
         ##
         ## Loop Through All Images in Images Directory
         ##
-        Files = os.listdir(ImagesDirectory)
+#        Files = os.listdir(ImagesDirectory)
+        Files = glob.glob(os.path.join(ImagesDirectory, '*.fts'))
         print "Found %d files in images directory" % len(Files)
         if len(Files) >= 1:
             ## Parse filename for date and time
@@ -99,14 +101,22 @@ def main(argv=None):
                     target = IsMatch.group(1)
                     FNdate = IsMatch.group(2)
                     FNtime = IsMatch.group(3)
-                    Properties.append([FNtime, FNdate, target, File])
+                    Properties.append([FNtime, File])
+                elif not IsEmpty:
+                    with fits.open(File) as hdulist:
+                        header = hdulist[0].header
+                        ## Get Observation Date and Time from header
+                        ## (assumes YYYY-MM-DDTHH:MM:SS format)
+                        IsDateTime = re.search('(\d{4}\-\d{2}\-\d{2})T(\d{2}):(\d{2}):(\d{2})', header["DATE-OBS"])
+                        if IsDateTime:
+                            Hdate = IsDateTime.group(1)
+                            Htime = '{}{}{}'.format(IsDateTime.group(2), IsDateTime.group(3), IsDateTime.group(4))
+                            Properties.append([Htime, File])
                 else:
                     print "  File Rejected: %s" % File
         
-            SortedImageTimes   = numpy.array([row[0] for row in sorted(Properties)])
-            SortedImageDates   = numpy.array([row[1] for row in sorted(Properties)])
-            SortedImageTargets = numpy.array([row[2] for row in sorted(Properties)])
-            SortedImageFiles   = numpy.array([row[3] for row in sorted(Properties)])
+            print(Properties)
+            SortedImageFiles   = numpy.array([row[1] for row in sorted(Properties)])
         
             print "%d out of %d files meet selection criteria." % (len(SortedImageFiles), len(Files))
             for Image in SortedImageFiles:
@@ -131,9 +141,10 @@ def main(argv=None):
                                      zero_point=zp, analyze_image=False)
 
         else:
-            print "No image files found in directory: "+ImagesDirectory
+            print("No image files found in {}".format(ImagesDirectory))
     else:
-        print "No Images or Logs directory for this night"
+        if not os.path.exists(ImagesDirectory):
+            print "Could not find images directory: "+ImagesDirectory
 
 
 if __name__ == "__main__":
