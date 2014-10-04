@@ -171,6 +171,8 @@ def MeasureImage(filename,\
         image.determine_FWHM()
 
         is_blank = (image.n_stars_SExtracted < 100)
+        if is_blank:
+            image.logger.warning('Only {} stars found.  Image may be blank.'.format(image.n_stars_SExtracted))
 
         if not image.image_WCS and not is_blank:
             image.solve_astrometry()
