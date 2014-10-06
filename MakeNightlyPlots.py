@@ -116,7 +116,7 @@ def ReadIQMonLog(logs_path, telescope, DateString, logger):
         telname = "VYSOS-20"
     if os.path.exists(os.path.join(logs_path, telname)):
         FoundIQMonFile = True
-        logger.debug("Found directory with IQMon summary files.")
+        logger.info("Found directory with IQMon summary files.")
         Files = os.listdir(os.path.join(logs_path, telname))
         if telescope == "V5":
             MatchIQMonFile = re.compile("([0-9]{8}UT)_V5_Summary\.txt")
@@ -164,6 +164,8 @@ def ReadIQMonLog(logs_path, telescope, DateString, logger):
                                 IQMonTable.add_row(row)
                             else:
                                 print('Skipping: {}'.format(entry['filename']))
+    else:
+        logger.info('Could not find IQMon summary file in {}'.format(os.path.join(logs_path, telname)))
     return IQMonTable
 
 
@@ -278,6 +280,7 @@ def ReadEnvironmentalLogs(DateString, telescope, V5DataPath, V20DataPath, logger
         V20EnvTable.add_column(table.Column(data=V20Windiness, name='WindCondition'))
         V20EnvTable.add_column(table.Column(data=V20DomeFan, name='DomeFan'))
     else:
+        logger.info('  No Environmental log for VYSOS-20 found')
         ColNames  = ['Date', 'TimeString', 'TubeTemp', 'PrimaryTemp', 'SecTemp', 'FanPower', 'FocusPos',
                      'SkyTemp', 'OutsideTemp', 'WindSpeed', 'Humidity', 'DewPoint', 'Altitude', 'Azimuth', 'Condition', 'DomeTemp', 'DomeFanState']
         V20EnvTable = table.Table(names=ColNames)
@@ -333,6 +336,7 @@ def ReadEnvironmentalLogs(DateString, telescope, V5DataPath, V20DataPath, logger
         V5EnvTable.add_column(table.Column(data=V5Cloudiness, name='CloudCondition'))
         V5EnvTable.add_column(table.Column(data=V5Windiness, name='WindCondition'))
     else:
+        logger.info('  No Environmental log for VYSOS-5 found')
         ColNames  = ['Date', 'TimeString', 'TubeTemp', 'FocusPos', 
                      'SkyTemp', 'OutsideTemp', 'WindSpeed', 'Humidity', 'DewPoint', 'Altitude', 'Azimuth', 'Condition']
         V5EnvTable = table.Table(names=ColNames)
@@ -356,7 +360,15 @@ def MakePlots(DateString, telescope, logger):
     ## Set up pathnames and filenames
     V5DataPath = os.path.join("/Volumes", "Data_V5")
     V20DataPath = os.path.join("/Volumes", "Data_V20")
-    logs_path = os.path.join(os.path.expanduser('~'), 'IQMon', 'Logs')
+
+    paths_to_check = [os.path.join(os.path.expanduser('~'), 'IQMon', 'Logs'),\
+                      os.path.join('/', 'Volumes', 'DroboPro1', 'IQMon', 'Logs')]
+    logs_path = None
+    for path_to_check in paths_to_check:
+        if os.path.exists(path_to_check):
+            logs_path = path_to_check
+    assert logs_path
+
     if telescope == "V5":
         VYSOSDATAPath = V5DataPath
         PixelScale = 2.53
@@ -453,6 +465,7 @@ def MakePlots(DateString, telescope, logger):
     ## - extract IQMon FWHM, ellipticity, pointing error
     IQMonTable = ReadIQMonLog(logs_path, telescope, DateString, logger)
     if IQMonTable and len(IQMonTable) > 1: FoundIQMonFile = True
+
 
     ###########################################################
     ## Get Environmental Data
@@ -692,6 +705,7 @@ def MakePlots(DateString, telescope, logger):
         ###########################################################
         ## FWHM vs. Time
         if FoundIQMonFile:
+            logger.info('  Making FWHM vs. Time Plot for {}'.format(telescope))
             Figure.add_axes(plot_positions[0][1])
             pyplot.title("IQ Mon Results for "+telescope + " on the Night of " + DateString)
             if telescope == "V20":
@@ -745,6 +759,7 @@ def MakePlots(DateString, telescope, logger):
                      for entry in IQMonTable\
                      if entry['ZeroPoint'] and not numpy.isnan(entry['ZeroPoint'])]
             if len(zero_points) > 0:
+                logger.info('  Making Zero Point vs. Time Plot for {}'.format(telescope))
                 Figure.add_axes(plot_positions[1][1], xticklabels=[])
                 pyplot.plot(times, zero_points, 'k.', label="Zero Point")
                 if tel.config['threshold_zeropoint'] != 'None':
@@ -781,6 +796,7 @@ def MakePlots(DateString, telescope, logger):
         ###########################################################
         ## Ellipticity vs. Time
         if FoundIQMonFile:
+            logger.info('  Making Ellipticity vs. Time Plot for {}'.format(telescope))
             Figure.add_axes(plot_positions[2][1], xticklabels=[])
             pyplot.plot(IQMonTable['ExpStart'], IQMonTable['Ellipticity'], 'b.', drawstyle="steps-post", label="Ellipticity")
             pyplot.plot([PlotStartUT,PlotEndUT],\
@@ -796,6 +812,7 @@ def MakePlots(DateString, telescope, logger):
         ###########################################################
         ## Pointing Error vs. Time
         if FoundIQMonFile:
+            logger.info('  Making Pointing Error vs. Time Plot for {}'.format(telescope))
             Figure.add_axes(plot_positions[3][1])
             pyplot.plot(IQMonTable['ExpStart'], IQMonTable['pointing_error (arcmin)'], 'b.', drawstyle="steps-post", label="IQMon")
             pyplot.plot([PlotStartUT,PlotEndUT],\
@@ -807,6 +824,7 @@ def MakePlots(DateString, telescope, logger):
             pyplot.ylim(0,10)
             pyplot.grid()
 
+        logger.info('Saving figure: {}'.format(PlotFile))
         pyplot.savefig(PlotFile, dpi=dpi, bbox_inches='tight', pad_inches=0.10)
 
 
@@ -1007,7 +1025,12 @@ def MakePlots(DateString, telescope, logger):
         pyplot.xlim(PlotStartUT,PlotEndUT)
         pyplot.grid()
 
-    pyplot.savefig(EnvPlotFile, dpi=dpi, bbox_inches='tight', pad_inches=0.10)
+    if FoundV20Env or FoundV5Env:
+        logger.info('Saving figure: {}'.format(EnvPlotFile))
+        pyplot.savefig(EnvPlotFile, dpi=dpi, bbox_inches='tight', pad_inches=0.10)
+    else:
+        logger.info('No data found.  Skipping figure: {}'.format(EnvPlotFile))
+        
 
 
     ###########################################################
