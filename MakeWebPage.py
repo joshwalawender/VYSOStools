@@ -34,7 +34,15 @@ def main(argv=None):
 
     telescope = args.telescope
 
-    logs_path = os.path.join(os.path.expanduser('~'), 'IQMon', 'Logs')
+    paths_to_check = [os.path.join(os.path.expanduser('~'), 'IQMon', 'Logs'),\
+                      os.path.join('/', 'Volumes', 'DroboPro1', 'IQMon', 'Logs')]
+    logs_path = None
+    for path_to_check in paths_to_check:
+        if os.path.exists(path_to_check):
+            logs_path = path_to_check
+    assert logs_path
+
+#     logs_path = os.path.join(os.path.expanduser('~'), 'IQMon', 'Logs')
     if telescope == "V20": telname = "VYSOS-20"
     if telescope == "V5":  telname = "VYSOS-5"
     NightSummariesDirectory = os.path.join(logs_path, telname)
@@ -48,7 +56,10 @@ def main(argv=None):
     MatchDateOnFile  = re.compile("([0-9]{8}UT)_"+telescope+".*")
 
 
-    sysfiles = os.listdir(SystemLogPath)
+    if os.path.exists(SystemLogPath):
+        sysfiles = os.listdir(SystemLogPath)
+    else:
+        sysfiles = []
     MatchPNGandDate  = re.compile("([0-9]{8}UT)\.png")
     SystemStatusCharts = []
     for sysfile in sysfiles:
@@ -84,10 +95,6 @@ def main(argv=None):
             if IsHTMLFile:
                 print "Found HTML File for "+Date
                 Dates[-1][3] = File
-#             IsIQMonFile   = re.match(Date+"_"+telescope+"_IQMonLog\.txt", File)
-#             if IsIQMonFile:
-#                 print "Found IQMonLog File for "+Date
-#                 Dates[-1][4] = File
             IsSummaryFile = re.match(Date+"_"+telescope+"_Summary\.txt", File)
             if IsSummaryFile:
                 print "Found Summary File for "+Date
@@ -109,13 +116,8 @@ def main(argv=None):
                         nImages = 0
                 Dates[-1][6] = nImages
             Dates[-1][7] = (Date in SystemStatusCharts)
-            
-    # for Date in Dates:
-    #     print Date
 
     SortedDates = sorted(Dates, reverse=True)
-    # for item in SortedDates:
-    #     print item
 
     ##############################################################
     ## Make index.html file
@@ -151,11 +153,6 @@ def main(argv=None):
             HTML.write("      <td style='text-align:center'><a href='%s'>%-50s</a></td>\n" % (DateInfo[3], "Image Summary"))
         else:
             HTML.write("      <td style='text-align:center'></td>\n")
-        ## Write Link to IQMon Log
-#         if DateInfo[4] != "":
-#             HTML.write("      <td style='text-align:center'><a href='%s'>%-50s</a></td>\n" % (DateInfo[4], "IQMon Log"))
-#         else:
-#             HTML.write("      <td style='text-align:center'></td>\n")
         ## Write Link to Text Summary
         if DateInfo[5] != "":
             HTML.write("      <td style='text-align:center'><a href='%s'>%-50s</a></td>\n" % (DateInfo[5], "Text Summary"))
