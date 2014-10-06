@@ -1,8 +1,8 @@
 ---
 name: 'VYSOS-20'
-logs_file_path: '~/IQMon/Logs/VYSOS-20'
-plot_file_path: '~/IQMon/Plots'
-temp_file_path: '~/IQMon/tmp/VYSOS-20'
+logs_file_path: '/Volumes/DroboPro1/IQMon/Logs/VYSOS-20'
+plot_file_path: '/Volumes/DroboPro1/IQMon/Plots'
+temp_file_path: '/Volumes/DroboPro1/IQMon/tmp/VYSOS-20'
 ## Telescope Properties
 focal_length: 4175            # mm
 pixel_size: 9.0               # um

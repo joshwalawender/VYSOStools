@@ -1,16 +1,9 @@
-HISTORY   Astrometric solution by SCAMP version 2.0.1 (2014-09-16)
-COMMENT   (c) 2010-2013 IAP/CNRS/UPMC
-COMMENT   
 EQUINOX =        2000.00000000 / Mean equinox                                  
-RADESYS = 'ICRS    '           / Astrometric system                            
+RADECSYS= 'ICRS    '           / Astrometric system                            
 CTYPE1  = 'RA---TAN'           / WCS projection type for this axis             
 CTYPE2  = 'DEC--TAN'           / WCS projection type for this axis             
 CUNIT1  = 'deg     '           / Axis unit                                     
 CUNIT2  = 'deg     '           / Axis unit                                     
-CD1_1   =  -1.223761524399E-04 / Linear projection matrix                      
-CD1_2   =   1.543804053420E-06 / Linear projection matrix                      
-CD2_1   =  -1.530894218133E-06 / Linear projection matrix                      
-CD2_2   =  -1.224053320302E-04 / Linear projection matrix                      
 PV1_0   =  -1.177909041584E-05 / Projection distortion parameter               
 PV1_1   =   1.000584771243E+00 / Projection distortion parameter               
 PV1_2   =  -1.149301330370E-04 / Projection distortion parameter               
