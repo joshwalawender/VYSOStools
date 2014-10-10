@@ -15,6 +15,7 @@ import shutil
 import subprocess
 import datetime
 import yaml
+import pickle
 
 import IQMon
 
@@ -42,80 +43,69 @@ def main(argv=None):
             logs_path = path_to_check
     assert logs_path
 
-#     logs_path = os.path.join(os.path.expanduser('~'), 'IQMon', 'Logs')
+
     if telescope == "V20": telname = "VYSOS-20"
     if telescope == "V5":  telname = "VYSOS-5"
     NightSummariesDirectory = os.path.join(logs_path, telname)
     SummaryHTMLFile = os.path.join(NightSummariesDirectory, "index.html")
     TemporaryHTMLFile = os.path.join(NightSummariesDirectory, "index_tmp.html")
-    SystemLogPath = os.path.join(logs_path, 'SystemStatus')
 
-    ##############################################################
-    ## Read Contents of Night Summaries Directory
-    Files = os.listdir(NightSummariesDirectory)
-    MatchDateOnFile  = re.compile("([0-9]{8}UT)_"+telescope+".*")
-
-
-    if os.path.exists(SystemLogPath):
-        sysfiles = os.listdir(SystemLogPath)
+    pickle_file = os.path.join(logs_path, telname, 'WebPageList.pkl')
+    if os.path.exists(pickle_file):
+        with open(pickle_file, 'r') as pickleFO:
+            Dates = pickle.load(pickleFO)
     else:
-        sysfiles = []
-    MatchPNGandDate  = re.compile("([0-9]{8}UT)\.png")
-    SystemStatusCharts = []
-    for sysfile in sysfiles:
-        IsPNG = MatchPNGandDate.match(sysfile)
-        if IsPNG:
-            print('Found system status graph for {}'.format(IsPNG.group(1)))
-            SystemStatusCharts.append(IsPNG.group(1))
-    ## Make List of Dates for Files in Directory
-    ## - loop through files, extract date
-    ## - compare against list of dates already recorded
-    ## - if date not already recorded, add to list
-    Dates = []
-    for File in Files:
-        HasDate = MatchDateOnFile.match(File)
-        if HasDate:
-            Date = HasDate.group(1)
-            DateAlreadyListed = False
-            for ListedDate in Dates:
-                if ListedDate[0] == Date:
-                    DateAlreadyListed = True
-            if not DateAlreadyListed:
-                Dates.append([Date, "", "", "", "", "", 0, False])
+        Dates = []
+    date_strings = [entry[0] for entry in Dates]
 
-            IsPNGFile     = re.match(Date+"_"+telescope+"\.png", File)
-            if IsPNGFile:
-                print "Found Summary Graphs File for "+Date
-                Dates[-1][1] = File
-            IsEnvFile     = re.match(Date+"_"+telescope+"_Env\.png", File)
-            if IsEnvFile:
-                print "Found Environmantal Graphs File for "+Date
-                Dates[-1][2] = File
-            IsHTMLFile    = re.match(Date+"_"+telescope+"\.html", File)
-            if IsHTMLFile:
-                print "Found HTML File for "+Date
-                Dates[-1][3] = File
-            IsSummaryFile = re.match(Date+"_"+telescope+"_Summary\.txt", File)
-            if IsSummaryFile:
-                print "Found Summary File for "+Date
-                Dates[-1][5] = File
-                with open(os.path.join(NightSummariesDirectory, File)) as summary_lines:
+    date = datetime.datetime(2013, 4, 19, 0, 0, 0)
+    one_day = datetime.timedelta(1, 0)
+    while date <= datetime.datetime.utcnow():
+        date_string = date.strftime('%Y%m%dUT')
+        if date_string in date_strings:
+            print('Found entry for {}'.format(date_string))
+        else:
+            print('Examining files for {}'.format(date_string))
+            path = os.path.join(logs_path, telname)
+            Dates.append([date_string, "", "", "", "", "", 0, False])
+
+            night_summary_file = '{}_{}.png'.format(date_string, telescope)
+            if os.path.exists(os.path.join(path, night_summary_file)):
+                Dates[-1][1] = night_summary_file
+
+            environmental_graph_file = '{}_{}_Env.png'.format(date_string, telescope)
+            if os.path.exists(os.path.join(path, environmental_graph_file)):
+                Dates[-1][2] = environmental_graph_file
+
+            html_summary_file = '{}_{}.html'.format(date_string, telescope)
+            if os.path.exists(os.path.join(path, html_summary_file)):
+                Dates[-1][3] = html_summary_file
+
+            system_status_file = '{}.png'.format(date_string)
+            if os.path.exists(os.path.join(logs_path, 'SystemStatus', system_status_file)):
+                Dates[-1][7] = True
+
+            text_summary_file = '{}_{}_Summary.txt'.format(date_string, telescope)
+            if os.path.exists(os.path.join(path, text_summary_file)):
+                Dates[-1][5] = text_summary_file
+                with open(os.path.join(path, text_summary_file), 'r') as summaryFO:
                     try:
-                        yaml_list = yaml.load(summary_lines)
-                    except:
-                        yaml_list = []
-                try:
-                    firstfile = yaml_list[0]['filename']
-                    nImages = len(yaml_list)
-                except:
-                    wcSTDOUT = subprocess.check_output(["wc", "-l", os.path.join(NightSummariesDirectory, File)], stderr=subprocess.STDOUT)
-                    try:
-                        nLines = int(wcSTDOUT.strip().split(" ")[0])
-                        nImages = nLines - 1
+                        yaml_list = yaml.load(summaryFO)
+                        firstfile = yaml_list[0]['filename']
+                        nImages = len(yaml_list)
+    #                     print('  Summary is a YAML file with {} entries'.format(nImages))
                     except:
                         nImages = 0
+                if nImages == 0:
+                    with open(os.path.join(path, text_summary_file), 'r') as summaryFO:
+                        summary_list = summaryFO.readlines()
+                        nImages = len(summary_list)
+    #                     print('  Summary is a text table with {} entries'.format(nImages))
                 Dates[-1][6] = nImages
-            Dates[-1][7] = (Date in SystemStatusCharts)
+        date += one_day
+
+    with open(pickle_file, 'w') as pickleFO:
+        pickle.dump(Dates, pickleFO)
 
     SortedDates = sorted(Dates, reverse=True)
 
