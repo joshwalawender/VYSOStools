@@ -58,11 +58,12 @@ def main(argv=None):
         Dates = []
     date_strings = [entry[0] for entry in Dates]
 
+    today_string = datetime.datetime.utcnow().strftime('%Y%m%dUT')
     date = datetime.datetime(2013, 4, 19, 0, 0, 0)
     one_day = datetime.timedelta(1, 0)
     while date <= datetime.datetime.utcnow():
         date_string = date.strftime('%Y%m%dUT')
-        if date_string in date_strings:
+        if (date_string in date_strings):
             print('Found entry for {}'.format(date_string))
         else:
             print('Examining files for {}'.format(date_string))
@@ -103,9 +104,6 @@ def main(argv=None):
     #                     print('  Summary is a text table with {} entries'.format(nImages))
                 Dates[-1][6] = nImages
         date += one_day
-
-    with open(pickle_file, 'w') as pickleFO:
-        pickle.dump(Dates, pickleFO)
 
     SortedDates = sorted(Dates, reverse=True)
 
@@ -162,6 +160,15 @@ def main(argv=None):
     HTML.write("</body>\n")
     HTML.write("</html>\n")
     HTML.close()
+
+    for entry in Dates:
+        if entry[0] == today_string:
+            print('Removing {}'.format(today_string))
+            Dates.remove(entry)
+
+    print('Saving records in pickle file')
+    with open(pickle_file, 'w') as pickleFO:
+        pickle.dump(Dates, pickleFO)
 
 
 if __name__ == '__main__':
