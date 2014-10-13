@@ -751,27 +751,48 @@ def MakePlots(DateString, telescope, logger):
 
         ###########################################################
         ## Zero Point
+        if telescope == "V20":
+            yrange = (17.25, 20.75)
+        elif telescope == "V5":
+            yrange = (16.25, 19.25)
         if FoundIQMonFile:
             zero_points = [entry['ZeroPoint']\
                            for entry in IQMonTable\
-                           if entry['ZeroPoint'] and not numpy.isnan(entry['ZeroPoint'])]
+                           if entry['ZeroPoint'] and not numpy.isnan(entry['ZeroPoint'])\
+                           and entry['ZeroPoint'] >= yrange[0] and entry['ZeroPoint'] <= yrange[1]]
             times = [entry['ExpStart']\
                      for entry in IQMonTable\
-                     if entry['ZeroPoint'] and not numpy.isnan(entry['ZeroPoint'])]
+                     if entry['ZeroPoint'] and not numpy.isnan(entry['ZeroPoint'])\
+                     and entry['ZeroPoint'] >= yrange[0] and entry['ZeroPoint'] <= yrange[1]]
+            zero_points_above_plot = [yrange[1]-0.1\
+                                      for entry in IQMonTable\
+                                      if entry['ZeroPoint'] and not numpy.isnan(entry['ZeroPoint']) and entry['ZeroPoint'] > yrange[1]]
+            times_above_plot = [entry['ExpStart']\
+                                for entry in IQMonTable\
+                                if entry['ZeroPoint'] and not numpy.isnan(entry['ZeroPoint']) and entry['ZeroPoint'] > yrange[1]]
+            zero_points_below_plot = [yrange[1]-0.1\
+                                      for entry in IQMonTable\
+                                      if entry['ZeroPoint'] and not numpy.isnan(entry['ZeroPoint']) and entry['ZeroPoint'] < yrange[0]]
+            times_below_plot = [entry['ExpStart']\
+                                for entry in IQMonTable\
+                                if entry['ZeroPoint'] and not numpy.isnan(entry['ZeroPoint']) and entry['ZeroPoint'] < yrange[0]]
             if len(zero_points) > 0:
                 logger.info('  Making Zero Point vs. Time Plot for {}'.format(telescope))
                 Figure.add_axes(plot_positions[1][1], xticklabels=[])
                 pyplot.plot(times, zero_points, 'k.', label="Zero Point")
+                pyplot.plot(times_above_plot, zero_points_above_plot, 'r^', mew=0, ms=4)
+                pyplot.plot(times_below_plot, zero_points_below_plot, 'rv', mew=0, ms=4)
                 if tel.config['threshold_zeropoint'] != 'None':
                     pyplot.plot([PlotStartUT,PlotEndUT], [tel.config['threshold_zeropoint'], tel.config['threshold_zeropoint']], 'r-')
                 pyplot.ylabel("Zero Point")
-                pyplot.yticks(numpy.arange(0,30,1))
+                pyplot.yticks(numpy.arange(10,30,0.5))
                 ymin = min(zero_points)-0.5
                 ymax = max(zero_points)+0.5
-                if tel.config['threshold_zeropoint'] != 'None':
-                    pyplot.ylim(min([ymin, math.floor(tel.config['threshold_zeropoint']-0.5)]), ymax)
-                else:
-                    pyplot.ylim(ymin, ymax)
+                pyplot.ylim(yrange)
+#                 if tel.config['threshold_zeropoint'] != 'None':
+#                     pyplot.ylim(min([ymin, math.floor(tel.config['threshold_zeropoint']-0.5)]), ymax)
+#                 else:
+#                     pyplot.ylim(ymin, ymax)
                 pyplot.xticks(numpy.linspace(PlotStartUT,PlotEndUT,nUTHours,endpoint=True))
                 pyplot.xlim(PlotStartUT,PlotEndUT)
                 pyplot.grid()
