@@ -752,9 +752,9 @@ def MakePlots(DateString, telescope, logger):
         ###########################################################
         ## Zero Point
         if telescope == "V20":
-            yrange = (17.25, 20.75)
+            yrange = (18.25, 20.75)
         elif telescope == "V5":
-            yrange = (16.25, 19.25)
+            yrange = (16.75, 19.25)
         if FoundIQMonFile:
             zero_points = [entry['ZeroPoint']\
                            for entry in IQMonTable\
@@ -764,13 +764,13 @@ def MakePlots(DateString, telescope, logger):
                      for entry in IQMonTable\
                      if entry['ZeroPoint'] and not numpy.isnan(entry['ZeroPoint'])\
                      and entry['ZeroPoint'] >= yrange[0] and entry['ZeroPoint'] <= yrange[1]]
-            zero_points_above_plot = [yrange[1]-0.1\
+            zero_points_above_plot = [yrange[1]-0.05\
                                       for entry in IQMonTable\
                                       if entry['ZeroPoint'] and not numpy.isnan(entry['ZeroPoint']) and entry['ZeroPoint'] > yrange[1]]
             times_above_plot = [entry['ExpStart']\
                                 for entry in IQMonTable\
                                 if entry['ZeroPoint'] and not numpy.isnan(entry['ZeroPoint']) and entry['ZeroPoint'] > yrange[1]]
-            zero_points_below_plot = [yrange[1]-0.1\
+            zero_points_below_plot = [yrange[0]+0.05\
                                       for entry in IQMonTable\
                                       if entry['ZeroPoint'] and not numpy.isnan(entry['ZeroPoint']) and entry['ZeroPoint'] < yrange[0]]
             times_below_plot = [entry['ExpStart']\
