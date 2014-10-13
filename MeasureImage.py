@@ -94,6 +94,7 @@ def MeasureImage(filename,\
                  verbose=False,\
                  nographics=False,\
                  analyze_image=True,\
+                 record=True,\
                  zero_point=False,\
                  ):
 
@@ -210,7 +211,7 @@ def MeasureImage(filename,\
         if not nographics and image.FWHM:
             image.make_PSF_plot()
 
-    if not nographics:
+    if record and not nographics:
         if tel.name == 'VYSOS-5':
             p1, p2 = (0.15, 0.50)
         if tel.name == 'VYSOS-20':
@@ -238,9 +239,11 @@ def MeasureImage(filename,\
     image.clean_up()
     image.calculate_process_time()
 
-    fields=["Date and Time", "Filename", "Alt", "Az", "Airmass", "MoonSep", "MoonIllum", "FWHM", "ellipticity", "PErr", "ZeroPoint", "nStars", "ProcessTime"]
-    image.add_web_log_entry(html_file, fields=fields)
-    image.add_yaml_entry(yaml_file)
+    if record:
+        fields=["Date and Time", "Filename", "Alt", "Az", "Airmass", "MoonSep", "MoonIllum", "FWHM", "ellipticity", "PErr", "ZeroPoint", "nStars", "ProcessTime"]
+        image.add_web_log_entry(html_file, fields=fields)
+        image.add_yaml_entry(yaml_file)
+
     image.logger.info('Done.')
 
 
@@ -260,6 +263,9 @@ def main():
     parser.add_argument("-z", "--zp",
         action="store_true", dest="zero_point",
         default=False, help="Calculate zero point")
+    parser.add_argument("-n", "--norecord",
+        action="store_true", dest="no_record",
+        default=False, help="Do not record results in HTML or YAML")
     ## add arguments
     parser.add_argument("filename",
         type=str,
@@ -269,10 +275,13 @@ def main():
         help="Telescope which took the data ('V5' or 'V20')")
     args = parser.parse_args()
 
+    record = not args.no_record
+
     MeasureImage(args.filename,\
                  telescope=args.telescope,\
                  nographics=args.nographics,\
                  zero_point=args.zero_point,\
+                 record=record,\
                  verbose=args.verbose)
 
 
