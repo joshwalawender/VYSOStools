@@ -384,16 +384,19 @@ def main():
         except:
             FocusMax = None
         if FocusMax:
-            ## Get Average of 5 Temperature Readings
+            ## Get Average of 3 Temperature Readings
             FocusMax_Temps = []
-#             for i in range(0,5,1):
-#                 try:
-#                     newtemp = float(FocusMax.Temperature)*9./5. + 32.
-#                     FocusMax_Temps.append(newtemp)
-#                     logger.debug('  FocusMax Temperature {} = {:.1f}'.format(i, newtemp))
-#                 except:
-#                     pass
-            FocusMax_Temp = float('nan')  #float(np.median(FocusMax_Temps))
+            for i in range(0,3,1):
+                try:
+                    newtemp = float(FocusMax.Temperature)*9./5. + 32.
+                    FocusMax_Temps.append(newtemp)
+                    logger.debug('  FocusMax Temperature {} = {:.1f}'.format(i, newtemp))
+                except:
+                    logger.debug('  Failed to get FocusMax Temperature')
+            if len(FocusMax_Temps) > 0:
+                FocusMax_Temp = np.median(FocusMax_Temps)
+            else:
+                FocusMax_Temp = float('nan')  #float(np.median(FocusMax_Temps))
             logger.info('  FocusMax Temperature = {:.1f}'.format(FocusMax_Temp))
             ## Get Position
             try:
