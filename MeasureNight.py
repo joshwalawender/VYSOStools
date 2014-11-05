@@ -76,7 +76,9 @@ def main(argv=None):
         if os.path.exists(location):
             print('Found data folder at: {}'.format(location))
             VYSOSDATAPath = location
-    assert VYSOSDATAPath
+    if not VYSOSDATAPath:
+        print('Could not find data path for {}'.format(args.telescope))
+        sys.exit(1)
 
     ImagesDirectory = os.path.join(VYSOSDATAPath, "Images", args.date)
 
