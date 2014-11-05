@@ -26,6 +26,10 @@ def main(argv=None):
     ##-------------------------------------------------------------------------
     ## create a parser object for understanding command-line arguments
     parser = ArgumentParser(description="Describe the script")
+    ## add flags
+    parser.add_argument("-c", "--clobber",
+        action="store_true", dest="clobber",
+        default=False, help="Clobber past results and re-check")
     ## add arguments
     parser.add_argument("-t", "--telescope",
         dest="telescope", required=True, type=str,
@@ -51,6 +55,10 @@ def main(argv=None):
     TemporaryHTMLFile = os.path.join(NightSummariesDirectory, "index_tmp.html")
 
     pickle_file = os.path.join(logs_path, telname, 'WebPageList.pkl')
+    if args.clobber:
+        if os.path.exists(pickle_file):
+            os.remove(pickle_file)
+
     if os.path.exists(pickle_file):
         with open(pickle_file, 'r') as pickleFO:
             Dates = pickle.load(pickleFO)
