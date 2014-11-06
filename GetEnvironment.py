@@ -11,7 +11,7 @@ import logging
 import time
 import datetime
 
-import asciitable
+import astropy.io.ascii as ascii
 import win32com.client
 import urllib
 from xml.dom import minidom
@@ -142,7 +142,7 @@ def GetClarity(ClarityDataFile, logger):
 
     ClarityGood = None
     try:
-        ClarityData = asciitable.read(ClarityDataFile, guess=False, delimiter=" ", comment="#", data_start=0, Reader=asciitable.NoHeader)
+        ClarityData = ascii.read(ClarityDataFile, guess=False, delimiter=" ", comment="#", data_start=0, Reader=ascii.NoHeader)
         Date             = str(ClarityData[0][0])
         Time             = str(ClarityData[0][1])
         TempUnits        = str(ClarityData[0][2])
@@ -593,6 +593,7 @@ def main():
     ##-------------------------------------------------------------------------
     write_html_snippet(ClarityArray, ACP_is_connected, ACP_Tracking, ACP_Slewing, ACP_AtPark, ACP_Altitude, ACP_Azimuth, telescope, logger)
 
+    logger.info('Done.')
 
 
 
