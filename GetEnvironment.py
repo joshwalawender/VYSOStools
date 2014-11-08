@@ -11,7 +11,7 @@ import logging
 import time
 import datetime
 
-import asciitable
+import astropy.io.ascii as ascii
 import win32com.client
 import urllib
 from xml.dom import minidom
@@ -142,7 +142,7 @@ def GetClarity(ClarityDataFile, logger):
 
     ClarityGood = None
     try:
-        ClarityData = asciitable.read(ClarityDataFile, guess=False, delimiter=" ", comment="#", data_start=0, Reader=asciitable.NoHeader)
+        ClarityData = ascii.read(ClarityDataFile, guess=False, delimiter=" ", comment="#", data_start=0, Reader=ascii.NoHeader)
         Date             = str(ClarityData[0][0])
         Time             = str(ClarityData[0][1])
         TempUnits        = str(ClarityData[0][2])
@@ -490,11 +490,12 @@ def main():
             logger.info('  ControlByWeb Relay 1 (Fans) = {:d}'.format(CBW_fans))
             logger.info('  ControlByWeb Relay 2 (Enable) = {:d}'.format(CBW_enable))
         except:
+            logger.warning('Could not communicate with temperature module')
             CBW_units = None
             CBW_temp1 = float('nan')
             CBW_temp2 = float('nan')
-            CBW_r1state = float('nan')
-            CBW_r2state = float('nan')
+            CBW_fans = -1
+            CBW_enable = -1
         ## Set CBW Relay Status to Turn Fans On or Off
         ControlFans = True
         DeadbandHigh = 0.1
@@ -593,6 +594,7 @@ def main():
     ##-------------------------------------------------------------------------
     write_html_snippet(ClarityArray, ACP_is_connected, ACP_Tracking, ACP_Slewing, ACP_AtPark, ACP_Altitude, ACP_Azimuth, telescope, logger)
 
+    logger.info('Done.')
 
 
 
