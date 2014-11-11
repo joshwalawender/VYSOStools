@@ -395,6 +395,11 @@ def main():
                     logger.debug('  Failed to get FocusMax Temperature')
             if len(FocusMax_Temps) > 0:
                 FocusMax_Temp = np.median(FocusMax_Temps)
+                ## Filter out bad values
+                if (FocusMax_Temp > -10) and (FocusMax_Temp < 150):
+                    pass
+                else:
+                    FocusMax_Temp = float('nan')
             else:
                 FocusMax_Temp = float('nan')  #float(np.median(FocusMax_Temps))
             logger.info('  FocusMax Temperature = {:.1f}'.format(FocusMax_Temp))
