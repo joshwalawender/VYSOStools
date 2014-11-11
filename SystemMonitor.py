@@ -168,8 +168,8 @@ def main():
         V20_mount = 'up'
     else:
         V20_mount = 'down'
-    if (V5_mount == 'down') or (V20_mount == 'down'):
-        subprocess.call(['open', os.path.join(os.path.expanduser('~vysosuser'), 'bin', 'ConnectToData.app')])
+#    if (V5_mount == 'down') or (V20_mount == 'down'):
+#        subprocess.call(['open', os.path.join(os.path.expanduser('~vysosuser'), 'bin', 'ConnectToData.app')])
 
 
 
