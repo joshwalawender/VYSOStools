@@ -470,6 +470,7 @@ def main():
         OutputClarityDataFO.close()
     else:
         logger.warning("No data from Clarity.")
+        ClarityArray = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
 
 
     ##-------------------------------------------------------------------------
@@ -565,23 +566,6 @@ def main():
         output.close()
     ## Write Data Line
     WetCldWnd = str(ClarityArray[8])+str(ClarityArray[6])+str(ClarityArray[7])
-#     print(type(TimeString))
-#     print(type(RCOS_Truss_Temp))
-#     print(type(RCOS_Primary_Temp))
-#     print(type(RCOS_Secondary_Temp))
-#     print(type(RCOS_Fan_Speed))
-#     print(type(RCOS_Focus_Position))
-#     print(type(ClarityArray[1]))
-#     print(type(ClarityArray[2]))
-#     print(type(ClarityArray[3]))
-#     print(type(ClarityArray[4]))
-#     print(type(ClarityArray[5]))
-#     print(type(ACP_Altitude))
-#     print(type(ACP_Azimuth))
-#     print(type(WetCldWnd))
-#     print(type(CBW_temp1))
-#     print(type(CBW_fans))
-#     print(type(CBW_enable))
     if telescope == 'V20':
         data_line = '{:<22s}{:>10.2f}{:>10.2f}{:>10.2f}{:>10d}{:>10d}{:>10.2f}{:>10.2f}{:>10.1f}{:>10.0f}{:>10.2f}{:>10.2f}{:>10.2f}{:>10s}{:>10.1f}{:>9d}{:1d}'.format( \
                     TimeString, RCOS_Truss_Temp, RCOS_Primary_Temp, RCOS_Secondary_Temp, RCOS_Fan_Speed, RCOS_Focus_Position, \
