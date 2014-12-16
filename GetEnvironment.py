@@ -266,6 +266,8 @@ def main():
     DataFile = os.path.join(DataFilePath, DataFileName)
     logger.info('  Writing data to {}'.format(DataFile))
 
+    TimeString = now.strftime("%Y/%m/%d %H:%M:%SUT")
+
 
     ##-------------------------------------------------------------------------
     ## Query ASCOM ACPHub for Telescope Position and State
@@ -433,7 +435,7 @@ def main():
         logger.info('  Boltwood Roof Close = {:d}'.format(ClarityArray[10]))
     else:
         logger.critical('  Could not read Clarity data file.')
-        ClarityArray = [-1, -1, -1, -1, -1, 0, 0, 0, 0, 0]
+        ClarityArray = [TimeString, -1, -1, -1, -1, -1, 0, 0, 0, 0, 0]
 
     ##-------------------------------------------------------------------------
     ## Make Copies of Clarity Data for ATLAS
@@ -460,7 +462,6 @@ def main():
     ## Make Processed Data Line for Web
     if ClarityArray:
         logger.info("Writing Boltwood Data File for Web Access.")
-        TimeString = now.strftime("%Y/%m/%d %H:%M:%SUT")
         OutputClarityDataFile = os.path.join("C:\\", "Data_"+telescope, "ClarityData_"+telescope+".txt")
         OutputClarityDataFO = open(OutputClarityDataFile, 'w')
         OutputClarityDataFO.write("# {:20s} {:9s} {:9s} {:9s} {:9s} {:9s} {:1s} {:1s} {:1s} {:1s} {:1s}\n".format("Date and Time", "SkyTemp", "AmbTemp", "WindSpd", "Humidity", "DewPoint", "C", "W", "R", "D", "R"))
@@ -564,10 +565,7 @@ def main():
             output.write(line+'\n')
         output.close()
     ## Write Data Line
-    if ClarityArray:
-        WetCldWnd = str(ClarityArray[8])+str(ClarityArray[6])+str(ClarityArray[7])
-    else:
-        WetCldWnd = '---'
+    WetCldWnd = str(ClarityArray[8])+str(ClarityArray[6])+str(ClarityArray[7])
     if telescope == 'V20':
         data_line = '{:<22s}{:>10.2f}{:>10.2f}{:>10.2f}{:>10d}{:>10d}{:>10.2f}{:>10.2f}{:>10.1f}{:>10.0f}{:>10.2f}{:>10.2f}{:>10.2f}{:>10s}{:>10.1f}{:>9d}{:1d}'.format( \
                     TimeString, RCOS_Truss_Temp, RCOS_Primary_Temp, RCOS_Secondary_Temp, RCOS_Fan_Speed, RCOS_Focus_Position, \
