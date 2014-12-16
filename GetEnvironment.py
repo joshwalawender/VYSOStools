@@ -458,7 +458,7 @@ def main():
     except:
         logger.warning('  Could not copy Clarity file.')
     ## Make Processed Data Line for Web
-    if ClarityData:
+    if ClarityArray:
         logger.info("Writing Boltwood Data File for Web Access.")
         TimeString = now.strftime("%Y/%m/%d %H:%M:%SUT")
         OutputClarityDataFile = os.path.join("C:\\", "Data_"+telescope, "ClarityData_"+telescope+".txt")
