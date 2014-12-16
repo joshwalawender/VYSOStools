@@ -433,7 +433,7 @@ def main():
         logger.info('  Boltwood Roof Close = {:d}'.format(ClarityArray[10]))
     else:
         logger.critical('  Could not read Clarity data file.')
-
+        ClarityArray = [-1, -1, -1, -1, -1, 0, 0, 0, 0, 0]
 
     ##-------------------------------------------------------------------------
     ## Make Copies of Clarity Data for ATLAS
@@ -470,7 +470,6 @@ def main():
         OutputClarityDataFO.close()
     else:
         logger.warning("No data from Clarity.")
-        ClarityArray = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
 
 
     ##-------------------------------------------------------------------------
@@ -565,7 +564,10 @@ def main():
             output.write(line+'\n')
         output.close()
     ## Write Data Line
-    WetCldWnd = str(ClarityArray[8])+str(ClarityArray[6])+str(ClarityArray[7])
+    if ClarityArray:
+        WetCldWnd = str(ClarityArray[8])+str(ClarityArray[6])+str(ClarityArray[7])
+    else:
+        WetCldWnd = '---'
     if telescope == 'V20':
         data_line = '{:<22s}{:>10.2f}{:>10.2f}{:>10.2f}{:>10d}{:>10d}{:>10.2f}{:>10.2f}{:>10.1f}{:>10.0f}{:>10.2f}{:>10.2f}{:>10.2f}{:>10s}{:>10.1f}{:>9d}{:1d}'.format( \
                     TimeString, RCOS_Truss_Temp, RCOS_Primary_Temp, RCOS_Secondary_Temp, RCOS_Fan_Speed, RCOS_Focus_Position, \
