@@ -458,15 +458,18 @@ def main():
     except:
         logger.warning('  Could not copy Clarity file.')
     ## Make Processed Data Line for Web
-    logger.info("Writing Boltwood Data File for Web Access.")
-    TimeString = now.strftime("%Y/%m/%d %H:%M:%SUT")
-    OutputClarityDataFile = os.path.join("C:\\", "Data_"+telescope, "ClarityData_"+telescope+".txt")
-    OutputClarityDataFO = open(OutputClarityDataFile, 'w')
-    OutputClarityDataFO.write("# {:20s} {:9s} {:9s} {:9s} {:9s} {:9s} {:1s} {:1s} {:1s} {:1s} {:1s}\n".format("Date and Time", "SkyTemp", "AmbTemp", "WindSpd", "Humidity", "DewPoint", "C", "W", "R", "D", "R"))
-    OutputClarityDataFO.write("{:22s} {:9.1f} {:9.1f} {:9.1f} {:9.1f} {:9.1f} {:1d} {:1d} {:1d} {:1d} {:1d}\n".format(TimeString,
-                              ClarityArray[1], ClarityArray[2], ClarityArray[3], ClarityArray[4], ClarityArray[5],
-                              ClarityArray[6], ClarityArray[7], ClarityArray[8], ClarityArray[9], ClarityArray[10]))
-    OutputClarityDataFO.close()
+    if ClarityData:
+        logger.info("Writing Boltwood Data File for Web Access.")
+        TimeString = now.strftime("%Y/%m/%d %H:%M:%SUT")
+        OutputClarityDataFile = os.path.join("C:\\", "Data_"+telescope, "ClarityData_"+telescope+".txt")
+        OutputClarityDataFO = open(OutputClarityDataFile, 'w')
+        OutputClarityDataFO.write("# {:20s} {:9s} {:9s} {:9s} {:9s} {:9s} {:1s} {:1s} {:1s} {:1s} {:1s}\n".format("Date and Time", "SkyTemp", "AmbTemp", "WindSpd", "Humidity", "DewPoint", "C", "W", "R", "D", "R"))
+        OutputClarityDataFO.write("{:22s} {:9.1f} {:9.1f} {:9.1f} {:9.1f} {:9.1f} {:1d} {:1d} {:1d} {:1d} {:1d}\n".format(TimeString,
+                                  ClarityArray[1], ClarityArray[2], ClarityArray[3], ClarityArray[4], ClarityArray[5],
+                                  ClarityArray[6], ClarityArray[7], ClarityArray[8], ClarityArray[9], ClarityArray[10]))
+        OutputClarityDataFO.close()
+    else:
+        logger.warning("No data from Clarity.")
 
 
     ##-------------------------------------------------------------------------
