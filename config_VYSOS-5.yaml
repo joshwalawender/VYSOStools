@@ -12,8 +12,8 @@ saturation: 30000             # ADU
 ## Preferences
 threshold_FWHM: 2.5           # pix
 threshold_pointing_err: 5.0   # arcmin
-threshold_ellipticity: 0.30
-threshold_zeropoint: 18.0
+threshold_ellipticity: 0.25
+threshold_zeropoint: 18.5
 SCAMP_aheader: '~/IQMon/VYSOS5.ahead'
 units_for_FWHM: 'pix'
 PSF_measurement_radius: 1024  # pix
