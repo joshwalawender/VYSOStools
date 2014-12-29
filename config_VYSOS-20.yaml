@@ -13,7 +13,7 @@ saturation: 30000             # ADU
 threshold_FWHM: 5.7           # pix (roughly 2.5 arcsec on VYSOS-20)
 threshold_pointing_err: 4.0   # arcmin
 threshold_ellipticity: 0.25
-threshold_zeropoint: 20.0
+threshold_zeropoint: 20.2
 SCAMP_aheader: '~/IQMon/VYSOS20.ahead'
 units_for_FWHM: 'arcsec'
 PSF_measurement_radius: 2048  # pix

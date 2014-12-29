@@ -752,9 +752,9 @@ def MakePlots(DateString, telescope, logger):
         ###########################################################
         ## Zero Point
         if telescope == "V20":
-            yrange = (18.25, 20.75)
+            yrange = (18.75, 20.75)
         elif telescope == "V5":
-            yrange = (16.75, 19.25)
+            yrange = (17.25, 19.25)
         if FoundIQMonFile:
             zero_points = [entry['ZeroPoint']\
                            for entry in IQMonTable\
