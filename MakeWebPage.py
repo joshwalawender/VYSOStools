@@ -135,19 +135,42 @@ def main(argv=None):
     header = header.replace("telescopename", telname)
     imagenumbers = {"VYSOS-20": '0', "VYSOS-5": '4'}
     header = header.replace("imagenumber", imagenumbers[telname])
-    size_GB, avail_GB, pcnt_used = free_space(os.path.join('/', 'Volumes', 'Drobo'))
-    size_GB -= 12750
-    avail_GB -= 12750
-    pcnt_used = float(size_GB - avail_GB)/float(size_GB) * 100
+    ## Disk info for Drobo
+    drobo_path = os.path.join('/', 'Volumes', 'Drobo')
+    if os.path.exists(drobo_path):
+        size_GB, avail_GB, pcnt_used = free_space(drobo_path)
+        size_GB -= 12750
+        avail_GB -= 12750
+        pcnt_used = float(size_GB - avail_GB)/float(size_GB) * 100
+    else:
+        size_GB, avail_GB, pcnt_used = (0, 0, 0)
     header = header.replace("drobopercent", '{:.0f}'.format(pcnt_used))
     header = header.replace("droboavail", '{:.0f}'.format(avail_GB))
-    size_GB, avail_GB, pcnt_used = free_space(os.path.join('/', 'Volumes', 'WD500B'))
+    ## Disk info for external USB drive
+    extdrive_paths = [os.path.join('/', 'Volumes', 'WD500B', telescope),\
+                      os.path.join('/', 'Volumes', 'WD500_C', telescope)]
+    if os.path.exists(extdrive_paths[0]):
+        size_GB, avail_GB, pcnt_used = free_space(extdrive_paths[0])
+    elif os.path.exists(extdrive_paths[1]):
+        size_GB, avail_GB, pcnt_used = free_space(extdrive_paths[1])
+    else:
+        size_GB, avail_GB, pcnt_used = (0, 0, 0)
     header = header.replace("usbpercent", '{:.0f}'.format(pcnt_used))
     header = header.replace("usbavail", '{:.0f}'.format(avail_GB))
-    size_GB, avail_GB, pcnt_used = free_space(os.path.join('/', 'Volumes', 'Data_V5'))
+    ## Disk info for VYSOS-5 control computer
+    v5_path = os.path.join('/', 'Volumes', 'Data_V5')
+    if os.path.exists(v5_path):
+        size_GB, avail_GB, pcnt_used = free_space(v5_path)
+    else:
+        size_GB, avail_GB, pcnt_used = (0, 0, 0)
     header = header.replace("v5percent", '{:.0f}'.format(pcnt_used))
     header = header.replace("v5avail", '{:.0f}'.format(avail_GB))
-    size_GB, avail_GB, pcnt_used = free_space(os.path.join('/', 'Volumes', 'Data_V20'))
+    ## Disk info for VYSOS-20 control computer
+    v20_path = os.path.join('/', 'Volumes', 'Data_V20')
+    if os.path.exists(v20_path):
+        size_GB, avail_GB, pcnt_used = free_space(v20_path)
+    else:
+        size_GB, avail_GB, pcnt_used = (0, 0, 0)
     header = header.replace("v20percent", '{:.0f}'.format(pcnt_used))
     header = header.replace("v20avail", '{:.0f}'.format(avail_GB))
     
