@@ -50,14 +50,16 @@ def main():
         help="The date to copy.")
     args = parser.parse_args()
 
-    date = datetime.datetime.utcnow().strftime('%Y%m%dUT')
+    telescope = args.telescope
     if args.date:
         date = args.date
+    else:
+        date = datetime.datetime.utcnow().strftime('%Y%m%dUT')
 
     ##-------------------------------------------------------------------------
     ## Create logger object
     ##-------------------------------------------------------------------------
-    logger = logging.getLogger('MyLogger')
+    logger = logging.getLogger('DataHandler_{}_{}'.format(telescope, date))
     logger.setLevel(logging.DEBUG)
     ## Set up console output
     LogConsoleHandler = logging.StreamHandler()
@@ -69,7 +71,7 @@ def main():
     LogConsoleHandler.setFormatter(LogFormat)
     logger.addHandler(LogConsoleHandler)
     ## Set up file output
-    LogFileName = 'DataHandler_{}.log'.format(date)
+    LogFileName = 'DataHandler_{}_{}.log'.format(telescope, date)
     LogFilePath = os.path.join('/', 'Users', 'vysosuser', 'logs')
     LogFileHandler = logging.FileHandler(os.path.join(LogFilePath, LogFileName))
     LogFileHandler.setLevel(logging.DEBUG)
@@ -81,7 +83,6 @@ def main():
     ##-------------------------------------------------------------------------
     ## Copy Data from Windows Share to Drobo and USB Drive
     ##-------------------------------------------------------------------------
-    telescope = args.telescope
     windows_path = os.path.join('/', 'Volumes', 'Data_{}'.format(telescope))
     drobo_path = os.path.join('/', 'Volumes', 'Drobo', telescope)
     extdrive_paths = [os.path.join('/', 'Volumes', 'WD500B', telescope),\
