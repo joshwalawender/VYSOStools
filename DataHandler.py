@@ -64,6 +64,10 @@ def main():
     else:
         date = datetime.datetime.utcnow().strftime('%Y%m%dUT')
 
+    ## Safety Feature: do not have delete active if working on today's data
+    if date == datetime.datetime.utcnow().strftime('%Y%m%dUT'):
+        args.delete = False
+
     ##-------------------------------------------------------------------------
     ## Create logger object
     ##-------------------------------------------------------------------------
