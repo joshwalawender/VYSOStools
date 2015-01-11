@@ -17,6 +17,7 @@ import time
 
 import ephem
 import astropy.units as u
+import astropy.io.fits as fits
 
 import IQMon
 
@@ -122,11 +123,19 @@ def MeasureImage(filename,\
             telescope = "V5"
         elif V20match and not V5match:
             telescope = "V20"
-        elif NoTelMatch:
-            telescope = "V5"  ## Assume telescope is VYSOS-5
         else:
-            print("Can not determine valid telescope from arguments or filename.")
-            sys.exit(1)
+            with fits.open(FitsFile) as hdulist:
+                if hdulist[0].header['OBSERVAT']:
+                    if re.search('VYSOS-?20', hdulist[0].header['OBSERVAT']):
+                        telescope = "V20"
+                    elif re.search('VYSOS-?5', hdulist[0].header['OBSERVAT']):
+                        telescope = "V5"
+                    else:
+                        print("Can not determine valid telescope from arguments or filename or header.")
+                        sys.exit(0)
+                else:
+                    print("Can not determine valid telescope from arguments or filename or header.")
+                    sys.exit(0)
 
 
     ##-------------------------------------------------------------------------

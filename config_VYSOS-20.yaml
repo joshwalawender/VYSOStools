@@ -40,3 +40,4 @@ catalog:
     magmax: 18.0
     PSi: 'imag'
     PSr: 'rmag'
+    V: 'Vmag'
