@@ -20,6 +20,17 @@ import pickle
 import IQMon
 
 
+##-------------------------------------------------------------------------
+## Check Free Space on Drive
+##-------------------------------------------------------------------------
+def free_space(path):
+    statvfs = os.statvfs(path)
+    size_GB = statvfs.f_frsize * statvfs.f_blocks / 1024 / 1024 / 1024
+    avail_GB = statvfs.f_frsize * statvfs.f_bfree / 1024 / 1024 / 1024
+    pcnt_used = float(size_GB - avail_GB)/float(size_GB) * 100
+    return (size_GB, avail_GB, pcnt_used)
+
+
 def main(argv=None):
     ##-------------------------------------------------------------------------
     ## Parse Command Line Arguments
@@ -124,6 +135,16 @@ def main(argv=None):
     header = header.replace("telescopename", telname)
     imagenumbers = {"VYSOS-20": '0', "VYSOS-5": '4'}
     header = header.replace("imagenumber", imagenumbers[telname])
+    size_GB, avail_GB, pcnt_used = free_space(os.path.join('/', 'Volumes', 'Drobo'))
+    size_GB -= 12750
+    avail_GB -= 12750
+    pcnt_used = float(size_GB - avail_GB)/float(size_GB) * 100
+    header = header.replace("drobopercent", '{:.0f}'.format(pcnt_used))
+    header = header.replace("droboavail", '{:.0f}'.format(avail_GB))
+    size_GB, avail_GB, pcnt_used = free_space(os.path.join('/', 'Volumes', 'WD500B'))
+    header = header.replace("usbpercent", '{:.0f}'.format(pcnt_used))
+    header = header.replace("usbavail", '{:.0f}'.format(avail_GB))
+    
     HTMLheader.close()
     HTML.write(header)
 
