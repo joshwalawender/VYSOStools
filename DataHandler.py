@@ -52,7 +52,12 @@ def main():
 
     telescope = args.telescope
     if args.date:
-        date = args.date
+        if re.match('\d{8}UT', args.date):
+            date = args.date
+        elif args.date == 'yesterday':
+            today = datetime.datetime.utcnow()
+            oneday = datetime.timedelta(1, 0)
+            date = (today - oneday).strftime('%Y%m%dUT')
     else:
         date = datetime.datetime.utcnow().strftime('%Y%m%dUT')
 
@@ -173,6 +178,15 @@ def main():
                 logger.warning('  SHA sum does not match')
                 logger.debug('  Original SHA sum: {}'.format(original_hash))
                 logger.debug('  Drobo SHA sum:    {}'.format(drobo_hash))
+                logger.info('  Copying file.')
+                shutil.copy2(file, drobo_file)
+                drobo_hash = subprocess.check_output(['shasum', drobo_file]).split()[0]
+                if original_hash == drobo_hash:
+                    logger.info('  SHA sum on drobo confirmed')
+                else:
+                    logger.warning('  SHA sum does not match')
+                    logger.debug('  Original SHA sum: {}'.format(original_hash))
+                    logger.debug('  Drobo SHA sum:    {}'.format(drobo_hash))
         ## Copy to External Drive
         if not os.path.exists(extdrive_file) and copy_to_extdrive:
             logger.info('  File does not exist on external drive.  Copying.')
