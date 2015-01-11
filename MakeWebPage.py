@@ -144,6 +144,12 @@ def main(argv=None):
     size_GB, avail_GB, pcnt_used = free_space(os.path.join('/', 'Volumes', 'WD500B'))
     header = header.replace("usbpercent", '{:.0f}'.format(pcnt_used))
     header = header.replace("usbavail", '{:.0f}'.format(avail_GB))
+    size_GB, avail_GB, pcnt_used = free_space(os.path.join('/', 'Volumes', 'Data_V5'))
+    header = header.replace("v5percent", '{:.0f}'.format(pcnt_used))
+    header = header.replace("v5avail", '{:.0f}'.format(avail_GB))
+    size_GB, avail_GB, pcnt_used = free_space(os.path.join('/', 'Volumes', 'Data_V20'))
+    header = header.replace("v20percent", '{:.0f}'.format(pcnt_used))
+    header = header.replace("v20avail", '{:.0f}'.format(avail_GB))
     
     HTMLheader.close()
     HTML.write(header)
