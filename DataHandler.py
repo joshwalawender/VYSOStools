@@ -40,6 +40,9 @@ def main():
     parser.add_argument("-v", "--verbose",
         action="store_true", dest="verbose",
         default=False, help="Be verbose! (default = False)")
+    parser.add_argument("--delete",
+        action="store_true", dest="delete",
+        default=False, help="Delete the file after confirmation of SHA sum?")
     ## add arguments
     parser.add_argument("-t", "--telescope",
         dest="telescope", required=True, type=str,
@@ -180,13 +183,6 @@ def main():
                 logger.debug('  Drobo SHA sum:    {}'.format(drobo_hash))
                 logger.info('  Copying file.')
                 shutil.copy2(file, drobo_file)
-                drobo_hash = subprocess.check_output(['shasum', drobo_file]).split()[0]
-                if original_hash == drobo_hash:
-                    logger.info('  SHA sum on drobo confirmed')
-                else:
-                    logger.warning('  SHA sum does not match')
-                    logger.debug('  Original SHA sum: {}'.format(original_hash))
-                    logger.debug('  Drobo SHA sum:    {}'.format(drobo_hash))
         ## Copy to External Drive
         if not os.path.exists(extdrive_file) and copy_to_extdrive:
             logger.info('  File does not exist on external drive.  Copying.')
@@ -200,12 +196,15 @@ def main():
                 logger.warning('  SHA sum does not match')
                 logger.info('  Original SHA sum: {}'.format(original_hash))
                 logger.info('  External SHA sum: {}'.format(extdrive_hash))
+                logger.info('  Copying file.')
+                shutil.copy2(file, extdrive_file)
         ## Delete Original File
-        if (original_hash == drobo_hash) and (original_hash == extdrive_hash):
-            logger.info('  All three SHA sums match.  Deleting file.')
-            os.remove(file)
-        else:
-            logger.warning('  SHA sum mismatch.  File not deleted.')
+        if args.delete:
+            if (original_hash == drobo_hash) and (original_hash == extdrive_hash):
+                logger.info('  All three SHA sums match.  Deleting file.')
+                os.remove(file)
+            else:
+                logger.warning('  SHA sum mismatch.  File not deleted.')
 
     ## Remove Calibration directory if empty
     Calibration_path = os.path.join(windows_path, 'Images', date, 'Calibration')
