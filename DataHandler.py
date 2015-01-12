@@ -187,6 +187,8 @@ def main():
                 logger.debug('  Drobo SHA sum:    {}'.format(drobo_hash))
                 logger.info('  Copying file.')
                 shutil.copy2(file, drobo_file)
+                if args.delete:
+                    drobo_hash = subprocess.check_output(['shasum', drobo_file]).split()[0]
         ## Copy to External Drive
         if not os.path.exists(extdrive_file) and copy_to_extdrive:
             logger.info('  File does not exist on external drive.  Copying.')
@@ -202,6 +204,8 @@ def main():
                 logger.info('  External SHA sum: {}'.format(extdrive_hash))
                 logger.info('  Copying file.')
                 shutil.copy2(file, extdrive_file)
+                if args.delete:
+                    extdrive_hash = subprocess.check_output(['shasum', extdrive_file]).split()[0]
         ## Delete Original File
         if args.delete:
             if (original_hash == drobo_hash) and (original_hash == extdrive_hash):
