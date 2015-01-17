@@ -14,6 +14,79 @@ import subprocess
 import paramiko
 
 
+def check_remote_shasum(remote_computer, remote_file, logger):
+    ansi_escape = re.compile(r'\x1b[^m]*m')
+    shasum_cmd = 'shasum {}'.format(remote_file)
+    stdin, stdout, stderr = remote_computer.exec_command(shasum_cmd)
+    ## stdout
+    try:
+        lines_with_ansi = stdout.readlines()
+        lines = []
+        for line in lines_with_ansi:
+            cleanedline = ansi_escape.sub('', line).strip('\n')
+            lines.append(str(cleanedline))
+            logger.debug('  STDOUT: {}'.format(cleanedline))
+        stdout = lines
+    except:
+        stdout = []
+    ## stderr
+    try:
+        lines_with_ansi = stderr.readlines()
+        lines = []
+        for line in lines_with_ansi:
+            cleanedline = ansi_escape.sub('', line).strip('\n')
+            lines.append(str(cleanedline))
+            logger.warning('  STDERR: {}'.format(cleanedline))
+        stderr = lines
+    except:
+        stderr = []
+
+    if (len(stderr) == 0):
+        matchsum = re.match('.*\s+{}'.format(remote_file), stdout[0])
+        if matchsum:
+            logger.debug('  SHASUM recieved')
+            remote_shasum = stdout[0].split()[0]
+        else:
+            remote_shasum = None
+    elif re.search('No such file or directory', stderr[0]):
+        logger.info('  Did not find file on remote machine.')
+        remote_shasum = None
+    else:
+        logger.warning('  STDERR: {}'.format(stderr))
+        remote_shasum = None
+
+    return remote_shasum
+
+
+def copy_file(file, local_shasum, remote_file, remote_computer_string, remote_computer, logger):
+    ## Create Directories on Remote Machine as Needed
+    remote_dest2 = os.path.split(remote_file)[0]
+    remote_dest1 = os.path.split(remote_dest2)[0]
+    mkdir_cmd1 = 'mkdir {}'.format(remote_dest1)
+    mkdir_cmd2 = 'mkdir {}'.format(remote_dest2)
+    logger.debug('  Ensuring {} exists'.format(remote_dest1))
+    stdin, stdout, stderr = remote_computer.exec_command(mkdir_cmd1)
+    logger.debug('  Ensuring {} exists'.format(remote_dest2))
+    stdin, stdout, stderr = remote_computer.exec_command(mkdir_cmd2)
+
+    ## Copy File
+    scp_cmd = ['scp', file, '{}:{}'.format(remote_computer_string, remote_file)]
+    logger.debug('  Running: {}'.format(' '.join(scp_cmd)))
+    subprocess.call(scp_cmd)
+    remote_shasum = check_remote_shasum(remote_computer, remote_file, logger)
+    if not remote_shasum:
+        logger.warning('  Copy to remote machine failed')
+        return False
+    elif remote_shasum == local_shasum:
+        logger.info('  SHASUMs match.')
+        return True
+    else:
+        logger.warning('  SHASUMs do not match!')
+        logger.debug('  local:  {}'.format(local_shasum))
+        logger.debug('  remote: {}'.format(remote_shasum))
+        return False
+
+
 ##-------------------------------------------------------------------------
 ## Main Program
 ##-------------------------------------------------------------------------
@@ -32,6 +105,9 @@ def main():
     parser.add_argument("--delete",
         action="store_true", dest="delete",
         default=False, help="Delete the file after confirmation of SHA sum?")
+    parser.add_argument("--copy",
+        action="store_true", dest="copy",
+        default=False, help="Copy the file over if SHASUM mismatch?")
     ## add arguments
     parser.add_argument("-t", "--telescope",
         dest="telescope", required=True, type=str,
@@ -93,69 +169,37 @@ def main():
     files.extend(glob.glob(os.path.join(drobo_path, 'Logs', date, '*.*')))
     logger.info('Found {} files to analyze'.format(len(files)))
 
+    remote_computer_string = 'vysosuser@trapezium.ifa.hawaii.edu'
     remote_computer = paramiko.SSHClient()
     remote_computer.load_system_host_keys()
     remote_computer.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    remote_computer.connect(hostname='trapezium.ifa.hawaii.edu', username='vysosuser')
+    remote_computer.connect(hostname=remote_computer_string.split('@')[1],\
+                            username=remote_computer_string.split('@')[0])
 
-#     remote_path = os.path.join('/', 'Volumes', 'DroboPro1', telescope, date)
-    remote_path = os.path.join('/', 'Users', 'vysosuser', 'Data', telescope, 'Images', date)
+#     remote_path = os.path.join('/', 'Volumes', 'DroboPro1', telescope)
+    remote_path = os.path.join('/', 'Users', 'vysosuser', 'Data', telescope)
 
-    ansi_escape = re.compile(r'\x1b[^m]*m')
     for file in files:
         logger.info('Checking file: {}'.format(file))
         filename = os.path.split(file)[1]
         local_shasum = subprocess.check_output(['shasum', file]).split()[0]
-        remote_file = os.path.join(remote_path, filename)
+        remote_file = file.replace(drobo_path, remote_path)
+        remote_shasum = check_remote_shasum(remote_computer, remote_file, logger)
 
-        command = 'shasum {}'.format(remote_file)
-        stdin, stdout, stderr = remote_computer.exec_command(command)
-        ## Handle STDIN
-        try:
-            stdinlines_with_ansi = stdin.readlines()
-            stdinlines = []
-            for line in stdinlines_with_ansi:
-                cleanedline = ansi_escape.sub('', line).strip('\n')
-                stdinlines.append(str(cleanedline))
-                if logger: logger.debug('  stdin: {0}'.format(cleanedline))
-        except:
-            stdinlines = []
-        ## Handle STDOUT
-        try:
-            stdoutlines_with_ansi = stdout.readlines()
-            stdoutlines = []
-            for line in stdoutlines_with_ansi:
-                cleanedline = ansi_escape.sub('', line).strip('\n')
-                stdoutlines.append(str(cleanedline))
-                if logger: logger.debug('  stdout: {0}'.format(cleanedline))
-        except:
-            if logger: logger.debug('  No lines read from STDOUT')
-            stdoutlines = []
-        ## Handle STDERR
-        try:
-            stderrlines_with_ansi = stderr.readlines()
-            stderrlines = []
-            for line in stderrlines_with_ansi:
-                cleanedline = ansi_escape.sub('', line).strip('\n')
-                stderrlines.append(str(cleanedline))
-                if logger: logger.debug('  stderr: {0}'.format(cleanedline))
-        except:
-            if logger: logger.debug('  No lines read from STDERR')
-            stderrlines = []
-
-        matchsum = re.match('.*\s+{}'.format(remote_file), stdoutlines[0])
-        if matchsum:
-            logger.debug('  SHASUM recieved')
-            remote_shasum = stdoutlines[0].split()[0]
-            if remote_shasum == local_shasum:
-                logger.info('  SHASUMs match.')
-            else:
-                logger.warning('  SHASUMs do not match!')
-                logger.debug('  local:  {}'.format(local_shasum))
-                logger.debug('  remote: {}'.format(remote_shasum))
+        ## Check Remote SHASUM against local SHASUM
+        if not remote_shasum:
+            if args.copy:
+                logger.info('  Copying file to remote machine')
+                copy_file(file, local_shasum, remote_file, remote_computer_string, remote_computer, logger)
+        elif remote_shasum == local_shasum:
+            logger.info('  SHASUMs match.')
         else:
-            logger.warning('  Could not parse response.')
-            logger.warning('  {}'.format(stdout))
+            logger.warning('  SHASUMs do not match!')
+            logger.debug('  local:  {}'.format(local_shasum))
+            logger.debug('  remote: {}'.format(remote_shasum))
+            if args.copy:
+                logger.info('  Copying file to remote machine')
+                copy_file(file, local_shasum, remote_file, remote_computer_string, remote_computer, logger)
 
 
 
