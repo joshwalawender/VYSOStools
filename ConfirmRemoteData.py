@@ -15,6 +15,12 @@ import paramiko
 
 
 def check_remote_shasum(remote_computer, remote_file, logger):
+
+    if re.search('\$TGTNAME\-\$INTERVAL', remote_file):
+        remote_file = remote_file.replace('$', '\$')
+        logger.debug('  Replacing $ characters with \$ in {}'.format(remote_file))
+
+
     ansi_escape = re.compile(r'\x1b[^m]*m')
     shasum_cmd = 'shasum {}'.format(remote_file)
     stdin, stdout, stderr = remote_computer.exec_command(shasum_cmd)
@@ -36,7 +42,7 @@ def check_remote_shasum(remote_computer, remote_file, logger):
         for line in lines_with_ansi:
             cleanedline = ansi_escape.sub('', line).strip('\n')
             lines.append(str(cleanedline))
-            logger.warning('  STDERR: {}'.format(cleanedline))
+            logger.debug('  STDERR: {}'.format(cleanedline))
         stderr = lines
     except:
         stderr = []
@@ -58,7 +64,7 @@ def check_remote_shasum(remote_computer, remote_file, logger):
     return remote_shasum
 
 
-def copy_file(file, local_shasum, remote_file, remote_computer_string, remote_computer, logger):
+def copy_file(file, local_shasum, remote_file, remote_computer_string, remote_computer, logger, listFO):
     ## Create Directories on Remote Machine as Needed
     remote_dest2 = os.path.split(remote_file)[0]
     remote_dest1 = os.path.split(remote_dest2)[0]
@@ -69,6 +75,10 @@ def copy_file(file, local_shasum, remote_file, remote_computer_string, remote_co
     logger.debug('  Ensuring {} exists'.format(remote_dest2))
     stdin, stdout, stderr = remote_computer.exec_command(mkdir_cmd2)
 
+    if re.search('\$TGTNAME\-\$INTERVAL', remote_file):
+        remote_file = remote_file.replace('$', '\$')
+        logger.debug('  Replacing $ characters with \$ in {}'.format(remote_file))
+
     ## Copy File
     scp_cmd = ['scp', file, '{}:{}'.format(remote_computer_string, remote_file)]
     logger.debug('  Running: {}'.format(' '.join(scp_cmd)))
@@ -76,14 +86,17 @@ def copy_file(file, local_shasum, remote_file, remote_computer_string, remote_co
     remote_shasum = check_remote_shasum(remote_computer, remote_file, logger)
     if not remote_shasum:
         logger.warning('  Copy to remote machine failed')
+        listFO.write('Failed: {},{},{}:{},{}\n'.format(file, local_shasum, '', '', ''))
         return False
     elif remote_shasum == local_shasum:
         logger.info('  SHASUMs match.')
+        listFO.write('Success: {},{},{}:{},{}\n'.format(file, local_shasum, remote_computer_string, remote_file, remote_shasum))
         return True
     else:
         logger.warning('  SHASUMs do not match!')
         logger.debug('  local:  {}'.format(local_shasum))
         logger.debug('  remote: {}'.format(remote_shasum))
+        listFO.write('Failed: {},{},{}:{},{}\n'.format(file, local_shasum, '', '', ''))
         return False
 
 
@@ -179,6 +192,9 @@ def main():
 #     remote_path = os.path.join('/', 'Volumes', 'DroboPro1', telescope)
     remote_path = os.path.join('/', 'Users', 'vysosuser', 'Data', telescope)
 
+    ## Open Local File on Drobo with Results
+    listFO = open(os.path.join(drobo_path, 'transfer_logs', 'remote_{}_{}.txt'.format(telescope, date)), 'w')
+
     for file in files:
         logger.info('Checking file: {}'.format(file))
         filename = os.path.split(file)[1]
@@ -190,16 +206,23 @@ def main():
         if not remote_shasum:
             if args.copy:
                 logger.info('  Copying file to remote machine')
-                copy_file(file, local_shasum, remote_file, remote_computer_string, remote_computer, logger)
+                copy_file(file, local_shasum, remote_file, remote_computer_string, remote_computer, logger, listFO)
+            else:
+                listFO.write('Failed: {},{},{}:{},{}\n'.format(file, local_shasum, '', '', ''))
         elif remote_shasum == local_shasum:
             logger.info('  SHASUMs match.')
+            listFO.write('Success: {},{},{}:{},{}\n'.format(file, local_shasum, remote_computer_string, remote_file, remote_shasum))
         else:
             logger.warning('  SHASUMs do not match!')
             logger.debug('  local:  {}'.format(local_shasum))
             logger.debug('  remote: {}'.format(remote_shasum))
             if args.copy:
                 logger.info('  Copying file to remote machine')
-                copy_file(file, local_shasum, remote_file, remote_computer_string, remote_computer, logger)
+                copy_file(file, local_shasum, remote_file, remote_computer_string, remote_computer, logger, listFO)
+            else:
+                listFO.write('Failed: {},{},{}:{},{}\n'.format(file, local_shasum, '', '', ''))
+
+    listFO.close()
 
 
 
