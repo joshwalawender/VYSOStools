@@ -171,6 +171,8 @@ def main():
     LogFileHandler.setFormatter(LogFormat)
     logger.addHandler(LogFileHandler)
 
+    logger.info('Checking data for {} for night of {}'.format(telescope, date))
+
     ##-------------------------------------------------------------------------
     ## Confirm Data on Drobo Matches Data in Hilo
     ##-------------------------------------------------------------------------
@@ -199,8 +201,6 @@ def main():
     else:
         logger.critical('Telescope is not set to V5 or V20')
         sys.exit(1)
-
-#     remote_path = os.path.join('/', 'Users', 'vysosuser', 'Data', telescope)
 
     ## Open Local File on Drobo with Results
     listFO = open(os.path.join(drobo_path, 'transfer_logs', 'remote_{}_{}.txt'.format(telescope, date)), 'w')
