@@ -19,6 +19,9 @@ def check_remote_shasum(remote_computer, remote_file, logger):
     if re.search('\$TGTNAME\-\$INTERVAL', remote_file):
         remote_file = remote_file.replace('$', '\$')
         logger.debug('  Replacing $ characters with \$ in {}'.format(remote_file))
+    if re.search('\+', remote_file):
+        remote_file = remote_file.replace('+', '\+')
+        logger.debug('  Replacing + characters with \+ in {}'.format(remote_file))
 
 
     ansi_escape = re.compile(r'\x1b[^m]*m')
@@ -189,8 +192,15 @@ def main():
     remote_computer.connect(hostname=remote_computer_string.split('@')[1],\
                             username=remote_computer_string.split('@')[0])
 
-#     remote_path = os.path.join('/', 'Volumes', 'DroboPro1', telescope)
-    remote_path = os.path.join('/', 'Users', 'vysosuser', 'Data', telescope)
+    if telescope == 'V5':
+        remote_path = os.path.join('/', 'Volumes', 'DroboPro1', 'VYSOS5_Data')
+    elif telescope == 'V20':
+        remote_path = os.path.join('/', 'Volumes', 'DroboPro1', 'VYSOS20_Data')
+    else:
+        logger.critical('Telescope is not set to V5 or V20')
+        sys.exit(1)
+
+#     remote_path = os.path.join('/', 'Users', 'vysosuser', 'Data', telescope)
 
     ## Open Local File on Drobo with Results
     listFO = open(os.path.join(drobo_path, 'transfer_logs', 'remote_{}_{}.txt'.format(telescope, date)), 'w')
