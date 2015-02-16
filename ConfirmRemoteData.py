@@ -85,7 +85,10 @@ def copy_file(file, local_shasum, remote_file, remote_computer_string, remote_co
     ## Copy File
     scp_cmd = ['scp', file, '{}:{}'.format(remote_computer_string, remote_file)]
     logger.debug('  Running: {}'.format(' '.join(scp_cmd)))
-    subprocess.call(scp_cmd)
+    try:
+        subprocess.call(scp_cmd)
+    except:
+        logger.warning('  scp command failed')
     remote_shasum = check_remote_shasum(remote_computer, remote_file, logger)
     if not remote_shasum:
         logger.warning('  Copy to remote machine failed')
