@@ -12,6 +12,7 @@ import datetime
 import glob
 import subprocess
 import paramiko
+import shutil
 
 
 def check_remote_shasum(remote_computer, remote_file, logger):
@@ -106,6 +107,7 @@ def copy_file(file, local_shasum, remote_file, remote_computer_string, remote_co
         return False
 
 
+
 ##-------------------------------------------------------------------------
 ## Main Program
 ##-------------------------------------------------------------------------
@@ -127,6 +129,9 @@ def main():
     parser.add_argument("--copy",
         action="store_true", dest="copy",
         default=False, help="Copy the file over if SHASUM mismatch?")
+    parser.add_argument("--check-night-only",
+        action="store_true", dest="check_night_only",
+        default=False, help="Only do the check for the night, not file by file.")
     ## add arguments
     parser.add_argument("-t", "--telescope",
         dest="telescope", required=True, type=str,
@@ -180,15 +185,25 @@ def main():
     ## Confirm Data on Drobo Matches Data in Hilo
     ##-------------------------------------------------------------------------
     drobo_path = os.path.join('/', 'Volumes', 'Drobo', telescope)
+    extdrive_paths = [os.path.join('/', 'Volumes', 'WD500B', telescope),\
+                      os.path.join('/', 'Volumes', 'WD500_C', telescope)]
+    if os.path.exists(extdrive_paths[0]):
+        extdrive_path = extdrive_paths[0]
+    elif os.path.exists(extdrive_paths[1]):
+        extdrive_path = extdrive_paths[1]
+    else:
+        logger.warning("Can't find path for external drive")
+        extdrive_path = None
 
     ## Make list of files to analyze
-    files = glob.glob(os.path.join(drobo_path, 'Images', date, '*.fts'))
+    files = glob.glob(os.path.join(drobo_path, 'Images', date, '*.*'))
     if os.path.exists(os.path.join(drobo_path, 'Images', date, 'Calibration')):
         files.extend(glob.glob(os.path.join(drobo_path, 'Images', date, 'Calibration', '*.fts')))
     if os.path.exists(os.path.join(drobo_path, 'Images', date, 'AutoFlat')):
         files.extend(glob.glob(os.path.join(drobo_path, 'Images', date, 'AutoFlat', '*.fts')))
     files.extend(glob.glob(os.path.join(drobo_path, 'Logs', date, '*.*')))
-    logger.info('Found {} files to analyze'.format(len(files)))
+    n_source_files = len(files)
+    logger.info('Found {} files to analyze'.format(n_source_files))
 
     remote_computer_string = 'vysosuser@trapezium.ifa.hawaii.edu'
     remote_computer = paramiko.SSHClient()
@@ -205,38 +220,112 @@ def main():
         logger.critical('Telescope is not set to V5 or V20')
         sys.exit(1)
 
-    ## Open Local File on Drobo with Results
-    listFO = open(os.path.join(drobo_path, 'transfer_logs', 'remote_{}_{}.txt'.format(telescope, date)), 'w')
+    if not args.check_night_only:
+        ## Open Local File on Drobo with Results
+        listFO = open(os.path.join(drobo_path, 'transfer_logs', 'remote_{}_{}.txt'.format(telescope, date)), 'w')
 
-    for file in files:
-        logger.info('Checking file: {}'.format(file))
-        filename = os.path.split(file)[1]
-        local_shasum = subprocess.check_output(['shasum', file]).split()[0]
-        remote_file = file.replace(drobo_path, remote_path)
-        remote_shasum = check_remote_shasum(remote_computer, remote_file, logger)
+        for file in files:
+            logger.info('Checking file: {}'.format(file))
+            filename = os.path.split(file)[1]
+            local_shasum = subprocess.check_output(['shasum', file]).split()[0]
+            remote_file = file.replace(drobo_path, remote_path)
+            remote_shasum = check_remote_shasum(remote_computer, remote_file, logger)
 
-        ## Check Remote SHASUM against local SHASUM
-        if not remote_shasum:
-            if args.copy:
-                logger.info('  Copying file to remote machine')
-                copy_file(file, local_shasum, remote_file, remote_computer_string, remote_computer, logger, listFO)
+            ## Check Remote SHASUM against local SHASUM
+            if not remote_shasum:
+                if args.copy:
+                    logger.info('  Copying file to remote machine')
+                    copy_file(file, local_shasum, remote_file, remote_computer_string, remote_computer, logger, listFO)
+                else:
+                    listFO.write('Failed: {},{},{}:{},{}\n'.format(file, local_shasum, '', '', ''))
+            elif remote_shasum == local_shasum:
+                logger.info('  SHASUMs match.')
+                listFO.write('Success: {},{},{}:{},{}\n'.format(file, local_shasum, remote_computer_string, remote_file, remote_shasum))
             else:
-                listFO.write('Failed: {},{},{}:{},{}\n'.format(file, local_shasum, '', '', ''))
-        elif remote_shasum == local_shasum:
-            logger.info('  SHASUMs match.')
-            listFO.write('Success: {},{},{}:{},{}\n'.format(file, local_shasum, remote_computer_string, remote_file, remote_shasum))
+                logger.warning('  SHASUMs do not match!')
+                logger.debug('  local:  {}'.format(local_shasum))
+                logger.debug('  remote: {}'.format(remote_shasum))
+                if args.copy:
+                    logger.info('  Copying file to remote machine')
+                    copy_file(file, local_shasum, remote_file, remote_computer_string, remote_computer, logger, listFO)
+                else:
+                    listFO.write('Failed: {},{},{}:{},{}\n'.format(file, local_shasum, '', '', ''))
+
+        listFO.close()
+
+    ##-------------------------------------------------------------------------
+    ## Final Confirmation of Night
+    ##-------------------------------------------------------------------------
+    ## Count files in source directory, compare to count in remote directory
+    ## Check that number of "success" lines in log is equal to number of files
+    ## Check that number of "failure" lines in log is zero
+    ## If all ok, then change name of data directory on USB drive to indicate
+    ## that it can be deleted
+    
+    logger.info('Starting final check of files for night')
+    Fail = False
+    logger.info('  Found {} files on local drive'.format(n_source_files))
+    
+    ## Get count of files in remote directory
+    ansi_escape = re.compile(r'\x1b[^m]*m')
+
+    ls_cmd = 'ls -1 {}'.format(os.path.join(remote_path, 'Images', date, '*.*'))
+    ls_cmd += ' ; ls -1 {}'.format(os.path.join(remote_path, 'Images', date, 'Calibration'))
+    ls_cmd += ' ; ls -1 {}'.format(os.path.join(remote_path, 'Images', date, 'AutoFlat'))
+    ls_cmd += ' ; ls -1 {}'.format(os.path.join(remote_path, 'Logs', date))
+
+    logger.debug('  Counting files on remote machine using "{}"'.format(ls_cmd))
+    stdin, stdout, stderr = remote_computer.exec_command(ls_cmd)
+    ## stdout
+    try:
+        lines_with_ansi = stdout.readlines()
+        lines = []
+        for line in lines_with_ansi:
+            cleanedline = ansi_escape.sub('', line).strip('\n')
+            lines.append(str(cleanedline))
+            logger.debug('  STDOUT: {}'.format(cleanedline))
+        stdout = lines
+    except:
+        stdout = []
+
+    n_remote_files = len(stdout)
+    logger.info('  Found {} files on remote drive'.format(n_remote_files))
+
+    if n_source_files == n_remote_files:
+        logger.info('  Number of source and destination files match.  PASS')
+    else:
+        logger.warning('  Number of source and destination files do NOT match.  FAIL')
+        Fail = True
+
+    ## Check for number of "success" lines in log
+    logger.info('Checking for reported success in transfer log')
+    with open(os.path.join(drobo_path, 'transfer_logs', 'remote_{}_{}.txt'.format(telescope, date)), 'r') as listFO:
+        lines = listFO.readlines()
+        n_loglines = len(lines)
+        if n_source_files == n_loglines:
+            logger.info('  Number of source files and log lines match.  PASS')
         else:
-            logger.warning('  SHASUMs do not match!')
-            logger.debug('  local:  {}'.format(local_shasum))
-            logger.debug('  remote: {}'.format(remote_shasum))
-            if args.copy:
-                logger.info('  Copying file to remote machine')
-                copy_file(file, local_shasum, remote_file, remote_computer_string, remote_computer, logger, listFO)
-            else:
-                listFO.write('Failed: {},{},{}:{},{}\n'.format(file, local_shasum, '', '', ''))
+            logger.warning('  Number of source files and log lines do NOT match.  FAIL')
+            Fail = True
+        for line in lines:
+            if not re.match('Success:.*', line):
+                logger.warning('Failue in Log: {}'.format(line))
+                Fail = True
 
-    listFO.close()
-
+    ## Check for Fail flag
+    if extdrive_path and not Fail:
+        if os.path.exists(os.path.join(extdrive_path, 'Images', date)):
+            logger.info('Renaming Images/{0} on USB drive as Images/ok2delete_{0}'.format(date))
+            shutil.move(os.path.join(extdrive_path, 'Images', date),\
+                        os.path.join(extdrive_path, 'Images', 'ok2delete_'+date))
+        else:
+            logger.info('No Images/{0} found.  Already deleted?'.format(date))
+        if os.path.exists(os.path.join(extdrive_path, 'Logs', date)):
+            logger.info('Renaming Logs/{0} as Logs/ok2delete_{0}'.format(date))
+            shutil.move(os.path.join(extdrive_path, 'Logs', date),\
+                        os.path.join(extdrive_path, 'Logs', 'ok2delete_'+date))
+        else:
+            logger.info('No Logs/{0} found.  Already deleted?'.format(date))
 
 
 if __name__ == '__main__':
