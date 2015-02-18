@@ -309,7 +309,7 @@ def main():
             Fail = True
         for line in lines:
             if not re.match('Success:.*', line):
-                logger.warning('Failue in Log: {}'.format(line))
+                logger.warning('Failure in Log: {}'.format(line))
                 Fail = True
 
     ## Check for Fail flag
