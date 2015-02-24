@@ -57,32 +57,35 @@ def main(argv=None):
     
     ## Set Path to Data for this night
     if re.match("V5", args.telescope):
-        paths = [os.path.join("/Volumes", "Data_V5"),\
-                 os.path.expanduser('~/VYSOS-5'),\
-                 os.path.join('/', 'Volumes', 'DroboPro1', 'VYSOS5_Data'),\
+        paths = [os.path.join("/Volumes", "Data_V5", "Images", args.date),\
+                 os.path.join("/Volumes", "Drobo", "V5", "Images", args.date),\
+                 os.path.join(os.path.expanduser("~"), "VYSOS-5", "Images", args.date),\
+                 os.path.join('/', 'Volumes', 'DroboPro1', 'VYSOS5_Data', "Images", args.date),\
                 ]
         zp = True
     elif re.match("V20", args.telescope):
-        paths = [os.path.join("/Volumes", "Data_V20"),\
-                 os.path.expanduser('~/VYSOS-20'),\
-                 os.path.join('/', 'Volumes', 'DroboPro1', 'VYSOS20_Data'),\
+        paths = [os.path.join("/Volumes", "Data_V20", "Images", args.date),\
+                 os.path.join("/Volumes", "Drobo", "V20", "Images", args.date),\
+                 os.path.join(os.path.expanduser("~"), "VYSOS-20", "Images", args.date),\
+                 os.path.join('/', 'Volumes', 'DroboPro1', 'VYSOS20_Data', "Images", args.date),\
                 ]
         zp = True
     else:
         print("Telescope {0} does not match 'V5' or 'V20'".format(args.telescope))
         sys.exit(1)
 
+    ImagesDirectory = None
     for location in paths:
         if os.path.exists(location):
             print('Found data folder at: {}'.format(location))
-            VYSOSDATAPath = location
-    if not VYSOSDATAPath:
+            ImagesDirectory = location
+    if not ImagesDirectory:
         print('Could not find data path for {}'.format(args.telescope))
         sys.exit(1)
 
-    ImagesDirectory = os.path.join(VYSOSDATAPath, "Images", args.date)
-
-    print "Analyzing data for night of "+args.date
+    print("Analyzing data for night of "+args.date)
+    print("Found data at: {}".format(ImagesDirectory))
+    
     if os.path.exists(ImagesDirectory):
         print "  Found "+ImagesDirectory
         ##
