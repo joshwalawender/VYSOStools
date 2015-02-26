@@ -133,8 +133,10 @@ def main(argv=None):
     HTMLheader = open(os.path.join(pathHome, "git", "VYSOS", "ListOfNights.html"), 'r')
     header = HTMLheader.read()
     header = header.replace("telescopename", telname)
-    imagenumbers = {"VYSOS-20": '0', "VYSOS-5": '4'}
-    header = header.replace("imagenumber", imagenumbers[telname])
+    imagenumbers_ext = {"VYSOS-20": '0', "VYSOS-5": '4'}
+    imagenumbers_int = {"VYSOS-20": '2', "VYSOS-5": '5'}
+    header = header.replace("imagenumber_ext", imagenumbers_ext[telname])
+    header = header.replace("imagenumber_int", imagenumbers_int[telname])
     ## Disk info for Drobo
     drobo_path = os.path.join('/', 'Volumes', 'Drobo')
     if os.path.exists(drobo_path):
