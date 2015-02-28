@@ -13,7 +13,11 @@ import astropy.io.fits as fits
 
 def check_compressed(file, logger):
     is_compressed = False
-    result = subprocess.check_output(['fpack', '-L', file])
+    try:
+        result = subprocess.check_output(['fpack', '-L', file])
+    except:
+        logger.error('  fpack -L processed failed on {}.  Skipping.'.format(file))
+        return True
     found_compression_info = False
     for line in result.split('\n'):
         IsMatch = re.match('\s*\d+\s+IMAGE\s+([\w/=\.]+)\s(BITPIX=[\-\d]+)\s(\[.*\])\s([\w]+)', line)
