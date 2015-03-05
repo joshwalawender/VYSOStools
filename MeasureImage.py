@@ -39,7 +39,10 @@ def ListDarks(image):
     ## Extract night data was taken from path
     DataPath = os.path.split(image.raw_file)[0]
     BaseDirectory, DataNightString = os.path.split(DataPath)
-    DataNight = datetime.datetime.strptime(DataNightString, "%Y%m%dUT")
+    try:
+        DataNight = datetime.datetime.strptime(DataNightString, "%Y%m%dUT")
+    except:
+        return []
 
     OneDay = datetime.timedelta(days=1)
     NewDate = DataNight
