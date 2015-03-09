@@ -159,11 +159,20 @@ def MeasureImage(filename,\
     ##-------------------------------------------------------------------------
     ## Create Filenames
     ##-------------------------------------------------------------------------
+    TargetFileNameMatch = re.match('V\d{1,2}_(\w+)\-(\w+)\-\d{8}at\d{6}', FitsBasename)
+    if TargetFileNameMatch:
+        target_name = TargetFileNameMatch.group(1)
+    else:
+        print('Could not determine target name.  Exiting.')
+        sys.exit(0)
+    target_file = os.path.join(tel.logs_file_path, '{}.yaml'.format(target_name))
+
     html_file = os.path.join(tel.logs_file_path, DataNightString+"_"+telescope+".html")
     yaml_file = os.path.join(tel.logs_file_path, DataNightString+"_"+telescope+"_Summary.txt")
     if clobber_summary:
         if os.path.exists(html_file): os.remove(html_file)
         if os.path.exists(yaml_file): os.remove(yaml_file)
+
 
     ##-------------------------------------------------------------------------
     ## Perform Actual Image Analysis
@@ -255,6 +264,7 @@ def MeasureImage(filename,\
         fields=["Date and Time", "Filename", "Alt", "Az", "Airmass", "MoonSep", "MoonIllum", "FWHM", "ellipticity", "PErr", "ZeroPoint", "nStars", "ProcessTime"]
         image.add_web_log_entry(html_file, fields=fields)
         image.add_yaml_entry(yaml_file)
+        image.add_yaml_entry(target_file)
 
     image.logger.info('Done.')
 
