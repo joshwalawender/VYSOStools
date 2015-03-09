@@ -152,20 +152,31 @@ def MeasureImage(filename,\
 
 
     ##-------------------------------------------------------------------------
-    ## Create IQMon.Image Object
-    ##-------------------------------------------------------------------------
-    image = IQMon.Image(FitsFile, tel)
-
-    ##-------------------------------------------------------------------------
     ## Create Filenames
     ##-------------------------------------------------------------------------
-    TargetFileNameMatch = re.match('V\d{1,2}_(\w+)\-(\w+)\-\d{8}at\d{6}', FitsBasename)
-    if TargetFileNameMatch:
-        target_name = TargetFileNameMatch.group(1)
+    image = IQMon.Image(FitsFile, tel)
+    image.make_logger(verbose=verbose, clobber=clobber_logs)
+    print('Logging to {}'.format(image.logfile))
+    image.read_image()
+    if telescope == 'V5':
+        image.edit_header('FILTER', 'PSr')
+    image.read_header()
+
+    if image.object_name:
+        target_name = image.object_name
+        image.logger.info('Target name from header: {}'.format(target_name))
     else:
-        print('Could not determine target name.  Exiting.')
-        sys.exit(0)
-    target_file = os.path.join(tel.logs_file_path, '{}.yaml'.format(target_name))
+        TargetFileNameMatch = re.match('V\d{1,2}_(\w+)\-(\w+)\-\d{8}at\d{6}', FitsBasename)
+        if TargetFileNameMatch:
+            target_name = TargetFileNameMatch.group(1)
+            image.logger.info('Target name from filename: {}'.format(target_name))
+        else:
+            image.logger.error('Could not determine target name.  Exiting.')
+            sys.exit(0)
+
+    if not os.path.exists(os.path.join(tel.logs_file_path, 'targets')):
+        os.mkdir(os.path.join(tel.logs_file_path, 'targets'))
+    target_file = os.path.join(tel.logs_file_path, 'targets', '{}.yaml'.format(target_name))
 
     html_file = os.path.join(tel.logs_file_path, DataNightString+"_"+telescope+".html")
     yaml_file = os.path.join(tel.logs_file_path, DataNightString+"_"+telescope+"_Summary.txt")
@@ -177,13 +188,6 @@ def MeasureImage(filename,\
     ##-------------------------------------------------------------------------
     ## Perform Actual Image Analysis
     ##-------------------------------------------------------------------------
-    image.make_logger(verbose=verbose, clobber=clobber_logs)
-    print('Logging to {}'.format(image.logfile))
-    image.read_image()
-
-    if telescope == 'V5':
-        image.edit_header('FILTER', 'PSr')
-    image.read_header()
     if analyze_image:
         darks = ListDarks(image)
         if darks and len(darks) > 0:
