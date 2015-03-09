@@ -90,3 +90,11 @@ def GetClarity(ClarityDataFile, logger):
 #         return [ClarityTime, SkyTemp, AmbTemp, WindSpeed, Humidity, DewPoint, CloudCondition, WindCondition, RainCondition, DayCondition, RoofClose]
 #     else:
 #         return None
+
+
+def main():
+    ClarityDataFile = os.path.join("C:\\", "Users", "vysosuser", "Documents", "ClarityII", "ClarityData.txt")
+    ClarityArray = GetClarity(ClarityDataFile, logger)
+
+if __name__ == '__main__':
+    main()
