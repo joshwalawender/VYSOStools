@@ -358,8 +358,15 @@ def MakePlots(DateString, telescope, logger):
 
     ##############################################################
     ## Set up pathnames and filenames
-    V5DataPath = os.path.join("/Volumes", "Data_V5")
-    V20DataPath = os.path.join("/Volumes", "Data_V20")
+    if os.path.exists(os.path.join("/Volumes", "Data_V5")):
+        V5DataPath = os.path.join("/Volumes", "Data_V5")
+    else:
+        V5DataPath = os.path.join("/Volumes", "Drobo", "V5")
+
+    if os.path.exists(os.path.join("/Volumes", "Data_V20")):
+        V20DataPath = os.path.join("/Volumes", "Data_V20")
+    else:
+        V20DataPath = os.path.join("/Volumes", "Drobo", "V20")
 
     paths_to_check = [os.path.join(os.path.expanduser('~'), 'IQMon', 'Logs'),\
                       os.path.join('/', 'Volumes', 'DroboPro1', 'IQMon', 'Logs')]
