@@ -5,11 +5,11 @@ from __future__ import division, print_function
 ## Import General Tools
 import sys
 import os
-import shutil
 import argparse
 import logging
 import time
 import datetime
+import yaml
 
 import win32com.client
 import urllib
@@ -17,92 +17,146 @@ from xml.dom import minidom
 import numpy as np
 
 
-def get_clarity(ClarityDataFile):
+def get_boltwood(ClarityDataFile, logger):
+    logger.info('Reading Clarity file at {}'.format(ClarityDataFile))
+    if not os.path.exists(ClarityDataFile):
+        logger.error('Could not find Clarity file.')
+        return {}
+
     with open(ClarityDataFile, 'r') as clarityFO:
         data = clarityFO.read().split()
 
     if len(data) != 20:
         return {}
+    logger.debug('  Read Clarity file.')
 
-    clarity = {}
-    clarity['date'] = data[0]                # local date (yyyy-mm-dd)
-    clarity['time'] = data[1]                # local time (hh:mm:ss.ss)
-    clarity['temp_units'] = data[2]          # 'C' or 'F'
-    clarity['wind_units'] = data[3]          # 'K' = km/hr, 'M' = 'mph', 'm' = m/s
-    clarity['sky_temp'] = float(data[4])     # 999 for saturated hot, -999 saturated cold, -998 wet
-    clarity['ambient_temp'] = float(data[5]) # 
-    clarity['sensor_temp'] = float(data[6])  # 999 for saturated hot, -999 saturated cold
-    clarity['wind_speed'] = float(data[7])   # -1 = heating up, -2 = wet, -3,-4,-5,-6 = fail
-    clarity['humidity'] = int(data[8])       # %
-    clarity['dew_point'] = float(data[9])    # 
-    clarity['heater'] = int(data[10])        # heater power in %
-    clarity['rain'] = int(data[11])          # 0 = dry, 1 = rain in last minute, 2 = rain now
-    clarity['wet'] = int(data[12])           # 0 = dry, 1 = wet in last minute, 2 = wet now
-    clarity['since'] = data[13]              # seconds since last valid data
-    clarity['now_days'] = data[14]           # date/time when clarity wrote this file
-    clarity['cloud'] = int(data[15])         # 0 = unknown, 1 = clear, 2 = cloudy, 3 = very cloudy
-    clarity['wind'] = int(data[16])          # 0 = unknown, 1 = calm, 2 = windy, 3 = very windy
-    clarity['rain'] = int(data[17])          # 0 = unknown, 1 = dry, 2 = wet, 3 = rain
-    clarity['day'] = int(data[18])           # 0 = unknown, 1 = dark, 2 = light, 3 = very light
-    clarity['roof'] = int(data[19])          # 0 = not requested, 1 = requested
-#     clarity['alert'] = data[20]            # 0 = no alert, 1 = alert
+    boltwood = {}
+    boltwood['boltwood date'] = data[0]                # local date (yyyy-mm-dd)
+    boltwood['boltwood time'] = data[1]                # local time (hh:mm:ss.ss)
+    logger.debug('  Date and Time: {} {}'.format(boltwood['boltwood date'], boltwood['boltwood time']))
+
+    boltwood['boltwood temp units'] = data[2]          # 'C' or 'F'
+    boltwood['boltwood wind units'] = data[3]          # 'K' = km/hr, 'M' = 'mph', 'm' = m/s
+
+    if (float(data[4]) != 999.) and (float(data[4]) != -999.) and (float(data[4]) != -998.):
+        boltwood['boltwood sky temp'] = float(data[4])     # 999 for saturated hot, -999 saturated cold, -998 wet
+    logger.debug('  Sky Temp = {:.2f} {}'.format(float(data[4]), boltwood['boltwood temp units']))
+
+    boltwood['boltwood ambient temp'] = float(data[5]) # 
+    logger.debug('  Ambient Temp = {:.2f} {}'.format(boltwood['boltwood ambient temp'], boltwood['boltwood temp units']))
+
+    if (data[6] != '999') and (data[6] != '-999'):
+        boltwood['boltwood sensor temp'] = float(data[6])  # 999 for saturated hot, -999 saturated cold
+    logger.debug('  Sensor Temp = {:.2f} {}'.format(float(data[6]), boltwood['boltwood temp units']))
+
+    if float(data[7]) >=0:
+        boltwood['boltwood wind speed'] = float(data[7])   # -1 = heating up, -2 = wet, -3,-4,-5,-6 = fail
+    logger.debug('  Wind Speed = {:.2f} {}'.format(float(data[7]), boltwood['boltwood wind units']))
+
+    boltwood['boltwood humidity'] = int(data[8])       # %
+    logger.debug('  Humidity = {} %'.format(boltwood['boltwood humidity']))
+
+    boltwood['boltwood dew point'] = float(data[9])    # 
+    logger.debug('  Dew Point = {:.2f} {}'.format(boltwood['boltwood dew point'], boltwood['boltwood temp units']))
+
+    boltwood['boltwood heater'] = int(data[10])        # heater power in %
+    logger.debug('  Heater Power = {} %'.format(boltwood['boltwood heater']))
+
+    boltwood['boltwood rain status'] = int(data[11])          # 0 = dry, 1 = rain in last minute, 2 = rain now
+    logger.debug('  Rain Status = {}'.format(boltwood['boltwood rain status']))
+
+    boltwood['boltwood wet status'] = int(data[12])           # 0 = dry, 1 = wet in last minute, 2 = wet now
+    logger.debug('  Wetness Status = {}'.format(boltwood['boltwood wet status']))
+
+    boltwood['boltwood since'] = data[13]              # seconds since last valid data
+    logger.debug('  Seconds Since Last Valid Data = {}'.format(boltwood['boltwood since']))
+
+    boltwood['boltwood nowdays'] = data[14]           # date/time when boltwood wrote this file
+    logger.debug('  Date/time when boltwood wrote this file = {}'.format(boltwood['boltwood nowdays']))
+
+    boltwood['boltwood cloud condition'] = int(data[15])         # 0 = unknown, 1 = clear, 2 = cloudy, 3 = very cloudy
+    logger.debug('  Cloud Condition = {}'.format(boltwood['boltwood cloud condition']))
+
+    boltwood['boltwood wind condition'] = int(data[16])          # 0 = unknown, 1 = calm, 2 = windy, 3 = very windy
+    logger.debug('  Wind Condition = {}'.format(boltwood['boltwood wind condition']))
+
+    boltwood['boltwood rain condition'] = int(data[17])          # 0 = unknown, 1 = dry, 2 = wet, 3 = rain
+    logger.debug('  Rain Condition = {}'.format(boltwood['boltwood rain condition']))
+
+    boltwood['boltwood day condition'] = int(data[18])           # 0 = unknown, 1 = dark, 2 = light, 3 = very light
+    logger.debug('  Day Condition = {}'.format(boltwood['boltwood day condition']))
+
+    boltwood['boltwood roof close'] = int(data[19])          # 0 = not requested, 1 = requested
+    logger.debug('  Roof Close = {}'.format(boltwood['boltwood roof close']))
+
 
     ## Check that Data File is not Stale
     now = datetime.datetime.now()
-    ClarityTime = datetime.datetime.strptime(clarity['date']+' '+clarity['time'][0:-3], '%Y-%m-%d %H:%M:%S')
+    ClarityTime = datetime.datetime.strptime(boltwood['boltwood date']+' '+boltwood['boltwood time'][0:-3], '%Y-%m-%d %H:%M:%S')
     difference = now - ClarityTime
     if difference.seconds > 30.0:
+        logger.error('Boltwood data appears stale!')
         return {}
 
     ## Standardize Temperature Units to Farenheit (F)
-    if clarity['temp_units'] == "C":
+    if boltwood['boltwood temp units'] == "C":
         ## Change Units to F
-        clarity['sky_temp'] = clarity['sky_temp']*9./5. + 32.
-        clarity['ambient_temp'] = clarity['ambient_temp']*9./5. + 32.
-        clarity['sensor_temp'] = clarity['sensor_temp']*9./5. + 32.
-        clarity['dew_point'] = clarity['dew_point']*9./5. + 32.
-        clarity['temp_units'] = 'F'
-    elif clarity['temp_units'] == "F":
+        if 'boltwood sky temp' in boltwood.keys():
+            boltwood['boltwood sky temp'] = boltwood['boltwood sky temp']*9./5. + 32.
+        if 'boltwood ambient temp' in boltwood.keys():
+            boltwood['boltwood ambient temp'] = boltwood['boltwood ambient temp']*9./5. + 32.
+        if 'boltwood sensor temp' in boltwood.keys():
+            boltwood['boltwood sensor temp'] = boltwood['boltwood sensor temp']*9./5. + 32.
+        if 'boltwood dew point' in boltwood.keys():
+            boltwood['boltwood dew point'] = boltwood['boltwood dew point']*9./5. + 32.
+        boltwood['boltwood temp units'] = 'F'
+        logger.debug('  Changed boltwood temperature units to F')
+    elif boltwood['boltwood temp units'] == "F":
         pass
-    else:
-        return {}
 
     ## Standardize Wind Speed Units to Miles Per Hour (MPH)
-    if clarity['wind_units'] == "M":
-        ## units are MPH
-        pass
-    elif clarity['wind_units'] == "K":
-        ## units are KPH
-        clarity['wind_speed'] = clarity['wind_speed'] * 0.621
-        clarity['wind_units'] = "M"
-    elif clarity['wind_units'] == "m":
-        clarity['wind_speed'] = clarity['wind_speed'] * 2.237
-        clarity['wind_units'] = "M"
-    else:
-        ClarityGood == False
+    if 'boltwood wind speed' in boltwood.keys():
+        if boltwood['boltwood wind units'] == "M":
+            ## units are MPH
+            pass
+        elif boltwood['boltwood wind units'] == "K":
+            ## units are KPH
+            boltwood['boltwood wind speed'] = boltwood['boltwood wind speed'] * 0.621
+            boltwood['boltwood wind units'] = "M"
+            logger.debug('  Changed boltwood wind speed units to mph')
+        elif boltwood['boltwood wind units'] == "m":
+            boltwood['boltwood wind speed'] = boltwood['boltwood wind speed'] * 2.237
+            boltwood['boltwood wind units'] = "M"
+            logger.debug('  Changed boltwood wind speed units to mph')
 
-    return clarity
+    return boltwood
 
 
 ##-------------------------------------------------------------------------
 ## Query ASCOM ACPHub for Telescope Position and State
 ##-------------------------------------------------------------------------
-def get_telescope_info():
-    ACP = None
-    ACP_is_connected = None
+def get_telescope_info(logger):
+    logger.info('Getting ACP status')
     try:
         ACP = win32com.client.Dispatch("ACP.Telescope")
     except:
+        logger.error('Could not connect to ACP ASCOM object.')
         return {}
 
     telescope_info = {}
-    telescope_info['connected'] = ACP.Connected
+    telescope_info['ACP connected'] = ACP.Connected
+    logger.debug('  ACP Connected = {}'.format(telescope_info['ACP connected']))
     if ACP.Connected:
-        telescope_info['at_park'] = ACP.AtPark
-        telescope_info['alt'] = float(ACP.Altitude)
-        telescope_info['az']  = float(ACP.Azimuth)
-        telescope_info['slewing']  = ACP.Slewing
-        telescope_info['tracking'] = ACP.Tracking
+        telescope_info['ACP park status'] = ACP.AtPark
+        logger.debug('  ACP At Park = {}'.format(telescope_info['ACP park status']))
+        telescope_info['ACP alt'] = float(ACP.Altitude)
+        logger.debug('  ACP Alt = {:.2f}'.format(telescope_info['ACP alt']))
+        telescope_info['ACP az']  = float(ACP.Azimuth)
+        logger.debug('  ACP Az = {:.2f}'.format(telescope_info['ACP az']))
+        telescope_info['ACP slewing status']  = ACP.Slewing
+        logger.debug('  ACP Slewing = {}'.format(telescope_info['ACP slewing status']))
+        telescope_info['ACP tracking status'] = ACP.Tracking
+        logger.debug('  ACP Tracking = {}'.format(telescope_info['ACP tracking status']))
 
     return telescope_info
 
@@ -110,13 +164,15 @@ def get_telescope_info():
 ##-------------------------------------------------------------------------
 ## Query ASCOM Focuser for Position, Temperature, Fan State
 ##-------------------------------------------------------------------------
-def get_focuser_info(telescope):
+def get_focuser_info(telescope, logger):
+    logger.info('Getting ASCOM focuser status')
     focuser_info = {}
     if telescope == "V20":
         try:
             RCOST = win32com.client.Dispatch("RCOS_AE.Temperature")
             RCOSF = win32com.client.Dispatch("RCOS_AE.Focuser")
         except:
+            logger.error('Could not connect to RCOS ASCOM object.')
             return {}
 
         ## Get Average of 5 Temperature Readings
@@ -125,7 +181,7 @@ def get_focuser_info(telescope):
         RCOS_Secondary_Temps = []
         RCOS_Fan_Speeds = []
         RCOS_Focus_Positions = []
-        print(' RCOS Data:  {:>7s}, {:>7s}, {:>7s}, {:>7s}, {:>5s}'.format('Truss', 'Pri', 'Sec', 'Fan', 'Foc'))
+        logger.debug('  {:>7s}, {:>7s}, {:>7s}, {:>7s}, {:>5s}'.format('Truss', 'Pri', 'Sec', 'Fan', 'Foc'))
         for i in range(0,5,1):
             try:
                 new_Truss_Temp = RCOST.AmbientTemp
@@ -152,30 +208,21 @@ def get_focuser_info(telescope):
                 new_Focus_Pos = RCOSF.Position
                 RCOS_Focus_Positions.append(new_Focus_Pos)
 
-                print('  RCOS Data:  {:5.1f} F, {:5.1f} F, {:5.1f} F, {:5.0f} %, {:5d}'.format(new_Truss_Temp, new_Pri_Temp, new_Sec_Temp, new_Fan_Speed, new_Focus_Pos))
+                logger.debug('  {:5.1f} F, {:5.1f} F, {:5.1f} F, {:5.0f} %, {:5d}'.format(new_Truss_Temp, new_Pri_Temp, new_Sec_Temp, new_Fan_Speed, new_Focus_Pos))
             except:
                 pass
             time.sleep(1)
         if len(RCOS_Truss_Temps) >= 3:
-            focuser_info['temperature (truss)'] = float(np.median(RCOS_Truss_Temps))
-        else:
-            focuser_info['temperature (truss)'] = float('nan')
+            focuser_info['RCOS temperature (truss)'] = float(np.median(RCOS_Truss_Temps))
+            focuser_info['RCOS temperature units'] = 'F'
         if len(RCOS_Primary_Temps) >= 3:
-            focuser_info['temperature (primary)'] = float(np.median(RCOS_Primary_Temps))
-        else:
-            focuser_info['temperature (primary)'] = float('nan')
+            focuser_info['RCOS temperature (primary)'] = float(np.median(RCOS_Primary_Temps))
         if len(RCOS_Secondary_Temps) >= 3:
-            focuser_info['temperature (secondary)'] = float(np.median(RCOS_Secondary_Temps))
-        else:
-            focuser_info['temperature (secondary)'] = float('nan')
+            focuser_info['RCOS temperature (secondary)'] = float(np.median(RCOS_Secondary_Temps))
         if len(RCOS_Fan_Speeds) >= 3:
-            focuser_info['fan speed'] = int(np.median(RCOS_Fan_Speeds))
-        else:
-            focuser_info['fan speed'] = float('nan')
+            focuser_info['RCOS fan speed'] = int(np.median(RCOS_Fan_Speeds))
         if len(RCOS_Focus_Positions) >= 3:
-            focuser_info['position'] = int(np.median(RCOS_Focus_Positions))
-        else:
-            focuser_info['position'] = float('nan')
+            focuser_info['RCOS focuser position'] = int(np.median(RCOS_Focus_Positions))
     elif telescope == "V5":
         try:
             FocusMax = win32com.client.Dispatch("FocusMax.Focuser")
@@ -183,9 +230,9 @@ def get_focuser_info(telescope):
                 try:
                     FocusMax.Link = True
                 except:
-                    return {}
+                    logger.error('Could not start FocusMax ASCOM link.')
         except:
-                    return {}
+            logger.error('Could not connect to FocusMax ASCOM object.')
 
         ## Get Average of 3 Temperature Readings
         FocusMax_Temps = []
@@ -199,10 +246,11 @@ def get_focuser_info(telescope):
             ## Filter out bad values
             median_temp = np.median(FocusMax_Temps)
             if (median_temp > -10) and (median_temp < 150):
-                focuser_info['temperature (tube)'] = median_temp
+                focuser_info['FocusMax temperature (tube)'] = median_temp
+                focuser_info['FocusMax units'] = '?'
         ## Get Position
         try:
-            focuser_info['position'] = int(FocusMax.Position)
+            focuser_info['FocusMax focuser position'] = int(FocusMax.Position)
         except:
             pass
 
@@ -212,7 +260,18 @@ def get_focuser_info(telescope):
 ##-------------------------------------------------------------------------
 ## Query ControlByWeb Temperature Module for Temperature and Fan State
 ##-------------------------------------------------------------------------
-def control_by_web(InsideTemp, OutsideTemp):
+def control_by_web(focuser_info, boltwood, logger):
+    logger.info('Getting CBW temperature module status')
+    if focuser_info['RCOS temperature units'] == 'F':
+        InsideTemp = focuser_info['RCOS temperature (truss)']
+    else:
+        logger.error('  Focuser temperature unit mismatch')
+        return {}
+    if boltwood['boltwood temp units'] == 'F':
+        OutsideTemp = boltwood['boltwood ambient temp']
+    else:
+        logger.error('  Boltwood temperature unit mismatch')
+        return{}
     CBW_info = {}
     IPaddress = "192.168.1.115"
     try:
@@ -220,29 +279,33 @@ def control_by_web(InsideTemp, OutsideTemp):
         contents = page.read()
         ContentLines = contents.splitlines()
         xmldoc = minidom.parseString(contents)
-        CBW_info['units'] = str(xmldoc.getElementsByTagName('units')[0].firstChild.nodeValue)
-        CBW_info['temp1'] = float(xmldoc.getElementsByTagName('sensor1temp')[0].firstChild.nodeValue)
-        CBW_info['temp2'] = float(xmldoc.getElementsByTagName('sensor2temp')[0].firstChild.nodeValue)
-        CBW_info['fan state'] = bool(xmldoc.getElementsByTagName('relay1state')[0].firstChild.nodeValue)
-        CBW_info['fan enable'] = bool(xmldoc.getElementsByTagName('relay2state')[0].firstChild.nodeValue)
-        if CBW_info['units'] == "C":
-            CBW_info['temp1'] = CBW_info['temp1']*9./5. + 32.
-            CBW_info['temp2'] = CBW_info['temp2']*9./5. + 32.
-            CBW_info['units'] = 'F'
+        CBW_info['CBW temperature units'] = str(xmldoc.getElementsByTagName('units')[0].firstChild.nodeValue)
+        CBW_info['CBW temp1'] = float(xmldoc.getElementsByTagName('sensor1temp')[0].firstChild.nodeValue)
+        logger.debug('  Temp1 = {:.1f} {}'.format(CBW_info['CBW temp1'], CBW_info['CBW temperature units']))
+        CBW_info['CBW temp2'] = float(xmldoc.getElementsByTagName('sensor2temp')[0].firstChild.nodeValue)
+        logger.debug('  Temp2 = {:.1f} {}'.format(CBW_info['CBW temp2'], CBW_info['CBW temperature units']))
+        CBW_info['CBW fan state'] = bool(xmldoc.getElementsByTagName('relay1state')[0].firstChild.nodeValue)
+        logger.debug('  Fans On? = {}'.format(CBW_info['CBW fan state']))
+        CBW_info['CBW fan enable'] = bool(xmldoc.getElementsByTagName('relay2state')[0].firstChild.nodeValue)
+        logger.debug('  Fan Control Enabled? = {}'.format(CBW_info['CBW fan enable']))
+        if CBW_info['CBW temperature units'] == "C":
+            CBW_info['CBW temp1'] = CBW_info['CBW temp1']*9./5. + 32.
+            CBW_info['CBW temp2'] = CBW_info['CBW temp2']*9./5. + 32.
+            CBW_info['CBW temperature units'] = 'F'
+            logger.debug('  Temp1 = {:.1f} {}'.format(CBW_info['CBW temp1'], CBW_info['CBW temperature units']))
+            logger.debug('  Temp2 = {:.1f} {}'.format(CBW_info['CBW temp2'], CBW_info['CBW temperature units']))
     except:
+        logger.error('Could not connect to CBW temperature module.')
         return {}
 
-    for item in CBW_info:
-        print(item, CBW_info[item])
-
     ## Control Fans
-    DeadbandHigh = 0.1
-    DeadbandLow = 2.0
+    DeadbandHigh = 0.5
+    DeadbandLow = 3.0
 
     ## If fan enable not on, return values and stop
-    if not CBW_info['fan enable']:
-        if CBW_info['fan state']:
-            print("  Turning Dome Fan Off.  Remote Control Set to Off.")
+    if not CBW_info['CBW fan enable']:
+        if CBW_info['CBW fan state']:
+            logger.info("  Turning Dome Fan Off.  Remote Control Set to Off.")
             page = urllib.urlopen("http://"+IPaddress+"/state.xml?relay1State=0")
         return CBW_info
     
@@ -251,28 +314,34 @@ def control_by_web(InsideTemp, OutsideTemp):
     
     ## Set state of fans based on temperature
     if OutsideTemp and InsideTemp:
-        print('Inside Temp = {:.1f}'.format(InsideTemp))
-        print('Outside Temp = {:.1f}'.format(OutsideTemp))
+        logger.debug('  Inside Temp = {:.1f}'.format(InsideTemp))
+        logger.debug('  Outside Temp = {:.1f}'.format(OutsideTemp))
         DeltaT = InsideTemp - OutsideTemp
 
         ## Turn on Fans if Inside Temperature is High
         if operate_fans_now and (InsideTemp > OutsideTemp + DeadbandHigh):
-            if not CBW_info['fan state']:
-                print("  Turning Dome Fan On.  DeltaT = %.1f" % DeltaT)
+            if not CBW_info['CBW fan state']:
+                logger.info("  Turning Dome Fan On.  DeltaT = %.1f" % DeltaT)
                 page = urllib.urlopen("http://"+IPaddress+"/state.xml?relay1State=1")
-                CBW_info['fan state'] = True
+                CBW_info['CBW fan state'] = True
+            else:
+                logger.debug("  Leaving Dome Fan On.  DeltaT = %.1f" % DeltaT)
         ## Turn off Fans if Inside Temperature is Low
         elif operate_fans_now and (InsideTemp < OutsideTemp - DeadbandLow):
-            if CBW_info['fan state']:
-                print("  Turning Dome Fan Off.  DeltaT = %.1f" % DeltaT)
+            if CBW_info['CBW fan state']:
+                logger.info("  Turning Dome Fan Off.  DeltaT = %.1f" % DeltaT)
                 page = urllib.urlopen("http://"+IPaddress+"/state.xml?relay1State=0")
-                CBW_info['fan state'] = False
+                CBW_info['CBW fan state'] = False
+            else:
+                logger.debug("  Leaving Dome Fan Off.  DeltaT = %.1f" % DeltaT)
         ## Turn off Fans if it is night
         elif not operate_fans_now:
-            if CBW_info['fan state']:
-                print("  Turning Dome Fan Off for Night.  DeltaT = %.1f" % DeltaT)
+            if CBW_info['CBW fan state']:
+                logger.info("  Turning Dome Fan Off for Night.  DeltaT = %.1f" % DeltaT)
                 page = urllib.urlopen("http://"+IPaddress+"/state.xml?relay1State=0")
-                CBW_info['fan state'] = False
+                CBW_info['CBW fan state'] = False
+            else:
+                logger.debug("  Leaving Dome Fan Off.  DeltaT = %.1f" % DeltaT)
 
     return CBW_info
 
@@ -324,26 +393,51 @@ def main():
     logger.addHandler(LogFileHandler)
 
     ##-------------------------------------------------------------------------
+    ## Setup File to Recieve Data
+    ##-------------------------------------------------------------------------
+    logger.info('#### Starting GetEnvironment.py ####')
+    DataFilePath = os.path.join("C:\\", "Data_"+telescope, "Logs", DateString)
+    if not os.path.exists(DataFilePath):
+        logger.debug('  Making directory: {}'.format(DataFilePath))
+        os.mkdir(DataFilePath)
+    DataFileName = "status_log.yaml"
+    DataFile = os.path.join(DataFilePath, DataFileName)
+    logger.info('  Writing data to {}'.format(DataFile))
+    time_string = now.strftime("%Y/%m/%d %H:%M:%SUT")
+
+    ##-------------------------------------------------------------------------
     ## Get Status Info
     ##-------------------------------------------------------------------------
-    clarity_file = os.path.join("C:\\", "Users", "vysosuser", "Documents", "ClarityII", "ClarityData.txt")
-    clarity = get_clarity(clarity_file)
-#     for item in clarity:
-#         print(item, clarity[item])
+    boltwood_file = os.path.join("C:\\", "Users", "vysosuser", "Documents", "ClarityII", "ClarityData.txt")
+    boltwood = get_boltwood(boltwood_file, logger)
 
-    telescope_info = get_telescope_info()
-    for item in telescope_info:
-        print(item, telescope_info[item])
+    telescope_info = get_telescope_info(logger)
 
-    focuser_info = get_focuser_info(telescope)
-    for item in focuser_info:
-        print(item, focuser_info[item])
+    focuser_info = get_focuser_info(telescope, logger)
 
     if telescope == 'V20':
-        CBW_info = control_by_web(focuser_info['temperature (truss)'], clarity['ambient_temp'])
-        for item in CBW_info:
-            print(item, CBW_info[item])
+        CBW_info = control_by_web(focuser_info, boltwood, logger)
 
+    ##-------------------------------------------------------------------------
+    ## Write Environmental Log
+    ##-------------------------------------------------------------------------
+    logger.info("Writing YAML data file: {}".format(DataFile))
+    data_list = []
+    if os.path.exists(DataFile):
+        logger.debug('  Reading existing data file.')
+        with open(DataFile, 'r') as yaml_string:
+            data_list = yaml.load(yaml_string)
+
+    new_data = {}
+    new_data.update(boltwood)
+    new_data.update(telescope_info)
+    new_data.update(focuser_info)
+    if telescope == 'V20':
+        new_data.update(CBW_info)
+    data_list.append(new_data)
+    yaml_string = yaml.dump(data_list)
+    with open(DataFile, 'w') as output:
+        output.write(yaml_string)
 
 
 
