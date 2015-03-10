@@ -346,7 +346,7 @@ def control_by_web(focuser_info, boltwood, logger):
     return CBW_info
 
 
-def main():
+def get_status_and_log():
     ##-------------------------------------------------------------------------
     ## Parse Command Line Arguments
     ##-------------------------------------------------------------------------
@@ -442,4 +442,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    get_status_and_log()
