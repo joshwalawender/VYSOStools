@@ -18,7 +18,8 @@ import numpy as np
 
 
 def get_boltwood(ClarityDataFile, logger):
-    logger.info('Reading Clarity file at {}'.format(ClarityDataFile))
+    logger.info('Reading Clarity file')
+    logger.debug('  Clarity File: {}'.format(ClarityDataFile))
     if not os.path.exists(ClarityDataFile):
         logger.error('Could not find Clarity file.')
         return {}
@@ -40,7 +41,7 @@ def get_boltwood(ClarityDataFile, logger):
 
     if (float(data[4]) != 999.) and (float(data[4]) != -999.) and (float(data[4]) != -998.):
         boltwood['boltwood sky temp'] = float(data[4])     # 999 for saturated hot, -999 saturated cold, -998 wet
-    logger.debug('  Sky Temp = {:.2f} {}'.format(float(data[4]), boltwood['boltwood temp units']))
+    logger.info('  Sky Temp = {:.2f} {}'.format(float(data[4]), boltwood['boltwood temp units']))
 
     boltwood['boltwood ambient temp'] = float(data[5]) # 
     logger.debug('  Ambient Temp = {:.2f} {}'.format(boltwood['boltwood ambient temp'], boltwood['boltwood temp units']))
@@ -51,10 +52,10 @@ def get_boltwood(ClarityDataFile, logger):
 
     if float(data[7]) >=0:
         boltwood['boltwood wind speed'] = float(data[7])   # -1 = heating up, -2 = wet, -3,-4,-5,-6 = fail
-    logger.debug('  Wind Speed = {:.2f} {}'.format(float(data[7]), boltwood['boltwood wind units']))
+    logger.info('  Wind Speed = {:.2f} {}'.format(float(data[7]), boltwood['boltwood wind units']))
 
     boltwood['boltwood humidity'] = int(data[8])       # %
-    logger.debug('  Humidity = {} %'.format(boltwood['boltwood humidity']))
+    logger.info('  Humidity = {} %'.format(boltwood['boltwood humidity']))
 
     boltwood['boltwood dew point'] = float(data[9])    # 
     logger.debug('  Dew Point = {:.2f} {}'.format(boltwood['boltwood dew point'], boltwood['boltwood temp units']))
@@ -75,19 +76,19 @@ def get_boltwood(ClarityDataFile, logger):
     logger.debug('  Date/time when boltwood wrote this file = {}'.format(boltwood['boltwood nowdays']))
 
     boltwood['boltwood cloud condition'] = int(data[15])         # 0 = unknown, 1 = clear, 2 = cloudy, 3 = very cloudy
-    logger.debug('  Cloud Condition = {}'.format(boltwood['boltwood cloud condition']))
+    logger.info('  Cloud Condition = {}'.format(boltwood['boltwood cloud condition']))
 
     boltwood['boltwood wind condition'] = int(data[16])          # 0 = unknown, 1 = calm, 2 = windy, 3 = very windy
-    logger.debug('  Wind Condition = {}'.format(boltwood['boltwood wind condition']))
+    logger.info('  Wind Condition = {}'.format(boltwood['boltwood wind condition']))
 
     boltwood['boltwood rain condition'] = int(data[17])          # 0 = unknown, 1 = dry, 2 = wet, 3 = rain
-    logger.debug('  Rain Condition = {}'.format(boltwood['boltwood rain condition']))
+    logger.info('  Rain Condition = {}'.format(boltwood['boltwood rain condition']))
 
     boltwood['boltwood day condition'] = int(data[18])           # 0 = unknown, 1 = dark, 2 = light, 3 = very light
-    logger.debug('  Day Condition = {}'.format(boltwood['boltwood day condition']))
+    logger.info('  Day Condition = {}'.format(boltwood['boltwood day condition']))
 
     boltwood['boltwood roof close'] = int(data[19])          # 0 = not requested, 1 = requested
-    logger.debug('  Roof Close = {}'.format(boltwood['boltwood roof close']))
+    logger.info('  Roof Close = {}'.format(boltwood['boltwood roof close']))
 
 
     ## Check that Data File is not Stale
@@ -148,15 +149,15 @@ def get_telescope_info(logger):
     logger.debug('  ACP Connected = {}'.format(telescope_info['ACP connected']))
     if ACP.Connected:
         telescope_info['ACP park status'] = ACP.AtPark
-        logger.debug('  ACP At Park = {}'.format(telescope_info['ACP park status']))
+        logger.info('  ACP At Park = {}'.format(telescope_info['ACP park status']))
         telescope_info['ACP alt'] = float(ACP.Altitude)
-        logger.debug('  ACP Alt = {:.2f}'.format(telescope_info['ACP alt']))
+        logger.info('  ACP Alt = {:.2f}'.format(telescope_info['ACP alt']))
         telescope_info['ACP az']  = float(ACP.Azimuth)
-        logger.debug('  ACP Az = {:.2f}'.format(telescope_info['ACP az']))
+        logger.info('  ACP Az = {:.2f}'.format(telescope_info['ACP az']))
         telescope_info['ACP slewing status']  = ACP.Slewing
-        logger.debug('  ACP Slewing = {}'.format(telescope_info['ACP slewing status']))
+        logger.info('  ACP Slewing = {}'.format(telescope_info['ACP slewing status']))
         telescope_info['ACP tracking status'] = ACP.Tracking
-        logger.debug('  ACP Tracking = {}'.format(telescope_info['ACP tracking status']))
+        logger.info('  ACP Tracking = {}'.format(telescope_info['ACP tracking status']))
 
     return telescope_info
 
@@ -346,7 +347,89 @@ def control_by_web(focuser_info, boltwood, logger):
     return CBW_info
 
 
-def get_status_and_log():
+def get_status_and_log(telescope):
+
+    ##-------------------------------------------------------------------------
+    ## Create logger object
+    ##-------------------------------------------------------------------------
+    now = datetime.datetime.utcnow()
+    DateString = now.strftime("%Y%m%dUT")
+    TimeString = now.strftime("%H:%M:%S")
+
+    logger = logging.getLogger('get_status_{}'.format(DateString))
+    if len(logger.handlers) < 1:
+        logger.setLevel(logging.DEBUG)
+        ## Set up console output
+        LogConsoleHandler = logging.StreamHandler()
+        if args.verbose:
+            LogConsoleHandler.setLevel(logging.DEBUG)
+        else:
+            LogConsoleHandler.setLevel(logging.INFO)
+        LogFormat = logging.Formatter('%(asctime)23s %(levelname)8s: %(message)s')
+        LogConsoleHandler.setFormatter(LogFormat)
+        logger.addHandler(LogConsoleHandler)
+        ## Set up file output
+        LogFilePath = os.path.join('C:\\', 'Data_'+telescope, 'Logs', DateString)
+        if not os.path.exists(LogFilePath):
+            os.mkdir(LogFilePath)
+        LogFile = os.path.join(LogFilePath, 'get_status.log')
+        LogFileHandler = logging.FileHandler(LogFile)
+        LogFileHandler.setLevel(logging.DEBUG)
+        LogFileHandler.setFormatter(LogFormat)
+        logger.addHandler(LogFileHandler)
+
+    ##-------------------------------------------------------------------------
+    ## Setup File to Recieve Data
+    ##-------------------------------------------------------------------------
+    logger.info('#### Starting Status Queries ####')
+    DataFilePath = os.path.join("C:\\", "Data_"+telescope, "Logs", DateString)
+    if not os.path.exists(DataFilePath):
+        logger.debug('  Making directory: {}'.format(DataFilePath))
+        os.mkdir(DataFilePath)
+    DataFileName = "status.yaml"
+    DataFile = os.path.join(DataFilePath, DataFileName)
+    time_string = now.strftime("%Y/%m/%d %H:%M:%SUT")
+
+    ##-------------------------------------------------------------------------
+    ## Get Status Info
+    ##-------------------------------------------------------------------------
+    boltwood_file = os.path.join("C:\\", "Users", "vysosuser", "Documents", "ClarityII", "ClarityData.txt")
+    boltwood = get_boltwood(boltwood_file, logger)
+
+    telescope_info = get_telescope_info(logger)
+
+    focuser_info = get_focuser_info(telescope, logger)
+
+    if telescope == 'V20':
+        CBW_info = control_by_web(focuser_info, boltwood, logger)
+
+    ##-------------------------------------------------------------------------
+    ## Write Environmental Log
+    ##-------------------------------------------------------------------------
+    logger.info("Writing YAML data file")
+    logger.debug("  YAML file: {}".format(DataFile))
+    data_list = []
+    if os.path.exists(DataFile):
+        logger.debug('  Reading existing data file.')
+        with open(DataFile, 'r') as yaml_string:
+            data_list = yaml.load(yaml_string)
+
+    new_data = {}
+    new_data.update({'UT date': DateString, 'UT time': TimeString})
+    new_data.update(boltwood)
+    new_data.update(telescope_info)
+    new_data.update(focuser_info)
+    if telescope == 'V20':
+        new_data.update(CBW_info)
+    data_list.append(new_data)
+    yaml_string = yaml.dump(data_list)
+    with open(DataFile, 'w') as output:
+        output.write(yaml_string)
+
+    logger.info("Done")
+
+
+if __name__ == '__main__':
     ##-------------------------------------------------------------------------
     ## Parse Command Line Arguments
     ##-------------------------------------------------------------------------
@@ -366,80 +449,6 @@ def get_status_and_log():
 
     telescope = args.telescope
 
-    ##-------------------------------------------------------------------------
-    ## Create logger object
-    ##-------------------------------------------------------------------------
-    logger = logging.getLogger('get_status')
-    logger.setLevel(logging.DEBUG)
-    ## Set up console output
-    LogConsoleHandler = logging.StreamHandler()
-    if args.verbose:
-        LogConsoleHandler.setLevel(logging.DEBUG)
-    else:
-        LogConsoleHandler.setLevel(logging.INFO)
-    LogFormat = logging.Formatter('%(asctime)23s %(levelname)8s: %(message)s')
-    LogConsoleHandler.setFormatter(LogFormat)
-    logger.addHandler(LogConsoleHandler)
-    ## Set up file output
-    now = datetime.datetime.utcnow()
-    DateString = now.strftime("%Y%m%dUT")
-    LogFilePath = os.path.join('C:\\', 'Data_'+telescope, 'Logs', DateString)
-    if not os.path.exists(LogFilePath):
-        os.mkdir(LogFilePath)
-    LogFile = os.path.join(LogFilePath, 'get_status.log')
-    LogFileHandler = logging.FileHandler(LogFile)
-    LogFileHandler.setLevel(logging.DEBUG)
-    LogFileHandler.setFormatter(LogFormat)
-    logger.addHandler(LogFileHandler)
-
-    ##-------------------------------------------------------------------------
-    ## Setup File to Recieve Data
-    ##-------------------------------------------------------------------------
-    logger.info('#### Starting GetEnvironment.py ####')
-    DataFilePath = os.path.join("C:\\", "Data_"+telescope, "Logs", DateString)
-    if not os.path.exists(DataFilePath):
-        logger.debug('  Making directory: {}'.format(DataFilePath))
-        os.mkdir(DataFilePath)
-    DataFileName = "status_log.yaml"
-    DataFile = os.path.join(DataFilePath, DataFileName)
-    logger.info('  Writing data to {}'.format(DataFile))
-    time_string = now.strftime("%Y/%m/%d %H:%M:%SUT")
-
-    ##-------------------------------------------------------------------------
-    ## Get Status Info
-    ##-------------------------------------------------------------------------
-    boltwood_file = os.path.join("C:\\", "Users", "vysosuser", "Documents", "ClarityII", "ClarityData.txt")
-    boltwood = get_boltwood(boltwood_file, logger)
-
-    telescope_info = get_telescope_info(logger)
-
-    focuser_info = get_focuser_info(telescope, logger)
-
-    if telescope == 'V20':
-        CBW_info = control_by_web(focuser_info, boltwood, logger)
-
-    ##-------------------------------------------------------------------------
-    ## Write Environmental Log
-    ##-------------------------------------------------------------------------
-    logger.info("Writing YAML data file: {}".format(DataFile))
-    data_list = []
-    if os.path.exists(DataFile):
-        logger.debug('  Reading existing data file.')
-        with open(DataFile, 'r') as yaml_string:
-            data_list = yaml.load(yaml_string)
-
-    new_data = {}
-    new_data.update(boltwood)
-    new_data.update(telescope_info)
-    new_data.update(focuser_info)
-    if telescope == 'V20':
-        new_data.update(CBW_info)
-    data_list.append(new_data)
-    yaml_string = yaml.dump(data_list)
-    with open(DataFile, 'w') as output:
-        output.write(yaml_string)
-
-
-
-if __name__ == '__main__':
-    get_status_and_log()
+    while True:
+        get_status_and_log(telescope)
+        time.sleep(10)
