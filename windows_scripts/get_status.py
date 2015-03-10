@@ -251,8 +251,8 @@ def control_by_web(InsideTemp, OutsideTemp):
     
     ## Set state of fans based on temperature
     if OutsideTemp and InsideTemp:
-        print('  Inside Temp = {:.1f}'.format(InsideTemp))
-        print('  Outside Temp = {:.1f}'.format(OutsideTemp))
+        print('Inside Temp = {:.1f}'.format(InsideTemp))
+        print('Outside Temp = {:.1f}'.format(OutsideTemp))
         DeltaT = InsideTemp - OutsideTemp
 
         ## Turn on Fans if Inside Temperature is High
@@ -298,6 +298,32 @@ def main():
     telescope = args.telescope
 
     ##-------------------------------------------------------------------------
+    ## Create logger object
+    ##-------------------------------------------------------------------------
+    logger = logging.getLogger('get_status')
+    logger.setLevel(logging.DEBUG)
+    ## Set up console output
+    LogConsoleHandler = logging.StreamHandler()
+    if args.verbose:
+        LogConsoleHandler.setLevel(logging.DEBUG)
+    else:
+        LogConsoleHandler.setLevel(logging.INFO)
+    LogFormat = logging.Formatter('%(asctime)23s %(levelname)8s: %(message)s')
+    LogConsoleHandler.setFormatter(LogFormat)
+    logger.addHandler(LogConsoleHandler)
+    ## Set up file output
+    now = datetime.datetime.utcnow()
+    DateString = now.strftime("%Y%m%dUT")
+    LogFilePath = os.path.join('C:\\', 'Data_'+telescope, 'Logs', DateString)
+    if not os.path.exists(LogFilePath):
+        os.mkdir(LogFilePath)
+    LogFile = os.path.join(LogFilePath, 'get_status.log')
+    LogFileHandler = logging.FileHandler(LogFile)
+    LogFileHandler.setLevel(logging.DEBUG)
+    LogFileHandler.setFormatter(LogFormat)
+    logger.addHandler(LogFileHandler)
+
+    ##-------------------------------------------------------------------------
     ## Get Status Info
     ##-------------------------------------------------------------------------
     clarity_file = os.path.join("C:\\", "Users", "vysosuser", "Documents", "ClarityII", "ClarityData.txt")
@@ -312,6 +338,14 @@ def main():
     focuser_info = get_focuser_info(telescope)
     for item in focuser_info:
         print(item, focuser_info[item])
+
+    if telescope == 'V20':
+        CBW_info = control_by_web(focuser_info['temperature (truss)'], clarity['ambient_temp'])
+        for item in CBW_info:
+            print(item, CBW_info[item])
+
+
+
 
 if __name__ == '__main__':
     main()
