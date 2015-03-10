@@ -209,6 +209,73 @@ def get_focuser_info(telescope):
     return focuser_info
 
 
+##-------------------------------------------------------------------------
+## Query ControlByWeb Temperature Module for Temperature and Fan State
+##-------------------------------------------------------------------------
+def control_by_web(InsideTemp, OutsideTemp):
+    CBW_info = {}
+    IPaddress = "192.168.1.115"
+    try:
+        page = urllib.urlopen("http://"+IPaddress+"/state.xml")
+        contents = page.read()
+        ContentLines = contents.splitlines()
+        xmldoc = minidom.parseString(contents)
+        CBW_info['units'] = str(xmldoc.getElementsByTagName('units')[0].firstChild.nodeValue)
+        CBW_info['temp1'] = float(xmldoc.getElementsByTagName('sensor1temp')[0].firstChild.nodeValue)
+        CBW_info['temp2'] = float(xmldoc.getElementsByTagName('sensor2temp')[0].firstChild.nodeValue)
+        CBW_info['fan state'] = bool(xmldoc.getElementsByTagName('relay1state')[0].firstChild.nodeValue)
+        CBW_info['fan enable'] = bool(xmldoc.getElementsByTagName('relay2state')[0].firstChild.nodeValue)
+        if CBW_info['units'] == "C":
+            CBW_info['temp1'] = CBW_info['temp1']*9./5. + 32.
+            CBW_info['temp2'] = CBW_info['temp2']*9./5. + 32.
+            CBW_info['units'] = 'F'
+    except:
+        return {}
+
+    for item in CBW_info:
+        print(item, CBW_info[item])
+
+    ## Control Fans
+    DeadbandHigh = 0.1
+    DeadbandLow = 2.0
+
+    ## If fan enable not on, return values and stop
+    if not CBW_info['fan enable']:
+        if CBW_info['fan state']:
+            print("  Turning Dome Fan Off.  Remote Control Set to Off.")
+            page = urllib.urlopen("http://"+IPaddress+"/state.xml?relay1State=0")
+        return CBW_info
+    
+    ## If fans should be on or off based on the time of day
+    operate_fans_now = True
+    
+    ## Set state of fans based on temperature
+    if OutsideTemp and InsideTemp:
+        print('  Inside Temp = {:.1f}'.format(InsideTemp))
+        print('  Outside Temp = {:.1f}'.format(OutsideTemp))
+        DeltaT = InsideTemp - OutsideTemp
+
+        ## Turn on Fans if Inside Temperature is High
+        if operate_fans_now and (InsideTemp > OutsideTemp + DeadbandHigh):
+            if not CBW_info['fan state']:
+                print("  Turning Dome Fan On.  DeltaT = %.1f" % DeltaT)
+                page = urllib.urlopen("http://"+IPaddress+"/state.xml?relay1State=1")
+                CBW_info['fan state'] = True
+        ## Turn off Fans if Inside Temperature is Low
+        elif operate_fans_now and (InsideTemp < OutsideTemp - DeadbandLow):
+            if CBW_info['fan state']:
+                print("  Turning Dome Fan Off.  DeltaT = %.1f" % DeltaT)
+                page = urllib.urlopen("http://"+IPaddress+"/state.xml?relay1State=0")
+                CBW_info['fan state'] = False
+        ## Turn off Fans if it is night
+        elif not operate_fans_now:
+            if CBW_info['fan state']:
+                print("  Turning Dome Fan Off for Night.  DeltaT = %.1f" % DeltaT)
+                page = urllib.urlopen("http://"+IPaddress+"/state.xml?relay1State=0")
+                CBW_info['fan state'] = False
+
+    return CBW_info
+
 
 def main():
     ##-------------------------------------------------------------------------
