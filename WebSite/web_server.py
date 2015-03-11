@@ -48,57 +48,131 @@ class StatusHandler(RequestHandler):
         if 'boltwood wind units' in v20data.keys():
             v20data['boltwood wind units'] = wind_units[v20data['boltwood wind units']]
         if 'boltwood rain status' in v20data.keys():
+            if v20data['boltwood rain status'] == 0: v20data['boltwood rain status color'] = 'green'
+            elif v20data['boltwood rain status'] == 1: v20data['boltwood rain status color'] = 'red'
+            elif v20data['boltwood rain status'] == 2: v20data['boltwood rain status color'] = 'red'
+            else: v20data['boltwood rain color'] = ''
             v20data['boltwood rain status string'] = rain_status[v20data['boltwood rain status']]
         if 'boltwood wet status' in v20data.keys():
+            if v20data['boltwood wet status'] == 0: v20data['boltwood wet status color'] = 'green'
+            elif v20data['boltwood wet status'] == 1: v20data['boltwood wet status color'] = 'red'
+            elif v20data['boltwood wet status'] == 2: v20data['boltwood wet status color'] = 'red'
+            else: v20data['boltwood wet color'] = ''
             v20data['boltwood wet status string'] = wet_status[v20data['boltwood wet status']]
         if 'boltwood cloud condition' in v20data.keys():
+            if v20data['boltwood cloud condition'] == 0: v20data['boltwood cloud color'] = 'orange'
+            elif v20data['boltwood cloud condition'] == 1: v20data['boltwood cloud color'] = 'green'
+            elif v20data['boltwood cloud condition'] == 2: v20data['boltwood cloud color'] = 'orange'
+            elif v20data['boltwood cloud condition'] == 3: v20data['boltwood cloud color'] = 'red'
+            else: v20data['boltwood cloud color'] = ''
             v20data['boltwood cloud condition string'] = cloud_condition[v20data['boltwood cloud condition']]
         if 'boltwood wind condition' in v20data.keys():
+            if v20data['boltwood wind condition'] == 0: v20data['boltwood wind color'] = 'orange'
+            elif v20data['boltwood wind condition'] == 1: v20data['boltwood wind color'] = 'green'
+            elif v20data['boltwood wind condition'] == 2: v20data['boltwood wind color'] = 'orange'
+            elif v20data['boltwood wind condition'] == 3: v20data['boltwood wind color'] = 'red'
+            else: v20data['boltwood wind color'] = ''
             v20data['boltwood wind condition string'] = wind_condition[v20data['boltwood wind condition']]
         if 'boltwood rain condition' in v20data.keys():
+            if v20data['boltwood rain condition'] == 0: v20data['boltwood rain color'] = 'orange'
+            elif v20data['boltwood rain condition'] == 1: v20data['boltwood rain color'] = 'green'
+            elif v20data['boltwood rain condition'] == 2: v20data['boltwood rain color'] = 'red'
+            elif v20data['boltwood rain condition'] == 3: v20data['boltwood rain color'] = 'red'
+            else: v20data['boltwood rain color'] = ''
             v20data['boltwood rain condition string'] = rain_condition[v20data['boltwood rain condition']]
         if 'boltwood day condition' in v20data.keys():
+            if v20data['boltwood day condition'] == 0: v20data['boltwood day color'] = 'orange'
+            elif v20data['boltwood day condition'] == 1: v20data['boltwood day color'] = 'green'
+            elif v20data['boltwood day condition'] == 2: v20data['boltwood day color'] = 'red'
+            elif v20data['boltwood day condition'] == 3: v20data['boltwood day color'] = 'red'
+            else: v20data['boltwood day color'] = ''
             v20data['boltwood day condition string'] = day_condition[v20data['boltwood day condition']]
         if 'boltwood roof close' in v20data.keys():
+            if v20data['boltwood roof close'] == 0: v20data['boltwood roof close color'] = 'green'
+            elif v20data['boltwood roof close'] == 1: v20data['boltwood roof close color'] = 'red'
+            else: v20data['boltwood roof close color'] = ''
             v20data['boltwood roof close string'] = roof_close[v20data['boltwood roof close']]
 
         v20clarity_time = datetime.datetime.strptime('{} {}'.format(v20data['boltwood date'], v20data['boltwood time'][:-3]), '%Y-%m-%d %H:%M:%S')
         v20clarity_age = (now - v20clarity_time).total_seconds()
+        if v20clarity_age > 60: v20clarity_color = 'red'
+        else: v20clarity_color = 'black'
 
         v20data_time = datetime.datetime.strptime('{} {}'.format(v20data['UT date'], v20data['UT time']), '%Y%m%dUT %H:%M:%S')
         v20data_age = (nowut - v20data_time).total_seconds()
+        if v20data_age > 60: v20data_color = 'red'
+        else: v20data_color = 'black'
 
         if 'boltwood wind units' in v5data.keys():
             v5data['boltwood wind units'] = wind_units[v5data['boltwood wind units']]
         if 'boltwood rain status' in v5data.keys():
+            if v5data['boltwood rain status'] == 0: v5data['boltwood rain status color'] = 'green'
+            elif v5data['boltwood rain status'] == 1: v5data['boltwood rain status color'] = 'red'
+            elif v5data['boltwood rain status'] == 2: v5data['boltwood rain status color'] = 'red'
+            else: v5data['boltwood rain color'] = ''
             v5data['boltwood rain status string'] = rain_status[v5data['boltwood rain status']]
         if 'boltwood wet status' in v5data.keys():
+            if v5data['boltwood wet status'] == 0: v5data['boltwood wet status color'] = 'green'
+            elif v5data['boltwood wet status'] == 1: v5data['boltwood wet status color'] = 'red'
+            elif v5data['boltwood wet status'] == 2: v5data['boltwood wet status color'] = 'red'
+            else: v5data['boltwood wet color'] = ''
             v5data['boltwood wet status string'] = wet_status[v5data['boltwood wet status']]
         if 'boltwood cloud condition' in v5data.keys():
+            if v5data['boltwood cloud condition'] == 0: v5data['boltwood cloud color'] = 'orange'
+            elif v5data['boltwood cloud condition'] == 1: v5data['boltwood cloud color'] = 'green'
+            elif v5data['boltwood cloud condition'] == 2: v5data['boltwood cloud color'] = 'orange'
+            elif v5data['boltwood cloud condition'] == 3: v5data['boltwood cloud color'] = 'red'
+            else: v5data['boltwood cloud color'] = ''
             v5data['boltwood cloud condition string'] = cloud_condition[v5data['boltwood cloud condition']]
         if 'boltwood wind condition' in v5data.keys():
+            if v5data['boltwood wind condition'] == 0: v5data['boltwood wind color'] = 'orange'
+            elif v5data['boltwood wind condition'] == 1: v5data['boltwood wind color'] = 'green'
+            elif v5data['boltwood wind condition'] == 2: v5data['boltwood wind color'] = 'orange'
+            elif v5data['boltwood wind condition'] == 3: v5data['boltwood wind color'] = 'red'
+            else: v5data['boltwood wind color'] = ''
             v5data['boltwood wind condition string'] = wind_condition[v5data['boltwood wind condition']]
         if 'boltwood rain condition' in v5data.keys():
+            if v5data['boltwood rain condition'] == 0: v5data['boltwood rain color'] = 'orange'
+            elif v5data['boltwood rain condition'] == 1: v5data['boltwood rain color'] = 'green'
+            elif v5data['boltwood rain condition'] == 2: v5data['boltwood rain color'] = 'red'
+            elif v5data['boltwood rain condition'] == 3: v5data['boltwood rain color'] = 'red'
+            else: v5data['boltwood rain color'] = ''
             v5data['boltwood rain condition string'] = rain_condition[v5data['boltwood rain condition']]
         if 'boltwood day condition' in v5data.keys():
+            if v5data['boltwood day condition'] == 0: v5data['boltwood day color'] = 'orange'
+            elif v5data['boltwood day condition'] == 1: v5data['boltwood day color'] = 'green'
+            elif v5data['boltwood day condition'] == 2: v5data['boltwood day color'] = 'red'
+            elif v5data['boltwood day condition'] == 3: v5data['boltwood day color'] = 'red'
+            else: v5data['boltwood day color'] = ''
             v5data['boltwood day condition string'] = day_condition[v5data['boltwood day condition']]
         if 'boltwood roof close' in v5data.keys():
+            if v5data['boltwood roof close'] == 0: v5data['boltwood roof close color'] = 'green'
+            elif v5data['boltwood roof close'] == 1: v5data['boltwood roof close color'] = 'red'
+            else: v5data['boltwood roof close color'] = ''
             v5data['boltwood roof close string'] = roof_close[v5data['boltwood roof close']]
 
         v5clarity_time = datetime.datetime.strptime('{} {}'.format(v5data['boltwood date'], v5data['boltwood time'][:-3]), '%Y-%m-%d %H:%M:%S')
         v5clarity_age = (now - v5clarity_time).total_seconds()
+        if v5clarity_age > 60: v5clarity_color = 'red'
+        else: v5clarity_color = 'black'
 
         v5data_time = datetime.datetime.strptime('{} {}'.format(v5data['UT date'], v5data['UT time']), '%Y%m%dUT %H:%M:%S')
         v5data_age = (nowut - v5data_time).total_seconds()
+        if v5data_age > 60: v5data_color = 'red'
+        else: v5data_color = 'black'
 
         self.render("status.html", title="VYSOS Status",\
                     date = nowut.strftime('%Y%m%dUT'),\
                     time = nowut.strftime('%H:%M:%S'),\
                     v20clarity_age = v20clarity_age,\
+                    v20clarity_color = v20clarity_color,\
                     v20data_age = v20data_age,\
+                    v20data_color = v20data_color,\
                     v20data = v20data,\
                     v5clarity_age = v5clarity_age,\
+                    v5clarity_color = v5clarity_color,\
                     v5data_age = v5data_age,\
+                    v5data_color = v5data_color,\
                     v5data = v5data,\
                     )
 

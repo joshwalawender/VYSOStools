@@ -75,14 +75,52 @@
         {% if 'boltwood sky temp' in v20data.keys() %}               {{ '{:.1f} {}'.format(v20data['boltwood sky temp'], v20data['boltwood temp units']) }} {% end %}<br>
         {% if 'boltwood wind speed' in v20data.keys() %}             {{ '{:.1f} {}'.format(v20data['boltwood wind speed'], v20data['boltwood wind units']) }} {% end %}<br>
         {% if 'boltwood humidity' in v20data.keys() %}               {{ '{:.1f} %'.format(v20data['boltwood humidity']) }} {% end %}<br>
-        {% if 'boltwood rain status string' in v20data.keys() %}     {{ '{}'.format(v20data['boltwood rain status string']) }} {% end %}<br>
-        {% if 'boltwood wet status string' in v20data.keys() %}      {{ '{}'.format(v20data['boltwood wet status string']) }} {% end %}<br>
-        {% if 'boltwood cloud condition string' in v20data.keys() %} {{ '{}'.format(v20data['boltwood cloud condition string']) }} {% end %}<br>
-        {% if 'boltwood wind condition string' in v20data.keys() %}  {{ '{}'.format(v20data['boltwood wind condition string']) }} {% end %}<br>
-        {% if 'boltwood rain condition string' in v20data.keys() %}  {{ '{}'.format(v20data['boltwood rain condition string']) }} {% end %}<br>
-        {% if 'boltwood day condition string' in v20data.keys() %}   {{ '{}'.format(v20data['boltwood day condition string']) }} {% end %}<br>
-        {% if 'boltwood roof close string' in v20data.keys() %}      {{ '{}'.format(v20data['boltwood roof close string']) }} {% end %}<br>
+
+        {% if 'boltwood rain status string' in v20data.keys() %}
+            <font color="{{ '{}'.format(v20data['boltwood rain status color']) }}">
+            {{ '{}'.format(v20data['boltwood rain status string']) }}
+            </font>
+        {% end %}<br>
+
+        {% if 'boltwood wet status string' in v20data.keys() %}
+            <font color="{{ '{}'.format(v20data['boltwood wet status color']) }}">
+            {{ '{}'.format(v20data['boltwood wet status string']) }}
+            </font>
+        {% end %}<br>
+
+        {% if 'boltwood cloud condition string' in v20data.keys() %}
+            <font color="{{ '{}'.format(v20data['boltwood cloud color']) }}">
+            {{ '{}'.format(v20data['boltwood cloud condition string']) }}
+            </font>
+        {% end %}<br>
+
+        {% if 'boltwood wind condition string' in v20data.keys() %}
+            <font color="{{ '{}'.format(v20data['boltwood wind color']) }}">
+            {{ '{}'.format(v20data['boltwood wind condition string']) }}
+            </font>
+        {% end %}<br>
+
+        {% if 'boltwood rain condition string' in v20data.keys() %}
+            <font color="{{ '{}'.format(v20data['boltwood rain color']) }}">
+            {{ '{}'.format(v20data['boltwood rain condition string']) }}
+            </font>
+        {% end %}<br>
+
+        {% if 'boltwood day condition string' in v20data.keys() %}
+            <font color="{{ '{}'.format(v20data['boltwood day color']) }}">
+            {{ '{}'.format(v20data['boltwood day condition string']) }}
+            </font>
+        {% end %}<br>
+
+        {% if 'boltwood roof close string' in v20data.keys() %}
+            <font color="{{ '{}'.format(v20data['boltwood roof close color']) }}">
+            {{ '{}'.format(v20data['boltwood roof close string']) }}
+            </font>
+        {% end %}<br>
+
+        <font color="{{ '{}'.format(v20clarity_color) }}">
         {{ '{:.0f} sec'.format(v20clarity_age) }}<br>
+        </font>
     </td>
     <td style="text-align: left;">
         <br><u>VYSOS-5</u><br>
@@ -90,14 +128,53 @@
         {% if 'boltwood sky temp' in v5data.keys() %}               {{ '{:.1f} {}'.format(v5data['boltwood sky temp'], v5data['boltwood temp units']) }} {% end %}<br>
         {% if 'boltwood wind speed' in v5data.keys() %}             {{ '{:.1f} {}'.format(v5data['boltwood wind speed'], v5data['boltwood wind units']) }} {% end %}<br>
         {% if 'boltwood humidity' in v5data.keys() %}               {{ '{:.1f} %'.format(v5data['boltwood humidity']) }} {% end %}<br>
-        {% if 'boltwood rain status string' in v5data.keys() %}     {{ '{}'.format(v5data['boltwood rain status string']) }} {% end %}<br>
-        {% if 'boltwood wet status string' in v5data.keys() %}      {{ '{}'.format(v5data['boltwood wet status string']) }} {% end %}<br>
-        {% if 'boltwood cloud condition string' in v5data.keys() %} {{ '{}'.format(v5data['boltwood cloud condition string']) }} {% end %}<br>
-        {% if 'boltwood wind condition string' in v5data.keys() %}  {{ '{}'.format(v5data['boltwood wind condition string']) }} {% end %}<br>
-        {% if 'boltwood rain condition string' in v5data.keys() %}  {{ '{}'.format(v5data['boltwood rain condition string']) }} {% end %}<br>
-        {% if 'boltwood day condition string' in v5data.keys() %}   {{ '{}'.format(v5data['boltwood day condition string']) }} {% end %}<br>
-        {% if 'boltwood roof close string' in v5data.keys() %}      {{ '{}'.format(v5data['boltwood roof close string']) }} {% end %}<br>
+
+        {% if 'boltwood rain status string' in v5data.keys() %}
+            <font color="{{ '{}'.format(v5data['boltwood rain status color']) }}">
+            {{ '{}'.format(v5data['boltwood rain status string']) }}
+            </font>
+        {% end %}<br>
+
+        {% if 'boltwood wet status string' in v5data.keys() %}
+            <font color="{{ '{}'.format(v5data['boltwood wet status color']) }}">
+            {{ '{}'.format(v5data['boltwood wet status string']) }}
+            </font>
+        {% end %}<br>
+
+        {% if 'boltwood cloud condition string' in v5data.keys() %}
+            <font color="{{ '{}'.format(v5data['boltwood cloud color']) }}">
+            {{ '{}'.format(v5data['boltwood cloud condition string']) }}
+            </font>
+        {% end %}<br>
+
+        {% if 'boltwood wind condition string' in v5data.keys() %}
+            <font color="{{ '{}'.format(v5data['boltwood wind color']) }}">
+            {{ '{}'.format(v5data['boltwood wind condition string']) }}
+            </font>
+        {% end %}<br>
+
+        {% if 'boltwood rain condition string' in v5data.keys() %}
+            <font color="{{ '{}'.format(v5data['boltwood rain color']) }}">
+            {{ '{}'.format(v5data['boltwood rain condition string']) }}
+            </font>
+        {% end %}<br>
+
+        {% if 'boltwood day condition string' in v5data.keys() %}
+            <font color="{{ '{}'.format(v5data['boltwood day color']) }}">
+            {{ '{}'.format(v5data['boltwood day condition string']) }}
+            </font>
+        {% end %}<br>
+
+        {% if 'boltwood roof close string' in v5data.keys() %}
+            <font color="{{ '{}'.format(v5data['boltwood roof close color']) }}">
+            {{ '{}'.format(v5data['boltwood roof close string']) }}
+            </font>
+        {% end %}<br>
+
+        <font color="{{ '{}'.format(v5clarity_color) }}">
         {{ '{:.0f} sec'.format(v5clarity_age) }}<br>
+        </font>
+
     </td>
     <td>
         Boltwood Plot<br>
@@ -131,7 +208,9 @@
         {% if 'ACP tracking status' in v20data.keys() %} {{ '{}'.format(v20data['ACP tracking status']) }} {% end %}<br>
         {% if 'ACP alt' in v20data.keys() %}             {{ '{:.1f}'.format(v20data['ACP alt']) }} {% end %}<br>
         {% if 'ACP az' in v20data.keys() %}              {{ '{:.1f}'.format(v20data['ACP az']) }} {% end %}<br>
+        <font color="{{ '{}'.format(v20data_color) }}">
         {{ '{:.0f} sec'.format(v20data_age) }}<br>
+        </font>
     </td>
     <td>
     </td>
@@ -167,7 +246,9 @@
         {% if 'ACP tracking status' in v5data.keys() %} {{ '{}'.format(v5data['ACP tracking status']) }} {% end %}<br>
         {% if 'ACP alt' in v5data.keys() %}             {{ '{:.1f}'.format(v5data['ACP alt']) }} {% end %}<br>
         {% if 'ACP az' in v5data.keys() %}              {{ '{:.1f}'.format(v5data['ACP az']) }} {% end %}<br>
+        <font color="{{ '{}'.format(v5data_color) }}">
         {{ '{:.0f} sec'.format(v5data_age) }}<br>
+        </font>
     </td>
     <td>
     </td>
