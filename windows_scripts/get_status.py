@@ -10,12 +10,13 @@ import logging
 import time
 import datetime
 import yaml
+import numpy as np
 
 import win32com.client
 import urllib
 from xml.dom import minidom
-import numpy as np
-
+import pymongo
+from pymongo import MongoClient
 
 def get_boltwood(ClarityDataFile, logger):
     logger.info('Reading Clarity file')
@@ -263,16 +264,26 @@ def get_focuser_info(telescope, logger):
 ##-------------------------------------------------------------------------
 def control_by_web(focuser_info, boltwood, logger):
     logger.info('Getting CBW temperature module status')
-    if focuser_info['RCOS temperature units'] == 'F':
-        InsideTemp = focuser_info['RCOS temperature (truss)']
+    if 'RCOS temperature units' in focuser_info.keys():
+        if focuser_info['RCOS temperature units'] == 'F':
+            InsideTemp = focuser_info['RCOS temperature (truss)']
+        else:
+            logger.error('  Focuser temperature unit mismatch')
+            return {}
     else:
-        logger.error('  Focuser temperature unit mismatch')
+        logger.error('  Focuser temperature unit not found')
         return {}
-    if boltwood['boltwood temp units'] == 'F':
-        OutsideTemp = boltwood['boltwood ambient temp']
+
+    if 'boltwood temp units' in boltwood.keys():
+        if boltwood['boltwood temp units'] == 'F':
+            OutsideTemp = boltwood['boltwood ambient temp']
+        else:
+            logger.error('  Boltwood temperature unit mismatch')
+            return{}
     else:
-        logger.error('  Boltwood temperature unit mismatch')
+        logger.error('  Boltwood temperature unit not found')
         return{}
+
     CBW_info = {}
     IPaddress = "192.168.1.115"
     try:
@@ -378,17 +389,17 @@ def get_status_and_log(telescope):
         LogFileHandler.setFormatter(LogFormat)
         logger.addHandler(LogFileHandler)
 
+    logger.info('#### Starting Status Queries ####')
+
     ##-------------------------------------------------------------------------
     ## Setup File to Recieve Data
     ##-------------------------------------------------------------------------
-    logger.info('#### Starting Status Queries ####')
-    DataFilePath = os.path.join("C:\\", "Data_"+telescope, "Logs", DateString)
-    if not os.path.exists(DataFilePath):
-        logger.debug('  Making directory: {}'.format(DataFilePath))
-        os.mkdir(DataFilePath)
-    DataFileName = "status.yaml"
-    DataFile = os.path.join(DataFilePath, DataFileName)
-    time_string = now.strftime("%Y/%m/%d %H:%M:%SUT")
+#     DataFilePath = os.path.join("C:\\", "Data_"+telescope, "Logs", DateString)
+#     if not os.path.exists(DataFilePath):
+#         logger.debug('  Making directory: {}'.format(DataFilePath))
+#         os.mkdir(DataFilePath)
+#     DataFileName = "status.yaml"
+#     DataFile = os.path.join(DataFilePath, DataFileName)
 
     ##-------------------------------------------------------------------------
     ## Get Status Info
@@ -398,7 +409,7 @@ def get_status_and_log(telescope):
 
     telescope_info = get_telescope_info(logger)
 
-    focuser_info = get_focuser_info(telescope, logger)
+    focuser_info = {} #get_focuser_info(telescope, logger)
 
     if telescope == 'V20':
         CBW_info = control_by_web(focuser_info, boltwood, logger)
@@ -406,13 +417,17 @@ def get_status_and_log(telescope):
     ##-------------------------------------------------------------------------
     ## Write Environmental Log
     ##-------------------------------------------------------------------------
-    logger.info("Writing YAML data file")
-    logger.debug("  YAML file: {}".format(DataFile))
-    data_list = []
-    if os.path.exists(DataFile):
-        logger.debug('  Reading existing data file.')
-        with open(DataFile, 'r') as yaml_string:
-            data_list = yaml.load(yaml_string)
+#     logger.info("Writing YAML data file")
+#     logger.debug("  YAML file: {}".format(DataFile))
+#     data_list = []
+#     if os.path.exists(DataFile):
+#         logger.debug('  Reading existing data file.')
+#         with open(DataFile, 'r') as yaml_string:
+#             data_list = yaml.load(yaml_string)
+
+    logger.info('Writing results to mongo db at 192.168.1.101')
+    client = MongoClient('192.168.1.101', 27017)
+    v20status = client.vysos['v20status']
 
     new_data = {}
     new_data.update({'UT date': DateString, 'UT time': TimeString})
@@ -421,10 +436,14 @@ def get_status_and_log(telescope):
     new_data.update(focuser_info)
     if telescope == 'V20':
         new_data.update(CBW_info)
-    data_list.append(new_data)
-    yaml_string = yaml.dump(data_list)
-    with open(DataFile, 'w') as output:
-        output.write(yaml_string)
+
+    id = v20status.insert(new_data)
+    logger.debug('  Inserted datum with ID: {}'.format(id))
+
+#     data_list.append(new_data)
+#     yaml_string = yaml.dump(data_list)
+#     with open(DataFile, 'w') as output:
+#         output.write(yaml_string)
 
     logger.info("Done")
 
