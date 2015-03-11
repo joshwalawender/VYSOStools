@@ -9,7 +9,7 @@ import argparse
 import logging
 import time
 import datetime
-import yaml
+# import yaml
 import numpy as np
 
 import win32com.client
@@ -409,7 +409,7 @@ def get_status_and_log(telescope):
 
     telescope_info = get_telescope_info(logger)
 
-    focuser_info = {} #get_focuser_info(telescope, logger)
+    focuser_info = get_focuser_info(telescope, logger)
 
     if telescope == 'V20':
         CBW_info = control_by_web(focuser_info, boltwood, logger)
