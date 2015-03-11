@@ -12,10 +12,14 @@
         table
         {
         border-collapse:collapse;
+        margin-left: auto;
+        margin-right: auto;
         }
         table,th,td
         {
         border:1px solid black;
+        vertical-align: top;
+        text-align: center; 
         }
     </style>
 
@@ -23,49 +27,126 @@
 
 <body>
 
-<ul>
-    <li>UT Time = {{ data['UT time'] }}</li>
-</ul>
+<table>
+<tr>
+    <td>Current UT Time</td>
+    <td>{{ time }}</td>
+</tr>
+<tr>
+    <td>UT Time of Status Datum</td>
+    <td>{{ data['UT time'] }}</td>
+</tr>
+</table>
+
+<br>
 
 <table border=0 width=1200>
 <tr>
-    <th>
+    <th colspan=4>Weather</th>
+</tr>
+<tr>
+    <td style="text-align: right;">
+        <br>
+        <u>Boltwood Data</u><br>
+        Ambient Temp<br>
+        Sky Temp<br>
+        Wind Speed<br>
+        Humidity<br>
+        Rain Status<br>
+        Wet Status<br>
+        Cloud Condition<br>
+        Wind Condition<br>
+        Rain Condition<br>
+        Day Condition<br>
+        Roof Close<br>
+        Clarity Data Age<br>
+    </td>
+    <td style="text-align: left;">
+        <br><br>
+        {% if 'boltwood ambient temp' in data.keys() %}    {{ '{:.1f} {}'.format(data['boltwood ambient temp'], data['boltwood temp units']) }} {% end %}<br>
+        {% if 'boltwood sky temp' in data.keys() %}        {{ '{:.1f} {}'.format(data['boltwood sky temp'], data['boltwood temp units']) }} {% end %}<br>
+        {% if 'boltwood wind speed' in data.keys() %}      {{ '{:.1f} {}'.format(data['boltwood wind speed'], data['boltwood wind units']) }} {% end %}<br>
+        {% if 'boltwood humidity' in data.keys() %}        {{ '{:.1f} %'.format(data['boltwood humidity']) }} {% end %}<br>
+        {% if 'boltwood rain status' in data.keys() %}     {{ '{:d}'.format(data['boltwood rain status']) }} {% end %}<br>
+        {% if 'boltwood wet status' in data.keys() %}      {{ '{:d}'.format(data['boltwood wet status']) }} {% end %}<br>
+        {% if 'boltwood cloud condition' in data.keys() %} {{ '{:d}'.format(data['boltwood cloud condition']) }} {% end %}<br>
+        {% if 'boltwood wind condition' in data.keys() %}  {{ '{:d}'.format(data['boltwood wind condition']) }} {% end %}<br>
+        {% if 'boltwood rain condition' in data.keys() %}  {{ '{:d}'.format(data['boltwood rain condition']) }} {% end %}<br>
+        {% if 'boltwood day condition' in data.keys() %}   {{ '{:d}'.format(data['boltwood day condition']) }} {% end %}<br>
+        {% if 'boltwood roof close' in data.keys() %}      {{ '{:d}'.format(data['boltwood roof close']) }} {% end %}<br>
+        {{ '{:.0f} sec'.format(clarity_age) }}<br>
+    </td>
+    <td>
+        Boltwood Plot<br>
+        <a href="http://166.122.71.162:80/Weather_VYSOS5.gif"><img width=400 height=300 src="http://166.122.71.162:80/Weather_VYSOS5.gif"></a><br>
+    </td>
+    <td>
         Atlas All Sky Image (Color)<br>
         <a href="http://www.fallingstar.com/weather/mlo/"><img width=400 height=330 src="http://www.fallingstar.com/weather/mlo/latest_clr400.jpg"></a><br>
+    </td>
+<tr>
+<tr>
+    <th colspan=4>VYSOS-20</th>
+</tr>
+<tr>
+    <td style="text-align: right;">
+        <br>
+        <u>VYSOS-20 Status</u><br>
+        Connected<br>
+        Parked<br>
+        Slewing<br>
+        Tracking<br>
+        Alt<br>
+        Az<br>
+        ACP Data Age<br>
+    </td>
+    <td style="text-align: left;">
         <br><br>
-    </th>
-    <th>
+        {% if 'ACP connected' in data.keys() %}       {{ '{}'.format(data['ACP connected']) }} {% end %}<br>
+        {% if 'ACP park status' in data.keys() %}     {{ '{}'.format(data['ACP park status']) }} {% end %}<br>
+        {% if 'ACP slewing status' in data.keys() %}  {{ '{}'.format(data['ACP slewing status']) }} {% end %}<br>
+        {% if 'ACP tracking status' in data.keys() %} {{ '{}'.format(data['ACP tracking status']) }} {% end %}<br>
+        {% if 'ACP alt' in data.keys() %}             {{ '{:.1f}'.format(data['ACP alt']) }} {% end %}<br>
+        {% if 'ACP az' in data.keys() %}              {{ '{:.1f}'.format(data['ACP az']) }} {% end %}<br>
+        {{ '{:.0f} sec'.format(data_age) }}<br>
+    </td>
+    <td>
         <a href="Logs/VYSOS-20/">VYSOS-20</a> External<br>
-        ACP Connected = {{ data['ACP connected'] }}<br>
-        ACP Az = {{ '{:.3f}'.format(data['ACP az']) }}<br>
-        Alt = {{ '{:.3f}'.format(data['ACP alt']) }}<br>
         <a href="http://166.122.71.162:8083/0.jpg"><img width=400 height=267 src="http://166.122.71.162:8083/0.jpg"><br>
-        <br><br>
-    </th>
-    <th>
+    </td>
+    <td>
         <a href="Logs/VYSOS-20/">VYSOS-20</a> Internal<br>
         <a href="http://166.122.71.162:8083/2.jpg"><img width=400 height=267 src="http://166.122.71.162:8083/2.jpg"></a><br>
-        <br><br>
-    </th>
+    </td>
 </tr>
-
 <tr>
-    <th>
-        Boltwood Plot<br>
-        <a href="Weather_VYSOS5.gif"><img width=400 src="Weather_VYSOS5.gif"></a><br>
+    <th colspan=4>VYSOS-5</th>
+</tr>
+<tr>
+    <td style="text-align: right;">
+        <br>
+        <u>VYSOS-5 Status</u><br>
+        Connected<br>
+        Parked<br>
+        Slewing<br>
+        Tracking<br>
+        Alt<br>
+        Az<br>
+    </td>
+    <td style="text-align: left;">
         <br><br>
-    </th>
-    <th>
+    </td>
+    <td>
         <a href="Logs/VYSOS-5/">VYSOS-5</a> External<br>
         <a href="http://166.122.71.162:8083/4.jpg"><img width=400 height=267 src="http://166.122.71.162:8083/4.jpg"></a><br>
-        <br><br>
-    </th>
-    <th>
+    </td>
+    <td>
         <a href="Logs/VYSOS-5/">VYSOS-5</a> Internal<br>
         <a href="http://166.122.71.162:8083/2.jpg"><img width=400 height=267 src="http://166.122.71.162:8083/6.jpg"></a><br>
-        <br><br>
-    </th>
+    </td>
 </tr>
+</table>
+
 
 
 
