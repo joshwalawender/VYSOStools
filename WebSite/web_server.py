@@ -7,7 +7,10 @@ import sys
 import os
 import argparse
 import logging
-import yaml
+import datetime
+
+import pymongo
+from pymongo import MongoClient
 
 from tornado.ioloop import IOLoop
 from tornado.web import RequestHandler, Application, url
@@ -18,8 +21,17 @@ class HelloHandler(RequestHandler):
 
 class StatusHandler(RequestHandler):
     def get(self):
-        items = ["Item 1", "Item 2", "Item 3"]
-        self.render("status.html", title="VYSOS Status", items=items)
+        now = datetime.datetime.utcnow()
+        UTdate_string = now.strftime('%Y%m%dUT')
+
+        client = MongoClient('192.168.1.101', 27017)
+        v20status = client.vysos['v20status']
+
+        entries = [entry for entry\
+                   in v20status.find( {"UT date" : UTdate_string} ).sort([('UT time', pymongo.ASCENDING)])]
+        print()
+
+        self.render("status.html", title="VYSOS Status", data = entries[-1])
 
 def make_app():
     return Application([

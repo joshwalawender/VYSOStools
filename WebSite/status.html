@@ -23,6 +23,10 @@
 
 <body>
 
+<ul>
+    <li>UT Time = {{ data['UT time'] }}</li>
+</ul>
+
 <table border=0 width=1200>
 <tr>
     <th>
@@ -32,6 +36,9 @@
     </th>
     <th>
         <a href="Logs/VYSOS-20/">VYSOS-20</a> External<br>
+        ACP Connected = {{ data['ACP connected'] }}<br>
+        ACP Az = {{ '{:.3f}'.format(data['ACP az']) }}<br>
+        Alt = {{ '{:.3f}'.format(data['ACP alt']) }}<br>
         <a href="http://166.122.71.162:8083/0.jpg"><img width=400 height=267 src="http://166.122.71.162:8083/0.jpg"><br>
         <br><br>
     </th>
