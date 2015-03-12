@@ -427,22 +427,10 @@ def get_status_and_log(telescope):
     ##-------------------------------------------------------------------------
     ## Write Environmental Log
     ##-------------------------------------------------------------------------
-#     logger.info("Writing YAML data file")
-#     logger.debug("  YAML file: {}".format(DataFile))
-#     data_list = []
-#     if os.path.exists(DataFile):
-#         logger.debug('  Reading existing data file.')
-#         with open(DataFile, 'r') as yaml_string:
-#             data_list = yaml.load(yaml_string)
-
     logger.info('Writing results to mongo db at 192.168.1.101')
     client = MongoClient('192.168.1.101', 27017)
-    if telescope == 'V20':
-        logger.debug('  Getting v20status collection')
-        status = client.vysos['v20status']
-    elif telescope == 'V5':
-        logger.debug('  Getting v5status collection')
-        status = client.vysos['v5status']
+    status = client.vysos['{}status'.format(telescope)]
+    logger.debug('  Getting {}status collection'.format(telescope))
 
     new_data = {}
     new_data.update({'UT date': DateString, 'UT time': TimeString})
@@ -454,11 +442,6 @@ def get_status_and_log(telescope):
 
     id = status.insert(new_data)
     logger.debug('  Inserted datum with ID: {}'.format(id))
-
-#     data_list.append(new_data)
-#     yaml_string = yaml.dump(data_list)
-#     with open(DataFile, 'w') as output:
-#         output.write(yaml_string)
 
     logger.info("Done")
 
