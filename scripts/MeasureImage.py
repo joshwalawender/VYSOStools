@@ -269,6 +269,7 @@ def MeasureImage(filename,\
         image.add_web_log_entry(html_file, fields=fields)
         image.add_yaml_entry(yaml_file)
         image.add_yaml_entry(target_file)
+        image.add_mongo_entry('192.168.1.101', 'vysos', '{}images'.format(telescope))
 
     image.logger.info('Done.')
 
