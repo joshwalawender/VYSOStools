@@ -15,11 +15,37 @@ from pymongo import MongoClient
 from tornado.ioloop import IOLoop
 from tornado.web import RequestHandler, Application, url
 
-class HelloHandler(RequestHandler):
-    def get(self):
-        self.write("Hello, world")
 
-class StatusHandler(RequestHandler):
+##-----------------------------------------------------------------------------
+## Handler for IQMon Night Results Page
+##-----------------------------------------------------------------------------
+class IQMonNightList_V5(RequestHandler):
+    def get(self):
+
+        telescope = 'V5'
+        telescopename = 'VYSOS-5'
+
+        paths_to_check = [os.path.join(os.path.expanduser('~'), 'IQMon', 'Logs', telescopename),\
+                          os.path.join('/', 'Volumes', 'DroboPro1', 'IQMon', 'Logs', telescopename)]
+        logs_path = None
+        for path_to_check in paths_to_check:
+            if os.path.exists(path_to_check):
+                logs_path = path_to_check
+        assert logs_path
+
+
+        nights = {}
+        self.render("night_list.html", title="{} Results".format(telescopename),\
+                    telescope = telescope,\
+                    telescopename = telescopename,\
+                    nights = nights,\
+                   )
+
+
+##-----------------------------------------------------------------------------
+## Handler for Status Page
+##-----------------------------------------------------------------------------
+class Status(RequestHandler):
     def get(self):
         now = datetime.datetime.now()
         nowut = datetime.datetime.utcnow()
@@ -174,18 +200,20 @@ class StatusHandler(RequestHandler):
                     v5data = v5data,\
                     )
 
+##-----------------------------------------------------------------------------
+## Make App and Main
+##-----------------------------------------------------------------------------
 def make_app():
     return Application([
-        url(r"/", StatusHandler),
+        url(r"/", Status),
+        url(r"/VYSOS5/", Status),
+        url(r"/VYSOS5/NightLogs/", IQMonNightList_V5),
         ])
 
 def main():
     app = make_app()
     app.listen(80)
     IOLoop.current().start()
-
-
-
 
 if __name__ == '__main__':
     main()
