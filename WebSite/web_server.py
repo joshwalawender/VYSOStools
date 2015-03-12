@@ -51,7 +51,7 @@ class Status(RequestHandler):
         nowut = datetime.datetime.utcnow()
 
         client = MongoClient('192.168.1.101', 27017)
-        v20status = client.vysos['v20status']
+        v20status = client.vysos['V20status']
         v20entries = [entry for entry\
                       in v20status.find( {"UT date" : nowut.strftime('%Y%m%dUT')} ).sort([('UT time', pymongo.ASCENDING)])]
         v20data = v20entries[-1]
@@ -64,7 +64,7 @@ class Status(RequestHandler):
         if v20data_age > 60: v20data_color = 'red'
         else: v20data_color = 'black'
 
-        v5status = client.vysos['v5status']
+        v5status = client.vysos['V5status']
         v5entries = [entry for entry\
                       in v5status.find( {"UT date" : nowut.strftime('%Y%m%dUT')} ).sort([('UT time', pymongo.ASCENDING)])]
         v5data = v5entries[-1]
