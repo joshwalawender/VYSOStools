@@ -31,26 +31,28 @@
 
 <body>
 
-<table>
-<tr>
-    <td>Current UT Time</td>
-    <td>{{ time }}</td>
-</tr>
-<tr>
-    <td>UT Time of VYSOS-20 Datum</td>
-    <td>{{ v20data['UT time'] }}</td>
-</tr>
-<tr>
-    <td>UT Time of VYSOS-5 Datum</td>
-    <td>{{ v5data['UT time'] }}</td>
-</tr>
-</table>
-
 <br>
 
 <table border=0 width=1200>
 <tr>
-    <th colspan=5>Weather</th>
+    <td colspan=3><b>Current Time</b></td>
+    <td>{{ nowut.strftime('%Y/%m/%d %H:%M:%S UT') }}</td>
+    <td>{{ now.strftime('%Y/%m/%d %H:%M:%S HST') }}</td>
+</tr>
+<!--
+<tr>
+    <td>Time of VYSOS-20 Status</td>
+    <td>{{ v20data_time.strftime('%Y/%m/%d %H:%M:%S UT') }}</td>
+    <td>{{ (v20data_time-datetime.timedelta(0, 10*3600)).strftime('%Y/%m/%d %H:%M:%S HST') }}</td>
+</tr>
+<tr>
+    <td>Time of VYSOS-5 Status</td>
+    <td>{{ v5data_time.strftime('%Y/%m/%d %H:%M:%S UT') }}</td>
+    <td>{{ (v5data_time-datetime.timedelta(0, 10*3600)).strftime('%Y/%m/%d %H:%M:%S HST') }}</td>
+</tr>
+-->
+<tr>
+    <th colspan=5><br><br>Weather</th>
 </tr>
 <tr>
     <td style="text-align: right;">
@@ -186,7 +188,7 @@
     </td>
 <tr>
 <tr>
-    <th colspan=5>VYSOS-20</th>
+    <th colspan=5><br><br>VYSOS-20</th>
 </tr>
 <tr>
     <td style="text-align: right;">
@@ -224,7 +226,7 @@
     </td>
 </tr>
 <tr>
-    <th colspan=5>VYSOS-5</th>
+    <th colspan=5><br><br>VYSOS-5</th>
 </tr>
 <tr>
     <td style="text-align: right;">
