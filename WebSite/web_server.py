@@ -27,12 +27,12 @@ class StatusHandler(RequestHandler):
         client = MongoClient('192.168.1.101', 27017)
         v20status = client.vysos['v20status']
         v20entries = [entry for entry\
-                      in v20status.find( {"UT date" : now.strftime('%Y%m%dUT')} ).sort([('UT time', pymongo.ASCENDING)])]
+                      in v20status.find( {"UT date" : nowut.strftime('%Y%m%dUT')} ).sort([('UT time', pymongo.ASCENDING)])]
         v20data = v20entries[-1]
 
         v5status = client.vysos['v5status']
         v5entries = [entry for entry\
-                      in v5status.find( {"UT date" : now.strftime('%Y%m%dUT')} ).sort([('UT time', pymongo.ASCENDING)])]
+                      in v5status.find( {"UT date" : nowut.strftime('%Y%m%dUT')} ).sort([('UT time', pymongo.ASCENDING)])]
         v5data = v5entries[-1]
 
         
