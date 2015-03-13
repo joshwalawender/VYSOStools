@@ -400,9 +400,9 @@ def MakePlots(DateString, telescope, logger):
 
 
     if telescope == 'V5':
-        config_file = os.path.join(os.path.expanduser('~'), 'IQMon', 'config_VYSOS-5.yaml')
+        config_file = os.path.join(os.path.expanduser('~'), 'IQMon', 'VYSOS5.yaml')
     if telescope == 'V20':
-        config_file = os.path.join(os.path.expanduser('~'), 'IQMon', 'config_VYSOS-20.yaml')
+        config_file = os.path.join(os.path.expanduser('~'), 'IQMon', 'VYSOS20.yaml')
     tel = IQMon.Telescope(config_file)
 
 
