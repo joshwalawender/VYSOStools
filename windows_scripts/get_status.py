@@ -9,6 +9,7 @@ import argparse
 import logging
 import time
 import datetime
+import re
 # import yaml
 import numpy as np
 
@@ -36,6 +37,15 @@ def get_boltwood(ClarityDataFile, logger):
     boltwood['boltwood date'] = data[0]                # local date (yyyy-mm-dd)
     boltwood['boltwood time'] = data[1]                # local time (hh:mm:ss.ss)
     logger.debug('  Date and Time: {} {}'.format(boltwood['boltwood date'], boltwood['boltwood time']))
+    ## If boltwood time ends in :60 seconds, change to make valid for datetime module
+    Match60 = re.match('(\d{1,2}):(\d{2}):(60\.\d{2})', boltwood['boltwood time'])
+    if Match60:
+        logger.debug('  Changing boltwood time to end in :59.99')
+        boltwood['boltwood time'] = '{:2d}:{:2d}:{:5.2f}'.format(\
+                                     int(Match60.groups(1)),\
+                                     int(Match60.groups(2)),\
+                                     59.99)
+                                     
 
     boltwood['boltwood temp units'] = data[2]          # 'C' or 'F'
     boltwood['boltwood wind units'] = data[3]          # 'K' = km/hr, 'M' = 'mph', 'm' = m/s
