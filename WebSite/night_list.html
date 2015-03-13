@@ -39,17 +39,23 @@
         <th style="width:120px">UT Date</th>
         <th style="width:180px">Night Summary Graphs</th>
         <th style="width:180px">Environmental Graphs</th>
-        <th style="width:120px">HTML Summary</th>
-        <th style="width:120px">Text Summary</th>
+        <th style="width:120px">Image List</th>
         <th style="width:80px">Number of Images</th>
-        <th style="width:100px">System Status</th>
     </tr>
+
     {% for night in nights %}
     <tr>
         <td>{{ night['date'] }}</td>
+        <td>
+            {% if 'night graph' in night.keys() %} {{ night['night graph'] }} {% end %}<br>
+        </td>
+        <td>
+            {% if 'env graph' in night.keys() %} {{ night['env graph'] }} {% end %}<br>
+        </td>
+        <td></td>
+        <td>{{ night['n images'] }}</td>
     </tr>
     {% end %}
-
 
 
 </table>

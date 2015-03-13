@@ -25,6 +25,10 @@ class IQMonNightList_V5(RequestHandler):
         telescope = 'V5'
         telescopename = 'VYSOS-5'
 
+        client = MongoClient('192.168.1.101', 27017)
+        collection = client.vysos['{}images'.format(telescope)]
+        date_list = [entry for entry in collection.distinct("date")]
+
         paths_to_check = [os.path.join(os.path.expanduser('~'), 'IQMon', 'Logs', telescopename),\
                           os.path.join('/', 'Volumes', 'DroboPro1', 'IQMon', 'Logs', telescopename)]
         logs_path = None
@@ -33,8 +37,22 @@ class IQMonNightList_V5(RequestHandler):
                 logs_path = path_to_check
         assert logs_path
 
+        nights = []
+        for date_string in date_list:
+            night_info = {'date': date_string }
 
-        nights = {}
+            night_graph_file = '{}_{}.png'.format(date_string, telescope)
+            if os.path.exists(os.path.join(logs_path, night_graph_file)):
+                night_info['night graph'] = night_graph_file
+
+            environmental_graph_file = '{}_{}_Env.png'.format(date_string, telescope)
+            if os.path.exists(os.path.join(logs_path, environmental_graph_file)):
+                night_info['env graph'] = environmental_graph_file
+
+            night_info['n images'] = collection.find( {"date":date_string} ).count()
+            
+            nights.append(night_info)
+
         self.render("night_list.html", title="{} Results".format(telescopename),\
                     telescope = telescope,\
                     telescopename = telescopename,\
