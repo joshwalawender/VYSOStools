@@ -13,10 +13,23 @@ import pymongo
 from pymongo import MongoClient
 
 from tornado.ioloop import IOLoop
-from tornado.web import RequestHandler, Application, url
+from tornado.web import RequestHandler, Application, url, StaticFileHandler
+from tornado import websocket
 
 from astropy import units as u
 from astropy.coordinates import SkyCoord
+
+
+# class EchoWebSocket(websocket.WebSocketHandler):
+#     def open(self):
+#         print "WebSocket opened"
+# 
+#     def on_message(self, message):
+#         self.write_message(u"You said: " + message)
+# 
+#     def on_close(self):
+#         print "WebSocket closed"
+
 
 ##-----------------------------------------------------------------------------
 ## Handler for IQMon Night Results Page
@@ -320,6 +333,7 @@ def make_app():
         url(r"/", Status),
         url(r"/VYSOS5/", Status),
         url(r"/VYSOS5/NightLogs/", IQMonNightList_V5),
+        (r"/static/(.*)", StaticFileHandler, {"path": "/var/www"}),
         ])
 
 def main():
