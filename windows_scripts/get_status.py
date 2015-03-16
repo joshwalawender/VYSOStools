@@ -169,6 +169,10 @@ def get_telescope_info(logger):
         logger.info('  ACP Slewing = {}'.format(telescope_info['ACP slewing status']))
         telescope_info['ACP tracking status'] = ACP.Tracking
         logger.info('  ACP Tracking = {}'.format(telescope_info['ACP tracking status']))
+        telescope_info['ACP target RA'] = ACP.TargetRightAscension
+        logger.info('  ACP target RA = {}'.format(telescope_info['ACP target RA']))
+        telescope_info['ACP target Dec'] = ACP.TargetDeclination
+        logger.info('  ACP target Dec = {}'.format(telescope_info['ACP target Dec']))
 
     return telescope_info
 
