@@ -194,22 +194,28 @@
     <td style="text-align: right;">
         <br>
         <u>VYSOS-20 Status</u><br>
-        Connected<br>
-        Parked<br>
-        Slewing<br>
-        Tracking<br>
+        ACP Connected<br>
+        Status<br>
         Alt<br>
         Az<br>
         ACP Data Age<br>
     </td>
     <td style="text-align: left;">
         <br><br>
-        {% if 'ACP connected' in v20data.keys() %}       {{ '{}'.format(v20data['ACP connected']) }} {% end %}<br>
-        {% if 'ACP park status' in v20data.keys() %}     {{ '{}'.format(v20data['ACP park status']) }} {% end %}<br>
-        {% if 'ACP slewing status' in v20data.keys() %}  {{ '{}'.format(v20data['ACP slewing status']) }} {% end %}<br>
-        {% if 'ACP tracking status' in v20data.keys() %} {{ '{}'.format(v20data['ACP tracking status']) }} {% end %}<br>
-        {% if 'ACP alt' in v20data.keys() %}             {{ '{:.1f}'.format(v20data['ACP alt']) }} {% end %}<br>
-        {% if 'ACP az' in v20data.keys() %}              {{ '{:.1f}'.format(v20data['ACP az']) }} {% end %}<br>
+        {% if 'ACP connected' in v20data.keys() %}
+            <font color="{{ '{}'.format(v20data['ACP connected color']) }}">
+            {{ '{}'.format(v20data['ACP connected string']) }}
+            </font>
+        {% end %}<br>
+
+        {% if 'ACP status string' in v20data.keys() %}
+            <font color="{{ '{}'.format(v20data['ACP status color']) }}">
+            {{ '{}'.format(v20data['ACP status string']) }}
+            </font>
+        {% end %}<br>
+        
+        {% if 'ACP alt' in v20data.keys() %} {{ '{:.1f}'.format(v20data['ACP alt']) }} {% end %}<br>
+        {% if 'ACP az' in v20data.keys() %}  {{ '{:.1f}'.format(v20data['ACP az']) }} {% end %}<br>
         <font color="{{ '{}'.format(v20data_color) }}">
         {{ '{:.0f} sec'.format(v20data_age) }}<br>
         </font>
@@ -232,22 +238,28 @@
     <td style="text-align: right;">
         <br>
         <u>VYSOS-5 Status</u><br>
-        Connected<br>
-        Parked<br>
-        Slewing<br>
-        Tracking<br>
+        ACP Connected<br>
+        Status<br>
         Alt<br>
         Az<br>
         ACP Data Age<br>
     </td>
     <td style="text-align: left;">
         <br><br>
-        {% if 'ACP connected' in v5data.keys() %}       {{ '{}'.format(v5data['ACP connected']) }} {% end %}<br>
-        {% if 'ACP park status' in v5data.keys() %}     {{ '{}'.format(v5data['ACP park status']) }} {% end %}<br>
-        {% if 'ACP slewing status' in v5data.keys() %}  {{ '{}'.format(v5data['ACP slewing status']) }} {% end %}<br>
-        {% if 'ACP tracking status' in v5data.keys() %} {{ '{}'.format(v5data['ACP tracking status']) }} {% end %}<br>
-        {% if 'ACP alt' in v5data.keys() %}             {{ '{:.1f}'.format(v5data['ACP alt']) }} {% end %}<br>
-        {% if 'ACP az' in v5data.keys() %}              {{ '{:.1f}'.format(v5data['ACP az']) }} {% end %}<br>
+        {% if 'ACP connected' in v5data.keys() %}
+            <font color="{{ '{}'.format(v5data['ACP connected color']) }}">
+            {{ '{}'.format(v5data['ACP connected string']) }}
+            </font>
+        {% end %}<br>
+
+        {% if 'ACP status string' in v5data.keys() %}
+            <font color="{{ '{}'.format(v5data['ACP status color']) }}">
+            {{ '{}'.format(v5data['ACP status string']) }}
+            </font>
+        {% end %}<br>
+        
+        {% if 'ACP alt' in v5data.keys() %} {{ '{:.1f}'.format(v5data['ACP alt']) }} {% end %}<br>
+        {% if 'ACP az' in v5data.keys() %}  {{ '{:.1f}'.format(v5data['ACP az']) }} {% end %}<br>
         <font color="{{ '{}'.format(v5data_color) }}">
         {{ '{:.0f} sec'.format(v5data_age) }}<br>
         </font>

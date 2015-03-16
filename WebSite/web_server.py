@@ -223,6 +223,57 @@ class Status(RequestHandler):
             else: v5data['boltwood roof close color'] = ''
             v5data['boltwood roof close string'] = roof_close[v5data['boltwood roof close']]
 
+        ACP_connected = {True: 'Connected', False: 'Disconnected'}
+
+        if 'ACP connected' in v20data.keys():
+            v20data['ACP connected string'] = ACP_connected[v20data['ACP connected']]
+            if v20data['ACP connected']:
+                v20data['ACP connected color'] = 'green'
+                P = v20data['ACP park status']
+                S = v20data['ACP slewing status']
+                T = v20data['ACP tracking status']
+                if P:
+                    v20data['ACP status string'] = 'Parked'
+                    v20data['ACP status color'] = ''
+                elif not P and not S and not T:
+                    v20data['ACP status string'] = 'Not Moving'
+                    v20data['ACP status color'] = ''
+                elif not P and S and not T:
+                    v20data['ACP status string'] = 'Slewing'
+                    v20data['ACP status color'] = 'orange'
+                elif not P and not S and T:
+                    v20data['ACP status string'] = 'Tracking'
+                    v20data['ACP status color'] = 'green'
+                else:
+                    v20data['ACP status string'] = '{}{}{}'.format(P,S,T)
+                    v20data['ACP status color'] = 'red'
+            else: v20data['ACP connected color'] = ''
+
+        if 'ACP connected' in v5data.keys():
+            v5data['ACP connected string'] = ACP_connected[v5data['ACP connected']]
+            if v5data['ACP connected']:
+                v5data['ACP connected color'] = 'green'
+                P = v5data['ACP park status']
+                S = v5data['ACP slewing status']
+                T = v5data['ACP tracking status']
+                if P:
+                    v5data['ACP status string'] = 'Parked'
+                    v5data['ACP status color'] = ''
+                elif not P and not S and not T:
+                    v5data['ACP status string'] = 'Not Moving'
+                    v5data['ACP status color'] = ''
+                elif not P and S and not T:
+                    v5data['ACP status string'] = 'Slewing'
+                    v5data['ACP status color'] = 'orange'
+                elif not P and not S and T:
+                    v5data['ACP status string'] = 'Tracking'
+                    v5data['ACP status color'] = 'green'
+                else:
+                    v5data['ACP status string'] = '{}{}{}'.format(P,S,T)
+                    v5data['ACP status color'] = 'red'
+            else:
+                v5data['ACP connected color'] = ''
+
         self.render("status.html", title="VYSOS Status",\
                     now = now,\
                     nowut = nowut,\
