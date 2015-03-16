@@ -156,23 +156,26 @@ def get_telescope_info(logger):
         return {}
 
     telescope_info = {}
-    telescope_info['ACP connected'] = ACP.Connected
-    logger.debug('  ACP Connected = {}'.format(telescope_info['ACP connected']))
-    if ACP.Connected:
-        telescope_info['ACP park status'] = ACP.AtPark
-        logger.info('  ACP At Park = {}'.format(telescope_info['ACP park status']))
-        telescope_info['ACP alt'] = float(ACP.Altitude)
-        logger.info('  ACP Alt = {:.2f}'.format(telescope_info['ACP alt']))
-        telescope_info['ACP az']  = float(ACP.Azimuth)
-        logger.info('  ACP Az = {:.2f}'.format(telescope_info['ACP az']))
-        telescope_info['ACP slewing status']  = ACP.Slewing
-        logger.info('  ACP Slewing = {}'.format(telescope_info['ACP slewing status']))
-        telescope_info['ACP tracking status'] = ACP.Tracking
-        logger.info('  ACP Tracking = {}'.format(telescope_info['ACP tracking status']))
-        telescope_info['ACP target RA'] = ACP.TargetRightAscension
-        logger.info('  ACP target RA = {}'.format(telescope_info['ACP target RA']))
-        telescope_info['ACP target Dec'] = ACP.TargetDeclination
-        logger.info('  ACP target Dec = {}'.format(telescope_info['ACP target Dec']))
+    try:
+        telescope_info['ACP connected'] = ACP.Connected
+        logger.debug('  ACP Connected = {}'.format(telescope_info['ACP connected']))
+        if ACP.Connected:
+            telescope_info['ACP park status'] = ACP.AtPark
+            logger.info('  ACP At Park = {}'.format(telescope_info['ACP park status']))
+            telescope_info['ACP alt'] = float(ACP.Altitude)
+            logger.info('  ACP Alt = {:.2f}'.format(telescope_info['ACP alt']))
+            telescope_info['ACP az']  = float(ACP.Azimuth)
+            logger.info('  ACP Az = {:.2f}'.format(telescope_info['ACP az']))
+            telescope_info['ACP slewing status']  = ACP.Slewing
+            logger.info('  ACP Slewing = {}'.format(telescope_info['ACP slewing status']))
+            telescope_info['ACP tracking status'] = ACP.Tracking
+            logger.info('  ACP Tracking = {}'.format(telescope_info['ACP tracking status']))
+            telescope_info['ACP target RA'] = ACP.TargetRightAscension
+            logger.info('  ACP target RA = {}'.format(telescope_info['ACP target RA']))
+            telescope_info['ACP target Dec'] = ACP.TargetDeclination
+            logger.info('  ACP target Dec = {}'.format(telescope_info['ACP target Dec']))
+    except:
+        logger.warning('Queries to ACP object failed')
 
     return telescope_info
 
