@@ -262,13 +262,17 @@ class Status(RequestHandler):
                 else:
                     v20data['ACP status string'] = '{}{}{}'.format(P,S,T)
                     v20data['ACP status color'] = 'red'
-                v20c = SkyCoord(ra=v5data['ACP target RA']*u.degree,\
-                                dec=v5data['ACP target Dec']*u.degree,\
-                                frame='icrs')
-                v20coord = '{} {}'.format(\
-                                          v20c.ra.to_string(sep=':', precision=1),\
-                                          v20c.dec.to_string(sep=':', precision=1),\
-                                         )
+                if ('ACP target RA' in v20data.keys()) and ('ACP target Dec' in v20data.keys()):
+                    v20c = SkyCoord(ra=v5data['ACP target RA']*u.degree,\
+                                    dec=v5data['ACP target Dec']*u.degree,\
+                                    frame='icrs')
+                    v20coord = '{} {}'.format(\
+                                              v20c.ra.to_string(sep=':', precision=1),\
+                                              v20c.dec.to_string(sep=':', precision=1),\
+                                             )
+                else:
+                    v20c = None
+                    v20coord = ''
             else:
                 v20data['ACP connected color'] = ''
                 v20coord = ''
@@ -284,7 +288,7 @@ class Status(RequestHandler):
                     v5data['ACP status string'] = 'Parked'
                     v5data['ACP status color'] = ''
                 elif not P and not S and not T:
-                    v5data['ACP status string'] = 'Not Moving'
+                    v5data['ACP status string'] = 'Stationary'
                     v5data['ACP status color'] = ''
                 elif not P and S and not T:
                     v5data['ACP status string'] = 'Slewing'
@@ -295,13 +299,17 @@ class Status(RequestHandler):
                 else:
                     v5data['ACP status string'] = '{}{}{}'.format(P,S,T)
                     v5data['ACP status color'] = 'red'
-                v5c = SkyCoord(ra=v5data['ACP target RA']*u.degree,\
-                               dec=v5data['ACP target Dec']*u.degree,\
-                               frame='icrs')
-                v5coord = '{} {}'.format(\
-                                         v5c.ra.to_string(sep=':', precision=1),\
-                                         v5c.dec.to_string(sep=':', precision=1),\
-                                        )
+                if ('ACP target RA' in v5data.keys()) and ('ACP target Dec' in v5data.keys()):
+                    v5c = SkyCoord(ra=v5data['ACP target RA']*u.degree,\
+                                   dec=v5data['ACP target Dec']*u.degree,\
+                                   frame='icrs')
+                    v5coord = '{} {}'.format(\
+                                             v5c.ra.to_string(sep=':', precision=1),\
+                                             v5c.dec.to_string(sep=':', precision=1),\
+                                            )
+                else:
+                    v5c = None
+                    v5coord = ''
             else:
                 v5data['ACP connected color'] = ''
                 v5coord = ''
