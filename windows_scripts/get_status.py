@@ -284,7 +284,7 @@ def get_focuser_info(telescope, logger):
 ##-------------------------------------------------------------------------
 def control_by_web(focuser_info, boltwood, logger):
     logger.info('Getting CBW temperature module status')
-    if 'RCOS temperature units' in focuser_info.keys():
+    if ('RCOS temperature units' in focuser_info.keys()) and ('RCOS temperature (truss)' in focuser_info.keys()):
         if focuser_info['RCOS temperature units'] == 'F':
             InsideTemp = focuser_info['RCOS temperature (truss)']
         else:
@@ -294,7 +294,7 @@ def control_by_web(focuser_info, boltwood, logger):
         logger.error('  Focuser temperature unit not found')
         return {}
 
-    if 'boltwood temp units' in boltwood.keys():
+    if ('boltwood temp units' in boltwood.keys()) and ('boltwood ambient temp' in boltwood.keys()):
         if boltwood['boltwood temp units'] == 'F':
             OutsideTemp = boltwood['boltwood ambient temp']
         else:

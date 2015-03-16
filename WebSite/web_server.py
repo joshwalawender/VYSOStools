@@ -73,28 +73,50 @@ class Status(RequestHandler):
         v20entries = [entry for entry\
                       in v20status.find( {"UT date" : nowut.strftime('%Y%m%dUT')} ).sort([('UT time', pymongo.ASCENDING)])]
         v20data = v20entries[-1]
-        v20clarity_time = datetime.datetime.strptime('{} {}'.format(v20data['boltwood date'], v20data['boltwood time'][:-3]), '%Y-%m-%d %H:%M:%S')
-        v20clarity_age = (now - v20clarity_time).total_seconds()
-        if v20clarity_age > 60: v20clarity_color = 'red'
-        else: v20clarity_color = 'black'
-        v20data_time = datetime.datetime.strptime('{} {}'.format(v20data['UT date'], v20data['UT time']), '%Y%m%dUT %H:%M:%S')
-        v20data_age = (nowut - v20data_time).total_seconds()
-        if v20data_age > 60: v20data_color = 'red'
-        else: v20data_color = 'black'
+
+        try:
+            v20clarity_time = datetime.datetime.strptime('{} {}'.format(\
+                              v20data['boltwood date'],\
+                              v20data['boltwood time'][:-3]),\
+                              '%Y-%m-%d %H:%M:%S')        
+            v20clarity_age = (now - v20clarity_time).total_seconds()
+            if v20clarity_age > 60: v20clarity_color = 'red'
+            else: v20clarity_color = 'black'
+        except:
+            v20clarity_age = float('nan')
+            v20clarity_color = 'red'
+
+        try:
+            v20data_time = datetime.datetime.strptime('{} {}'.format(v20data['UT date'], v20data['UT time']), '%Y%m%dUT %H:%M:%S')
+            v20data_age = (nowut - v20data_time).total_seconds()
+            if v20data_age > 60: v20data_color = 'red'
+            else: v20data_color = 'black'
+        except:
+            v20data_age = float('nan')
+            v20data_color = 'red'
 
         v5status = client.vysos['V5status']
         v5entries = [entry for entry\
                       in v5status.find( {"UT date" : nowut.strftime('%Y%m%dUT')} ).sort([('UT time', pymongo.ASCENDING)])]
         v5data = v5entries[-1]
-        v5clarity_time = datetime.datetime.strptime('{} {}'.format(v5data['boltwood date'], v5data['boltwood time'][:-3]), '%Y-%m-%d %H:%M:%S')
-        v5clarity_age = (now - v5clarity_time).total_seconds()
-        if v5clarity_age > 60: v5clarity_color = 'red'
-        else: v5clarity_color = 'black'
-        v5data_time = datetime.datetime.strptime('{} {}'.format(v5data['UT date'], v5data['UT time']), '%Y%m%dUT %H:%M:%S')
-        v5data_age = (nowut - v5data_time).total_seconds()
-        if v5data_age > 60: v5data_color = 'red'
-        else: v5data_color = 'black'
 
+        try:
+            v5clarity_time = datetime.datetime.strptime('{} {}'.format(v5data['boltwood date'], v5data['boltwood time'][:-3]), '%Y-%m-%d %H:%M:%S')
+            v5clarity_age = (now - v5clarity_time).total_seconds()
+            if v5clarity_age > 60: v5clarity_color = 'red'
+            else: v5clarity_color = 'black'
+        except:
+            v5clarity_age = float('nan')
+            v5clarity_color = 'red'
+
+        try:
+            v5data_time = datetime.datetime.strptime('{} {}'.format(v5data['UT date'], v5data['UT time']), '%Y%m%dUT %H:%M:%S')
+            v5data_age = (nowut - v5data_time).total_seconds()
+            if v5data_age > 60: v5data_color = 'red'
+            else: v5data_color = 'black'
+        except:
+            v5data_age = float('nan')
+            v5data_color = 'red'
         
         wind_units = {'M': 'mph', 'K': 'kph', 'm': 'm/s'}
         rain_status = {0: 'Dry', 1: 'Recent Rain', 2: 'Raining'}
