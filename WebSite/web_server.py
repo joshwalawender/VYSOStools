@@ -15,6 +15,8 @@ from pymongo import MongoClient
 from tornado.ioloop import IOLoop
 from tornado.web import RequestHandler, Application, url
 
+from astropy import units as u
+from astropy.coordinates import SkyCoord
 
 ##-----------------------------------------------------------------------------
 ## Handler for IQMon Night Results Page
@@ -247,7 +249,16 @@ class Status(RequestHandler):
                 else:
                     v20data['ACP status string'] = '{}{}{}'.format(P,S,T)
                     v20data['ACP status color'] = 'red'
-            else: v20data['ACP connected color'] = ''
+                v20c = SkyCoord(ra=v5data['ACP target RA']*u.degree,\
+                                dec=v5data['ACP target Dec']*u.degree,\
+                                frame='icrs')
+                v20coord = '{} {}'.format(\
+                                          v20c.ra.to_string(sep=':', precision=1),\
+                                          v20c.dec.to_string(sep=':', precision=1),\
+                                         )
+            else:
+                v20data['ACP connected color'] = ''
+                v20coord = ''
 
         if 'ACP connected' in v5data.keys():
             v5data['ACP connected string'] = ACP_connected[v5data['ACP connected']]
@@ -271,8 +282,16 @@ class Status(RequestHandler):
                 else:
                     v5data['ACP status string'] = '{}{}{}'.format(P,S,T)
                     v5data['ACP status color'] = 'red'
+                v5c = SkyCoord(ra=v5data['ACP target RA']*u.degree,\
+                               dec=v5data['ACP target Dec']*u.degree,\
+                               frame='icrs')
+                v5coord = '{} {}'.format(\
+                                         v5c.ra.to_string(sep=':', precision=1),\
+                                         v5c.dec.to_string(sep=':', precision=1),\
+                                        )
             else:
                 v5data['ACP connected color'] = ''
+                v5coord = ''
 
         self.render("status.html", title="VYSOS Status",\
                     now = now,\
@@ -283,12 +302,14 @@ class Status(RequestHandler):
                     v20data_age = v20data_age,\
                     v20data_color = v20data_color,\
                     v20data = v20data,\
+                    v20coord = v20coord,\
                     v5clarity_age = v5clarity_age,\
                     v5clarity_color = v5clarity_color,\
                     v5data_time = v5data_time,\
                     v5data_age = v5data_age,\
                     v5data_color = v5data_color,\
                     v5data = v5data,\
+                    v5coord = v5coord,\
                     )
 
 ##-----------------------------------------------------------------------------

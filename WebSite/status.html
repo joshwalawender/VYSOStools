@@ -198,9 +198,10 @@
         Status<br>
         Alt<br>
         Az<br>
+        Target Coordinate<br>
         ACP Data Age<br>
     </td>
-    <td style="text-align: left;">
+    <td style="text-align: left;" colspan=2>
         <br><br>
         {% if 'ACP connected' in v20data.keys() %}
             <font color="{{ '{}'.format(v20data['ACP connected color']) }}">
@@ -216,11 +217,10 @@
         
         {% if 'ACP alt' in v20data.keys() %} {{ '{:.1f}'.format(v20data['ACP alt']) }} {% end %}<br>
         {% if 'ACP az' in v20data.keys() %}  {{ '{:.1f}'.format(v20data['ACP az']) }} {% end %}<br>
+        {{ v20coord }}<br>
         <font color="{{ '{}'.format(v20data_color) }}">
         {{ '{:.0f} sec'.format(v20data_age) }}<br>
         </font>
-    </td>
-    <td>
     </td>
     <td>
         <a href="Logs/VYSOS-20/">VYSOS-20</a> External<br>
@@ -242,9 +242,10 @@
         Status<br>
         Alt<br>
         Az<br>
+        Target Coordinate<br>
         ACP Data Age<br>
     </td>
-    <td style="text-align: left;">
+    <td style="text-align: left;" colspan=2>
         <br><br>
         {% if 'ACP connected' in v5data.keys() %}
             <font color="{{ '{}'.format(v5data['ACP connected color']) }}">
@@ -260,11 +261,10 @@
         
         {% if 'ACP alt' in v5data.keys() %} {{ '{:.1f}'.format(v5data['ACP alt']) }} {% end %}<br>
         {% if 'ACP az' in v5data.keys() %}  {{ '{:.1f}'.format(v5data['ACP az']) }} {% end %}<br>
+        {{ v5coord }}<br>
         <font color="{{ '{}'.format(v5data_color) }}">
         {{ '{:.0f} sec'.format(v5data_age) }}<br>
         </font>
-    </td>
-    <td>
     </td>
     <td>
         <a href="Logs/VYSOS-5/">VYSOS-5</a> External<br>
@@ -277,7 +277,7 @@
 </tr>
 </table>
 
-
+<br><br>
 
 
 </body>
