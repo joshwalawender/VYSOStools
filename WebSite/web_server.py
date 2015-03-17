@@ -268,14 +268,14 @@ class Status(RequestHandler):
                 elif not P and not S and not T:
                     v20data['ACP status string'] = 'Not Moving'
                     v20data['ACP status color'] = ''
-                elif not P and S and not T:
+                elif not P and S:
                     v20data['ACP status string'] = 'Slewing'
                     v20data['ACP status color'] = 'orange'
                 elif not P and not S and T:
                     v20data['ACP status string'] = 'Tracking'
                     v20data['ACP status color'] = 'green'
                 else:
-                    v20data['ACP status string'] = '{}{}{}'.format(P,S,T)
+                    v20data['ACP status string'] = 'P={},S={},T={}'.format(P,S,T)
                     v20data['ACP status color'] = 'red'
                 if ('ACP target RA' in v20data.keys()) and ('ACP target Dec' in v20data.keys()):
                     v20c = SkyCoord(ra=v5data['ACP target RA']*u.degree,\
