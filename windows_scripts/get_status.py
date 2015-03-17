@@ -14,6 +14,7 @@ import re
 import numpy as np
 
 import win32com.client
+import pywintypes
 import urllib
 from xml.dom import minidom
 import pymongo
