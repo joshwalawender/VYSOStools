@@ -177,6 +177,10 @@ def get_telescope_info(logger):
                 telescope_info['ACP target Dec'] = ACP.TargetDeclination
             except:
                 logger.info('  Could not get target info')
+    except pywintypes.com_error as err:
+        logger.warning('COM error:')
+        logger.warning('  {}'.format(err.message))
+        telescope_info['ACP COM Error'] = '  {}'.format(err.message)
     except:
         telescope_info['ACP connected'] = False
         logger.warning('Queries to ACP object failed')
