@@ -20,17 +20,6 @@ from astropy import units as u
 from astropy.coordinates import SkyCoord
 
 
-# class EchoWebSocket(websocket.WebSocketHandler):
-#     def open(self):
-#         print "WebSocket opened"
-# 
-#     def on_message(self, message):
-#         self.write_message(u"You said: " + message)
-# 
-#     def on_close(self):
-#         print "WebSocket closed"
-
-
 ##-----------------------------------------------------------------------------
 ## Handler for IQMon Night Results Page
 ##-----------------------------------------------------------------------------
