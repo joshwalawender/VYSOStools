@@ -12,5 +12,6 @@ setup(
             'makenightlyplots = scripts.MakeNightlyPlots:main',
             'makewebpage = scripts.MakeWebPage:main',
             'cleanupIQMon = scripts.CleanUpIQMon:main',
+            'systemstatus = scripts.get_system_status:main',
         ]}
 )
