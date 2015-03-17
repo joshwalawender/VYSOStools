@@ -33,31 +33,24 @@
 
 <br>
 
-<table border=0 width=1200>
+<table>
 <tr>
     <td colspan=3><b>Current Time</b></td>
     <td>{{ nowut.strftime('%Y/%m/%d %H:%M:%S UT') }}</td>
     <td>{{ now.strftime('%Y/%m/%d %H:%M:%S HST') }}</td>
 </tr>
-<!--
-<tr>
-    <td>Time of VYSOS-20 Status</td>
-    <td>{{ v20data_time.strftime('%Y/%m/%d %H:%M:%S UT') }}</td>
-    <td>{{ (v20data_time-datetime.timedelta(0, 10*3600)).strftime('%Y/%m/%d %H:%M:%S HST') }}</td>
-</tr>
-<tr>
-    <td>Time of VYSOS-5 Status</td>
-    <td>{{ v5data_time.strftime('%Y/%m/%d %H:%M:%S UT') }}</td>
-    <td>{{ (v5data_time-datetime.timedelta(0, 10*3600)).strftime('%Y/%m/%d %H:%M:%S HST') }}</td>
-</tr>
--->
 <tr>
     <th colspan=5><br><br>Weather</th>
 </tr>
 <tr>
+    <td><u>Boltwood Data</u></td>
+    <td><u>VYSOS-20</u></td>
+    <td><u>VYSOS-5</u></td>
+    <td><u>Boltwood Plot</u></td>
+    <td><u>Atlas All Sky Image (Color)</u></td>
+</tr>
+<tr>
     <td style="text-align: right;">
-        <br>
-        <u>Boltwood Data</u><br>
         Ambient Temp<br>
         Sky Temp<br>
         Wind Speed<br>
@@ -72,7 +65,6 @@
         Clarity Data Age<br>
     </td>
     <td style="text-align: left;">
-        <br><u>VYSOS-20</u><br>
         {% if 'boltwood ambient temp' in v20data.keys() %}           {{ '{:.1f} {}'.format(v20data['boltwood ambient temp'], v20data['boltwood temp units']) }} {% end %}<br>
         {% if 'boltwood sky temp' in v20data.keys() %}               {{ '{:.1f} {}'.format(v20data['boltwood sky temp'], v20data['boltwood temp units']) }} {% end %}<br>
         {% if 'boltwood wind speed' in v20data.keys() %}             {{ '{:.1f} {}'.format(v20data['boltwood wind speed'], v20data['boltwood wind units']) }} {% end %}<br>
@@ -125,7 +117,6 @@
         </font>
     </td>
     <td style="text-align: left;">
-        <br><u>VYSOS-5</u><br>
         {% if 'boltwood ambient temp' in v5data.keys() %}           {{ '{:.1f} {}'.format(v5data['boltwood ambient temp'], v5data['boltwood temp units']) }} {% end %}<br>
         {% if 'boltwood sky temp' in v5data.keys() %}               {{ '{:.1f} {}'.format(v5data['boltwood sky temp'], v5data['boltwood temp units']) }} {% end %}<br>
         {% if 'boltwood wind speed' in v5data.keys() %}             {{ '{:.1f} {}'.format(v5data['boltwood wind speed'], v5data['boltwood wind units']) }} {% end %}<br>
@@ -178,22 +169,35 @@
         </font>
 
     </td>
-    <td>
-        Boltwood Plot<br>
+    <td style="vertical-align: middle;">
         <a href="static/Weather_VYSOS5.gif"><img width=400 height=300 src="static/Weather_VYSOS5.gif"></a><br>
     </td>
-    <td>
-        Atlas All Sky Image (Color)<br>
-        <a href="http://www.fallingstar.com/weather/mlo/"><img width=400 height=330 src="http://www.fallingstar.com/weather/mlo/latest_clr400.jpg"></a><br>
+    <td style="vertical-align: middle;">
+        <table style="border:0px; border-style: none;">
+            <tr style="border:0px; border-style: none;">
+                <td style="border:0px; border-style: none; vertical-align: middle;">S</td>
+                <td style="border:0px; border-style: none;">
+                    W<br>
+                    <a href="http://www.fallingstar.com/weather/mlo/">
+                        <img width=400 height=330 src="http://www.fallingstar.com/weather/mlo/latest_clr400.jpg">
+                    </a><br>
+                    E
+                </td>
+                <td style="border:0px; border-style: none; vertical-align: middle;">N</td>
+            </tr>
+        </table>
     </td>
 <tr>
 <tr>
-    <th colspan=5><br><br>VYSOS-20</th>
+    <th colspan=5><br><br><a href="Logs/VYSOS-20/">VYSOS-20</a></th>
+</tr>
+<tr>
+    <td colspan=3><u>VYSOS-20 Status</u></td>
+    <td>VYSOS-20 External</td>
+    <td>VYSOS-20 Internal</td>
 </tr>
 <tr>
     <td style="text-align: right;">
-        <br>
-        <u>VYSOS-20 Status</u><br>
         ACP Connected<br>
         Status<br>
         Alt<br>
@@ -202,7 +206,6 @@
         ACP Data Age<br>
     </td>
     <td style="text-align: left;" colspan=2>
-        <br><br>
         {% if 'ACP connected' in v20data.keys() %}
             <font color="{{ '{}'.format(v20data['ACP connected color']) }}">
             {{ '{}'.format(v20data['ACP connected string']) }}
@@ -223,17 +226,21 @@
         </font>
     </td>
     <td>
-        <a href="Logs/VYSOS-20/">VYSOS-20</a> External<br>
         <a href="http://166.122.71.162:8083/0.jpg"><img width=400 height=267 src="http://166.122.71.162:8083/0.jpg"><br>
     </td>
     <td>
-        <a href="Logs/VYSOS-20/">VYSOS-20</a> Internal<br>
         <a href="http://166.122.71.162:8083/2.jpg"><img width=400 height=267 src="http://166.122.71.162:8083/2.jpg"></a><br>
     </td>
 </tr>
 <tr>
-    <th colspan=5><br><br>VYSOS-5</th>
+    <th colspan=5><br><br><a href="Logs/VYSOS-5/">VYSOS-5</a></th>
 </tr>
+<tr>
+    <td colspan=3><u>VYSOS-5 Status</u></td>
+    <td>VYSOS-5 External</td>
+    <td>VYSOS-5 Internal</td>
+</tr>
+
 <tr>
     <td style="text-align: right;">
         <br>
@@ -267,11 +274,9 @@
         </font>
     </td>
     <td>
-        <a href="Logs/VYSOS-5/">VYSOS-5</a> External<br>
         <a href="http://166.122.71.162:8083/4.jpg"><img width=400 height=267 src="http://166.122.71.162:8083/4.jpg"></a><br>
     </td>
     <td>
-        <a href="Logs/VYSOS-5/">VYSOS-5</a> Internal<br>
         <a href="http://166.122.71.162:8083/2.jpg"><img width=400 height=267 src="http://166.122.71.162:8083/6.jpg"></a><br>
     </td>
 </tr>
