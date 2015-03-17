@@ -84,10 +84,18 @@ class Status(RequestHandler):
         nowut = datetime.datetime.utcnow()
 
         client = MongoClient('192.168.1.101', 27017)
+
+        ##---------------------------------------------------------------------
+        ## Get Latest V20 Data
+        ##---------------------------------------------------------------------
         v20status = client.vysos['V20status']
-        v20entries = [entry for entry\
-                      in v20status.find( {"UT date" : nowut.strftime('%Y%m%dUT')} ).sort([('UT time', pymongo.ASCENDING)])]
-        v20data = v20entries[-1]
+        v20entries = []
+        while (len(v20entries) < 1) and (nowut > datetime.datetime(2015,1,1)):
+            v20entries = [entry for entry\
+                          in v20status.find( {"UT date" : nowut.strftime('%Y%m%dUT')} ).sort([('UT time', pymongo.ASCENDING)])]
+            if len(v20entries) > 0: v20data = v20entries[-1]
+            else: nowut = nowut - datetime.timedelta(1, 0)
+        nowut = datetime.datetime.utcnow()
 
         try:
             v20clarity_time = datetime.datetime.strptime('{} {}'.format(\
@@ -110,10 +118,17 @@ class Status(RequestHandler):
             v20data_age = float('nan')
             v20data_color = 'red'
 
+        ##---------------------------------------------------------------------
+        ## Get Latest V5 Data
+        ##---------------------------------------------------------------------
         v5status = client.vysos['V5status']
-        v5entries = [entry for entry\
-                      in v5status.find( {"UT date" : nowut.strftime('%Y%m%dUT')} ).sort([('UT time', pymongo.ASCENDING)])]
-        v5data = v5entries[-1]
+        v5entries = []
+        while (len(v5entries) < 1) and (nowut > datetime.datetime(2015,1,1)):
+            v5entries = [entry for entry\
+                          in v5status.find( {"UT date" : nowut.strftime('%Y%m%dUT')} ).sort([('UT time', pymongo.ASCENDING)])]
+            if len(v5entries) > 0: v5data = v5entries[-1]
+            else: nowut = nowut - datetime.timedelta(1, 0)
+        nowut = datetime.datetime.utcnow()
 
         try:
             v5clarity_time = datetime.datetime.strptime('{} {}'.format(v5data['boltwood date'], v5data['boltwood time'][:-3]), '%Y-%m-%d %H:%M:%S')
