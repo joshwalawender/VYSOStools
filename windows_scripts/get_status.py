@@ -180,7 +180,6 @@ def get_telescope_info(logger):
     except:
         telescope_info['ACP connected'] = False
         logger.warning('Queries to ACP object failed')
-        raise
 
     return telescope_info
 
