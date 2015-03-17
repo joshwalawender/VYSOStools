@@ -138,13 +138,23 @@ def main(verbose=False):
     ##-------------------------------------------------------------------------
     ## Ping Devices
     ##-------------------------------------------------------------------------
-    Addresses = {'Router': '192.168.1.1',\
+    Addresses = {
+                 ## Devices in Computer Shed
+                 'Router': '192.168.1.1',\
+                 'Data': '192.168.1.101',\
                  'Altair': '192.168.1.102',\
                  'CCTV': '192.168.1.103',\
+                 ## Devices in VYSOS-20 Dome
+                 'V20 PDU': '192.168.1.111',\
                  'Black': '192.168.1.112',\
+                 'Temperature Module': '192.168.1.115',\
+                 ## Devices in VYSOS-5 Dome
+                 'V5 PDU': '192.168.1.121',\
                  'Vega': '192.168.1.122',\
+                 ## Other Devices
                  'Panoptes': '192.168.1.50',\
                  'RasPi': '192.168.1.51',\
+                 'Outside': 'www.google.com',\
                  }
 
     status = {True: 'UP', False: 'DOWN'}
