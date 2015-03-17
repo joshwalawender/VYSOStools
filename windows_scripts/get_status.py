@@ -174,8 +174,8 @@ def get_telescope_info(logger):
             try:
                 telescope_info['ACP target RA'] = ACP.TargetRightAscension
                 logger.info('  ACP target RA = {}'.format(telescope_info['ACP target RA']))
-                logger.info('  ACP target Dec = {}'.format(telescope_info['ACP target Dec']))
                 telescope_info['ACP target Dec'] = ACP.TargetDeclination
+                logger.info('  ACP target Dec = {}'.format(telescope_info['ACP target Dec']))
             except:
                 logger.info('  Could not get target info')
     except pywintypes.com_error as err:
