@@ -184,7 +184,7 @@ class Status(RequestHandler):
         if 'boltwood day condition' in v20data.keys():
             if v20data['boltwood day condition'] == 0: v20data['boltwood day color'] = 'orange'
             elif v20data['boltwood day condition'] == 1: v20data['boltwood day color'] = 'green'
-            elif v20data['boltwood day condition'] == 2: v20data['boltwood day color'] = 'red'
+            elif v20data['boltwood day condition'] == 2: v20data['boltwood day color'] = 'orange'
             elif v20data['boltwood day condition'] == 3: v20data['boltwood day color'] = 'red'
             else: v20data['boltwood day color'] = ''
             v20data['boltwood day condition string'] = day_condition[v20data['boltwood day condition']]
@@ -232,7 +232,7 @@ class Status(RequestHandler):
         if 'boltwood day condition' in v5data.keys():
             if v5data['boltwood day condition'] == 0: v5data['boltwood day color'] = 'orange'
             elif v5data['boltwood day condition'] == 1: v5data['boltwood day color'] = 'green'
-            elif v5data['boltwood day condition'] == 2: v5data['boltwood day color'] = 'red'
+            elif v5data['boltwood day condition'] == 2: v5data['boltwood day color'] = 'orange'
             elif v5data['boltwood day condition'] == 3: v5data['boltwood day color'] = 'red'
             else: v5data['boltwood day color'] = ''
             v5data['boltwood day condition string'] = day_condition[v5data['boltwood day condition']]
