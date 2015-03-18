@@ -182,16 +182,18 @@ def get_telescope_info(logger):
         logger.warning('COM error:')
         logger.warning('  {}'.format(err.message))
         telescope_info['ACP COM Error'] = '  {}'.format(err.message)
-        time.sleep(2)
-        ## Try Reconnecting to ACP
-        logger.info('  Reconnecting ACP to Telescope')
-        try:
-            ACP.Connected = True
-        except:
-            logger.warning('  Failed to reconnect')
-        time.sleep(2)
-        telescope_info['ACP connected'] = ACP.Connected
-        logger.debug('  ACP Connected = {}'.format(telescope_info['ACP connected']))
+#         time.sleep(2)
+#         ## Try Reconnecting to ACP
+#         logger.info('  Reconnecting ACP to Telescope')
+#         try:
+#             ACP.Connected = False
+#             time.sleep(2)
+#             ACP.Connected = True
+#         except:
+#             logger.warning('  Failed to reconnect')
+#         time.sleep(2)
+#         telescope_info['ACP connected'] = ACP.Connected
+#         logger.debug('  ACP Connected = {}'.format(telescope_info['ACP connected']))
     except:
         telescope_info['ACP connected'] = False
         logger.warning('Queries to ACP object failed')
