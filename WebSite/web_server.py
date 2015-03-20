@@ -41,32 +41,39 @@ class ListOfImages(RequestHandler):
 
         ## Set FWHM color
         for image in image_list:
-            image['FWHM color'] = "#70DB70"
-            if 'flags' in image.keys():
-                if 'FWHM' in image['flags'].keys():
-                    if image['flags']['FWHM']:
-                        image['FWHM color'] = "#FF5C33"
+            image['FWHM color'] = ""
+            if 'FWHM_pix' in image.keys():
+                image['FWHM color'] = "#70DB70" # green
+                if 'flags' in image.keys():
+                    if 'FWHM' in image['flags'].keys():
+                        if image['flags']['FWHM']:
+                            image['FWHM color'] = "#FF5C33" # red
         ## Set ellipticity color
         for image in image_list:
-            image['ellipticity color'] = "#70DB70"
-            if 'flags' in image.keys():
-                if 'ellipticity' in image['flags'].keys():
-                    if image['flags']['ellipticity']:
-                        image['ellipticity color'] = "#FF5C33"
+            image['ellipticity color'] = ""
+            if 'ellipticity' in image.keys():
+                image['ellipticity color'] = "#70DB70" # green
+                if 'flags' in image.keys():
+                    if 'ellipticity' in image['flags'].keys():
+                        if image['flags']['ellipticity']:
+                            image['ellipticity color'] = "#FF5C33" # red
         ## Set pointing error color
         for image in image_list:
-            image['pointing error color'] = "#70DB70"
-            if 'flags' in image.keys():
-                if 'pointing error' in image['flags'].keys():
-                    if image['flags']['pointing error']:
-                        image['pointing error color'] = "#FF5C33"
+            image['pointing error color'] = ""
+            if 'pointing_error_arcmin' in image.keys():
+                image['pointing error color'] = "#70DB70" # green
+                if 'flags' in image.keys():
+                    if 'pointing error' in image['flags'].keys():
+                        if image['flags']['pointing error']:
+                            image['pointing error color'] = "#FF5C33" # red
         ## Set zero point color
-        for image in image_list:
-            image['zero point color'] = "#70DB70"
-            if 'flags' in image.keys():
-                if 'zero point' in image['flags'].keys():
-                    if image['flags']['zero point']:
-                        image['zero point color'] = "#FF5C33"
+            image['zero point color'] = ""
+            if 'zero_point' in image.keys():
+                image['zero point color'] = "#70DB70" # green
+                if 'flags' in image.keys():
+                    if 'zero point' in image['flags'].keys():
+                        if image['flags']['zero point']:
+                            image['zero point color'] = "#FF5C33" # red
 
         self.render("image_list.html", title="{} Results".format(telescopename),\
                     telescope = telescope,\
