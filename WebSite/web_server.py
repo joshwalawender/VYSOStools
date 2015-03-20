@@ -37,7 +37,7 @@ class IQMonNightList(RequestHandler):
         self.telescopename = names[self.telescope]
 
         client = MongoClient('192.168.1.101', 27017)
-        collection = client.vysos['{}images'.format(self.telescope)]
+        collection = client.vysos['{}.images'.format(self.telescope)]
         date_list = sorted([entry for entry in collection.distinct("date")])
 
         paths_to_check = [os.path.join(os.path.expanduser('~'), 'IQMon', 'Logs', self.telescopename),\
@@ -83,7 +83,7 @@ class Status(RequestHandler):
         ##---------------------------------------------------------------------
         ## Get Latest V20 Data
         ##---------------------------------------------------------------------
-        v20status = client.vysos['V20status']
+        v20status = client.vysos['V20.status']
         v20entries = []
         while (len(v20entries) < 1) and (nowut > datetime.datetime(2015,1,1)):
             v20entries = [entry for entry\
@@ -93,10 +93,13 @@ class Status(RequestHandler):
         nowut = datetime.datetime.utcnow()
 
         try:
-            v20clarity_time = datetime.datetime.strptime('{} {}'.format(\
-                              v20data['boltwood date'],\
-                              v20data['boltwood time'][:-3]),\
-                              '%Y-%m-%d %H:%M:%S')        
+            try:
+                v20clarity_time = v20data['boltwood timestamp']
+            except:
+                v20clarity_time = datetime.datetime.strptime('{} {}'.format(\
+                                  v20data['boltwood date'],\
+                                  v20data['boltwood time'][:-3]),\
+                                  '%Y-%m-%d %H:%M:%S')        
             v20clarity_age = (now - v20clarity_time).total_seconds()
             if v20clarity_age > 60: v20clarity_color = 'red'
             else: v20clarity_color = 'black'
@@ -105,7 +108,13 @@ class Status(RequestHandler):
             v20clarity_color = 'red'
 
         try:
-            v20data_time = datetime.datetime.strptime('{} {}'.format(v20data['UT date'], v20data['UT time']), '%Y%m%dUT %H:%M:%S')
+            try:
+                v20data_time = v20data['UT timestamp']
+            except:
+                v20data_time = datetime.datetime.strptime('{} {}'.format(\
+                               v20data['UT date'],\
+                               v20data['UT time']),\
+                               '%Y%m%dUT %H:%M:%S')
             v20data_age = (nowut - v20data_time).total_seconds()
             if v20data_age > 60: v20data_color = 'red'
             else: v20data_color = 'black'
@@ -116,7 +125,7 @@ class Status(RequestHandler):
         ##---------------------------------------------------------------------
         ## Get Latest V5 Data
         ##---------------------------------------------------------------------
-        v5status = client.vysos['V5status']
+        v5status = client.vysos['V5.status']
         v5entries = []
         while (len(v5entries) < 1) and (nowut > datetime.datetime(2015,1,1)):
             v5entries = [entry for entry\
@@ -126,7 +135,13 @@ class Status(RequestHandler):
         nowut = datetime.datetime.utcnow()
 
         try:
-            v5clarity_time = datetime.datetime.strptime('{} {}'.format(v5data['boltwood date'], v5data['boltwood time'][:-3]), '%Y-%m-%d %H:%M:%S')
+            try:
+                v5clarity_time = v5data['boltwood timestamp']
+            except:
+                v5clarity_time = datetime.datetime.strptime('{} {}'.format(\
+                                  v5data['boltwood date'],\
+                                  v5data['boltwood time'][:-3]),\
+                                  '%Y-%m-%d %H:%M:%S')        
             v5clarity_age = (now - v5clarity_time).total_seconds()
             if v5clarity_age > 60: v5clarity_color = 'red'
             else: v5clarity_color = 'black'
@@ -135,7 +150,13 @@ class Status(RequestHandler):
             v5clarity_color = 'red'
 
         try:
-            v5data_time = datetime.datetime.strptime('{} {}'.format(v5data['UT date'], v5data['UT time']), '%Y%m%dUT %H:%M:%S')
+            try:
+                v5data_time = v5data['UT timestamp']
+            except:
+                v5data_time = datetime.datetime.strptime('{} {}'.format(\
+                               v5data['UT date'],\
+                               v5data['UT time']),\
+                               '%Y%m%dUT %H:%M:%S')
             v5data_age = (nowut - v5data_time).total_seconds()
             if v5data_age > 60: v5data_color = 'red'
             else: v5data_color = 'black'
@@ -143,6 +164,9 @@ class Status(RequestHandler):
             v5data_age = float('nan')
             v5data_color = 'red'
         
+        ##---------------------------------------------------------------------
+        ## Format and Color Code Boltwood Data
+        ##---------------------------------------------------------------------
         wind_units = {'M': 'mph', 'K': 'kph', 'm': 'm/s'}
         rain_status = {0: 'Dry', 1: 'Recent Rain', 2: 'Raining'}
         wet_status = {0: 'Dry', 1: 'Recent Wet', 2: 'Wet'}
@@ -248,6 +272,9 @@ class Status(RequestHandler):
             else: v5data['boltwood roof close color'] = ''
             v5data['boltwood roof close string'] = roof_close[v5data['boltwood roof close']]
 
+        ##---------------------------------------------------------------------
+        ## Format and Color Code ACP Data
+        ##---------------------------------------------------------------------
         ACP_connected = {True: 'Connected', False: 'Disconnected'}
 
         if 'ACP connected' in v20data.keys():
@@ -330,6 +357,9 @@ class Status(RequestHandler):
                 v5data['ACP connected color'] = ''
                 v5coord = ''
 
+        ##---------------------------------------------------------------------
+        ## Render
+        ##---------------------------------------------------------------------
         self.render("status.html", title="VYSOS Status",\
                     now = now,\
                     nowut = nowut,\
