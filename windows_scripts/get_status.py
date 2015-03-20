@@ -444,16 +444,6 @@ def get_status_and_log(telescope):
     logger.info('#### Starting Status Queries ####')
 
     ##-------------------------------------------------------------------------
-    ## Setup File to Recieve Data
-    ##-------------------------------------------------------------------------
-#     DataFilePath = os.path.join("C:\\", "Data_"+telescope, "Logs", DateString)
-#     if not os.path.exists(DataFilePath):
-#         logger.debug('  Making directory: {}'.format(DataFilePath))
-#         os.mkdir(DataFilePath)
-#     DataFileName = "status.yaml"
-#     DataFile = os.path.join(DataFilePath, DataFileName)
-
-    ##-------------------------------------------------------------------------
     ## Get Status Info
     ##-------------------------------------------------------------------------
     boltwood_file = os.path.join("C:\\", "Users", "vysosuser", "Documents", "ClarityII", "ClarityData.txt")
