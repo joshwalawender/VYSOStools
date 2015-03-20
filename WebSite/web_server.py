@@ -53,7 +53,7 @@ class ListOfImages(RequestHandler):
                 self.write('<tr><th>Target</th><th>n Images</th>')
                 for target in target_name_list:
                     target_images = [entry for entry in collection.find( { "target name": target } ) ]
-                    self.write('<tr><td>{}</td><td>{:d}</td></tr>'.format(target, len(target_images)))
+                    self.write('<tr><td><a href="{0}">{0}</a></td><td>{1:d}</td></tr>'.format(target, len(target_images)))
                 self.write('</table></html>')
 
         ## Set FWHM color
