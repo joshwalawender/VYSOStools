@@ -463,6 +463,7 @@ def main():
                        url(r"/", Status),
                        url(r"/(V20$|V5$)", ListOfNights),
                        url(r"/(V20/?$|V5/?$)", ListOfNights),
+                       url(r"/(V20|V5)/(\w*)", ListOfImages),
                        (r"/static/(.*)", StaticFileHandler, {"path": "/var/www"}),
                      ])
     app.listen(80)

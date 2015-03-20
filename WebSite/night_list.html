@@ -33,7 +33,7 @@
 
 <body>
 
-<h2>IQMon Results for {{ telescopename }}</h2>
+<h2>IQMon Results for {{ telescopename }} Listed by Night</h2>
 
 
 <table>
@@ -46,7 +46,7 @@
 
     {% for night in nights %}
     <tr>
-        <td><a href="{{ '{}/{}'.format(telescope, night['date']) }}">{{ night['date'] }}</a></td>
+        <td><a href="{{ '/{}/{}'.format(telescope, night['date']) }}">{{ night['date'] }}</a></td>
         <td>
             {% if 'night graph' in night.keys() %} {{ night['night graph'] }} {% end %}<br>
         </td>
