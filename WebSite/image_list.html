@@ -91,22 +91,22 @@
                 {{ '{:.0f} %'.format(image['moon_illumination']) }}
             {% end %}<br>
         </td>
-        <td style='text-align:right;'>
+        <td style={{ 'text-align:right;background-color:{};'.format(image['FWHM color']) }}>
             {% if 'FWHM_pix' in image.keys() %}
                 {{ '{:.2f}'.format(image['FWHM_pix']) }}
             {% end %}<br>
         </td>
-        <td style='text-align:right;'>
+        <td style={{ 'text-align:right;background-color:{};'.format(image['ellipticity color']) }}>
             {% if 'ellipticity' in image.keys() %}
                 {{ '{:.2f}'.format(image['ellipticity']) }}
             {% end %}<br>
         </td>
-        <td style='text-align:right;'>
+        <td style={{ 'text-align:right;background-color:{};'.format(image['pointing error color']) }}>
             {% if 'pointing_error_arcmin' in image.keys() %}
                 {{ '{:.1f}'.format(image['pointing_error_arcmin']) }}
             {% end %}<br>
         </td>
-        <td style='text-align:right;'>
+        <td style={{ 'text-align:right;background-color:{};'.format(image['zero point color']) }}>
             {% if 'zero_point' in image.keys() %}
                 {{ '{:.2f}'.format(image['zero_point']) }}
             {% end %}<br>

@@ -39,6 +39,35 @@ class ListOfImages(RequestHandler):
         else:
             image_list = []
 
+        ## Set FWHM color
+        for image in image_list:
+            image['FWHM color'] = "#70DB70"
+            if 'flags' in image.keys():
+                if 'FWHM' in image['flags'].keys():
+                    if image['flags']['FWHM']:
+                        image['FWHM color'] = "#FF5C33"
+        ## Set ellipticity color
+        for image in image_list:
+            image['ellipticity color'] = "#70DB70"
+            if 'flags' in image.keys():
+                if 'ellipticity' in image['flags'].keys():
+                    if image['flags']['ellipticity']:
+                        image['ellipticity color'] = "#FF5C33"
+        ## Set pointing error color
+        for image in image_list:
+            image['pointing error color'] = "#70DB70"
+            if 'flags' in image.keys():
+                if 'pointing error' in image['flags'].keys():
+                    if image['flags']['pointing error']:
+                        image['pointing error color'] = "#FF5C33"
+        ## Set zero point color
+        for image in image_list:
+            image['zero point color'] = "#70DB70"
+            if 'flags' in image.keys():
+                if 'zero point' in image['flags'].keys():
+                    if image['flags']['zero point']:
+                        image['zero point color'] = "#FF5C33"
+
         self.render("image_list.html", title="{} Results".format(telescopename),\
                     telescope = telescope,\
                     telescopename = telescopename,\
