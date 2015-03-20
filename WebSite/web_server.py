@@ -45,9 +45,10 @@ class ListOfImages(RequestHandler):
                 image_list = []
                 self.write('<html><head><style>')
                 self.write('table{border-collapse:collapse;margin-left:auto;margin-right:auto;}')
-                self.write('table,th,td{border:1px solid black;vertical-align:top;text-align:left;padding-top:5px;padding-right:5px;padding-bottom:5px;padding-left:5px;}')
+                self.write('table,th,td{border:1px solid black;vertical-align:top;text-align:left;')
+                self.write('padding-top:5px;padding-right:5px;padding-bottom:5px;padding-left:5px;}')
                 self.write('</style></head>')
-                if len(subject) > 0:
+                if (len(subject) > 0) and not re.match('[tT]argets', subject):
                     self.write('<p style="text-align:center;">Could not find {} in target list:</p>'.format(subject))
                 self.write('<table style="border:1px solid black;">')
                 self.write('<tr><th>Target</th><th>n Images</th>')
@@ -106,7 +107,7 @@ class ListOfImages(RequestHandler):
 class ListOfNights(RequestHandler):
 
     def get(self, telescope):
-        telescope = telescope
+        telescope = telescope.strip('/')
         assert telescope in ['V5', 'V20']
         names = {'V5': 'VYSOS-5', 'V20': 'VYSOS-20'}
         telescopename = names[telescope]
@@ -461,8 +462,7 @@ def main():
     app = Application([
                        url(r"/", Status),
                        url(r"/(V20$|V5$)", ListOfNights),
-#                        url(r"/(V20|V5)/(\d{8}UT)", ListOfImages),
-                       url(r"/(V20|V5)/(\w*)", ListOfImages),
+                       url(r"/(V20/?$|V5/?$)", ListOfNights),
                        (r"/static/(.*)", StaticFileHandler, {"path": "/var/www"}),
                      ])
     app.listen(80)
