@@ -37,7 +37,7 @@ class ListOfImages(RequestHandler):
         if re.match('\d{8}UT', subject):
             image_list = [entry for entry in collection.find( { "date": subject } ) ]
         else:
-            image_list = []
+            image_list = [entry for entry in collection.find( { "target name": subject } ) ]
 
         ## Set FWHM color
         for image in image_list:
@@ -441,7 +441,8 @@ def main():
     app = Application([
                        url(r"/", Status),
                        url(r"/(V20$|V5$)", ListOfNights),
-                       url(r"/(V20|V5)/(\d{8}UT)", ListOfImages),
+#                        url(r"/(V20|V5)/(\d{8}UT)", ListOfImages),
+                       url(r"/(V20|V5)/(\w+)", ListOfImages),
                        (r"/static/(.*)", StaticFileHandler, {"path": "/var/www"}),
                      ])
     app.listen(80)
