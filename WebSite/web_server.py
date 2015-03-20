@@ -23,18 +23,21 @@ from astropy.coordinates import SkyCoord
 ##-----------------------------------------------------------------------------
 ## Handler for IQMon Night Results Page
 ##-----------------------------------------------------------------------------
-class IQMonNightList_V5(RequestHandler):
+class IQMonNightList(RequestHandler):
+    def initialize(self, telescope):
+        self.telescope = telescope
+        assert self.telescope in ['V5', 'V20']
+        names = {'V5': 'VYSOS-5', 'V20': 'VYSOS-20'}
+        self.telescopename = names[self.telescope]
+
     def get(self):
 
-        telescope = 'V5'
-        telescopename = 'VYSOS-5'
-
         client = MongoClient('192.168.1.101', 27017)
-        collection = client.vysos['{}images'.format(telescope)]
+        collection = client.vysos['{}images'.format(self.telescope)]
         date_list = sorted([entry for entry in collection.distinct("date")])
 
-        paths_to_check = [os.path.join(os.path.expanduser('~'), 'IQMon', 'Logs', telescopename),\
-                          os.path.join('/', 'Volumes', 'DroboPro1', 'IQMon', 'Logs', telescopename)]
+        paths_to_check = [os.path.join(os.path.expanduser('~'), 'IQMon', 'Logs', self.telescopename),\
+                          os.path.join('/', 'Volumes', 'DroboPro1', 'IQMon', 'Logs', self.telescopename)]
         logs_path = None
         for path_to_check in paths_to_check:
             if os.path.exists(path_to_check):
@@ -45,11 +48,11 @@ class IQMonNightList_V5(RequestHandler):
         for date_string in date_list:
             night_info = {'date': date_string }
 
-            night_graph_file = '{}_{}.png'.format(date_string, telescope)
+            night_graph_file = '{}_{}.png'.format(date_string, self.telescope)
             if os.path.exists(os.path.join(logs_path, night_graph_file)):
                 night_info['night graph'] = night_graph_file
 
-            environmental_graph_file = '{}_{}_Env.png'.format(date_string, telescope)
+            environmental_graph_file = '{}_{}_Env.png'.format(date_string, self.telescope)
             if os.path.exists(os.path.join(logs_path, environmental_graph_file)):
                 night_info['env graph'] = environmental_graph_file
 
@@ -57,12 +60,11 @@ class IQMonNightList_V5(RequestHandler):
             
             nights.append(night_info)
 
-        self.render("night_list.html", title="{} Results".format(telescopename),\
-                    telescope = telescope,\
-                    telescopename = telescopename,\
+        self.render("night_list.html", title="{} Results".format(self.telescopename),\
+                    telescope = self.telescope,\
+                    telescopename = self.telescopename,\
                     nights = sorted(nights, key=lambda entry: entry['date']),\
                    )
-
 
 ##-----------------------------------------------------------------------------
 ## Handler for Status Page
@@ -350,7 +352,8 @@ def make_app():
     return Application([
         url(r"/", Status),
         url(r"/VYSOS5/", Status),
-        url(r"/VYSOS5/NightLogs/", IQMonNightList_V5),
+        url(r"/VYSOS5/NightLogs/", IQMonNightList, {'telescope': 'V5'}),
+        url(r"/VYSOS20/NightLogs/", IQMonNightList, {'telescope': 'V20'}),
         (r"/static/(.*)", StaticFileHandler, {"path": "/var/www"}),
         ])
 
