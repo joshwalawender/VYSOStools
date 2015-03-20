@@ -23,14 +23,18 @@ from astropy.coordinates import SkyCoord
 ##-----------------------------------------------------------------------------
 ## Handler for IQMon Night Results Page
 ##-----------------------------------------------------------------------------
+class IQMonNightResults(RequestHandler):
+    def get(self, telescope, nightstring):
+        self.write('IQMon results for {} on the night of {}'.format(telescope, nightstring))
+
+
 class IQMonNightList(RequestHandler):
-    def initialize(self, telescope):
+
+    def get(self, telescope):
         self.telescope = telescope
         assert self.telescope in ['V5', 'V20']
         names = {'V5': 'VYSOS-5', 'V20': 'VYSOS-20'}
         self.telescopename = names[self.telescope]
-
-    def get(self):
 
         client = MongoClient('192.168.1.101', 27017)
         collection = client.vysos['{}images'.format(self.telescope)]
@@ -63,7 +67,7 @@ class IQMonNightList(RequestHandler):
         self.render("night_list.html", title="{} Results".format(self.telescopename),\
                     telescope = self.telescope,\
                     telescopename = self.telescopename,\
-                    nights = sorted(nights, key=lambda entry: entry['date']),\
+                    nights = sorted(nights, key=lambda entry: entry['date'], reverse=True),\
                    )
 
 ##-----------------------------------------------------------------------------
@@ -346,19 +350,15 @@ class Status(RequestHandler):
                     )
 
 ##-----------------------------------------------------------------------------
-## Make App and Main
+## Main
 ##-----------------------------------------------------------------------------
-def make_app():
-    return Application([
-        url(r"/", Status),
-        url(r"/VYSOS5/", Status),
-        url(r"/VYSOS5/NightLogs/", IQMonNightList, {'telescope': 'V5'}),
-        url(r"/VYSOS20/NightLogs/", IQMonNightList, {'telescope': 'V20'}),
-        (r"/static/(.*)", StaticFileHandler, {"path": "/var/www"}),
-        ])
-
 def main():
-    app = make_app()
+    app = Application([
+                       url(r"/", Status),
+                       url(r"/(V20$|V5$)", IQMonNightList),
+                       url(r"/(V20|V5)/(\d{8}UT)", IQMonNightResults),
+                       (r"/static/(.*)", StaticFileHandler, {"path": "/var/www"}),
+                     ])
     app.listen(80)
     IOLoop.current().start()
 
