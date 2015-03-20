@@ -8,6 +8,7 @@ import os
 import argparse
 import logging
 import datetime
+import re
 
 import pymongo
 from pymongo import MongoClient
@@ -23,25 +24,43 @@ from astropy.coordinates import SkyCoord
 ##-----------------------------------------------------------------------------
 ## Handler for IQMon Night Results Page
 ##-----------------------------------------------------------------------------
-class IQMonNightResults(RequestHandler):
-    def get(self, telescope, nightstring):
-        self.write('IQMon results for {} on the night of {}'.format(telescope, nightstring))
-
-
-class IQMonNightList(RequestHandler):
-
-    def get(self, telescope):
-        self.telescope = telescope
-        assert self.telescope in ['V5', 'V20']
+class ListOfImages(RequestHandler):
+    def get(self, telescope, subject):
+        assert telescope in ['V5', 'V20']
         names = {'V5': 'VYSOS-5', 'V20': 'VYSOS-20'}
-        self.telescopename = names[self.telescope]
+        telescopename = names[telescope]
 
         client = MongoClient('192.168.1.101', 27017)
-        collection = client.vysos['{}.images'.format(self.telescope)]
+        collection = client.vysos['{}.images'.format(telescope)]
+
+        ## If subject matches a date, then get images from a date
+        if re.match('\d{8}UT', subject):
+            image_list = [entry for entry in collection.find( { "date": subject } ) ]
+        else:
+            image_list = []
+
+        self.render("image_list.html", title="{} Results".format(telescopename),\
+                    telescope = telescope,\
+                    telescopename = telescopename,\
+                    subject = subject,\
+                    image_list = sorted(image_list, key=lambda entry: entry['time']),\
+                   )
+
+
+class ListOfNights(RequestHandler):
+
+    def get(self, telescope):
+        telescope = telescope
+        assert telescope in ['V5', 'V20']
+        names = {'V5': 'VYSOS-5', 'V20': 'VYSOS-20'}
+        telescopename = names[telescope]
+
+        client = MongoClient('192.168.1.101', 27017)
+        collection = client.vysos['{}.images'.format(telescope)]
         date_list = sorted([entry for entry in collection.distinct("date")])
 
-        paths_to_check = [os.path.join(os.path.expanduser('~'), 'IQMon', 'Logs', self.telescopename),\
-                          os.path.join('/', 'Volumes', 'DroboPro1', 'IQMon', 'Logs', self.telescopename)]
+        paths_to_check = [os.path.join(os.path.expanduser('~'), 'IQMon', 'Logs', telescopename),\
+                          os.path.join('/', 'Volumes', 'DroboPro1', 'IQMon', 'Logs', telescopename)]
         logs_path = None
         for path_to_check in paths_to_check:
             if os.path.exists(path_to_check):
@@ -52,11 +71,11 @@ class IQMonNightList(RequestHandler):
         for date_string in date_list:
             night_info = {'date': date_string }
 
-            night_graph_file = '{}_{}.png'.format(date_string, self.telescope)
+            night_graph_file = '{}_{}.png'.format(date_string, telescope)
             if os.path.exists(os.path.join(logs_path, night_graph_file)):
                 night_info['night graph'] = night_graph_file
 
-            environmental_graph_file = '{}_{}_Env.png'.format(date_string, self.telescope)
+            environmental_graph_file = '{}_{}_Env.png'.format(date_string, telescope)
             if os.path.exists(os.path.join(logs_path, environmental_graph_file)):
                 night_info['env graph'] = environmental_graph_file
 
@@ -64,9 +83,9 @@ class IQMonNightList(RequestHandler):
             
             nights.append(night_info)
 
-        self.render("night_list.html", title="{} Results".format(self.telescopename),\
-                    telescope = self.telescope,\
-                    telescopename = self.telescopename,\
+        self.render("night_list.html", title="{} Results".format(telescopename),\
+                    telescope = telescope,\
+                    telescopename = telescopename,\
                     nights = sorted(nights, key=lambda entry: entry['date'], reverse=True),\
                    )
 
@@ -385,8 +404,8 @@ class Status(RequestHandler):
 def main():
     app = Application([
                        url(r"/", Status),
-                       url(r"/(V20$|V5$)", IQMonNightList),
-                       url(r"/(V20|V5)/(\d{8}UT)", IQMonNightResults),
+                       url(r"/(V20$|V5$)", ListOfNights),
+                       url(r"/(V20|V5)/(\d{8}UT)", ListOfImages),
                        (r"/static/(.*)", StaticFileHandler, {"path": "/var/www"}),
                      ])
     app.listen(80)

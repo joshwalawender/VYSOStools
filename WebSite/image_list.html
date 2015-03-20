@@ -1,0 +1,131 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+<head>
+    <title>IQMon Results for {{ telescopename }}</title>
+    <meta http-equiv="content-type"
+    content="text/html; charset=ISO-8859-1">
+
+    <style>
+        h2
+        {
+        text-align:center;
+        }
+        table
+        {
+        border-collapse:collapse;
+        margin-left: auto;
+        margin-right: auto;
+        }
+        table,th,td
+        {
+        border:1px solid black;
+        vertical-align: top;
+        padding-top: 5px;
+        padding-right: 5px;
+        padding-bottom: 5px;
+        padding-left: 5px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<h2>IQMon Results for {{ telescopename }} for {{ subject }}</h2>
+
+<table>
+    <tr>
+        <th style="width:150px">Exposure Start<br>(Date and Time UT)</th>
+        <th style="width:420px">Image File Name</th>
+        <th style="width:50px">Alt (deg)</th>
+        <th style="width:50px">Az (deg)</th>
+        <th style="width:50px">Airmass</th>
+        <th style="width:50px">Moon Sep (deg)</th>
+        <th style="width:50px">Moon Illum. (%)</th>
+        <th style="width:60px">FWHM (pix)</th>
+        <th style="width:50px">Ellip.</th>
+        <th style="width:70px">Pointing Error (arcmin)</th>
+        <th style="width:50px">Zero Point (mag)</th>
+        <th style="width:50px">N Stars</th>
+        <th style="width:50px">Process Time (sec)</th>
+    </tr>
+
+    {% for image in image_list %}
+    <tr>
+        <td style='text-align:left;'>
+            {% if 'exposure_start' in image.keys() %}
+                {{ image['exposure_start'].strftime('%Y%m%dUT %H:%M:%S') }}
+            {% elif 'date' in image.keys() and 'time' in image.keys() %}
+                {{ '{} {}'.format(image['date'], image['time']) }}
+            {% end %}<br>
+        </td>
+        <td style='text-align:left;'>
+            {% if 'filename' in image.keys() %}
+                {{ image['filename'] }}
+            {% end %}<br>
+        </td>
+        <td style='text-align:right;'>
+            {% if 'alt' in image.keys() %}
+                {{ '{:.1f}'.format(image['alt']) }}
+            {% end %}<br>
+        </td>
+        <td style='text-align:right;'>
+            {% if 'az' in image.keys() %}
+                {{ '{:.1f}'.format(image['az']) }}
+            {% end %}<br>
+        </td>
+        <td style='text-align:right;'>
+            {% if 'airmass' in image.keys() %}
+                {{ '{:.2f}'.format(image['airmass']) }}
+            {% end %}<br>
+        </td>
+        <td style='text-align:right;'>
+            {% if 'moon_separation' in image.keys() %}
+                {{ '{:.1f}'.format(image['moon_separation']) }}
+            {% end %}<br>
+        </td>
+        <td style='text-align:right;'>
+            {% if 'moon_illumination' in image.keys() %}
+                {{ '{:.0f} %'.format(image['moon_illumination']) }}
+            {% end %}<br>
+        </td>
+        <td style='text-align:right;'>
+            {% if 'FWHM_pix' in image.keys() %}
+                {{ '{:.2f}'.format(image['FWHM_pix']) }}
+            {% end %}<br>
+        </td>
+        <td style='text-align:right;'>
+            {% if 'ellipticity' in image.keys() %}
+                {{ '{:.2f}'.format(image['ellipticity']) }}
+            {% end %}<br>
+        </td>
+        <td style='text-align:right;'>
+            {% if 'pointing_error_arcmin' in image.keys() %}
+                {{ '{:.1f}'.format(image['pointing_error_arcmin']) }}
+            {% end %}<br>
+        </td>
+        <td style='text-align:right;'>
+            {% if 'zero_point' in image.keys() %}
+                {{ '{:.2f}'.format(image['zero_point']) }}
+            {% end %}<br>
+        </td>
+        <td style='text-align:right;'>
+            {% if 'n_stars' in image.keys() %}
+                {{ '{:d}'.format(image['n_stars']) }}
+            {% end %}<br>
+        </td>
+        <td style='text-align:right;'>
+            {% if 'process_time' in image.keys() %}
+                {{ '{:.0f} s'.format(image['process_time']) }}
+            {% end %}<br>
+        </td>
+    </tr>
+    {% end %}
+
+
+</table>
+
+</body>
+</html>
