@@ -22,7 +22,7 @@ from astropy.coordinates import SkyCoord
 
 
 ##-----------------------------------------------------------------------------
-## Handler for IQMon Night Results Page
+## Handler for list of images
 ##-----------------------------------------------------------------------------
 class ListOfImages(RequestHandler):
     def get(self, telescope, subject):
@@ -36,8 +36,16 @@ class ListOfImages(RequestHandler):
         ## If subject matches a date, then get images from a date
         if re.match('\d{8}UT', subject):
             image_list = [entry for entry in collection.find( { "date": subject } ) ]
+        ## If subject matches a target name, then get images from a date
         else:
-            image_list = [entry for entry in collection.find( { "target name": subject } ) ]
+            target_name_list = sorted([entry for entry in collection.distinct("target name")])
+            if subject in target_name_list:
+                image_list = [entry for entry in collection.find( { "target name": subject } ) ]
+            else:
+                image_list = []
+                self.write('Could not find {} in target list:<br>'.format(subject))
+                for target in target_name_list:
+                    self.write('{}<br>'.format(target))
 
         ## Set FWHM color
         for image in image_list:
@@ -75,14 +83,17 @@ class ListOfImages(RequestHandler):
                         if image['flags']['zero point']:
                             image['zero point color'] = "#FF5C33" # red
 
-        self.render("image_list.html", title="{} Results".format(telescopename),\
-                    telescope = telescope,\
-                    telescopename = telescopename,\
-                    subject = subject,\
-                    image_list = sorted(image_list, key=lambda entry: entry['time']),\
-                   )
+        if len(image_list) > 0:
+            self.render("image_list.html", title="{} Results".format(telescopename),\
+                        telescope = telescope,\
+                        telescopename = telescopename,\
+                        subject = subject,\
+                        image_list = sorted(image_list, key=lambda entry: entry['time']),\
+                       )
 
-
+##-----------------------------------------------------------------------------
+## Handler for list of nights
+##-----------------------------------------------------------------------------
 class ListOfNights(RequestHandler):
 
     def get(self, telescope):
