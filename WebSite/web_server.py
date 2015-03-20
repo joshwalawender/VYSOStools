@@ -43,9 +43,18 @@ class ListOfImages(RequestHandler):
                 image_list = [entry for entry in collection.find( { "target name": subject } ) ]
             else:
                 image_list = []
-                self.write('Could not find {} in target list:<br>'.format(subject))
+                self.write('<html><head><style>')
+                self.write('table{border-collapse:collapse;margin-left:auto;margin-right:auto;}')
+                self.write('table,th,td{border:1px solid black;vertical-align:top;text-align:left;padding-top:5px;padding-right:5px;padding-bottom:5px;padding-left:5px;}')
+                self.write('</style></head>')
+                if len(subject) > 0:
+                    self.write('<p style="text-align:center;">Could not find {} in target list:</p>'.format(subject))
+                self.write('<table style="border:1px solid black;">')
+                self.write('<tr><th>Target</th><th>n Images</th>')
                 for target in target_name_list:
-                    self.write('{}<br>'.format(target))
+                    target_images = [entry for entry in collection.find( { "target name": target } ) ]
+                    self.write('<tr><td>{}</td><td>{:d}</td></tr>'.format(target, len(target_images)))
+                self.write('</table></html>')
 
         ## Set FWHM color
         for image in image_list:
@@ -453,7 +462,7 @@ def main():
                        url(r"/", Status),
                        url(r"/(V20$|V5$)", ListOfNights),
 #                        url(r"/(V20|V5)/(\d{8}UT)", ListOfImages),
-                       url(r"/(V20|V5)/(\w+)", ListOfImages),
+                       url(r"/(V20|V5)/(\w*)", ListOfImages),
                        (r"/static/(.*)", StaticFileHandler, {"path": "/var/www"}),
                      ])
     app.listen(80)
