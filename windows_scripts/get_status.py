@@ -467,8 +467,8 @@ def get_status_and_log(telescope):
     ##-------------------------------------------------------------------------
     logger.info('Writing results to mongo db at 192.168.1.101')
     client = MongoClient('192.168.1.101', 27017)
-    status = client.vysos['{}status'.format(telescope)]
-    logger.debug('  Getting {}status collection'.format(telescope))
+    status = client.vysos['{}.status'.format(telescope)]
+    logger.debug('  Getting {}.status collection'.format(telescope))
 
     new_data = {}
     new_data.update({'UT date': DateString, 'UT time': TimeString})
