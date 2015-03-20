@@ -46,7 +46,11 @@ def get_boltwood(ClarityDataFile, logger):
                                      int(Match60.group(1)),\
                                      int(Match60.group(2)),\
                                      59.99)
-                                     
+    boltwood['boltwood timestamp'] = datetime.datetime.strptime('{} {}'.format(\
+                                              boltwood['boltwood date'],\
+                                              boltwood['boltwood time'][:-3]),\
+                                              '%Y-%m-%d %H:%M:%S')        
+
 
     boltwood['boltwood temp units'] = data[2]          # 'C' or 'F'
     boltwood['boltwood wind units'] = data[3]          # 'K' = km/hr, 'M' = 'mph', 'm' = m/s
@@ -471,7 +475,9 @@ def get_status_and_log(telescope):
     logger.debug('  Getting {}.status collection'.format(telescope))
 
     new_data = {}
-    new_data.update({'UT date': DateString, 'UT time': TimeString})
+    new_data.update({'UT date': DateString,\
+                     'UT time': TimeString,\
+                     'UT timestamp': now})
     new_data.update(boltwood)
     new_data.update(telescope_info)
     new_data.update(focuser_info)
