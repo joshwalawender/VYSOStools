@@ -1,8 +1,8 @@
 ---
 name: 'VYSOS-20'
-logs_file_path: '~/IQMon/Logs/VYSOS-20'
-plot_file_path: '~/IQMon/Plots'
-temp_file_path: '~/IQMon/tmp/VYSOS-20'
+logs_file_path: '/var/www/plots/V20'
+plot_file_path: '/var/www/plots/V20'
+temp_file_path: '/tmp/V20'
 ## Telescope Properties
 focal_length: 4175            # mm
 pixel_size: 9.0               # um
@@ -14,7 +14,7 @@ threshold_FWHM: 5.7           # pix (roughly 2.5 arcsec on VYSOS-20)
 threshold_pointing_err: 4.0   # arcmin
 threshold_ellipticity: 0.25
 threshold_zeropoint: 20.2
-SCAMP_aheader: '~/IQMon/VYSOS20.ahead'
+SCAMP_aheader: '~/.VYSOS20.ahead'
 units_for_FWHM: 'arcsec'
 PSF_measurement_radius: 2048  # pix
 pointing_marker_size: 1       # arcmin

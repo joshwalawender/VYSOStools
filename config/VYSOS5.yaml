@@ -1,8 +1,8 @@
 ---
 name: 'VYSOS-5'
-logs_file_path: '~/IQMon/Logs/VYSOS-5'
-plot_file_path: '~/IQMon/Plots'
-temp_file_path: '~/IQMon/tmp/VYSOS-5'
+logs_file_path: '/var/www/plots/V5'
+plot_file_path: '/var/www/plots/V5'
+temp_file_path: '/tmp/V5'
 ## Telescope Properties
 focal_length: 735             # mm
 pixel_size: 9.0               # um
@@ -14,7 +14,7 @@ threshold_FWHM: 2.5           # pix
 threshold_pointing_err: 5.0   # arcmin
 threshold_ellipticity: 0.25
 threshold_zeropoint: 18.7
-SCAMP_aheader: '~/IQMon/VYSOS5.ahead'
+SCAMP_aheader: '~/.VYSOS5.ahead'
 units_for_FWHM: 'pix'
 PSF_measurement_radius: 1024  # pix
 pointing_marker_size: 3       # arcmin

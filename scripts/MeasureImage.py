@@ -145,9 +145,9 @@ def MeasureImage(filename,\
     ## Create Telescope Object
     ##-------------------------------------------------------------------------
     if telescope == 'V5':
-        config_file = os.path.join(os.path.expanduser('~'), 'IQMon', 'VYSOS5.yaml')
+        config_file = os.path.join(os.path.expanduser('~'), '.VYSOS5.yaml')
     if telescope == 'V20':
-        config_file = os.path.join(os.path.expanduser('~'), 'IQMon', 'VYSOS20.yaml')
+        config_file = os.path.join(os.path.expanduser('~'), '.VYSOS20.yaml')
     tel = IQMon.Telescope(config_file)
 
 
@@ -162,27 +162,27 @@ def MeasureImage(filename,\
         image.edit_header('FILTER', 'PSr')
     image.read_header()
 
-    if image.object_name:
-        target_name = image.object_name
-        image.logger.info('Target name from header: {}'.format(target_name))
-    else:
-        TargetFileNameMatch = re.match('V\d{1,2}_(\w+)\-(\w+)\-\d{8}at\d{6}', FitsBasename)
-        if TargetFileNameMatch:
-            target_name = TargetFileNameMatch.group(1)
-            image.logger.info('Target name from filename: {}'.format(target_name))
-        else:
-            image.logger.error('Could not determine target name.  Exiting.')
-            sys.exit(0)
+#     if image.object_name:
+#         target_name = image.object_name
+#         image.logger.info('Target name from header: {}'.format(target_name))
+#     else:
+#         TargetFileNameMatch = re.match('V\d{1,2}_(\w+)\-(\w+)\-\d{8}at\d{6}', FitsBasename)
+#         if TargetFileNameMatch:
+#             target_name = TargetFileNameMatch.group(1)
+#             image.logger.info('Target name from filename: {}'.format(target_name))
+#         else:
+#             image.logger.error('Could not determine target name.  Exiting.')
+#             sys.exit(0)
+# 
+#     if not os.path.exists(os.path.join(tel.logs_file_path, 'targets')):
+#         os.mkdir(os.path.join(tel.logs_file_path, 'targets'))
+#     target_file = os.path.join(tel.logs_file_path, 'targets', '{}.yaml'.format(target_name))
 
-    if not os.path.exists(os.path.join(tel.logs_file_path, 'targets')):
-        os.mkdir(os.path.join(tel.logs_file_path, 'targets'))
-    target_file = os.path.join(tel.logs_file_path, 'targets', '{}.yaml'.format(target_name))
-
-    html_file = os.path.join(tel.logs_file_path, DataNightString+"_"+telescope+".html")
-    yaml_file = os.path.join(tel.logs_file_path, DataNightString+"_"+telescope+"_Summary.txt")
-    if clobber_summary:
-        if os.path.exists(html_file): os.remove(html_file)
-        if os.path.exists(yaml_file): os.remove(yaml_file)
+#     html_file = os.path.join(tel.logs_file_path, DataNightString+"_"+telescope+".html")
+#     yaml_file = os.path.join(tel.logs_file_path, DataNightString+"_"+telescope+"_Summary.txt")
+#     if clobber_summary:
+#         if os.path.exists(html_file): os.remove(html_file)
+#         if os.path.exists(yaml_file): os.remove(yaml_file)
 
 
     ##-------------------------------------------------------------------------
@@ -265,9 +265,9 @@ def MeasureImage(filename,\
     image.calculate_process_time()
 
     if record:
-        fields=["Date and Time", "Filename", "Alt", "Az", "Airmass", "MoonSep", "MoonIllum", "FWHM", "ellipticity", "PErr", "ZeroPoint", "nStars", "ProcessTime"]
-        image.add_web_log_entry(html_file, fields=fields)
-        image.add_yaml_entry(yaml_file)
+#         fields=["Date and Time", "Filename", "Alt", "Az", "Airmass", "MoonSep", "MoonIllum", "FWHM", "ellipticity", "PErr", "ZeroPoint", "nStars", "ProcessTime"]
+#         image.add_web_log_entry(html_file, fields=fields)
+#         image.add_yaml_entry(yaml_file)
         image.add_mongo_entry('192.168.1.101', 'vysos', '{}.images'.format(telescope))
 
     image.logger.info('Done.')
