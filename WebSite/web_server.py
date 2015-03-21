@@ -45,12 +45,18 @@ class ListOfImages(RequestHandler):
 
         ## If subject matches a date, then get images from a date
         if re.match('\d{8}UT', subject):
-            image_list = [entry for entry in collection.find( { "date": subject } ) ]
+            image_list = [entry for entry in\
+                          collection.find({"date": subject}).sort(\
+                          [('time', pymongo.ASCENDING)])]
         ## If subject matches a target name, then get images from a date
         else:
-            target_name_list = sorted([entry for entry in collection.distinct("target name")])
+            target_name_list = sorted(collection.distinct("target name"))
             if subject in target_name_list:
-                image_list = [entry for entry in collection.find( { "target name": subject } ) ]
+                image_list = [entry for entry in\
+                              collection.find({"target name":subject}).sort(\
+                              [('date', pymongo.DESCENDING),\
+                              ('time', pymongo.DESCENDING)])]
+
             else:
                 image_list = []
                 self.write('<html><head><style>')
@@ -134,7 +140,7 @@ class ListOfImages(RequestHandler):
                         telescope = telescope,\
                         telescopename = telescopename,\
                         subject = subject,\
-                        image_list = sorted(image_list, key=lambda entry: entry['time']),\
+                        image_list = image_list,\
                        )
 
 ##-----------------------------------------------------------------------------
@@ -150,7 +156,7 @@ class ListOfNights(RequestHandler):
 
         client = MongoClient('192.168.1.101', 27017)
         collection = client.vysos['{}.images'.format(telescope)]
-        date_list = sorted([entry for entry in collection.distinct("date")])
+        date_list = sorted(collection.distinct("date"), reverse=True)
 
         ## Create Telescope Object
         if telescope == 'V5':
@@ -180,7 +186,7 @@ class ListOfNights(RequestHandler):
         self.render("night_list.html", title="{} Results".format(telescopename),\
                     telescope = telescope,\
                     telescopename = telescopename,\
-                    nights = sorted(nights, key=lambda entry: entry['date'], reverse=True),\
+                    nights = nights,\
                    )
 
 ##-----------------------------------------------------------------------------
@@ -200,7 +206,9 @@ class Status(RequestHandler):
         v20entries = []
         while (len(v20entries) < 1) and (nowut > datetime.datetime(2015,1,1)):
             v20entries = [entry for entry\
-                          in v20status.find( {"UT date" : nowut.strftime('%Y%m%dUT')} ).sort([('UT time', pymongo.ASCENDING)])]
+                          in v20status.find(\
+                          {"UT date" : nowut.strftime('%Y%m%dUT')}\
+                          ).sort([('UT time', pymongo.ASCENDING)])]
             if len(v20entries) > 0: v20data = v20entries[-1]
             else: nowut = nowut - datetime.timedelta(1, 0)
         nowut = datetime.datetime.utcnow()
