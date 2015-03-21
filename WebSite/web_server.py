@@ -128,6 +128,7 @@ class ListOfImages(RequestHandler):
                 if match_static_path:
                     image['ZP plot'] = '/static/{}'.format(match_static_path.group(1))
 
+
         if len(image_list) > 0:
             self.render("image_list.html", title="{} Results".format(telescopename),\
                         telescope = telescope,\

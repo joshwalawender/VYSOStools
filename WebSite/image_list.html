@@ -99,8 +99,14 @@
         </td>
         <td style='text-align:right;'>
             {% if 'moon_separation' in image.keys() %}
-                {{ '{:.1f}'.format(image['moon_separation']) }}
-            {% end %}<br>
+                {% if 'moon_alt' in image.keys() %}
+                    {% if image['moon_alt'] < 0 %}
+                        down
+                    {% else %}
+                        {{ '{:.1f}'.format(image['moon_separation']) }}
+                    {% end %}
+                {% end %}
+            {% end %}
         </td>
         <td style='text-align:right;'>
             {% if 'moon_illumination' in image.keys() %}
