@@ -59,12 +59,28 @@
                 {{ image['exposure_start'].strftime('%Y%m%dUT %H:%M:%S') }}
             {% elif 'date' in image.keys() and 'time' in image.keys() %}
                 {{ '{} {}'.format(image['date'], image['time']) }}
-            {% end %}<br>
+            {% end %}
         </td>
         <td style='text-align:left;'>
             {% if 'filename' in image.keys() %}
-                {{ image['filename'] }}
-            {% end %}<br>
+                {% if len(image['jpegs']) > 0 %}
+                    <a href="{{ image['jpegs'].pop() }}">{{ image['filename'] }}</a>
+                {% else %}
+                    {{ image['filename'] }}
+                {% end %}
+                {% for jpeg in image['jpegs'] %}
+                    (<a href="{{ jpeg }}">JPEG</a>)
+                {% end %}                
+            {% end %}
+            {% if 'PSF plot' in image.keys() %}
+                 (<a href="{{ image['PSF plot'] }}">PSF</a>)
+            {% end %}
+            {% if 'ZP plot' in image.keys() %}
+                 (<a href="{{ image['ZP plot'] }}">ZP</a>)
+            {% end %}
+            {% if 'logfile' in image.keys() %}
+                 (<a href="{{ image['logfile'] }}">log</a>)
+            {% end %}
         </td>
         <td style='text-align:right;'>
             {% if 'alt' in image.keys() %}

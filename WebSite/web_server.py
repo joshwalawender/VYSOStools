@@ -9,6 +9,7 @@ import argparse
 import logging
 import datetime
 import re
+import glob
 
 import pymongo
 from pymongo import MongoClient
@@ -20,6 +21,7 @@ from tornado import websocket
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 
+import IQMon
 
 ##-----------------------------------------------------------------------------
 ## Handler for list of images
@@ -29,6 +31,14 @@ class ListOfImages(RequestHandler):
         assert telescope in ['V5', 'V20']
         names = {'V5': 'VYSOS-5', 'V20': 'VYSOS-20'}
         telescopename = names[telescope]
+
+        ## Create Telescope Object
+        if telescope == 'V5':
+            config_file = os.path.join(os.path.expanduser('~'), '.VYSOS5.yaml')
+        if telescope == 'V20':
+            config_file = os.path.join(os.path.expanduser('~'), '.VYSOS20.yaml')
+        tel = IQMon.Telescope(config_file)
+
 
         client = MongoClient('192.168.1.101', 27017)
         collection = client.vysos['{}.images'.format(telescope)]
@@ -57,8 +67,8 @@ class ListOfImages(RequestHandler):
                     self.write('<tr><td><a href="{0}">{0}</a></td><td>{1:d}</td></tr>'.format(target, len(target_images)))
                 self.write('</table></html>')
 
-        ## Set FWHM color
         for image in image_list:
+            ## Set FWHM color
             image['FWHM color'] = ""
             if 'FWHM_pix' in image.keys():
                 image['FWHM color'] = "#70DB70" # green
@@ -66,8 +76,7 @@ class ListOfImages(RequestHandler):
                     if 'FWHM' in image['flags'].keys():
                         if image['flags']['FWHM']:
                             image['FWHM color'] = "#FF5C33" # red
-        ## Set ellipticity color
-        for image in image_list:
+            ## Set ellipticity color
             image['ellipticity color'] = ""
             if 'ellipticity' in image.keys():
                 image['ellipticity color'] = "#70DB70" # green
@@ -75,8 +84,7 @@ class ListOfImages(RequestHandler):
                     if 'ellipticity' in image['flags'].keys():
                         if image['flags']['ellipticity']:
                             image['ellipticity color'] = "#FF5C33" # red
-        ## Set pointing error color
-        for image in image_list:
+            ## Set pointing error color
             image['pointing error color'] = ""
             if 'pointing_error_arcmin' in image.keys():
                 image['pointing error color'] = "#70DB70" # green
@@ -84,7 +92,7 @@ class ListOfImages(RequestHandler):
                     if 'pointing error' in image['flags'].keys():
                         if image['flags']['pointing error']:
                             image['pointing error color'] = "#FF5C33" # red
-        ## Set zero point color
+            ## Set zero point color
             image['zero point color'] = ""
             if 'zero_point' in image.keys():
                 image['zero point color'] = "#70DB70" # green
@@ -92,6 +100,33 @@ class ListOfImages(RequestHandler):
                     if 'zero point' in image['flags'].keys():
                         if image['flags']['zero point']:
                             image['zero point color'] = "#FF5C33" # red
+
+            ## Check for jpegs
+            image_basename = os.path.splitext(image['filename'])[0]
+            jpegs = glob.glob(os.path.join(tel.plot_file_path, '{}*.jpg'.format(image_basename)))
+            image['jpegs'] = []
+            for jpeg in jpegs:
+                match_static_path = re.match('/var/www/([\w\/\.\-]+)', jpeg)
+                if match_static_path:
+                    image['jpegs'].append('/static/{}'.format(match_static_path.group(1)))
+            ## Check for IQMon log file
+            log_file = os.path.join(tel.logs_file_path, '{}_IQMon.log'.format(image_basename))
+            if os.path.exists(log_file):
+                match_static_path = re.match('/var/www/([\w\/\.\-]+)', log_file)
+                if match_static_path:
+                    image['logfile'] = '/static/{}'.format(match_static_path.group(1))
+            ## Check for PSFinfo plot
+            psf_plot_file = os.path.join(tel.plot_file_path, '{}_PSFinfo.png'.format(image_basename))
+            if os.path.exists(psf_plot_file):
+                match_static_path = re.match('/var/www/([\w\/\.\-]+)', psf_plot_file)
+                if match_static_path:
+                    image['PSF plot'] = '/static/{}'.format(match_static_path.group(1))
+            ## Check for zero point plot
+            zp_plot_file = os.path.join(tel.plot_file_path, '{}_ZeroPoint.png'.format(image_basename))
+            if os.path.exists(zp_plot_file):
+                match_static_path = re.match('/var/www/([\w\/\.\-]+)', zp_plot_file)
+                if match_static_path:
+                    image['ZP plot'] = '/static/{}'.format(match_static_path.group(1))
 
         if len(image_list) > 0:
             self.render("image_list.html", title="{} Results".format(telescopename),\
@@ -116,13 +151,14 @@ class ListOfNights(RequestHandler):
         collection = client.vysos['{}.images'.format(telescope)]
         date_list = sorted([entry for entry in collection.distinct("date")])
 
-        paths_to_check = [os.path.join(os.path.expanduser('~'), 'IQMon', 'Logs', telescopename),\
-                          os.path.join('/', 'Volumes', 'DroboPro1', 'IQMon', 'Logs', telescopename)]
-        logs_path = None
-        for path_to_check in paths_to_check:
-            if os.path.exists(path_to_check):
-                logs_path = path_to_check
-        assert logs_path
+        ## Create Telescope Object
+        if telescope == 'V5':
+            config_file = os.path.join(os.path.expanduser('~'), '.VYSOS5.yaml')
+        if telescope == 'V20':
+            config_file = os.path.join(os.path.expanduser('~'), '.VYSOS20.yaml')
+        tel = IQMon.Telescope(config_file)
+
+        logs_path = tel.logs_file_path
 
         nights = []
         for date_string in date_list:
