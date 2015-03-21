@@ -1,6 +1,6 @@
 ---
 name: 'VYSOS-5'
-logs_file_path: '/var/www/plots/V5'
+logs_file_path: '/var/www/logs/V5'
 plot_file_path: '/var/www/plots/V5'
 temp_file_path: '/tmp/V5'
 ## Telescope Properties

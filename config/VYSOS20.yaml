@@ -1,6 +1,6 @@
 ---
 name: 'VYSOS-20'
-logs_file_path: '/var/www/plots/V20'
+logs_file_path: '/var/www/logs/V20'
 plot_file_path: '/var/www/plots/V20'
 temp_file_path: '/tmp/V20'
 ## Telescope Properties
