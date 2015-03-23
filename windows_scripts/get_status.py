@@ -42,7 +42,7 @@ def get_boltwood(ClarityDataFile, logger):
     Match60 = re.match('(\d{1,2}):(\d{2}):(60\.\d{2})', boltwood['boltwood time'])
     if Match60:
         logger.debug('  Changing boltwood time to end in :59.99')
-        boltwood['boltwood time'] = '{:2d}:{:2d}:{:5.2f}'.format(\
+        boltwood['boltwood time'] = '{:2d}:{:02d}:{:05.2f}'.format(\
                                      int(Match60.group(1)),\
                                      int(Match60.group(2)),\
                                      59.99)
