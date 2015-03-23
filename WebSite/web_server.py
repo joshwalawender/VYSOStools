@@ -76,7 +76,7 @@ class ListOfImages(RequestHandler):
         for image in image_list:
             ## Set FWHM color
             image['FWHM color'] = ""
-            if 'FWHM_pix' in image.keys():
+            if 'FWHM pix' in image.keys():
                 image['FWHM color'] = "#70DB70" # green
                 if 'flags' in image.keys():
                     if 'FWHM' in image['flags'].keys():
@@ -92,7 +92,7 @@ class ListOfImages(RequestHandler):
                             image['ellipticity color'] = "#FF5C33" # red
             ## Set pointing error color
             image['pointing error color'] = ""
-            if 'pointing_error_arcmin' in image.keys():
+            if 'pointing error arcmin' in image.keys():
                 image['pointing error color'] = "#70DB70" # green
                 if 'flags' in image.keys():
                     if 'pointing error' in image['flags'].keys():
@@ -100,7 +100,7 @@ class ListOfImages(RequestHandler):
                             image['pointing error color'] = "#FF5C33" # red
             ## Set zero point color
             image['zero point color'] = ""
-            if 'zero_point' in image.keys():
+            if 'zero point' in image.keys():
                 image['zero point color'] = "#70DB70" # green
                 if 'flags' in image.keys():
                     if 'zero point' in image['flags'].keys():
