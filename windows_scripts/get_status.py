@@ -460,22 +460,26 @@ def get_status_and_log(telescope):
     ## Write Environmental Log
     ##-------------------------------------------------------------------------
     logger.info('Writing results to mongo db at 192.168.1.101')
-    client = MongoClient('192.168.1.101', 27017)
-    status = client.vysos['{}.status'.format(telescope)]
-    logger.debug('  Getting {}.status collection'.format(telescope))
+    try:
+        client = MongoClient('192.168.1.101', 27017)
+    except:
+        logger.error('Could not connect to mongo db')
+    else:
+        status = client.vysos['{}.status'.format(telescope)]
+        logger.debug('  Getting {}.status collection'.format(telescope))
 
-    new_data = {}
-    new_data.update({'UT date': DateString,\
-                     'UT time': TimeString,\
-                     'UT timestamp': now})
-    new_data.update(boltwood)
-    new_data.update(telescope_info)
-    new_data.update(focuser_info)
-    if telescope == 'V20':
-        new_data.update(CBW_info)
+        new_data = {}
+        new_data.update({'UT date': DateString,\
+                         'UT time': TimeString,\
+                         'UT timestamp': now})
+        new_data.update(boltwood)
+        new_data.update(telescope_info)
+        new_data.update(focuser_info)
+        if telescope == 'V20':
+            new_data.update(CBW_info)
 
-    id = status.insert(new_data)
-    logger.debug('  Inserted datum with ID: {}'.format(id))
+        id = status.insert(new_data)
+        logger.debug('  Inserted datum with ID: {}'.format(id))
 
     logger.info("Done")
 
