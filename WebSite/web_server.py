@@ -24,6 +24,17 @@ import ephem
 
 import IQMon
 
+##-------------------------------------------------------------------------
+## Check Free Space on Drive
+##-------------------------------------------------------------------------
+def free_space(path):
+    statvfs = os.statvfs(path)
+    size_GB = statvfs.f_frsize * statvfs.f_blocks / 1024 / 1024 / 1024
+    avail_GB = statvfs.f_frsize * statvfs.f_bfree / 1024 / 1024 / 1024
+    pcnt_used = float(size_GB - avail_GB)/float(size_GB) * 100
+    return (size_GB, avail_GB, pcnt_used)
+
+
 ##-----------------------------------------------------------------------------
 ## Handler for list of images
 ##-----------------------------------------------------------------------------
@@ -541,6 +552,28 @@ class Status(RequestHandler):
                 v5coord = ''
 
         ##---------------------------------------------------------------------
+        ## Get disk use info
+        ##---------------------------------------------------------------------
+        paths = {'Drobo': os.path.join('/', 'Volumes', 'Drobo'),\
+                 'Data': os.path.expanduser('~'),\
+                 'Ext Drive B': os.path.join('/', 'Volumes', 'WD500B'),\
+                 'Ext Drive C': os.path.join('/', 'Volumes', 'WD500_C'),\
+                 'Vega': os.path.join('/', 'Volumes', 'Data_V5'),\
+                 'Black': os.path.join('/', 'Volumes', 'Data_V20'),\
+                }
+
+        disks = {}
+        for disk in paths.keys():
+            if os.path.exists(paths[disk]):
+                size_GB, avail_GB, pcnt_used = free_space(paths[disk])
+                if disk == 'Drobo':
+                    size_GB -= 12750
+                    avail_GB -= 12750
+                    pcnt_used = float(size_GB - avail_GB)/float(size_GB) * 100
+                disks[disk] = [size_GB, avail_GB, pcnt_used]
+
+
+        ##---------------------------------------------------------------------
         ## Render
         ##---------------------------------------------------------------------
         self.render("status.html", title="VYSOS Status",\
@@ -562,6 +595,7 @@ class Status(RequestHandler):
                     v5coord = v5coord,\
                     twilight = twilight,\
                     moon = moon,\
+                    disks = disks,\
                     )
 
 ##-----------------------------------------------------------------------------

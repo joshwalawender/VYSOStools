@@ -34,26 +34,57 @@
 <br>
 
 <table>
+<!-- ###################################### -->
+<!-- Status Header -->
+<!-- ###################################### -->
 <tr>
-    <td colspan=3><b>Current Time</b></td>
-    <td style="text-align: left;">
-        {{ nowut.strftime('%Y/%m/%d %H:%M:%S UT') }}<br>
-        {{ now.strftime('%Y/%m/%d %H:%M:%S HST') }}
+    <td colspan=3 style="text-align: left;">
+        {{ nowut.strftime('%Y/%m/%d %H:%M:%S UT') }}
     </td>
-    <td style="text-align: left;">
+    <td width="410px" style="text-align: left;">
         {{ 'It is currently {}'.format(twilight['now']) }}<br>
-        {{ 'A {:.0f}% illuminated moon is {}'.format(moon['phase'], moon['now']) }}
+    </td>
+    <td width="215px" style="text-align: left;">
+        {% if 'Drobo' in disks.keys() %}
+        <u>Drobo</u>: {{ '{:.0f}% used, {:.0f} GB avail.'.format(disks['Drobo'][2], disks['Drobo'][1]) }}
+        {% end %}
+    </td>
+    <td width="215px" style="text-align: left;">
+        {% if 'Data' in disks.keys() %}
+        <u>Data</u>: {{ '{:.0f}% used, {:.0f} GB avail.'.format(disks['Data'][2], disks['Data'][1]) }}
+        {% end %}
     </td>
 </tr>
 <tr>
-    <th colspan=5><br><br>Weather</th>
+    <td colspan=3 style="text-align: left;">
+        {{ now.strftime('%Y/%m/%d %H:%M:%S HST') }}
+    </td>
+    <td width="410px" style="text-align: left;">
+        {{ 'A {:.0f}% illuminated moon is {}'.format(moon['phase'], moon['now']) }}
+    </td>
+    <td width="215px" style="text-align: left;">
+        {% if 'Vega' in disks.keys() %}
+        <u>Vega</u>: {{ '{:.0f}% used, {:.0f} GB avail.'.format(disks['Vega'][2], disks['Vega'][1]) }}
+        {% end %}
+    </td>
+    <td width="215px" style="text-align: left;">
+        {% if 'Black' in disks.keys() %}
+        <u>Black</u>: {{ '{:.0f}% used, {:.0f} GB avail.'.format(disks['Black'][2], disks['Black'][1]) }}
+        {% end %}
+    </td>
+</tr>
+<!-- ###################################### -->
+<!-- Weather -->
+<!-- ###################################### -->
+<tr>
+    <th colspan=6><br><br>Weather</th>
 </tr>
 <tr>
     <td><u>Boltwood Data</u></td>
     <td><u>VYSOS-20</u></td>
     <td><u>VYSOS-5</u></td>
     <td><u>Boltwood Plot</u></td>
-    <td><u>Atlas All Sky Image (Color)</u></td>
+    <td colspan=2><u>Atlas All Sky Image (Color)</u></td>
 </tr>
 <tr>
     <td style="text-align: right;">
@@ -178,7 +209,7 @@
     <td style="vertical-align: middle;">
         <a href="static/Weather_VYSOS5.gif"><img width=400 height=300 src="static/Weather_VYSOS5.gif"></a><br>
     </td>
-    <td style="vertical-align: middle;">
+    <td colspan=2 style="vertical-align: middle;">
         <table style="border:0px; border-style: none;">
             <tr style="border:0px; border-style: none;">
                 <td style="border:0px; border-style: none; vertical-align: middle;">S</td>
@@ -194,13 +225,16 @@
         </table>
     </td>
 <tr>
+<!-- ###################################### -->
+<!-- VYSOS-20 -->
+<!-- ###################################### -->
 <tr>
-    <th colspan=5><br><br><a href="V20/">VYSOS-20</a></th>
+    <th colspan=6><br><br><a href="V20/">VYSOS-20</a></th>
 </tr>
 <tr>
     <td colspan=3><u>VYSOS-20 Status</u></td>
     <td>VYSOS-20 External</td>
-    <td>VYSOS-20 Internal</td>
+    <td colspan=2>VYSOS-20 Internal</td>
 </tr>
 <tr>
     <td style="text-align: right;">
@@ -234,19 +268,21 @@
     <td>
         <a href="http://166.122.71.162:8083/0.jpg"><img width=400 height=267 src="http://166.122.71.162:8083/0.jpg"><br>
     </td>
-    <td>
+    <td colspan=2>
         <a href="http://166.122.71.162:8083/2.jpg"><img width=400 height=267 src="http://166.122.71.162:8083/2.jpg"></a><br>
     </td>
 </tr>
+<!-- ###################################### -->
+<!-- VYSOS-5 -->
+<!-- ###################################### -->
 <tr>
-    <th colspan=5><br><br><a href="V5/">VYSOS-5</a></th>
+    <th colspan=6><br><br><a href="V5/">VYSOS-5</a></th>
 </tr>
 <tr>
     <td colspan=3><u>VYSOS-5 Status</u></td>
     <td>VYSOS-5 External</td>
-    <td>VYSOS-5 Internal</td>
+    <td colspan=2>VYSOS-5 Internal</td>
 </tr>
-
 <tr>
     <td style="text-align: right;">
         <br>
@@ -282,7 +318,7 @@
     <td>
         <a href="http://166.122.71.162:8083/4.jpg"><img width=400 height=267 src="http://166.122.71.162:8083/4.jpg"></a><br>
     </td>
-    <td>
+    <td colspan=2>
         <a href="http://166.122.71.162:8083/2.jpg"><img width=400 height=267 src="http://166.122.71.162:8083/6.jpg"></a><br>
     </td>
 </tr>
@@ -290,6 +326,7 @@
 
 <br><br>
 
+<br><br>
 
 </body>
 </html>
