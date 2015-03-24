@@ -11,6 +11,5 @@ setup(
             'monitor = scripts.watch_directory:main',
             'makenightlyplots = scripts.make_nightly_plots:main',
             'cleanupIQMon = scripts.remove_old_plots:main',
-            'systemstatus = scripts.get_system_status:main',
         ]}
 )
