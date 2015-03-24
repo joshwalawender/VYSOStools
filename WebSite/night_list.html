@@ -40,7 +40,7 @@
     <tr>
         <th style="width:120px">UT Date</th>
         <th style="width:180px">Night Summary Graphs</th>
-        <th style="width:180px">Environmental Graphs</th>
+<!--        <th style="width:180px">Environmental Graphs</th> -->
         <th style="width:80px">Number of Images</th>
     </tr>
 
@@ -48,11 +48,14 @@
     <tr>
         <td><a href="{{ '/{}/{}'.format(telescope, night['date']) }}">{{ night['date'] }}</a></td>
         <td>
-            {% if 'night graph' in night.keys() %} {{ night['night graph'] }} {% end %}<br>
+            {% if 'night graph' in night.keys() %}
+            <a href="{{ '/static/nights/{}'.format(night['night graph']) }}">
+            {{ night['night graph'] }}</a>
+            {% end %}
         </td>
-        <td>
+<!--        <td>
             {% if 'env graph' in night.keys() %} {{ night['env graph'] }} {% end %}<br>
-        </td>
+        </td> -->
         <td>{{ night['n images'] }}</td>
     </tr>
     {% end %}

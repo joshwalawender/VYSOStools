@@ -30,7 +30,7 @@ def make_plots(date_string, telescope, logger):
     ##------------------------------------------------------------------------
     config_file = os.path.expanduser('~/.VYSOS{}.yaml'.format(telescope[1:]))
     tel = IQMon.Telescope(config_file)
-    destination_path = os.path.abspath('/var/www/')
+    destination_path = os.path.abspath('/var/www/nights/')
 
     ##------------------------------------------------------------------------
     ## Use pyephem determine sunrise and sunset times

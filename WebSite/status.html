@@ -36,8 +36,14 @@
 <table>
 <tr>
     <td colspan=3><b>Current Time</b></td>
-    <td>{{ nowut.strftime('%Y/%m/%d %H:%M:%S UT') }}</td>
-    <td>{{ now.strftime('%Y/%m/%d %H:%M:%S HST') }}</td>
+    <td style="text-align: left;">
+        {{ nowut.strftime('%Y/%m/%d %H:%M:%S UT') }}<br>
+        {{ now.strftime('%Y/%m/%d %H:%M:%S HST') }}
+    </td>
+    <td style="text-align: left;">
+        {{ 'It is currently {}'.format(twilight['now']) }}<br>
+        {{ 'A {:.0f}% illuminated moon is {}'.format(moon['phase'], moon['now']) }}
+    </td>
 </tr>
 <tr>
     <th colspan=5><br><br>Weather</th>
@@ -189,7 +195,7 @@
     </td>
 <tr>
 <tr>
-    <th colspan=5><br><br><a href="Logs/VYSOS-20/">VYSOS-20</a></th>
+    <th colspan=5><br><br><a href="V20/">VYSOS-20</a></th>
 </tr>
 <tr>
     <td colspan=3><u>VYSOS-20 Status</u></td>
@@ -233,7 +239,7 @@
     </td>
 </tr>
 <tr>
-    <th colspan=5><br><br><a href="Logs/VYSOS-5/">VYSOS-5</a></th>
+    <th colspan=5><br><br><a href="V5/">VYSOS-5</a></th>
 </tr>
 <tr>
     <td colspan=3><u>VYSOS-5 Status</u></td>

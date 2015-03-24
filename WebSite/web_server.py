@@ -20,6 +20,7 @@ from tornado import websocket
 
 from astropy import units as u
 from astropy.coordinates import SkyCoord
+import ephem
 
 import IQMon
 
@@ -165,19 +166,19 @@ class ListOfNights(RequestHandler):
             config_file = os.path.join(os.path.expanduser('~'), '.VYSOS20.yaml')
         tel = IQMon.Telescope(config_file)
 
-        logs_path = tel.logs_file_path
+        night_plot_path = os.path.abspath('/var/www/nights/')
 
         nights = []
         for date_string in date_list:
             night_info = {'date': date_string }
 
             night_graph_file = '{}_{}.png'.format(date_string, telescope)
-            if os.path.exists(os.path.join(logs_path, night_graph_file)):
+            if os.path.exists(os.path.join(night_plot_path, night_graph_file)):
                 night_info['night graph'] = night_graph_file
 
-            environmental_graph_file = '{}_{}_Env.png'.format(date_string, telescope)
-            if os.path.exists(os.path.join(logs_path, environmental_graph_file)):
-                night_info['env graph'] = environmental_graph_file
+#             environmental_graph_file = '{}_{}_Env.png'.format(date_string, telescope)
+#             if os.path.exists(os.path.join(logs_path, environmental_graph_file)):
+#                 night_info['env graph'] = environmental_graph_file
 
             night_info['n images'] = collection.find( {"date":date_string} ).count()
             
@@ -194,10 +195,68 @@ class ListOfNights(RequestHandler):
 ##-----------------------------------------------------------------------------
 class Status(RequestHandler):
     def get(self):
-        now = datetime.datetime.now()
         nowut = datetime.datetime.utcnow()
+        now = nowut - datetime.timedelta(0,10*60*60)
 
         client = MongoClient('192.168.1.101', 27017)
+
+        ##------------------------------------------------------------------------
+        ## Use pyephem determine sunrise and sunset times
+        ##------------------------------------------------------------------------
+        y = nowut.year
+        m = nowut.month
+        d = nowut.day
+        Observatory = ephem.Observer()
+        Observatory.lon = "-155:34:33.9"
+        Observatory.lat = "+19:32:09.66"
+        Observatory.elevation = 3400.0
+        Observatory.temp = 10.0
+        Observatory.pressure = 680.0
+        Observatory.date = '{}/{}/{} 10:00:00'.format(y, m, d)
+
+        twilight = {}
+        Observatory.horizon = '0.0'
+        twilight['sunset'] = Observatory.previous_setting(ephem.Sun()).datetime()
+        twilight['sunrise'] = Observatory.next_rising(ephem.Sun()).datetime()
+        Observatory.horizon = '-6.0'
+        twilight['evening civil'] = Observatory.previous_setting(ephem.Sun(), use_center=True).datetime()
+        twilight['morning civil'] = Observatory.next_rising(ephem.Sun(), use_center=True).datetime()
+        Observatory.horizon = '-12.0'
+        twilight['evening nautical'] = Observatory.previous_setting(ephem.Sun(), use_center=True).datetime()
+        twilight['morning nautical'] = Observatory.next_rising(ephem.Sun(), use_center=True).datetime()
+        Observatory.horizon = '-18.0'
+        twilight['evening astronomical'] = Observatory.previous_setting(ephem.Sun(), use_center=True).datetime()
+        twilight['morning astronomical'] = Observatory.next_rising(ephem.Sun(), use_center=True).datetime()
+        if (nowut <= twilight['sunset']):
+            twilight['now'] = 'day'
+        elif (nowut > twilight['sunset']) and (nowut <= twilight['evening civil']):
+            twilight['now'] = 'civil twilight'
+        elif (nowut > twilight['evening civil']) and (nowut <= twilight['evening nautical']):
+            twilight['now'] = 'nautical twilight'
+        elif (nowut > twilight['evening nautical']) and (nowut <= twilight['evening astronomical']):
+            twilight['now'] = 'astronomical twilight'
+        elif (nowut > twilight['evening astronomical']) and (nowut <= twilight['morning astronomical']):
+            twilight['now'] = 'night'
+        elif (nowut > twilight['morning astronomical']) and (nowut <= twilight['morning nautical']):
+            twilight['now'] = 'astronomical twilight'
+        elif (nowut > twilight['morning nautical']) and (nowut <= twilight['morning civil']):
+            twilight['now'] = 'nautical twilight'
+        elif (nowut > twilight['civil astronomical']) and (nowut <= twilight['sunrise']):
+            twilight['now'] = 'civil twilight'
+        elif (nowut > twilight['sunrise']):
+            twilight['now'] = 'day'
+
+        TheMoon = ephem.Moon()
+        TheMoon.compute(Observatory)
+        moon = {}
+        moon['set']  = Observatory.next_setting(ephem.Moon()).datetime()
+        moon['rise'] = Observatory.next_rising(ephem.Moon()).datetime()
+        moon['phase'] = TheMoon.phase
+        moon['alt'] = TheMoon.alt * 180. / ephem.pi
+        if moon['alt'] > 0:
+            moon['now'] = 'up'
+        else:
+            moon['now'] = 'down'
 
         ##---------------------------------------------------------------------
         ## Get Latest V20 Data
@@ -417,6 +476,9 @@ class Status(RequestHandler):
                     elif not P and S and not T:
                         v20data['ACP status string'] = 'Slewing'
                         v20data['ACP status color'] = 'orange'
+                    elif not P and S and T:
+                        v20data['ACP status string'] = 'Slewing'
+                        v20data['ACP status color'] = 'orange'
                     elif not P and not S and T:
                         v20data['ACP status string'] = 'Tracking'
                         v20data['ACP status color'] = 'green'
@@ -498,6 +560,8 @@ class Status(RequestHandler):
                     v5data_color = v5data_color,\
                     v5data = v5data,\
                     v5coord = v5coord,\
+                    twilight = twilight,\
+                    moon = moon,\
                     )
 
 ##-----------------------------------------------------------------------------
