@@ -50,7 +50,7 @@ def main():
     LogConsoleHandler.setFormatter(LogFormat)
     logger.addHandler(LogConsoleHandler)
     ## Set up file output
-    LogFileName = os.path.join('/', 'Users', 'vysosuser', 'IQMon', 'Logs', 'CleanupLog.txt')
+    LogFileName = os.path.join('/', 'var', 'www', 'logs', 'CleanupLog.txt')
     LogFileHandler = logging.FileHandler(LogFileName)
     LogFileHandler.setLevel(logging.DEBUG)
     LogFileHandler.setFormatter(LogFormat)
@@ -65,7 +65,7 @@ def main():
     ##-------------------------------------------------------------------------
     ## Remove old files from Plots directory
     ##-------------------------------------------------------------------------
-    for tel in telescopes
+    for tel in telescopes:
         logger.info('Examining {} for files that are {} days old.'.format(\
                     tel.plot_file_path, days_to_keep))
         now = datetime.datetime.today()
