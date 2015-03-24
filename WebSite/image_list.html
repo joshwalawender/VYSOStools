@@ -44,7 +44,7 @@
         <th style="width:50px">Airmass</th>
         <th style="width:50px">Moon Sep (deg)</th>
         <th style="width:50px">Moon Illum. (%)</th>
-        <th style="width:60px">FWHM (pix)</th>
+        <th style="width:60px">FWHM ({{ FWHM_units }})</th>
         <th style="width:50px">Ellip.</th>
         <th style="width:70px">Pointing Error (arcmin)</th>
         <th style="width:50px">Zero Point (mag)</th>
@@ -114,8 +114,8 @@
             {% end %}<br>
         </td>
         <td style={{ 'text-align:right;background-color:{};'.format(image['FWHM color']) }}>
-            {% if 'FWHM pix' in image.keys() %}
-                {{ '{:.2f}'.format(image['FWHM pix']) }}
+            {% if 'FWHM' in image.keys() %}
+                {{ '{:.2f}'.format(image['FWHM']) }}
             {% end %}<br>
         </td>
         <td style={{ 'text-align:right;background-color:{};'.format(image['ellipticity color']) }}>

@@ -86,6 +86,11 @@ class ListOfImages(RequestHandler):
                 self.write('</table></html>')
 
         for image in image_list:
+            ## Convert FWHM to units
+            if tel.units_for_FWHM == u.arcsec:
+                image['FWHM'] = image['FWHM pix'] * tel.pixel_scale.value
+            elif tel.units_for_FWHM == u.pix:
+                image['FWHM'] = image['FWHM pix'] * tel.pixel_scale.value
             ## Set FWHM color
             image['FWHM color'] = ""
             if 'FWHM pix' in image.keys():
@@ -150,6 +155,7 @@ class ListOfImages(RequestHandler):
         if len(image_list) > 0:
             self.render("image_list.html", title="{} Results".format(telescopename),\
                         telescope = telescope,\
+                        FWHM_units = tel.units_for_FWHM.to_string(),\
                         telescopename = telescopename,\
                         subject = subject,\
                         image_list = image_list,\
