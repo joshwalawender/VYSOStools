@@ -312,7 +312,7 @@ def make_plots(date_string, telescope, logger):
         ## Cloudiness
         ##------------------------------------------------------------------------
         logger.info('Adding cloudiness plot')
-        c_axes = plt.axes(plot_positions[3][0])
+        c_axes = plt.axes(plot_positions[3][0], xticklabels=[])
 
         status_list = [entry for entry in\
                        status.find({'UT date':date_string,\
@@ -321,7 +321,7 @@ def make_plots(date_string, telescope, logger):
                                     'boltwood sky temp':{'$exists':True},\
                                     'boltwood cloud condition':{'$exists':True},\
                                    }) ]
-        logger.debug("  Found {} lines for boltwood temperature".format(len(status_list)))
+        logger.debug("  Found {} lines for boltwood sky temperature".format(len(status_list)))
         if len(status_list) > 1:
             time = [dt.strptime('{} {}'.format(entry['boltwood date'],\
                                                entry['boltwood time'][:-3]),\
@@ -344,6 +344,83 @@ def make_plots(date_string, telescope, logger):
         plt.xlim(plot_start, plot_end)
         plt.ylim(-100,0)
         plt.grid()
+
+
+        ##------------------------------------------------------------------------
+        ## Humidity, Wetness, Rain
+        ##------------------------------------------------------------------------
+        logger.info('Adding humidity, wetness, rain plot')
+        h_axes = plt.axes(plot_positions[4][0], xticklabels=[])
+
+        status_list = [entry for entry in\
+                       status.find({'UT date':date_string,\
+                                    'boltwood time':{'$exists':True},\
+                                    'boltwood date':{'$exists':True},\
+                                    'boltwood humidity':{'$exists':True},\
+                                    'boltwood rain condition':{'$exists':True},\
+                                   }) ]
+        logger.debug("  Found {} lines for boltwood humidity".format(len(status_list)))
+        if len(status_list) > 1:
+            time = [dt.strptime('{} {}'.format(entry['boltwood date'],\
+                                               entry['boltwood time'][:-3]),\
+                                               '%Y-%m-%d %H:%M:%S') + \
+                    + tdelta(0, 10*60*60)\
+                    for entry in status_list]
+            humidity = [x['boltwood humidity'] for x in status_list]
+            rain_condition = [x['boltwood rain condition'] for x in status_list]
+            logger.debug('  Adding Boltwood humidity to plot')
+            h_axes.plot_date(time, humidity, 'bo', \
+                             markersize=2, markeredgewidth=0, drawstyle="default", \
+                             label="Sky Temp")
+            plt.fill_between(time, -140, humidity, where=np.array(rain_condition)==1,\
+                             color='green', alpha=0.5)
+            plt.fill_between(time, -140, humidity, where=np.array(rain_condition)==2,\
+                             color='yellow', alpha=0.8)
+            plt.fill_between(time, -140, humidity, where=np.array(rain_condition)==3,\
+                             color='red', alpha=0.8)
+        plt.ylabel("Humidity (%)")
+        plt.xlim(plot_start, plot_end)
+        plt.ylim(-5,105)
+        plt.grid()
+
+        ##------------------------------------------------------------------------
+        ## Wind Speed
+        ##------------------------------------------------------------------------
+        logger.info('Adding wind speed plot')
+        h_axes = plt.axes(plot_positions[5][0], xticklabels=[])
+
+        status_list = [entry for entry in\
+                       status.find({'UT date':date_string,\
+                                    'boltwood time':{'$exists':True},\
+                                    'boltwood date':{'$exists':True},\
+                                    'boltwood wind speed':{'$exists':True},\
+                                    'boltwood wind condition':{'$exists':True},\
+                                   }) ]
+        logger.debug("  Found {} lines for boltwood wind speed".format(len(status_list)))
+        if len(status_list) > 1:
+            time = [dt.strptime('{} {}'.format(entry['boltwood date'],\
+                                               entry['boltwood time'][:-3]),\
+                                               '%Y-%m-%d %H:%M:%S') + \
+                    + tdelta(0, 10*60*60)\
+                    for entry in status_list]
+            wind_speed = [x['boltwood wind speed'] for x in status_list]
+            wind_condition = [x['boltwood wind condition'] for x in status_list]
+            logger.debug('  Adding Boltwood wind speed to plot')
+            h_axes.plot_date(time, wind_speed, 'bo', \
+                             markersize=2, markeredgewidth=0, drawstyle="default", \
+                             label="Wind Speed")
+            plt.fill_between(time, -140, wind_speed, where=np.array(wind_condition)==1,\
+                             color='green', alpha=0.5)
+            plt.fill_between(time, -140, wind_speed, where=np.array(wind_condition)==2,\
+                             color='yellow', alpha=0.8)
+            plt.fill_between(time, -140, wind_speed, where=np.array(wind_condition)==3,\
+                             color='red', alpha=0.8)
+        plt.ylabel("Wind Speed (mph)")
+        plt.xlim(plot_start, plot_end)
+        plt.ylim(-5,105)
+        plt.grid()
+
+        plt.xlabel("UT Time")
 
 
 
