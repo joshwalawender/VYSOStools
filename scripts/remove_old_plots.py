@@ -33,10 +33,6 @@ def main():
     parser.add_argument("-v", "--verbose",
         action="store_true", dest="verbose",
         default=False, help="Be verbose! (default = False)")
-    ## add arguments
-    parser.add_argument("--input",
-        type=str, dest="input",
-        help="The input.")
     args = parser.parse_args()
 
     ##-------------------------------------------------------------------------
@@ -60,39 +56,29 @@ def main():
     LogFileHandler.setFormatter(LogFormat)
     logger.addHandler(LogFileHandler)
 
+    V5 = IQMon.Telescope(os.path.expanduser('~/.VYSOS5.yaml'))
+    V20 = IQMon.Telescope(os.path.expanduser('~/.VYSOS20.yaml'))
+    telescopes = [V5, V20]
+
+    days_to_keep = 60
 
     ##-------------------------------------------------------------------------
     ## Remove old files from Plots directory
     ##-------------------------------------------------------------------------
-    config = IQMon.Config()
-    days_to_keep = 60
-    logger.info('Examining {} for files that are {} days old.'.format(config.pathPlots, days_to_keep))
-    now = datetime.datetime.today()
-    files = glob.glob(os.path.join(config.pathPlots, '*'))
-    n_removed = 0
-    for file in files:
-        file_mod = datetime.datetime.fromtimestamp(os.stat(file).st_mtime)
-        age = now - file_mod
-        if age.days >= days_to_keep:
-            n_removed += 1
-            os.remove(file)
-    logger.info('  Removed {} files from Plots directory.'.format(n_removed))
+    for tel in telescopes
+        logger.info('Examining {} for files that are {} days old.'.format(\
+                    tel.plot_file_path, days_to_keep))
+        now = datetime.datetime.today()
+        files = glob.glob(os.path.join(tel.plot_file_path, '*'))
+        n_removed = 0
+        for file in files:
+            file_mod = datetime.datetime.fromtimestamp(os.stat(file).st_mtime)
+            age = now - file_mod
+            if age.days >= days_to_keep:
+                n_removed += 1
+                os.remove(file)
+        logger.info('  Removed {} files from Plots directory.'.format(n_removed))
 
-
-    ##-------------------------------------------------------------------------
-    ## Remove old files from tmp directory
-    ##-------------------------------------------------------------------------
-    tmp_days_to_keep = 1
-    logger.info('Examining {} for files that are {} days old.'.format(config.pathTemp, tmp_days_to_keep))
-    tmp_files = glob.glob(os.path.join(config.pathTemp, '*'))
-    n_tmp_removed = 0
-    for tmp_file in tmp_files:
-        file_mod = datetime.datetime.fromtimestamp(os.stat(tmp_file).st_mtime)
-        age = now - file_mod
-        if age.days >= tmp_days_to_keep:
-            n_tmp_removed += 1
-            os.remove(tmp_file)
-    logger.info('  Removed {} files from tmp directory.'.format(n_tmp_removed))
 
 
 
