@@ -93,7 +93,6 @@ def ListDarks(image):
 ##-------------------------------------------------------------------------
 def MeasureImage(filename,\
                  telescope=None,\
-                 clobber_summary=False,\
                  clobber_logs=False,\
                  verbose=False,\
                  nographics=False,\
@@ -161,29 +160,6 @@ def MeasureImage(filename,\
     if telescope == 'V5':
         image.edit_header('FILTER', 'PSr')
     image.read_header()
-
-#     if image.object_name:
-#         target_name = image.object_name
-#         image.logger.info('Target name from header: {}'.format(target_name))
-#     else:
-#         TargetFileNameMatch = re.match('V\d{1,2}_(\w+)\-(\w+)\-\d{8}at\d{6}', FitsBasename)
-#         if TargetFileNameMatch:
-#             target_name = TargetFileNameMatch.group(1)
-#             image.logger.info('Target name from filename: {}'.format(target_name))
-#         else:
-#             image.logger.error('Could not determine target name.  Exiting.')
-#             sys.exit(0)
-# 
-#     if not os.path.exists(os.path.join(tel.logs_file_path, 'targets')):
-#         os.mkdir(os.path.join(tel.logs_file_path, 'targets'))
-#     target_file = os.path.join(tel.logs_file_path, 'targets', '{}.yaml'.format(target_name))
-
-#     html_file = os.path.join(tel.logs_file_path, DataNightString+"_"+telescope+".html")
-#     yaml_file = os.path.join(tel.logs_file_path, DataNightString+"_"+telescope+"_Summary.txt")
-#     if clobber_summary:
-#         if os.path.exists(html_file): os.remove(html_file)
-#         if os.path.exists(yaml_file): os.remove(yaml_file)
-
 
     ##-------------------------------------------------------------------------
     ## Perform Actual Image Analysis
