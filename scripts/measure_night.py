@@ -138,13 +138,13 @@ def main(argv=None):
                     try:
                         measure_image.MeasureImage(os.path.join(ImagesDirectory, Image),\
                                      telescope=args.telescope,\
-                                     clobber_logs=True, clobber_summary=clobber_summary,\
+                                     clobber_logs=True,\
                                      zero_point=zp, analyze_image=True)
                     except:
                         print('WARNING:  MeasureImage failed on {}'.format(Image))
                         measure_image.MeasureImage(os.path.join(ImagesDirectory, Image),\
                                      telescope=args.telescope,\
-                                     clobber_logs=False, clobber_summary=clobber_summary,\
+                                     clobber_logs=False,\
                                      zero_point=zp, analyze_image=False)
 
         else:
