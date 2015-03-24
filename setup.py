@@ -6,12 +6,11 @@ setup(
     packages = find_packages(),
     entry_points = {
         'console_scripts': [
-            'measureimage = scripts.MeasureImage:main',
-            'measurenight = scripts.MeasureNight:main',
-            'monitor = scripts.Monitor:main',
-            'makenightlyplots = scripts.MakeNightlyPlots:main',
-            'makewebpage = scripts.MakeWebPage:main',
-            'cleanupIQMon = scripts.CleanUpIQMon:main',
+            'measureimage = scripts.measure_image:main',
+            'measurenight = scripts.measure_night:main',
+            'monitor = scripts.watch_directory:main',
+            'makenightlyplots = scripts.make_nightly_plots:main',
+            'cleanupIQMon = scripts.remove_old_plots:main',
             'systemstatus = scripts.get_system_status:main',
         ]}
 )
