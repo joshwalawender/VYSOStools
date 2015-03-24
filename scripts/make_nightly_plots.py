@@ -439,7 +439,7 @@ def make_plots(date_string, telescope, logger):
                                    'FWHM pix':{'$exists':True},\
                                   }) ]
         logger.debug("  Found {} lines for FWHM".format(len(image_list)))
-        ymax = {'V5': 4, 'V20': 6}[telescope]
+        ymax = {'V5': 4, 'V20': 11}[telescope]
         if len(image_list) > 0:
             time = [x['exposure start'] for x in image_list]
             fwhm = [x['FWHM pix'] for x in image_list]
@@ -468,7 +468,7 @@ def make_plots(date_string, telescope, logger):
         f_axes.xaxis.set_major_formatter(hours_fmt)
 
         plt.ylabel("FWHM (pix)")
-        plt.yticks(range(0,10))
+        plt.yticks(range(0,20))
         plt.xlim(plot_start, plot_end)
         plt.ylim(0,ymax)
         plt.grid()
@@ -586,7 +586,7 @@ def make_plots(date_string, telescope, logger):
 
 
 
-if __name__ == '__main__':
+def main():
     ##-------------------------------------------------------------------------
     ## Parse Command Line Arguments
     ##-------------------------------------------------------------------------
@@ -601,9 +601,12 @@ if __name__ == '__main__':
         required=True, type=str,
         help="Telescope which took the data ('V5' or 'V20')")
     parser.add_argument("-d", dest="date",
-        required=True, type=str,
+        required=False, type=str,
         help="Date of night to plot")
     args = parser.parse_args()
+
+    if not args.date:
+        args.date = dt.utcnow().strftime("%Y%m%dUT")
 
     ##-------------------------------------------------------------------------
     ## Create Logger Object
@@ -631,3 +634,6 @@ if __name__ == '__main__':
 
 
     make_plots(args.date, args.telescope, logger)
+
+if __name__ == '__main__':
+    main()
