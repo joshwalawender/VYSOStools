@@ -556,14 +556,18 @@ def make_plots(date_string, telescope, logger):
                                    'pointing error arcmin':{'$exists':True},\
                                   }) ]
         logger.debug("  Found {} lines for pointing error".format(len(image_list)))
-        ymax = {'V5': 4, 'V20': 6}[telescope]
+        ymax = {'V5': 11, 'V20': 11}[telescope]
         if len(image_list) > 0:
             time = [x['exposure start'] for x in image_list]
             pointing_err = [x['pointing error arcmin'] for x in image_list]
+            time_above_plot = [x['exposure start'] for x in image_list if x['pointing error arcmin'] > ymax]
+            pointing_err_above_plot = [x['zero point'] for x in image_list if x['pointing error arcmin'] > ymax]
             logger.debug('  Adding pointing error to plot')
             p_axes.plot_date(time, pointing_err, 'ko', \
                              markersize=4, markeredgewidth=0, drawstyle="default", \
                              label="ellipticity")
+            p_axes.plot_date(time_above_plot, pointing_err_above_plot, 'r^', \
+                             markersize=5, markeredgewidth=0)
             p_axes.plot_date([plot_start, plot_end],\
                              [tel.config['threshold_pointing_err'], tel.config['threshold_pointing_err']],\
                              'r-')
@@ -571,7 +575,7 @@ def make_plots(date_string, telescope, logger):
         plt.ylabel("Pointing Error (arcmin)")
         plt.yticks(range(0,11,2))
         plt.xlim(plot_start, plot_end)
-        plt.ylim(0,11)
+        plt.ylim(0,ymax)
         plt.grid()
         plt.xlabel("UT Time")
 
