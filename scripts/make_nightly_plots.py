@@ -28,7 +28,7 @@ def make_plots(date_string, telescope, logger):
     ##------------------------------------------------------------------------
     ## Set up pathnames and filenames
     ##------------------------------------------------------------------------
-    config_file = os.path.join(os.path.expanduser('~'), 'IQMon', 'VYSOS{}.yaml'.format(telescope[1:]))
+    config_file = os.path.expanduser('~/.VYSOS{}.yaml'.format(telescope[1:]))
     tel = IQMon.Telescope(config_file)
     destination_path = os.path.abspath('/var/www/')
 
@@ -81,17 +81,17 @@ def make_plots(date_string, telescope, logger):
     ## Get status and IQMon results
     ##------------------------------------------------------------------------
     client = MongoClient('192.168.1.101', 27017)
-    status = client.vysos['{}status'.format(telescope)]
-    images = client.vysos['{}images'.format(telescope)]
+    status = client.vysos['{}.status'.format(telescope)]
+    images = client.vysos['{}.images'.format(telescope)]
 
     ##------------------------------------------------------------------------
     ## Make Nightly Sumamry Plot (show only night time)
     ##------------------------------------------------------------------------
     night_plot_file_name = '{}_{}.png'.format(date_string, telescope)
     night_plot_file = os.path.join(destination_path, night_plot_file_name)
-    UTstart = 0
-    UTend = 24
-    hours = HourLocator(byhour=range(24), interval=2)
+    plot_start = sunset-tdelta(0,3600)
+    plot_end = sunrise+tdelta(0,1800)
+    hours = HourLocator(byhour=range(24), interval=1)
     hours_fmt = DateFormatter('%H')
 
     now = dt.utcnow()
@@ -124,6 +124,7 @@ def make_plots(date_string, telescope, logger):
         ##------------------------------------------------------------------------
         t_axes = plt.axes(plot_positions[0][0])
         plt.title("Weather and Results for {} on the Night of {}".format(telescope, date_string))
+        logger.info('Adding temperature plot')
 
         ##------------------------------------------------------------------------
         ## Boltwood Temperature
@@ -186,30 +187,171 @@ def make_plots(date_string, telescope, logger):
                     for entry in status_list]
             FM_temp = [x['FocusMax temperature (tube)'] for x in status_list]
             logger.debug('  Adding FocusMax tube temp to plot')
-            t_axes.plot_date(time, primary_temp, 'ro', \
+            t_axes.plot_date(time, FM_temp, 'ro', \
                              markersize=2, markeredgewidth=0, drawstyle="default", \
                              label="Tube Temp")
 
-            t_axes.xaxis.set_major_locator(hours)
-            t_axes.xaxis.set_major_formatter(hours_fmt)
+        t_axes.xaxis.set_major_locator(hours)
+        t_axes.xaxis.set_major_formatter(hours_fmt)
 
         ## Overplot Twilights
-#         plt.axvspan(SunsetDecimal, EveningCivilTwilightDecimal, ymin=0, ymax=1, color='blue', alpha=0.1)
-#         plt.axvspan(EveningCivilTwilightDecimal, EveningNauticalTwilightDecimal, ymin=0, ymax=1, color='blue', alpha=0.2)
-#         plt.axvspan(EveningNauticalTwilightDecimal, EveningAstronomicalTwilightDecimal, ymin=0, ymax=1, color='blue', alpha=0.3)
-#         plt.axvspan(EveningAstronomicalTwilightDecimal, MorningAstronomicalTwilightDecimal, ymin=0, ymax=1, color='blue', alpha=0.5)
-#         plt.axvspan(MorningAstronomicalTwilightDecimal, MorningNauticalTwilightDecimal, ymin=0, ymax=1, color='blue', alpha=0.3)
-#         plt.axvspan(MorningNauticalTwilightDecimal, MorningCivilTwilightDecimal, ymin=0, ymax=1, color='blue', alpha=0.2)
-#         plt.axvspan(MorningCivilTwilightDecimal, SunriseDecimal, ymin=0, ymax=1, color='blue', alpha=0.1)
-
+        plt.axvspan(sunset, evening_civil_twilight, ymin=0, ymax=1, color='blue', alpha=0.1)
+        plt.axvspan(evening_civil_twilight, evening_nautical_twilight, ymin=0, ymax=1, color='blue', alpha=0.2)
+        plt.axvspan(evening_nautical_twilight, evening_astronomical_twilight, ymin=0, ymax=1, color='blue', alpha=0.3)
+        plt.axvspan(evening_astronomical_twilight, morning_astronomical_twilight, ymin=0, ymax=1, color='blue', alpha=0.5)
+        plt.axvspan(morning_astronomical_twilight, morning_nautical_twilight, ymin=0, ymax=1, color='blue', alpha=0.3)
+        plt.axvspan(morning_nautical_twilight, morning_civil_twilight, ymin=0, ymax=1, color='blue', alpha=0.2)
+        plt.axvspan(morning_civil_twilight, sunrise, ymin=0, ymax=1, color='blue', alpha=0.1)
 
         plt.legend(loc='best', prop={'size':10})
         plt.ylabel("Temperature (F)")
-        plt.xlabel("UT Time")
+        plt.xlim(plot_start, plot_end)
+        plt.grid()
+
+        ## Overplot Moon Up Time
+        m_axes = t_axes.twinx()
+        m_axes.set_ylabel('Moon Alt (%.0f%% full)' % moon_phase, color='y')
+        m_axes.plot_date(moon_time_list, moon_alts, 'y-')
+        plt.ylim(0,100)
+        plt.yticks([10,30,50,70,90], color='y')
+        plt.xlim(plot_start, plot_end)
+        plt.fill_between(moon_time_list, 0, moon_alts, where=np.array(moon_alts)>0, color='yellow', alpha=moon_fill)        
+
+        ##------------------------------------------------------------------------
+        ## Temperature Differences (V20 Only)
+        ##------------------------------------------------------------------------
+        if telescope == "V20":
+            logger.info('Adding temperature difference plot')
+            tdiff_axes = plt.axes(plot_positions[1][0], xticklabels=[])
+            status_list = [entry for entry in\
+                           status.find({'UT date':date_string,\
+                                        'UT time':{'$exists':True},\
+                                        'RCOS temperature (primary)':{'$exists':True},\
+                                        'RCOS temperature (truss)':{'$exists':True},\
+                                        'boltwood ambient temp':{'$exists':True},\
+                                       }) ]
+            logger.debug("  Found {} lines for temperature differences".format(len(status_list)))
+            if len(status_list) > 1:
+                time = [dt.strptime('{} {}'.format(entry['UT date'],\
+                                                   entry['UT time']),\
+                                                   '%Y%m%dUT %H:%M:%S')
+                        for entry in status_list]
+                primary_temp_diff = [float(x['RCOS temperature (primary)']) - \
+                                     float(x['boltwood ambient temp'])\
+                                     for x in status_list]
+                truss_temp_diff = [float(x['RCOS temperature (truss)']) - \
+                                   float(x['boltwood ambient temp'])\
+                                   for x in status_list]
+                logger.debug('  Adding priamry mirror temp diff to plot')
+                tdiff_axes.plot_date(time, primary_temp_diff, 'ro', \
+                                     markersize=2, markeredgewidth=0, drawstyle="default", \
+                                     label="Mirror Temp")
+                logger.debug('  Adding truss temp diff to plot')
+                tdiff_axes.plot_date(time, truss_temp_diff, 'go', \
+                                     markersize=2, markeredgewidth=0, drawstyle="default", \
+                                     label="Truss Temp")
+                tdiff_axes.plot_date([plot_start, plot_end], [0,0], 'k-')
+                plt.xlim(plot_start, plot_end)
+                plt.ylim(-2.25,4.5)
+                plt.ylabel("Difference (F)")
+                plt.grid()
+
+
+        ##------------------------------------------------------------------------
+        ## Fan State/Power (V20 Only)
+        ##------------------------------------------------------------------------
+        if telescope == "V20":
+            logger.info('Adding fan state/power plot')
+            fan_axes = plt.axes(plot_positions[2][0], xticklabels=[])
+            ##------------------------------------------------------------------------
+            ## V20 Dome Fan On
+            status_list = [entry for entry in\
+                           status.find({'UT date':date_string,\
+                                        'UT time':{'$exists':True},\
+                                        'CBW fan state':{'$exists':True},\
+                                       }) ]
+            logger.debug("  Found {} lines for dome fan state".format(len(status_list)))
+            if len(status_list) > 1:
+                time = [dt.strptime('{} {}'.format(entry['UT date'],\
+                                                   entry['UT time']),\
+                                                   '%Y%m%dUT %H:%M:%S')
+                        for entry in status_list]
+                dome_fan = [x['CBW fan state'] for x in status_list]
+                logger.debug('  Adding dome fan state to plot')
+                fan_axes.plot_date(time, dome_fan, 'co', \
+                                     markersize=2, markeredgewidth=0, drawstyle="default", \
+                                     label="Dome Fan")
+
+            ##------------------------------------------------------------------------
+            ## RCOS Fan Power
+            status_list = [entry for entry in\
+                           status.find({'UT date':date_string,\
+                                        'UT time':{'$exists':True},\
+                                        'RCOS fan speed':{'$exists':True},\
+                                       }) ]
+            logger.debug("  Found {} lines for RCOS fan speed".format(len(status_list)))
+            if len(status_list) > 1:
+                time = [dt.strptime('{} {}'.format(entry['UT date'],\
+                                                   entry['UT time']),\
+                                                   '%Y%m%dUT %H:%M:%S')
+                        for entry in status_list]
+                RCOS_fan = [x['RCOS fan speed'] for x in status_list]
+                logger.debug('  Adding RCOS fan speed to plot')
+                fan_axes.plot_date(time, RCOS_fan, 'bo', \
+                                     markersize=2, markeredgewidth=0, drawstyle="default", \
+                                     label="Mirror Temp")
+            
+            plt.xlim(plot_start, plot_end)
+            plt.ylim(-10,110)
+            plt.yticks(np.linspace(0,100,3,endpoint=True))
+            plt.legend(loc='best', prop={'size':10})
+            plt.grid()
+
+
+        ##------------------------------------------------------------------------
+        ## Cloudiness
+        ##------------------------------------------------------------------------
+        logger.info('Adding cloudiness plot')
+        c_axes = plt.axes(plot_positions[3][0])
+
+        status_list = [entry for entry in\
+                       status.find({'UT date':date_string,\
+                                    'boltwood time':{'$exists':True},\
+                                    'boltwood date':{'$exists':True},\
+                                    'boltwood sky temp':{'$exists':True},\
+                                    'boltwood cloud condition':{'$exists':True},\
+                                   }) ]
+        logger.debug("  Found {} lines for boltwood temperature".format(len(status_list)))
+        if len(status_list) > 1:
+            time = [dt.strptime('{} {}'.format(entry['boltwood date'],\
+                                               entry['boltwood time'][:-3]),\
+                                               '%Y-%m-%d %H:%M:%S') + \
+                    + tdelta(0, 10*60*60)\
+                    for entry in status_list]
+            sky_temp = [x['boltwood sky temp'] for x in status_list]
+            cloud_condition = [x['boltwood cloud condition'] for x in status_list]
+            logger.debug('  Adding Boltwood sky temp to plot')
+            c_axes.plot_date(time, sky_temp, 'bo', \
+                             markersize=2, markeredgewidth=0, drawstyle="default", \
+                             label="Sky Temp")
+            plt.fill_between(time, -140, sky_temp, where=np.array(cloud_condition)==1,\
+                             color='green', alpha=0.5)
+            plt.fill_between(time, -140, sky_temp, where=np.array(cloud_condition)==2,\
+                             color='yellow', alpha=0.8)
+            plt.fill_between(time, -140, sky_temp, where=np.array(cloud_condition)==3,\
+                             color='red', alpha=0.8)
+        plt.ylabel("Cloudiness (F)")
+        plt.xlim(plot_start, plot_end)
+        plt.ylim(-100,0)
+        plt.grid()
+
+
+
+
+
+
         logger.info('Saving figure: {}'.format(night_plot_file))
         plt.savefig(night_plot_file, dpi=dpi, bbox_inches='tight', pad_inches=0.10)
-
-
 
 
 
