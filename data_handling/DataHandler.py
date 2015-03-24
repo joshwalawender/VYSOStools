@@ -214,41 +214,42 @@ def main():
             else:
                 logger.warning('  SHA sum mismatch.  File not deleted.')
 
-    ## Remove Calibration directory if empty
-    Calibration_path = os.path.join(windows_path, 'Images', date, 'Calibration')
-    if os.path.exists(Calibration_path):
-        if len(glob.glob(os.path.join(Calibration_path, '*'))) == 0:
-            logger.info('Removing {}'.format(Calibration_path))
-            os.rmdir(Calibration_path)
-        else:
-            logger.warning('Files still remain in {}'.format(Calibration_path))
+    if args.delete:
+        ## Remove Calibration directory if empty
+        Calibration_path = os.path.join(windows_path, 'Images', date, 'Calibration')
+        if os.path.exists(Calibration_path):
+            if len(glob.glob(os.path.join(Calibration_path, '*'))) == 0:
+                logger.info('Removing {}'.format(Calibration_path))
+                os.rmdir(Calibration_path)
+            else:
+                logger.warning('Files still remain in {}'.format(Calibration_path))
 
-    ## Remove AutoFlat directory if empty
-    AutoFlat_path = os.path.join(windows_path, 'Images', date, 'AutoFlat')
-    if os.path.exists(AutoFlat_path):
-        if len(glob.glob(os.path.join(AutoFlat_path, '*'))) == 0:
-            logger.info('Removing {}'.format(AutoFlat_path))
-            os.rmdir(AutoFlat_path)
-        else:
-            logger.warning('Files still remain in {}'.format(AutoFlat_path))
+        ## Remove AutoFlat directory if empty
+        AutoFlat_path = os.path.join(windows_path, 'Images', date, 'AutoFlat')
+        if os.path.exists(AutoFlat_path):
+            if len(glob.glob(os.path.join(AutoFlat_path, '*'))) == 0:
+                logger.info('Removing {}'.format(AutoFlat_path))
+                os.rmdir(AutoFlat_path)
+            else:
+                logger.warning('Files still remain in {}'.format(AutoFlat_path))
 
-    ## Remove Images directory if empty
-    Images_path = os.path.join(windows_path, 'Images', date)
-    if os.path.exists(Images_path):
-        if len(glob.glob(os.path.join(Images_path, '*'))) == 0:
-            logger.info('Removing {}'.format(Images_path))
-            os.rmdir(Images_path)
-        else:
-            logger.warning('Files still remain in {}'.format(Images_path))
+        ## Remove Images directory if empty
+        Images_path = os.path.join(windows_path, 'Images', date)
+        if os.path.exists(Images_path):
+            if len(glob.glob(os.path.join(Images_path, '*'))) == 0:
+                logger.info('Removing {}'.format(Images_path))
+                os.rmdir(Images_path)
+            else:
+                logger.warning('Files still remain in {}'.format(Images_path))
 
-    ## Remove Logs directory if empty
-    Logs_path = os.path.join(windows_path, 'Logs', date)
-    if os.path.exists(Logs_path):
-        if len(glob.glob(os.path.join(Logs_path, '*'))) == 0:
-            logger.info('Removing {}'.format(Logs_path))
-            os.rmdir(Logs_path)
-        else:
-            logger.warning('Files still remain in {}'.format(Logs_path))
+        ## Remove Logs directory if empty
+        Logs_path = os.path.join(windows_path, 'Logs', date)
+        if os.path.exists(Logs_path):
+            if len(glob.glob(os.path.join(Logs_path, '*'))) == 0:
+                logger.info('Removing {}'.format(Logs_path))
+                os.rmdir(Logs_path)
+            else:
+                logger.warning('Files still remain in {}'.format(Logs_path))
 
 
 if __name__ == '__main__':
