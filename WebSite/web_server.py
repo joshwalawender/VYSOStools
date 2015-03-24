@@ -258,7 +258,7 @@ class Status(RequestHandler):
             twilight['now'] = 'astronomical twilight'
         elif (nowut > twilight['morning nautical']) and (nowut <= twilight['morning civil']):
             twilight['now'] = 'nautical twilight'
-        elif (nowut > twilight['civil astronomical']) and (nowut <= twilight['sunrise']):
+        elif (nowut > twilight['morning civil']) and (nowut <= twilight['sunrise']):
             twilight['now'] = 'civil twilight'
         elif (nowut > twilight['sunrise']):
             twilight['now'] = 'day'
