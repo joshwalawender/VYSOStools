@@ -15,11 +15,7 @@ import time
 import numpy
 import yaml
 
-import MeasureImage
-
-help_message = '''
-The help message goes here.
-'''
+import measure_image
 
 
 def main():  
@@ -99,13 +95,13 @@ def main():
                         clobber_summary = True
                     PreviousFiles.append(Image)
                     try:
-                        MeasureImage.MeasureImage(os.path.join(DataPath, Image),\
+                        measure_image.MeasureImage(os.path.join(DataPath, Image),\
                                                   clobber_logs=True,\
                                                   clobber_summary=clobber_summary,\
                                                   zero_point=zp, analyze_image=True)
                     except:
                         print('WARNING:  MeasureImage failed on {}'.format(Image))
-                        MeasureImage.MeasureImage(os.path.join(DataPath, Image),\
+                        measure_image.MeasureImage(os.path.join(DataPath, Image),\
                                                   clobber_logs=True,\
                                                   clobber_summary=clobber_summary,\
                                                   zero_point=zp, analyze_image=False)

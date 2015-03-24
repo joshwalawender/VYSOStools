@@ -19,7 +19,7 @@ from argparse import ArgumentParser
 import astropy.io.fits as fits
 
 import IQMon
-import MeasureImage
+import measure_image
 
 help_message = '''
 The help message goes here.
@@ -136,13 +136,13 @@ def main(argv=None):
                     if args.clobber and Image == SortedImageFiles[0]:
                         clobber_summary = True
                     try:
-                        MeasureImage.MeasureImage(os.path.join(ImagesDirectory, Image),\
+                        measure_image.MeasureImage(os.path.join(ImagesDirectory, Image),\
                                      telescope=args.telescope,\
                                      clobber_logs=True, clobber_summary=clobber_summary,\
                                      zero_point=zp, analyze_image=True)
                     except:
                         print('WARNING:  MeasureImage failed on {}'.format(Image))
-                        MeasureImage.MeasureImage(os.path.join(ImagesDirectory, Image),\
+                        measure_image.MeasureImage(os.path.join(ImagesDirectory, Image),\
                                      telescope=args.telescope,\
                                      clobber_logs=False, clobber_summary=clobber_summary,\
                                      zero_point=zp, analyze_image=False)
