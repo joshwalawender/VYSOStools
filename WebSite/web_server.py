@@ -86,14 +86,14 @@ class ListOfImages(RequestHandler):
                 self.write('</table></html>')
 
         for image in image_list:
-            ## Convert FWHM to units
-            if tel.units_for_FWHM == u.arcsec:
-                image['FWHM'] = image['FWHM pix'] * tel.pixel_scale.value
-            elif tel.units_for_FWHM == u.pix:
-                image['FWHM'] = image['FWHM pix'] * tel.pixel_scale.value
             ## Set FWHM color
             image['FWHM color'] = ""
             if 'FWHM pix' in image.keys():
+                ## Convert FWHM to units
+                if tel.units_for_FWHM == u.arcsec:
+                    image['FWHM'] = image['FWHM pix'] * tel.pixel_scale.value
+                elif tel.units_for_FWHM == u.pix:
+                    image['FWHM'] = image['FWHM pix'] * tel.pixel_scale.value
                 image['FWHM color'] = "#70DB70" # green
                 if 'flags' in image.keys():
                     if 'FWHM' in image['flags'].keys():
@@ -220,16 +220,13 @@ class Status(RequestHandler):
         ##------------------------------------------------------------------------
         ## Use pyephem determine sunrise and sunset times
         ##------------------------------------------------------------------------
-        y = nowut.year
-        m = nowut.month
-        d = nowut.day
         Observatory = ephem.Observer()
         Observatory.lon = "-155:34:33.9"
         Observatory.lat = "+19:32:09.66"
         Observatory.elevation = 3400.0
         Observatory.temp = 10.0
         Observatory.pressure = 680.0
-        Observatory.date = '{}/{}/{} 10:00:00'.format(y, m, d)
+        Observatory.date = nowut.strftime('%Y/%m/%d %H:%M:%S')
 
         twilight = {}
         Observatory.horizon = '0.0'
