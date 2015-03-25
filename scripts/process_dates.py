@@ -2,22 +2,39 @@ import sys
 import os
 import re
 import logging
+import time
 from glob import glob
 from datetime import datetime as dt
 from datetime import timedelta as tdelta
 from argparse import ArgumentParser
 import subprocess
+import ephem
 
 import measure_image
 import make_nightly_plots
 
-def main(startdate, enddate, logger):
+def main(startdate, enddate, logger, nice=False):
+    ##------------------------------------------------------------------------
+    ## Use pyephem determine sunrise and sunset times
+    ##------------------------------------------------------------------------
+    now = dt.utcnow()
+    Observatory = ephem.Observer()
+    Observatory.lon = "-155:34:33.9"
+    Observatory.lat = "+19:32:09.66"
+    Observatory.elevation = 3400.0
+    Observatory.temp = 10.0
+    Observatory.pressure = 680.0
+    Observatory.horizon = '0.0'
+    Observatory.date = now.strftime('%Y/%m/%d %H:%M:%S')
+    sunset  = Observatory.next_setting(ephem.Sun()).datetime()
+    sunrise = Observatory.next_rising(ephem.Sun()).datetime()
+
     MatchFilename = re.compile("(.*)\-([0-9]{8})at([0-9]{6})\.fts")
     MatchEmpty = re.compile(".*\-Empty\-.*\.fts")
     oneday = tdelta(1, 0)
-    now = startdate
-    while now <= enddate:
-        date_string = now.strftime('%Y%m%dUT')
+    date = startdate
+    while date <= enddate:
+        date_string = date.strftime('%Y%m%dUT')
         logger.info('Checking for images from {}'.format(date_string))
         images = []
         V5_path = os.path.join("/Volumes", "Drobo", "V5", "Images", date_string)
@@ -31,6 +48,20 @@ def main(startdate, enddate, logger):
             logger.info('  Found {} images for the night of {} for V20'.format(len(V20_images), date_string))
             images.extend(V20_images)
         for image in images:
+            now = dt.utcnow()
+            if (now > sunset) and (now < sunrise):
+                print(now)
+                print(sunset)
+                print(sunrise)
+                until_sunrise = (sunrise - now).total_seconds()
+                logger.info('Sleeping {} seconds until sunrise'.format(until_sunrise))
+                time.sleep(until_sunrise + 300)
+                now = dt.utcnow()
+                Observatory.date = now.strftime('%Y/%m/%d %H:%M:%S')
+                sunset  = Observatory.previous_setting(ephem.Sun()).datetime()
+                sunrise = Observatory.next_rising(ephem.Sun()).datetime()
+                logger.info('Resuming processing ...')
+                logger.info('  Next sunset at {}'.format(sunset.strftime('%Y/%m/%d %H:%M:%S')))
             if MatchFilename.match(image) and not MatchEmpty.match(image):
                 try:
                     measure_image.MeasureImage(image,\
@@ -45,7 +76,7 @@ def main(startdate, enddate, logger):
                                  analyze_image=False)
         make_nightly_plots.make_plots(date_string, 'V5', logger)
         make_nightly_plots.make_plots(date_string, 'V20', logger)
-        now += oneday
+        date += oneday
 
     
     
@@ -60,6 +91,9 @@ if __name__ == "__main__":
     parser.add_argument("-v", "--verbose",
         action="store_true", dest="verbose",
         default=False, help="Be verbose! (default = False)")
+    parser.add_argument("--nice",
+        action="store_true", dest="nice",
+        default=False, help="Be nice by not processing data at night.")
     ## add arguments
     parser.add_argument("-s", "--start", 
         dest="start", required=True, type=str,
@@ -96,4 +130,4 @@ if __name__ == "__main__":
     startdate = dt.strptime(args.start, '%Y%m%dUT')
     enddate = dt.strptime(args.end, '%Y%m%dUT')
 
-    main(startdate, enddate, logger)
+    main(startdate, enddate, logger, nice=args.nice)
