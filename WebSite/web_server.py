@@ -226,45 +226,62 @@ class Status(RequestHandler):
         Observatory.elevation = 3400.0
         Observatory.temp = 10.0
         Observatory.pressure = 680.0
-        Observatory.date = nowut.strftime('%Y/%m/%d %H:%M:%S')
-
-        twilight = {}
+        Observatory.date = nowut.strftime('%Y/%m/%d 01:00:00')
         Observatory.horizon = '0.0'
-        twilight['sunset'] = Observatory.previous_setting(ephem.Sun()).datetime()
-        twilight['sunrise'] = Observatory.next_rising(ephem.Sun()).datetime()
-        Observatory.horizon = '-6.0'
-        twilight['evening civil'] = Observatory.previous_setting(ephem.Sun(), use_center=True).datetime()
-        twilight['morning civil'] = Observatory.next_rising(ephem.Sun(), use_center=True).datetime()
-        Observatory.horizon = '-12.0'
-        twilight['evening nautical'] = Observatory.previous_setting(ephem.Sun(), use_center=True).datetime()
-        twilight['morning nautical'] = Observatory.next_rising(ephem.Sun(), use_center=True).datetime()
-        Observatory.horizon = '-18.0'
-        twilight['evening astronomical'] = Observatory.previous_setting(ephem.Sun(), use_center=True).datetime()
-        twilight['morning astronomical'] = Observatory.next_rising(ephem.Sun(), use_center=True).datetime()
-        if (nowut <= twilight['sunset']):
-            twilight['now'] = 'day'
-        elif (nowut > twilight['sunset']) and (nowut <= twilight['evening civil']):
-            twilight['now'] = 'civil twilight'
-        elif (nowut > twilight['evening civil']) and (nowut <= twilight['evening nautical']):
-            twilight['now'] = 'nautical twilight'
-        elif (nowut > twilight['evening nautical']) and (nowut <= twilight['evening astronomical']):
-            twilight['now'] = 'astronomical twilight'
-        elif (nowut > twilight['evening astronomical']) and (nowut <= twilight['morning astronomical']):
-            twilight['now'] = 'night'
-        elif (nowut > twilight['morning astronomical']) and (nowut <= twilight['morning nautical']):
-            twilight['now'] = 'astronomical twilight'
-        elif (nowut > twilight['morning nautical']) and (nowut <= twilight['morning civil']):
-            twilight['now'] = 'nautical twilight'
-        elif (nowut > twilight['morning civil']) and (nowut <= twilight['sunrise']):
-            twilight['now'] = 'civil twilight'
-        elif (nowut > twilight['sunrise']):
-            twilight['now'] = 'day'
+
+#         twilight = {}
+#         Observatory.horizon = '0.0'
+#         twilight['sunset'] = Observatory.next_setting(ephem.Sun()).datetime()
+#         twilight['sunrise'] = Observatory.next_rising(ephem.Sun()).datetime()
+#         Observatory.horizon = '-6.0'
+#         twilight['evening civil'] = Observatory.next_setting(ephem.Sun(), use_center=True).datetime()
+#         twilight['morning civil'] = Observatory.next_rising(ephem.Sun(), use_center=True).datetime()
+#         Observatory.horizon = '-12.0'
+#         twilight['evening nautical'] = Observatory.next_setting(ephem.Sun(), use_center=True).datetime()
+#         twilight['morning nautical'] = Observatory.next_rising(ephem.Sun(), use_center=True).datetime()
+#         Observatory.horizon = '-18.0'
+#         twilight['evening astronomical'] = Observatory.next_setting(ephem.Sun(), use_center=True).datetime()
+#         twilight['morning astronomical'] = Observatory.next_rising(ephem.Sun(), use_center=True).datetime()
+#         if (nowut <= twilight['sunset']):
+#             twilight['now'] = 'day'
+#         elif (nowut > twilight['sunset']) and (nowut <= twilight['evening civil']):
+#             twilight['now'] = 'civil twilight'
+#         elif (nowut > twilight['evening civil']) and (nowut <= twilight['evening nautical']):
+#             twilight['now'] = 'nautical twilight'
+#         elif (nowut > twilight['evening nautical']) and (nowut <= twilight['evening astronomical']):
+#             twilight['now'] = 'astronomical twilight'
+#         elif (nowut > twilight['evening astronomical']) and (nowut <= twilight['morning astronomical']):
+#             twilight['now'] = 'night'
+#         elif (nowut > twilight['morning astronomical']) and (nowut <= twilight['morning nautical']):
+#             twilight['now'] = 'astronomical twilight'
+#         elif (nowut > twilight['morning nautical']) and (nowut <= twilight['morning civil']):
+#             twilight['now'] = 'nautical twilight'
+#         elif (nowut > twilight['morning civil']) and (nowut <= twilight['sunrise']):
+#             twilight['now'] = 'civil twilight'
+#         elif (nowut > twilight['sunrise']):
+#             twilight['now'] = 'day'
+
+        Observatory.date = nowut.strftime('%Y/%m/%d %H:%M:%S')
+        TheSun = ephem.Sun()
+        TheSun.compute(Observatory)
+        sun = {}
+        sun['set'] = Observatory.next_setting(ephem.Sun()).datetime()
+        sun['rise'] = Observatory.next_rising(ephem.Sun()).datetime()
+        sun['alt'] = TheSun.alt * 180. / ephem.pi
+        if sun['alt'] <= -18:
+            sun['now'] = 'night'
+        elif sun['alt'] > -18 and sun['alt'] <= -12:
+            sun['now'] = 'astronomical twilight'
+        elif sun['alt'] > -12 and sun['alt'] <= -6:
+            sun['now'] = 'nautical twilight'
+        elif sun['alt'] > -6 and sun['alt'] <= 0:
+            sun['now'] = 'civil twilight'
+        elif sun['alt'] > 0:
+            sun['now'] = 'day'
 
         TheMoon = ephem.Moon()
         TheMoon.compute(Observatory)
         moon = {}
-        moon['set']  = Observatory.next_setting(ephem.Moon()).datetime()
-        moon['rise'] = Observatory.next_rising(ephem.Moon()).datetime()
         moon['phase'] = TheMoon.phase
         moon['alt'] = TheMoon.alt * 180. / ephem.pi
         if moon['alt'] > 0:
@@ -596,8 +613,9 @@ class Status(RequestHandler):
                     v5data_color = v5data_color,\
                     v5data = v5data,\
                     v5coord = v5coord,\
-                    twilight = twilight,\
+#                     twilight = twilight,\
                     moon = moon,\
+                    sun = sun,\
                     disks = disks,\
                     )
 

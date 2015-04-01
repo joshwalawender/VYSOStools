@@ -42,7 +42,7 @@
         {{ nowut.strftime('%Y/%m/%d %H:%M:%S UT') }}
     </td>
     <td width="410px" style="text-align: left;">
-        {{ 'It is currently {}'.format(twilight['now']) }}<br>
+        {{ 'It is currently {} (Sun alt = {:.0f})'.format(sun['now'], sun['alt']) }}<br>
     </td>
     <td width="215px" style="text-align: left;">
         {% if 'Drobo' in disks.keys() %}
@@ -323,8 +323,6 @@
     </td>
 </tr>
 </table>
-
-<br><br>
 
 <br><br>
 
