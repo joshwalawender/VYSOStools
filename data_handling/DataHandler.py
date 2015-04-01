@@ -28,45 +28,7 @@ def free_space(path):
 ##-------------------------------------------------------------------------
 ## Main Program
 ##-------------------------------------------------------------------------
-def main():
-
-    ##-------------------------------------------------------------------------
-    ## Parse Command Line Arguments
-    ##-------------------------------------------------------------------------
-    ## create a parser object for understanding command-line arguments
-    parser = argparse.ArgumentParser(
-             description="Program description.")
-    ## add flags
-    parser.add_argument("-v", "--verbose",
-        action="store_true", dest="verbose",
-        default=False, help="Be verbose! (default = False)")
-    parser.add_argument("--delete",
-        action="store_true", dest="delete",
-        default=False, help="Delete the file after confirmation of SHA sum?")
-    ## add arguments
-    parser.add_argument("-t", "--telescope",
-        dest="telescope", required=True, type=str,
-        choices=["V5", "V20"],
-        help="Telescope which took the data ('V5' or 'V20')")
-    parser.add_argument("-d", "--date",
-        type=str, dest="date",
-        help="The date to copy.")
-    args = parser.parse_args()
-
-    telescope = args.telescope
-    if args.date:
-        if re.match('\d{8}UT', args.date):
-            date = args.date
-        elif args.date == 'yesterday':
-            today = datetime.datetime.utcnow()
-            oneday = datetime.timedelta(1, 0)
-            date = (today - oneday).strftime('%Y%m%dUT')
-    else:
-        date = datetime.datetime.utcnow().strftime('%Y%m%dUT')
-
-    ## Safety Feature: do not have delete active if working on today's data
-    if date == datetime.datetime.utcnow().strftime('%Y%m%dUT'):
-        args.delete = False
+def data_handler(telescope, date, verbose=False, delete=False):
 
     ##-------------------------------------------------------------------------
     ## Create logger object
@@ -75,7 +37,7 @@ def main():
     logger.setLevel(logging.DEBUG)
     ## Set up console output
     LogConsoleHandler = logging.StreamHandler()
-    if args.verbose:
+    if verbose:
         LogConsoleHandler.setLevel(logging.DEBUG)
     else:
         LogConsoleHandler.setLevel(logging.INFO)
@@ -187,7 +149,7 @@ def main():
                 logger.debug('  Drobo SHA sum:    {}'.format(drobo_hash))
                 logger.info('  Copying file.')
                 shutil.copy2(file, drobo_file)
-                if args.delete:
+                if delete:
                     drobo_hash = subprocess.check_output(['shasum', drobo_file]).split()[0]
         ## Copy to External Drive
         if not os.path.exists(extdrive_file) and copy_to_extdrive:
@@ -204,17 +166,17 @@ def main():
                 logger.info('  External SHA sum: {}'.format(extdrive_hash))
                 logger.info('  Copying file.')
                 shutil.copy2(file, extdrive_file)
-                if args.delete:
+                if delete:
                     extdrive_hash = subprocess.check_output(['shasum', extdrive_file]).split()[0]
         ## Delete Original File
-        if args.delete:
+        if delete:
             if (original_hash == drobo_hash) and (original_hash == extdrive_hash):
                 logger.info('  All three SHA sums match.  Deleting file.')
                 os.remove(file)
             else:
                 logger.warning('  SHA sum mismatch.  File not deleted.')
 
-    if args.delete:
+    if delete:
         ## Remove Calibration directory if empty
         Calibration_path = os.path.join(windows_path, 'Images', date, 'Calibration')
         if os.path.exists(Calibration_path):
@@ -253,4 +215,41 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    ##-------------------------------------------------------------------------
+    ## Parse Command Line Arguments
+    ##-------------------------------------------------------------------------
+    ## create a parser object for understanding command-line arguments
+    parser = argparse.ArgumentParser(
+             description="Program description.")
+    ## add flags
+    parser.add_argument("-v", "--verbose",
+        action="store_true", dest="verbose",
+        default=False, help="Be verbose! (default = False)")
+    parser.add_argument("--delete",
+        action="store_true", dest="delete",
+        default=False, help="Delete the file after confirmation of SHA sum?")
+    ## add arguments
+    parser.add_argument("-t", "--telescope",
+        dest="telescope", required=True, type=str,
+        choices=["V5", "V20"],
+        help="Telescope which took the data ('V5' or 'V20')")
+    parser.add_argument("-d", "--date",
+        type=str, dest="date",
+        help="The date to copy.")
+    args = parser.parse_args()
+
+    if args.date:
+        if re.match('\d{8}UT', args.date):
+            date = args.date
+        elif args.date == 'yesterday':
+            today = datetime.datetime.utcnow()
+            oneday = datetime.timedelta(1, 0)
+            date = (today - oneday).strftime('%Y%m%dUT')
+    else:
+        date = datetime.datetime.utcnow().strftime('%Y%m%dUT')
+
+    ## Safety Feature: do not have delete active if working on today's data
+    if date == datetime.datetime.utcnow().strftime('%Y%m%dUT'):
+        args.delete = False
+
+    main(args.telescope, date, verbose=args.verbose, delete=args.delete)
