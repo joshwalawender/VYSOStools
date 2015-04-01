@@ -149,104 +149,99 @@ def MeasureImage(filename,\
         config_file = os.path.join(os.path.expanduser('~'), '.VYSOS20.yaml')
     tel = IQMon.Telescope(config_file)
 
-
-    ##-------------------------------------------------------------------------
-    ## Create Filenames
-    ##-------------------------------------------------------------------------
-    image = IQMon.Image(FitsFile, tel)
-    image.make_logger(verbose=verbose, clobber=clobber_logs)
-    print('Logging to {}'.format(image.logfile))
-    image.read_image()
-    if telescope == 'V5':
-        image.edit_header('FILTER', 'PSr')
-    image.read_header()
-
     ##-------------------------------------------------------------------------
     ## Perform Actual Image Analysis
     ##-------------------------------------------------------------------------
-    if analyze_image:
-        darks = ListDarks(image)
-        if darks and len(darks) > 0:
-            image.dark_subtract(darks)
+    with IQMon.Image(FitsFile, tel) as image:
+        image.make_logger(verbose=verbose, clobber=clobber_logs)
+        print('Logging to {}'.format(image.logfile))
+        image.read_image()
+        if telescope == 'V5':
+            image.edit_header('FILTER', 'PSr')
+        image.read_header()
+        if analyze_image:
+            darks = ListDarks(image)
+            if darks and len(darks) > 0:
+                image.dark_subtract(darks)
 
-        image.run_SExtractor()
-        image.determine_FWHM()
-
-        is_blank = (image.n_stars_SExtracted < 100)
-        if is_blank:
-            image.logger.warning('Only {} stars found.  Image may be blank.'.format(image.n_stars_SExtracted))
-
-        if not image.image_WCS and not is_blank:
-            image.solve_astrometry()
-            image.read_header()
             image.run_SExtractor()
-        image.determine_pointing_error()
+            image.determine_FWHM()
 
+            is_blank = (image.n_stars_SExtracted < 100)
+            if is_blank:
+                image.logger.warning('Only {} stars found.  Image may be blank.'.format(image.n_stars_SExtracted))
 
-        if zero_point and not is_blank:
-            image.run_SCAMP()
-            if image.SCAMP_successful:
-                image.run_SWarp()
+            if not image.image_WCS and not is_blank:
+                image.solve_astrometry()
                 image.read_header()
+                image.run_SExtractor()
+            image.determine_pointing_error()
 
-                if telescope == 'V20':
-#                    image.get_catalog()
-                    local_UCAC = os.path.join(os.path.expanduser('~'), 'UCAC4')
-                    image.get_local_UCAC4(local_UCAC_command=os.path.join(local_UCAC, 'access', 'u4test'),\
-                                          local_UCAC_data=os.path.join(local_UCAC, 'u4b'))
-                if telescope == 'V5':
-#                     image.get_catalog()
-                    local_UCAC = os.path.join(os.path.expanduser('~'), 'UCAC4')
-                    image.get_local_UCAC4(local_UCAC_command=os.path.join(local_UCAC, 'access', 'u4test'),\
-                                          local_UCAC_data=os.path.join(local_UCAC, 'u4b'))
 
-                image.tel.SExtractor_params['ANALYSIS_THRESH'] = 1.5
-                image.tel.SExtractor_params['DETECT_THRESH'] = 1.5
-                image.run_SExtractor(assoc=True)
-                image.determine_FWHM()
-                image.measure_zero_point(plot=True)
-                mark_catalog = True
-            else:
-                image.logger.info('  SCAMP failed.  Skipping photometric calculations.')
+            if zero_point and not is_blank:
+                image.run_SCAMP()
+                if image.SCAMP_successful:
+                    image.run_SWarp()
+                    image.read_header()
 
-        if not nographics and image.FWHM:
-            image.make_PSF_plot()
+                    if telescope == 'V20':
+    #                    image.get_catalog()
+                        local_UCAC = os.path.join(os.path.expanduser('~'), 'UCAC4')
+                        image.get_local_UCAC4(local_UCAC_command=os.path.join(local_UCAC, 'access', 'u4test'),\
+                                              local_UCAC_data=os.path.join(local_UCAC, 'u4b'))
+                    if telescope == 'V5':
+    #                     image.get_catalog()
+                        local_UCAC = os.path.join(os.path.expanduser('~'), 'UCAC4')
+                        image.get_local_UCAC4(local_UCAC_command=os.path.join(local_UCAC, 'access', 'u4test'),\
+                                              local_UCAC_data=os.path.join(local_UCAC, 'u4b'))
 
-    if record and not nographics:
-        if tel.name == 'VYSOS-5':
-            p1, p2 = (0.15, 0.50)
-        if tel.name == 'VYSOS-20':
-            p1, p2 = (3.0, 0.50)
-        small_JPEG = image.raw_file_basename+"_fullframe.jpg"
-        image.make_JPEG(small_JPEG, binning=3,\
-                        p1=p1, p2=p2,\
-                        make_hist=False,\
-                        mark_pointing=True,\
-                        mark_detected_stars=True,\
-                        mark_catalog_stars=False,\
-                        mark_saturated=False,\
-                        )
-        cropped_JPEG = image.raw_file_basename+"_crop.jpg"
-        image.make_JPEG(cropped_JPEG,\
-                        p1=p1, p2=p2,\
-                        make_hist=False,\
-                        mark_pointing=True,\
-                        mark_detected_stars=True,\
-                        mark_catalog_stars=False,\
-                        mark_saturated=False,\
-                        crop=(1024, 1024, 3072, 3072),\
-                        )
+                    image.tel.SExtractor_params['ANALYSIS_THRESH'] = 1.5
+                    image.tel.SExtractor_params['DETECT_THRESH'] = 1.5
+                    image.run_SExtractor(assoc=True)
+                    image.determine_FWHM()
+                    image.measure_zero_point(plot=True)
+                    mark_catalog = True
+                else:
+                    image.logger.info('  SCAMP failed.  Skipping photometric calculations.')
 
-    image.clean_up()
-    image.calculate_process_time()
+            if not nographics and image.FWHM:
+                image.make_PSF_plot()
 
-    if record:
-#         fields=["Date and Time", "Filename", "Alt", "Az", "Airmass", "MoonSep", "MoonIllum", "FWHM", "ellipticity", "PErr", "ZeroPoint", "nStars", "ProcessTime"]
-#         image.add_web_log_entry(html_file, fields=fields)
-#         image.add_yaml_entry(yaml_file)
-        image.add_mongo_entry('192.168.1.101', 'vysos', '{}.images'.format(telescope))
+        if record and not nographics:
+            if tel.name == 'VYSOS-5':
+                p1, p2 = (0.15, 0.50)
+            if tel.name == 'VYSOS-20':
+                p1, p2 = (3.0, 0.50)
+            small_JPEG = image.raw_file_basename+"_fullframe.jpg"
+            image.make_JPEG(small_JPEG, binning=3,\
+                            p1=p1, p2=p2,\
+                            make_hist=False,\
+                            mark_pointing=True,\
+                            mark_detected_stars=True,\
+                            mark_catalog_stars=False,\
+                            mark_saturated=False,\
+                            )
+            cropped_JPEG = image.raw_file_basename+"_crop.jpg"
+            image.make_JPEG(cropped_JPEG,\
+                            p1=p1, p2=p2,\
+                            make_hist=False,\
+                            mark_pointing=True,\
+                            mark_detected_stars=True,\
+                            mark_catalog_stars=False,\
+                            mark_saturated=False,\
+                            crop=(1024, 1024, 3072, 3072),\
+                            )
 
-    image.logger.info('Done.')
+        image.clean_up()
+        image.calculate_process_time()
+
+        if record:
+    #         fields=["Date and Time", "Filename", "Alt", "Az", "Airmass", "MoonSep", "MoonIllum", "FWHM", "ellipticity", "PErr", "ZeroPoint", "nStars", "ProcessTime"]
+    #         image.add_web_log_entry(html_file, fields=fields)
+    #         image.add_yaml_entry(yaml_file)
+            image.add_mongo_entry('192.168.1.101', 'vysos', '{}.images'.format(telescope))
+
+        image.logger.info('Done.')
 
 
 def main():

@@ -58,7 +58,7 @@ def main(startdate, enddate, logger, nice=False):
                 time.sleep(until_sunrise + 300)
                 now = dt.utcnow()
                 Observatory.date = now.strftime('%Y/%m/%d %H:%M:%S')
-                sunset  = Observatory.previous_setting(ephem.Sun()).datetime()
+                sunset  = Observatory.next_setting(ephem.Sun()).datetime()
                 sunrise = Observatory.next_rising(ephem.Sun()).datetime()
                 logger.info('Resuming processing ...')
                 logger.info('  Next sunset at {}'.format(sunset.strftime('%Y/%m/%d %H:%M:%S')))
@@ -66,7 +66,7 @@ def main(startdate, enddate, logger, nice=False):
                 try:
                     measure_image.MeasureImage(image,\
                                  clobber_logs=True,\
-                                 zero_point=True,\
+                                 zero_point=False,\
                                  analyze_image=True)
                 except:
                     logger.warning('MeasureImage failed on {}'.format(image))
