@@ -174,7 +174,17 @@ class ListOfNights(RequestHandler):
 
         client = MongoClient('192.168.1.101', 27017)
         collection = client.vysos['{}.images'.format(telescope)]
-        date_list = sorted(collection.distinct("date"), reverse=True)
+#         date_list = sorted(collection.distinct("date"), reverse=True)
+
+        first_date_string = sorted(collection.distinct("date"), reverse=False)[0]
+        first_date = datetime.datetime.strptime('{} 00:00:00'.format(first_date_string), '%Y%m%dUT %H:%M:%S')
+        oneday = datetime.timedelta(1, 0)
+        
+        date_list = []
+        thisdate = datetime.datetime.utcnow()
+        while thisdate >= first_date:
+            date_list.append(thisdate.strftime('%Y%m%dUT'))
+            thisdate -= oneday
 
         ## Create Telescope Object
         if telescope == 'V5':
