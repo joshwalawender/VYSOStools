@@ -46,7 +46,13 @@
 
     {% for night in nights %}
     <tr>
-        <td><a href="{{ '/{}/{}'.format(telescope, night['date']) }}">{{ night['date'] }}</a></td>
+        <td>
+            {% if night['n images'] > 0 %}
+                <a href="{{ '/{}/{}'.format(telescope, night['date']) }}">{{ night['date'] }}</a>
+            {% else %}
+                {{ night['date'] }}
+            {% end %}
+        </td>
         <td>
             {% if 'night graph' in night.keys() %}
             <a href="{{ '/static/nights/{}'.format(night['night graph']) }}">
