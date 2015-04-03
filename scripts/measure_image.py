@@ -158,6 +158,11 @@ def MeasureImage(filename,\
         image.read_image()
         if telescope == 'V5':
             image.edit_header('FILTER', 'PSr')
+        with fits.open(image.working_file, ignore_missing_end=True, mode='update') as hdulist:
+            if ('RADESYSa' not in hdulist[0].header.keys()) and ('RADECSYS' in hdulist[0].header.keys()):
+                hdulist[0].header['RADESYSa'] = hdulist[0].header['RADECSYS']
+                hdulist[0].header.remove('RADECSYS')
+                hdulist.flush()
         image.read_header()
         if analyze_image:
             darks = ListDarks(image)
