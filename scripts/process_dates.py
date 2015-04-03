@@ -87,13 +87,13 @@ def main(startdate, enddate, logger, nice=False):
                 try:
                     measure_image.MeasureImage(image,\
                                  clobber_logs=True,\
-                                 zero_point=False,\
+                                 zero_point=True,\
                                  analyze_image=True)
                 except:
                     logger.warning('MeasureImage failed on {}'.format(image))
                     measure_image.MeasureImage(image,\
                                  clobber_logs=False,\
-                                 zero_point=False,\
+                                 zero_point=True,\
                                  analyze_image=False)
         make_nightly_plots.make_plots(date_string, 'V5', logger)
         make_nightly_plots.make_plots(date_string, 'V20', logger)
