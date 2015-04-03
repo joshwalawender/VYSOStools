@@ -111,18 +111,54 @@ def copy_file(file, local_shasum, remote_file, remote_computer_string, remote_co
 ##-------------------------------------------------------------------------
 ## Main Program
 ##-------------------------------------------------------------------------
-def copy_data_remote(date, telescope,\
-                     verbose=False,\
-                     copy=True,\
-                     skip_file_checksums=False):
+def main():
+
+    ##-------------------------------------------------------------------------
+    ## Parse Command Line Arguments
+    ##-------------------------------------------------------------------------
+    ## create a parser object for understanding command-line arguments
+    parser = argparse.ArgumentParser(
+             description="Program description.")
+    ## add flags
+    parser.add_argument("-v", "--verbose",
+        action="store_true", dest="verbose",
+        default=False, help="Be verbose! (default = False)")
+    parser.add_argument("--copy",
+        action="store_true", dest="copy",
+        default=True, help="Copy the file over if SHASUM mismatch?")
+    parser.add_argument("--skip-file-checksums",
+        action="store_true", dest="skip_file_checksums",
+        default=False, help="Only do the check for the night, not file by file.")
+    ## add arguments
+    parser.add_argument("-t", "--telescope",
+        dest="telescope", required=True, type=str,
+        choices=["V5", "V20"],
+        help="Telescope which took the data ('V5' or 'V20')")
+    parser.add_argument("-d", "--date",
+        type=str, dest="date",
+        help="The date to copy.")
+    args = parser.parse_args()
+
+    if args.date:
+        if re.match('\d{8}UT', args.date):
+            date = args.date
+        elif args.date == 'yesterday':
+            today = datetime.datetime.utcnow()
+            oneday = datetime.timedelta(1, 0)
+            date = (today - oneday).strftime('%Y%m%dUT')
+    else:
+        date = datetime.datetime.utcnow().strftime('%Y%m%dUT')
+
+
+
     ##-------------------------------------------------------------------------
     ## Create logger object
     ##-------------------------------------------------------------------------
-    logger = logging.getLogger('ConfirmRemoteData_{}_{}'.format(telescope, date))
+    logger = logging.getLogger('ConfirmRemoteData_{}_{}'.format(args.telescope, date))
     logger.setLevel(logging.DEBUG)
     ## Set up console output
     LogConsoleHandler = logging.StreamHandler()
-    if verbose:
+    if args.verbose:
         LogConsoleHandler.setLevel(logging.DEBUG)
     else:
         LogConsoleHandler.setLevel(logging.INFO)
@@ -130,21 +166,21 @@ def copy_data_remote(date, telescope,\
     LogConsoleHandler.setFormatter(LogFormat)
     logger.addHandler(LogConsoleHandler)
     ## Set up file output
-    LogFileName = 'ConfirmRemoteData_{}_{}'.format(telescope, date)
+    LogFileName = 'ConfirmRemoteData_{}_{}'.format(args.telescope, date)
     LogFilePath = os.path.join('/', 'Users', 'vysosuser', 'logs')
     LogFileHandler = logging.FileHandler(os.path.join(LogFilePath, LogFileName))
     LogFileHandler.setLevel(logging.DEBUG)
     LogFileHandler.setFormatter(LogFormat)
     logger.addHandler(LogFileHandler)
 
-    logger.info('Checking data for {} for night of {}'.format(telescope, date))
+    logger.info('Checking data for {} for night of {}'.format(args.telescope, date))
 
     ##-------------------------------------------------------------------------
     ## Confirm Data on Drobo Matches Data in Hilo
     ##-------------------------------------------------------------------------
-    drobo_path = os.path.join('/', 'Volumes', 'Drobo', telescope)
-    extdrive_paths = [os.path.join('/', 'Volumes', 'WD500B', telescope),\
-                      os.path.join('/', 'Volumes', 'WD500_C', telescope)]
+    drobo_path = os.path.join('/', 'Volumes', 'Drobo', args.telescope)
+    extdrive_paths = [os.path.join('/', 'Volumes', 'WD500B', args.telescope),\
+                      os.path.join('/', 'Volumes', 'WD500_C', args.telescope)]
     if os.path.exists(extdrive_paths[0]):
         extdrive_path = extdrive_paths[0]
     elif os.path.exists(extdrive_paths[1]):
@@ -170,20 +206,22 @@ def copy_data_remote(date, telescope,\
     remote_computer.connect(hostname=remote_computer_string.split('@')[1],\
                             username=remote_computer_string.split('@')[0])
 
-    if telescope == 'V5':
+    if args.telescope == 'V5':
         remote_path = os.path.join('/', 'Volumes', 'DroboPro1', 'VYSOS5_Data')
-    elif telescope == 'V20':
+    elif args.telescope == 'V20':
         remote_path = os.path.join('/', 'Volumes', 'DroboPro1', 'VYSOS20_Data')
     else:
         logger.critical('Telescope is not set to V5 or V20')
         sys.exit(1)
 
-    if not skip_file_checksums:
+    if not args.skip_file_checksums:
         ## Open Local File on Drobo with Results
-        list_file = os.path.join(drobo_path, 'transfer_logs', 'remote_{}_{}.txt'.format(telescope, date))
+        list_file = os.path.join(drobo_path, 'transfer_logs', 'remote_{}_{}.txt'.format(args.telescope, date))
         with open(list_file, 'w') as listFO:
+            counter = 0
             for file in files:
-                logger.info('Checking file: {}'.format(file))
+                counter += 1
+                logger.info('Checking file {}/{}: {}'.format(counter, len(files), file))
                 filename = os.path.split(file)[1]
                 local_shasum = subprocess.check_output(['shasum', file]).split()[0]
                 remote_file = file.replace(drobo_path, remote_path)
@@ -191,7 +229,7 @@ def copy_data_remote(date, telescope,\
 
                 ## Check Remote SHASUM against local SHASUM
                 if not remote_shasum:
-                    if copy:
+                    if args.copy:
                         logger.info('  Copying file to remote machine')
                         copy_file(file, local_shasum, remote_file, remote_computer_string, remote_computer, logger, listFO)
                     else:
@@ -203,7 +241,7 @@ def copy_data_remote(date, telescope,\
                     logger.warning('  SHASUMs do not match!')
                     logger.debug('  local:  {}'.format(local_shasum))
                     logger.debug('  remote: {}'.format(remote_shasum))
-                    if copy:
+                    if args.copy:
                         logger.info('  Copying file to remote machine')
                         copy_file(file, local_shasum, remote_file, remote_computer_string, remote_computer, logger, listFO)
                     else:
@@ -256,7 +294,7 @@ def copy_data_remote(date, telescope,\
 
     ## Check for number of "success" lines in log
     logger.info('Checking for reported success in transfer log')
-    list_file = os.path.join(drobo_path, 'transfer_logs', 'remote_{}_{}.txt'.format(telescope, date))
+    list_file = os.path.join(drobo_path, 'transfer_logs', 'remote_{}_{}.txt'.format(args.telescope, date))
     with open(list_file, 'r') as listFO:
         lines = listFO.readlines()
         n_loglines = len(lines)
@@ -302,44 +340,4 @@ def copy_data_remote(date, telescope,\
 
 
 if __name__ == '__main__':
-    ##-------------------------------------------------------------------------
-    ## Parse Command Line Arguments
-    ##-------------------------------------------------------------------------
-    ## create a parser object for understanding command-line arguments
-    parser = argparse.ArgumentParser(
-             description="Program description.")
-    ## add flags
-    parser.add_argument("-v", "--verbose",
-        action="store_true", dest="verbose",
-        default=False, help="Be verbose! (default = False)")
-    parser.add_argument("--copy",
-        action="store_true", dest="copy",
-        default=True, help="Copy the file over if SHASUM mismatch?")
-    parser.add_argument("--skip-file-checksums",
-        action="store_true", dest="skip_file_checksums",
-        default=False, help="Only do the check for the night, not file by file.")
-    ## add arguments
-    parser.add_argument("-t", "--telescope",
-        dest="telescope", required=True, type=str,
-        choices=["V5", "V20"],
-        help="Telescope which took the data ('V5' or 'V20')")
-    parser.add_argument("-d", "--date",
-        type=str, dest="date",
-        help="The date to copy.")
-    args = parser.parse_args()
-
-    if args.date:
-        if re.match('\d{8}UT', args.date):
-            date = args.date
-        elif args.date == 'yesterday':
-            today = datetime.datetime.utcnow()
-            oneday = datetime.timedelta(1, 0)
-            date = (today - oneday).strftime('%Y%m%dUT')
-    else:
-        date = datetime.datetime.utcnow().strftime('%Y%m%dUT')
-
-    copy_data_remote(telescope=args.telescope,\
-                     date=args.date,\
-                     verbose=args.verbose,\
-                     copy=args.copy,\
-                     skip_file_checksums=args.skip_file_checksums)
+    main()

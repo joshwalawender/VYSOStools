@@ -28,16 +28,52 @@ def free_space(path):
 ##-------------------------------------------------------------------------
 ## Main Program
 ##-------------------------------------------------------------------------
-def copy_data_local(telescope, date, verbose=False, delete=False):
+def main():
+    ##-------------------------------------------------------------------------
+    ## Parse Command Line Arguments
+    ##-------------------------------------------------------------------------
+    ## create a parser object for understanding command-line arguments
+    parser = argparse.ArgumentParser(
+             description="Program description.")
+    ## add flags
+    parser.add_argument("-v", "--verbose",
+        action="store_true", dest="verbose",
+        default=False, help="Be verbose! (default = False)")
+    parser.add_argument("--delete",
+        action="store_true", dest="delete",
+        default=False, help="Delete the file after confirmation of SHA sum?")
+    ## add arguments
+    parser.add_argument("-t", "--telescope",
+        dest="telescope", required=True, type=str,
+        choices=["V5", "V20"],
+        help="Telescope which took the data ('V5' or 'V20')")
+    parser.add_argument("-d", "--date",
+        type=str, dest="date",
+        help="The date to copy.")
+    args = parser.parse_args()
+
+    if args.date:
+        if re.match('\d{8}UT', args.date):
+            date = args.date
+        elif args.date == 'yesterday':
+            today = datetime.datetime.utcnow()
+            oneday = datetime.timedelta(1, 0)
+            date = (today - oneday).strftime('%Y%m%dUT')
+    else:
+        date = datetime.datetime.utcnow().strftime('%Y%m%dUT')
+
+    ## Safety Feature: do not have delete active if working on today's data
+    if date == datetime.datetime.utcnow().strftime('%Y%m%dUT'):
+        args.delete = False
 
     ##-------------------------------------------------------------------------
     ## Create logger object
     ##-------------------------------------------------------------------------
-    logger = logging.getLogger('DataHandler_{}_{}'.format(telescope, date))
+    logger = logging.getLogger('DataHandler_{}_{}'.format(args.telescope, date))
     logger.setLevel(logging.DEBUG)
     ## Set up console output
     LogConsoleHandler = logging.StreamHandler()
-    if verbose:
+    if args.verbose:
         LogConsoleHandler.setLevel(logging.DEBUG)
     else:
         LogConsoleHandler.setLevel(logging.INFO)
@@ -45,7 +81,7 @@ def copy_data_local(telescope, date, verbose=False, delete=False):
     LogConsoleHandler.setFormatter(LogFormat)
     logger.addHandler(LogConsoleHandler)
     ## Set up file output
-    LogFileName = 'DataHandler_{}_{}.log'.format(telescope, date)
+    LogFileName = 'DataHandler_{}_{}.log'.format(args.telescope, date)
     LogFilePath = os.path.join('/', 'Users', 'vysosuser', 'logs')
     LogFileHandler = logging.FileHandler(os.path.join(LogFilePath, LogFileName))
     LogFileHandler.setLevel(logging.DEBUG)
@@ -57,10 +93,10 @@ def copy_data_local(telescope, date, verbose=False, delete=False):
     ##-------------------------------------------------------------------------
     ## Copy Data from Windows Share to Drobo and USB Drive
     ##-------------------------------------------------------------------------
-    windows_path = os.path.join('/', 'Volumes', 'Data_{}'.format(telescope))
-    drobo_path = os.path.join('/', 'Volumes', 'Drobo', telescope)
-    extdrive_paths = [os.path.join('/', 'Volumes', 'WD500B', telescope),\
-                      os.path.join('/', 'Volumes', 'WD500_C', telescope)]
+    windows_path = os.path.join('/', 'Volumes', 'Data_{}'.format(args.telescope))
+    drobo_path = os.path.join('/', 'Volumes', 'Drobo', args.telescope)
+    extdrive_paths = [os.path.join('/', 'Volumes', 'WD500B', args.telescope),\
+                      os.path.join('/', 'Volumes', 'WD500_C', args.telescope)]
     if os.path.exists(extdrive_paths[0]):
         extdrive_path = extdrive_paths[0]
     elif os.path.exists(extdrive_paths[1]):
@@ -127,9 +163,11 @@ def copy_data_local(telescope, date, verbose=False, delete=False):
     logger.info('Found {} files to analyze'.format(len(files)))
 
 
+    counter = 0
     for file in files:
+        counter += 1
         filename = os.path.split(file)[1]
-        logger.info('Checking file: {}'.format(filename))
+        logger.info('Checking file {}/{}: {}'.format(counter, len(files), filename))
         drobo_file = file.replace(windows_path, drobo_path)
         extdrive_file = file.replace(windows_path, extdrive_path)
         original_hash = subprocess.check_output(['shasum', file]).split()[0]
@@ -149,7 +187,7 @@ def copy_data_local(telescope, date, verbose=False, delete=False):
                 logger.debug('  Drobo SHA sum:    {}'.format(drobo_hash))
                 logger.info('  Copying file.')
                 shutil.copy2(file, drobo_file)
-                if delete:
+                if args.delete:
                     drobo_hash = subprocess.check_output(['shasum', drobo_file]).split()[0]
         ## Copy to External Drive
         if not os.path.exists(extdrive_file) and copy_to_extdrive:
@@ -166,17 +204,17 @@ def copy_data_local(telescope, date, verbose=False, delete=False):
                 logger.info('  External SHA sum: {}'.format(extdrive_hash))
                 logger.info('  Copying file.')
                 shutil.copy2(file, extdrive_file)
-                if delete:
+                if args.delete:
                     extdrive_hash = subprocess.check_output(['shasum', extdrive_file]).split()[0]
         ## Delete Original File
-        if delete:
+        if args.delete:
             if (original_hash == drobo_hash) and (original_hash == extdrive_hash):
                 logger.info('  All three SHA sums match.  Deleting file.')
                 os.remove(file)
             else:
                 logger.warning('  SHA sum mismatch.  File not deleted.')
 
-    if delete:
+    if args.delete:
         ## Remove Calibration directory if empty
         Calibration_path = os.path.join(windows_path, 'Images', date, 'Calibration')
         if os.path.exists(Calibration_path):
@@ -215,41 +253,4 @@ def copy_data_local(telescope, date, verbose=False, delete=False):
 
 
 if __name__ == '__main__':
-    ##-------------------------------------------------------------------------
-    ## Parse Command Line Arguments
-    ##-------------------------------------------------------------------------
-    ## create a parser object for understanding command-line arguments
-    parser = argparse.ArgumentParser(
-             description="Program description.")
-    ## add flags
-    parser.add_argument("-v", "--verbose",
-        action="store_true", dest="verbose",
-        default=False, help="Be verbose! (default = False)")
-    parser.add_argument("--delete",
-        action="store_true", dest="delete",
-        default=False, help="Delete the file after confirmation of SHA sum?")
-    ## add arguments
-    parser.add_argument("-t", "--telescope",
-        dest="telescope", required=True, type=str,
-        choices=["V5", "V20"],
-        help="Telescope which took the data ('V5' or 'V20')")
-    parser.add_argument("-d", "--date",
-        type=str, dest="date",
-        help="The date to copy.")
-    args = parser.parse_args()
-
-    if args.date:
-        if re.match('\d{8}UT', args.date):
-            date = args.date
-        elif args.date == 'yesterday':
-            today = datetime.datetime.utcnow()
-            oneday = datetime.timedelta(1, 0)
-            date = (today - oneday).strftime('%Y%m%dUT')
-    else:
-        date = datetime.datetime.utcnow().strftime('%Y%m%dUT')
-
-    ## Safety Feature: do not have delete active if working on today's data
-    if date == datetime.datetime.utcnow().strftime('%Y%m%dUT'):
-        args.delete = False
-
-    copy_data_local(args.telescope, date, verbose=args.verbose, delete=args.delete)
+    main()
