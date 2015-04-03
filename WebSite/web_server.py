@@ -93,7 +93,7 @@ class ListOfImages(RequestHandler):
                 if tel.units_for_FWHM == u.arcsec:
                     image['FWHM'] = image['FWHM pix'] * tel.pixel_scale.value
                 elif tel.units_for_FWHM == u.pix:
-                    image['FWHM'] = image['FWHM pix'] * tel.pixel_scale.value
+                    image['FWHM'] = image['FWHM pix']
                 image['FWHM color'] = "#70DB70" # green
                 if 'flags' in image.keys():
                     if 'FWHM' in image['flags'].keys():
