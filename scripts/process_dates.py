@@ -18,16 +18,16 @@ def main(startdate, enddate, logger, nice=False):
     ## Use pyephem determine sunrise and sunset times
     ##------------------------------------------------------------------------
     now = dt.utcnow()
-    Observatory = ephem.Observer()
-    Observatory.lon = "-155:34:33.9"
-    Observatory.lat = "+19:32:09.66"
-    Observatory.elevation = 3400.0
-    Observatory.temp = 10.0
-    Observatory.pressure = 680.0
-    Observatory.horizon = '0.0'
-    Observatory.date = now.strftime('%Y/%m/%d %H:%M:%S')
-    sunset  = Observatory.next_setting(ephem.Sun()).datetime()
-    sunrise = Observatory.next_rising(ephem.Sun()).datetime()
+    if nice:
+        Observatory = ephem.Observer()
+        Observatory.lon = "-155:34:33.9"
+        Observatory.lat = "+19:32:09.66"
+        Observatory.elevation = 3400.0
+        Observatory.temp = 10.0
+        Observatory.pressure = 680.0
+        Observatory.horizon = '0.0'
+        Observatory.date = now.strftime('%Y/%m/%d %H:%M:%S')
+        TheSun = ephem.Sun()
 
     MatchFilename = re.compile("(.*)\-([0-9]{8})at([0-9]{6})\.fts")
     MatchEmpty = re.compile(".*\-Empty\-.*\.fts")
@@ -47,21 +47,42 @@ def main(startdate, enddate, logger, nice=False):
             V20_images = glob(os.path.join(V20_path, '*.fts'))
             logger.info('  Found {} images for the night of {} for V20'.format(len(V20_images), date_string))
             images.extend(V20_images)
+        ## Sort Images by Observation time
+        properties = []
         for image in images:
-            now = dt.utcnow()
-            if (now > sunset) and (now < sunrise):
-                print(now)
-                print(sunset)
-                print(sunrise)
-                until_sunrise = (sunrise - now).total_seconds()
-                logger.info('Sleeping {} seconds until sunrise'.format(until_sunrise))
-                time.sleep(until_sunrise + 300)
+            FNmatch = MatchFilename.match(image)
+            Ematch = MatchEmpty.match(image)
+            if Ematch:
+                images.remove(image)
+            else:
+                if not FNmatch:
+                    images.remove(image)
+                else:
+                    try:
+                        image_dt = dt.strptime('{} {}'.format(FNmatch.group(2), FNmatch.group(3)), '%Y%m%d %H%M%S')
+                    except:
+                        image_dt = dt.utcnow()
+                    properties.append([image, image_dt])
+        properties = sorted(properties, key=lambda entry:entry[1])
+        ## Process Images
+        for entry in properties:
+            image = entry[0]
+            if nice:
                 now = dt.utcnow()
                 Observatory.date = now.strftime('%Y/%m/%d %H:%M:%S')
-                sunset  = Observatory.next_setting(ephem.Sun()).datetime()
-                sunrise = Observatory.next_rising(ephem.Sun()).datetime()
-                logger.info('Resuming processing ...')
-                logger.info('  Next sunset at {}'.format(sunset.strftime('%Y/%m/%d %H:%M:%S')))
+                TheSun.compute(Observatory)
+                if TheSun.alt < 0:
+                    print('The Sun is down (alt = {:.1f})'.format(TheSun.alt*180./ephem.pi))
+                    sunrise = Observatory.next_rising(TheSun).datetime()
+                    until_sunrise = (sunrise - now).total_seconds()
+                    logger.info('Sleeping {} seconds until sunrise'.format(until_sunrise))
+                    time.sleep(until_sunrise + 300)
+                    now = dt.utcnow()
+                    Observatory.date = now.strftime('%Y/%m/%d %H:%M:%S')
+                    sunset  = Observatory.next_setting(ephem.Sun()).datetime()
+                    sunrise = Observatory.next_rising(ephem.Sun()).datetime()
+                    logger.info('Resuming processing ...')
+                    logger.info('  Next sunset at {}'.format(sunset.strftime('%Y/%m/%d %H:%M:%S')))
             if MatchFilename.match(image) and not MatchEmpty.match(image):
                 try:
                     measure_image.MeasureImage(image,\
