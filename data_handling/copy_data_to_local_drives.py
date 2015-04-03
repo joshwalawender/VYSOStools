@@ -28,7 +28,7 @@ def free_space(path):
 ##-------------------------------------------------------------------------
 ## Main Program
 ##-------------------------------------------------------------------------
-def data_handler(telescope, date, verbose=False, delete=False):
+def copy_data_local(telescope, date, verbose=False, delete=False):
 
     ##-------------------------------------------------------------------------
     ## Create logger object
@@ -252,4 +252,4 @@ if __name__ == '__main__':
     if date == datetime.datetime.utcnow().strftime('%Y%m%dUT'):
         args.delete = False
 
-    main(args.telescope, date, verbose=args.verbose, delete=args.delete)
+    copy_data_local(args.telescope, date, verbose=args.verbose, delete=args.delete)

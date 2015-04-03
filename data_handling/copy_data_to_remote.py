@@ -111,52 +111,10 @@ def copy_file(file, local_shasum, remote_file, remote_computer_string, remote_co
 ##-------------------------------------------------------------------------
 ## Main Program
 ##-------------------------------------------------------------------------
-def main():
-
-    ##-------------------------------------------------------------------------
-    ## Parse Command Line Arguments
-    ##-------------------------------------------------------------------------
-    ## create a parser object for understanding command-line arguments
-    parser = argparse.ArgumentParser(
-             description="Program description.")
-    ## add flags
-    parser.add_argument("-v", "--verbose",
-        action="store_true", dest="verbose",
-        default=False, help="Be verbose! (default = False)")
-    parser.add_argument("--delete",
-        action="store_true", dest="delete",
-        default=False, help="Delete the file after confirmation of SHA sum?")
-    parser.add_argument("--copy",
-        action="store_true", dest="copy",
-        default=False, help="Copy the file over if SHASUM mismatch?")
-    parser.add_argument("--check-night-only",
-        action="store_true", dest="check_night_only",
-        default=False, help="Only do the check for the night, not file by file.")
-    ## add arguments
-    parser.add_argument("-t", "--telescope",
-        dest="telescope", required=True, type=str,
-        choices=["V5", "V20"],
-        help="Telescope which took the data ('V5' or 'V20')")
-    parser.add_argument("-d", "--date",
-        type=str, dest="date",
-        help="The date to copy.")
-    args = parser.parse_args()
-
-    telescope = args.telescope
-    if args.date:
-        if re.match('\d{8}UT', args.date):
-            date = args.date
-        elif args.date == 'yesterday':
-            today = datetime.datetime.utcnow()
-            oneday = datetime.timedelta(1, 0)
-            date = (today - oneday).strftime('%Y%m%dUT')
-    else:
-        date = datetime.datetime.utcnow().strftime('%Y%m%dUT')
-
-    ## Safety Feature: do not have delete active if working on today's data
-    if date == datetime.datetime.utcnow().strftime('%Y%m%dUT'):
-        args.delete = False
-
+def copy_data_remote(date, telescope,\
+                     verbose=False,\
+                     copy=True,\
+                     skip_file_checksums=False):
     ##-------------------------------------------------------------------------
     ## Create logger object
     ##-------------------------------------------------------------------------
@@ -164,7 +122,7 @@ def main():
     logger.setLevel(logging.DEBUG)
     ## Set up console output
     LogConsoleHandler = logging.StreamHandler()
-    if args.verbose:
+    if verbose:
         LogConsoleHandler.setLevel(logging.DEBUG)
     else:
         LogConsoleHandler.setLevel(logging.INFO)
@@ -220,38 +178,37 @@ def main():
         logger.critical('Telescope is not set to V5 or V20')
         sys.exit(1)
 
-    if not args.check_night_only:
+    if not skip_file_checksums:
         ## Open Local File on Drobo with Results
-        listFO = open(os.path.join(drobo_path, 'transfer_logs', 'remote_{}_{}.txt'.format(telescope, date)), 'w')
+        list_file = os.path.join(drobo_path, 'transfer_logs', 'remote_{}_{}.txt'.format(telescope, date))
+        with open(list_file, 'w') as listFO:
+            for file in files:
+                logger.info('Checking file: {}'.format(file))
+                filename = os.path.split(file)[1]
+                local_shasum = subprocess.check_output(['shasum', file]).split()[0]
+                remote_file = file.replace(drobo_path, remote_path)
+                remote_shasum = check_remote_shasum(remote_computer, remote_file, logger)
 
-        for file in files:
-            logger.info('Checking file: {}'.format(file))
-            filename = os.path.split(file)[1]
-            local_shasum = subprocess.check_output(['shasum', file]).split()[0]
-            remote_file = file.replace(drobo_path, remote_path)
-            remote_shasum = check_remote_shasum(remote_computer, remote_file, logger)
-
-            ## Check Remote SHASUM against local SHASUM
-            if not remote_shasum:
-                if args.copy:
-                    logger.info('  Copying file to remote machine')
-                    copy_file(file, local_shasum, remote_file, remote_computer_string, remote_computer, logger, listFO)
+                ## Check Remote SHASUM against local SHASUM
+                if not remote_shasum:
+                    if copy:
+                        logger.info('  Copying file to remote machine')
+                        copy_file(file, local_shasum, remote_file, remote_computer_string, remote_computer, logger, listFO)
+                    else:
+                        listFO.write('Failed: {},{},{}:{},{}\n'.format(file, local_shasum, '', '', ''))
+                elif remote_shasum == local_shasum:
+                    logger.info('  SHASUMs match.')
+                    listFO.write('Success: {},{},{}:{},{}\n'.format(file, local_shasum, remote_computer_string, remote_file, remote_shasum))
                 else:
-                    listFO.write('Failed: {},{},{}:{},{}\n'.format(file, local_shasum, '', '', ''))
-            elif remote_shasum == local_shasum:
-                logger.info('  SHASUMs match.')
-                listFO.write('Success: {},{},{}:{},{}\n'.format(file, local_shasum, remote_computer_string, remote_file, remote_shasum))
-            else:
-                logger.warning('  SHASUMs do not match!')
-                logger.debug('  local:  {}'.format(local_shasum))
-                logger.debug('  remote: {}'.format(remote_shasum))
-                if args.copy:
-                    logger.info('  Copying file to remote machine')
-                    copy_file(file, local_shasum, remote_file, remote_computer_string, remote_computer, logger, listFO)
-                else:
-                    listFO.write('Failed: {},{},{}:{},{}\n'.format(file, local_shasum, '', '', ''))
+                    logger.warning('  SHASUMs do not match!')
+                    logger.debug('  local:  {}'.format(local_shasum))
+                    logger.debug('  remote: {}'.format(remote_shasum))
+                    if copy:
+                        logger.info('  Copying file to remote machine')
+                        copy_file(file, local_shasum, remote_file, remote_computer_string, remote_computer, logger, listFO)
+                    else:
+                        listFO.write('Failed: {},{},{}:{},{}\n'.format(file, local_shasum, '', '', ''))
 
-        listFO.close()
 
     ##-------------------------------------------------------------------------
     ## Final Confirmation of Night
@@ -299,7 +256,8 @@ def main():
 
     ## Check for number of "success" lines in log
     logger.info('Checking for reported success in transfer log')
-    with open(os.path.join(drobo_path, 'transfer_logs', 'remote_{}_{}.txt'.format(telescope, date)), 'r') as listFO:
+    list_file = os.path.join(drobo_path, 'transfer_logs', 'remote_{}_{}.txt'.format(telescope, date))
+    with open(list_file, 'r') as listFO:
         lines = listFO.readlines()
         n_loglines = len(lines)
         if n_source_files == n_loglines:
@@ -312,21 +270,76 @@ def main():
                 logger.warning('Failure in Log: {}'.format(line))
                 Fail = True
 
-    ## Check for Fail flag
+    ## Rename folders that are ok to delete on USB drive
     if extdrive_path and not Fail:
         if os.path.exists(os.path.join(extdrive_path, 'Images', date)):
-            logger.info('Renaming Images/{0} on USB drive as Images/ok2delete_{0}'.format(date))
+            logger.info('Renaming Images/{0} on USB drive to Images/ok2delete_{0}'.format(date))
             shutil.move(os.path.join(extdrive_path, 'Images', date),\
                         os.path.join(extdrive_path, 'Images', 'ok2delete_'+date))
         else:
             logger.info('No Images/{0} found.  Already deleted?'.format(date))
         if os.path.exists(os.path.join(extdrive_path, 'Logs', date)):
-            logger.info('Renaming Logs/{0} as Logs/ok2delete_{0}'.format(date))
+            logger.info('Renaming Logs/{0} on USB drive to Logs/ok2delete_{0}'.format(date))
             shutil.move(os.path.join(extdrive_path, 'Logs', date),\
                         os.path.join(extdrive_path, 'Logs', 'ok2delete_'+date))
         else:
             logger.info('No Logs/{0} found.  Already deleted?'.format(date))
 
+    ## Rename folders that are ok to delete on Drobo
+    if os.path.exists(drobo_path) and not Fail:
+        if os.path.exists(os.path.join(drobo_path, 'Images', date)):
+            logger.info('Renaming Images/{0} on Drobo to Images/ok2delete_{0}'.format(date))
+            shutil.move(os.path.join(drobo_path, 'Images', date),\
+                        os.path.join(drobo_path, 'Images', 'ok2delete_'+date))
+        else:
+            logger.info('No Images/{0} found.  Already deleted?'.format(date))
+        if os.path.exists(os.path.join(drobo_path, 'Logs', date)):
+            logger.info('Renaming Logs/{0} on Drobo to Logs/ok2delete_{0}'.format(date))
+            shutil.move(os.path.join(drobo_path, 'Logs', date),\
+                        os.path.join(drobo_path, 'Logs', 'ok2delete_'+date))
+        else:
+            logger.info('No Logs/{0} found.  Already deleted?'.format(date))
+
 
 if __name__ == '__main__':
-    main()
+    ##-------------------------------------------------------------------------
+    ## Parse Command Line Arguments
+    ##-------------------------------------------------------------------------
+    ## create a parser object for understanding command-line arguments
+    parser = argparse.ArgumentParser(
+             description="Program description.")
+    ## add flags
+    parser.add_argument("-v", "--verbose",
+        action="store_true", dest="verbose",
+        default=False, help="Be verbose! (default = False)")
+    parser.add_argument("--copy",
+        action="store_true", dest="copy",
+        default=True, help="Copy the file over if SHASUM mismatch?")
+    parser.add_argument("--skip-file-checksums",
+        action="store_true", dest="skip_file_checksums",
+        default=False, help="Only do the check for the night, not file by file.")
+    ## add arguments
+    parser.add_argument("-t", "--telescope",
+        dest="telescope", required=True, type=str,
+        choices=["V5", "V20"],
+        help="Telescope which took the data ('V5' or 'V20')")
+    parser.add_argument("-d", "--date",
+        type=str, dest="date",
+        help="The date to copy.")
+    args = parser.parse_args()
+
+    if args.date:
+        if re.match('\d{8}UT', args.date):
+            date = args.date
+        elif args.date == 'yesterday':
+            today = datetime.datetime.utcnow()
+            oneday = datetime.timedelta(1, 0)
+            date = (today - oneday).strftime('%Y%m%dUT')
+    else:
+        date = datetime.datetime.utcnow().strftime('%Y%m%dUT')
+
+    copy_data_remote(telescope=args.telescope,\
+                     date=args.date,\
+                     verbose=args.verbose,\
+                     copy=args.copy,\
+                     skip_file_checksums=args.skip_file_checksums)
