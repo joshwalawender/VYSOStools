@@ -435,7 +435,7 @@ def get_status_and_log(telescope):
         LogFilePath = os.path.join('C:\\', 'Data_'+telescope, 'Logs', DateString)
         if not os.path.exists(LogFilePath):
             os.mkdir(LogFilePath)
-        LogFile = os.path.join(LogFilePath, 'get_status.log')
+        LogFile = os.path.join(LogFilePath, 'get_status_{}.log'.format(DateString))
         LogFileHandler = logging.FileHandler(LogFile)
         LogFileHandler.setLevel(logging.DEBUG)
         LogFileHandler.setFormatter(LogFormat)
