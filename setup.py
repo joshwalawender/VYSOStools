@@ -11,5 +11,7 @@ setup(
             'monitor = scripts.watch_directory:main',
             'makenightlyplots = scripts.make_nightly_plots:main',
             'cleanupIQMon = scripts.remove_old_plots:main',
+            'copydatalocal = data_handling.copy_data_local:main'
+            'copydataremote = data_handling.copy_data_remote:main'
         ]}
 )
