@@ -506,4 +506,5 @@ if __name__ == '__main__':
 
     while True:
         get_status_and_log(telescope)
+        logging.shutdown()
         time.sleep(10)
