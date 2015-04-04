@@ -561,7 +561,7 @@ def make_plots(date_string, telescope, logger):
             time = [x['exposure start'] for x in image_list]
             pointing_err = [x['pointing error arcmin'] for x in image_list]
             time_above_plot = [x['exposure start'] for x in image_list if x['pointing error arcmin'] > ymax]
-            pointing_err_above_plot = [x['zero point'] for x in image_list if x['pointing error arcmin'] > ymax]
+            pointing_err_above_plot = [x['pointing error arcmin'] for x in image_list if x['pointing error arcmin'] > ymax]
             logger.debug('  Adding pointing error to plot')
             p_axes.plot_date(time, pointing_err, 'ko', \
                              markersize=4, markeredgewidth=0, drawstyle="default", \
