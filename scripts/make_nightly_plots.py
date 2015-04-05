@@ -9,7 +9,7 @@ import logging
 import math
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.dates import HourLocator, DateFormatter
+from matplotlib.dates import HourLocator, MinuteLocator, DateFormatter
 import pymongo
 from pymongo import MongoClient
 
@@ -18,7 +18,7 @@ from astropy.io import ascii
 from astropy import table
 import IQMon
 
-def make_plots(date_string, telescope, logger):
+def make_plots(date_string, telescope, logger, recent=False):
     logger.info("#### Making Nightly Plots for "+telescope+" on the Night of "+date_string+" ####")
     telname = {'V20':'VYSOS-20', 'V5':'VYSOS-5'}
     y = date_string[0:4]
@@ -87,43 +87,76 @@ def make_plots(date_string, telescope, logger):
     ##------------------------------------------------------------------------
     ## Make Nightly Sumamry Plot (show only night time)
     ##------------------------------------------------------------------------
-    night_plot_file_name = '{}_{}.png'.format(date_string, telescope)
-    night_plot_file = os.path.join(destination_path, night_plot_file_name)
-    plot_start = sunset-tdelta(0,3600)
-    plot_end = sunrise+tdelta(0,1800)
-    hours = HourLocator(byhour=range(24), interval=1)
-    hours_fmt = DateFormatter('%H')
-
     now = dt.utcnow()
     now_string = now.strftime("%Y%m%dUT")
+    if recent:
+        night_plot_file_name = 'recent_{}.png'.format(telescope)
+        plot_start = now-tdelta(0,7200)
+        plot_end = now+tdelta(0,300)
+#         hours = MinuteLocator(byminute=range(60), interval=15)
+        hours = HourLocator(byhour=range(24), interval=1)
+        hours_fmt = DateFormatter('%H:%M')
+    else:
+        night_plot_file_name = '{}_{}.png'.format(date_string, telescope)
+        plot_start = sunset-tdelta(0,5400)
+        plot_end = sunrise+tdelta(0,300)
+        hours = HourLocator(byhour=range(24), interval=1)
+        hours_fmt = DateFormatter('%H')
 
-    if (date_string != now_string) or (now > sunset):
+    night_plot_file = os.path.join(destination_path, night_plot_file_name)
+
+
+    if (date_string != now_string) or (now > plot_start):
         time_ticks_values = np.arange(sunset.hour,sunrise.hour+1)
         
         if telescope == "V20":
-            plot_positions = [ ( [0.000, 0.760, 0.465, 0.240], [0.535, 0.760, 0.465, 0.240] ),
-                               ( [0.000, 0.580, 0.465, 0.155], [0.535, 0.495, 0.465, 0.240] ),
-                               ( [0.000, 0.495, 0.465, 0.075], [0.535, 0.245, 0.465, 0.240] ),
-                               ( [0.000, 0.330, 0.465, 0.155], [0.535, 0.000, 0.465, 0.235] ),
-                               ( [0.000, 0.165, 0.465, 0.155], None                         ),
-                               ( [0.000, 0.000, 0.465, 0.155], None                         ) ]
+            if recent:
+                plot_positions = [ ( [0.000, 0.750, 0.460, 0.250], None                         ),
+                                   ( [0.000, 0.570, 0.460, 0.155], None                         ),
+                                   ( [0.000, 0.485, 0.460, 0.075], None                         ),
+                                   ( [0.540, 0.845, 0.460, 0.155], None                         ),
+                                   ( [0.540, 0.665, 0.460, 0.155], None                         ),
+                                   ( [0.540, 0.485, 0.460, 0.155], None                         ) ]
+            else:
+                plot_positions = [ ( [0.000, 0.760, 0.465, 0.240], [0.535, 0.760, 0.465, 0.240] ),
+                                   ( [0.000, 0.580, 0.465, 0.155], [0.535, 0.495, 0.465, 0.240] ),
+                                   ( [0.000, 0.495, 0.465, 0.075], [0.535, 0.245, 0.465, 0.240] ),
+                                   ( [0.000, 0.330, 0.465, 0.155], [0.535, 0.000, 0.465, 0.235] ),
+                                   ( [0.000, 0.165, 0.465, 0.155], None                         ),
+                                   ( [0.000, 0.000, 0.465, 0.155], None                         ) ]
         if telescope == "V5":
-            plot_positions = [ ( [0.000, 0.760, 0.465, 0.240], [0.535, 0.760, 0.465, 0.240] ),
-                               ( None                        , [0.535, 0.495, 0.465, 0.240] ),
-                               ( None                        , [0.535, 0.245, 0.465, 0.240] ),
-                               ( [0.000, 0.495, 0.465, 0.240], [0.535, 0.000, 0.465, 0.235] ),
-                               ( [0.000, 0.245, 0.465, 0.240], None                         ),
-                               ( [0.000, 0.000, 0.465, 0.235], None                         ) ]
+            if recent:
+                plot_positions = [ ( [0.000, 0.485, 0.460, 0.515], None                         ),
+                                   ( None                        , None                         ),
+                                   ( None                        , None                         ),
+                                   ( [0.540, 0.845, 0.460, 0.155], None                         ),
+                                   ( [0.540, 0.665, 0.460, 0.155], None                         ),
+                                   ( [0.540, 0.485, 0.460, 0.155], None                         ) ]
+            else:
+                plot_positions = [ ( [0.000, 0.750, 0.460, 0.250], [0.535, 0.760, 0.465, 0.240] ),
+                                   ( None                        , [0.535, 0.495, 0.465, 0.240] ),
+                                   ( None                        , [0.535, 0.245, 0.465, 0.240] ),
+                                   ( [0.000, 0.495, 0.465, 0.240], [0.535, 0.000, 0.465, 0.235] ),
+                                   ( [0.000, 0.245, 0.465, 0.240], None                         ),
+                                   ( [0.000, 0.000, 0.465, 0.235], None                         ) ]
+
 
         logger.info("Writing Output File: {}".format(night_plot_file_name))
-        dpi=100
-        Figure = plt.figure(figsize=(13,9.5), dpi=dpi)
+        if recent:
+            dpi=72
+            Figure = plt.figure(figsize=(13,9.5), dpi=dpi)
+        else:
+            dpi=100
+            Figure = plt.figure(figsize=(13,9.5), dpi=dpi)
 
         ##------------------------------------------------------------------------
         ## Temperatures
         ##------------------------------------------------------------------------
         t_axes = plt.axes(plot_positions[0][0])
-        plt.title("Weather for {} on the Night of {}".format(telescope, date_string))
+        if recent:
+            plt.title("Recent Weather for {}".format(telescope))
+        else:
+            plt.title("Weather for {} on the Night of {}".format(telescope, date_string))
         logger.info('Adding temperature plot')
 
         ##------------------------------------------------------------------------
@@ -212,17 +245,20 @@ def make_plots(date_string, telescope, logger):
         m_axes = t_axes.twinx()
         m_axes.set_ylabel('Moon Alt (%.0f%% full)' % moon_phase, color='y')
         m_axes.plot_date(moon_time_list, moon_alts, 'y-')
+        m_axes.xaxis.set_major_locator(hours)
+        m_axes.xaxis.set_major_formatter(hours_fmt)
         plt.ylim(0,100)
         plt.yticks([10,30,50,70,90], color='y')
         plt.xlim(plot_start, plot_end)
         plt.fill_between(moon_time_list, 0, moon_alts, where=np.array(moon_alts)>0, color='yellow', alpha=moon_fill)        
+        plt.ylabel('')
 
         ##------------------------------------------------------------------------
         ## Temperature Differences (V20 Only)
         ##------------------------------------------------------------------------
         if telescope == "V20":
             logger.info('Adding temperature difference plot')
-            tdiff_axes = plt.axes(plot_positions[1][0], xticklabels=[])
+            tdiff_axes = plt.axes(plot_positions[1][0])
             status_list = [entry for entry in\
                            status.find({'UT date':date_string,\
                                         'UT time':{'$exists':True},\
@@ -251,10 +287,13 @@ def make_plots(date_string, telescope, logger):
                                      markersize=2, markeredgewidth=0, drawstyle="default", \
                                      label="Truss Temp")
                 tdiff_axes.plot_date([plot_start, plot_end], [0,0], 'k-')
-                plt.xlim(plot_start, plot_end)
-                plt.ylim(-2.25,4.5)
-                plt.ylabel("Difference (F)")
-                plt.grid()
+            tdiff_axes.xaxis.set_major_locator(hours)
+            tdiff_axes.xaxis.set_major_formatter(hours_fmt)
+            tdiff_axes.xaxis.set_ticklabels([])
+            plt.xlim(plot_start, plot_end)
+            plt.ylim(-2.25,4.5)
+            plt.ylabel("Difference (F)")
+            plt.grid()
 
 
         ##------------------------------------------------------------------------
@@ -262,7 +301,7 @@ def make_plots(date_string, telescope, logger):
         ##------------------------------------------------------------------------
         if telescope == "V20":
             logger.info('Adding fan state/power plot')
-            fan_axes = plt.axes(plot_positions[2][0], xticklabels=[])
+            fan_axes = plt.axes(plot_positions[2][0])
             ##------------------------------------------------------------------------
             ## V20 Dome Fan On
             status_list = [entry for entry in\
@@ -300,11 +339,13 @@ def make_plots(date_string, telescope, logger):
                 fan_axes.plot_date(time, RCOS_fan, 'bo', \
                                      markersize=2, markeredgewidth=0, drawstyle="default", \
                                      label="Mirror Temp")
-            
+            fan_axes.xaxis.set_major_locator(hours)
+            fan_axes.xaxis.set_major_formatter(hours_fmt)
+            fan_axes.xaxis.set_ticklabels([])
+
             plt.xlim(plot_start, plot_end)
             plt.ylim(-10,110)
             plt.yticks(np.linspace(0,100,3,endpoint=True))
-            plt.legend(loc='best', prop={'size':10})
             plt.grid()
 
 
@@ -312,7 +353,7 @@ def make_plots(date_string, telescope, logger):
         ## Cloudiness
         ##------------------------------------------------------------------------
         logger.info('Adding cloudiness plot')
-        c_axes = plt.axes(plot_positions[3][0], xticklabels=[])
+        c_axes = plt.axes(plot_positions[3][0])
 
         status_list = [entry for entry in\
                        status.find({'UT date':date_string,\
@@ -340,6 +381,9 @@ def make_plots(date_string, telescope, logger):
                              color='yellow', alpha=0.8)
             plt.fill_between(time, -140, sky_temp, where=np.array(cloud_condition)==3,\
                              color='red', alpha=0.8)
+        c_axes.xaxis.set_major_locator(hours)
+        c_axes.xaxis.set_major_formatter(hours_fmt)
+        c_axes.xaxis.set_ticklabels([])
         plt.ylabel("Cloudiness (F)")
         plt.xlim(plot_start, plot_end)
         plt.ylim(-100,0)
@@ -350,7 +394,7 @@ def make_plots(date_string, telescope, logger):
         ## Humidity, Wetness, Rain
         ##------------------------------------------------------------------------
         logger.info('Adding humidity, wetness, rain plot')
-        h_axes = plt.axes(plot_positions[4][0], xticklabels=[])
+        h_axes = plt.axes(plot_positions[4][0])
 
         status_list = [entry for entry in\
                        status.find({'UT date':date_string,\
@@ -378,6 +422,9 @@ def make_plots(date_string, telescope, logger):
                              color='yellow', alpha=0.8)
             plt.fill_between(time, -140, humidity, where=np.array(rain_condition)==3,\
                              color='red', alpha=0.8)
+        h_axes.xaxis.set_major_locator(hours)
+        h_axes.xaxis.set_major_formatter(hours_fmt)
+        h_axes.xaxis.set_ticklabels([])
         plt.ylabel("Humidity (%)")
         plt.xlim(plot_start, plot_end)
         plt.ylim(-5,105)
@@ -421,166 +468,173 @@ def make_plots(date_string, telescope, logger):
 
         plt.ylabel("Wind Speed (mph)")
         plt.xlim(plot_start, plot_end)
-        plt.ylim(-5,105)
+        plt.ylim(0,35)
         plt.grid()
 
         plt.xlabel("UT Time")
 
-        ##------------------------------------------------------------------------
-        ## FWHM
-        ##------------------------------------------------------------------------
-        logger.info('Adding FWHM plot')
-        f_axes = plt.axes(plot_positions[0][1])
-        plt.title("IQMon Results for {} on the Night of {}".format(telescope, date_string))
+        if not recent:
+            ##------------------------------------------------------------------------
+            ## FWHM
+            ##------------------------------------------------------------------------
+            logger.info('Adding FWHM plot')
+            f_axes = plt.axes(plot_positions[0][1])
+            plt.title("IQMon Results for {} on the Night of {}".format(telescope, date_string))
 
-        image_list = [entry for entry in\
-                      images.find({'date':date_string,\
-                                   'exposure start':{'$exists':True},\
-                                   'FWHM pix':{'$exists':True},\
-                                  }) ]
-        logger.debug("  Found {} lines for FWHM".format(len(image_list)))
-        ymax = {'V5': 4, 'V20': 11}[telescope]
-        if len(image_list) > 0:
-            time = [x['exposure start'] for x in image_list]
-            fwhm = [x['FWHM pix'] for x in image_list]
-            time_above_plot = [x['exposure start'] for x in image_list if x['FWHM pix'] > ymax]
-            fwhm_above_plot = [x['FWHM pix'] for x in image_list if x['FWHM pix'] > ymax]
-            logger.debug('  Adding FWHM to plot')
-            f_axes.plot_date(time, fwhm, 'ko', \
-                             markersize=4, markeredgewidth=0, drawstyle="default", \
-                             label="FWHM (pix)")
-            f_axes.plot_date(time_above_plot, fwhm_above_plot, 'r^', \
-                             markersize=5, markeredgewidth=0)
-            f_axes.plot_date([plot_start, plot_end],\
-                             [tel.config['threshold_FWHM'], tel.config['threshold_FWHM']],\
-                             'r-')
+            image_list = [entry for entry in\
+                          images.find({'date':date_string,\
+                                       'exposure start':{'$exists':True},\
+                                       'FWHM pix':{'$exists':True},\
+                                      }) ]
+            logger.debug("  Found {} lines for FWHM".format(len(image_list)))
+            ymax = {'V5': 4, 'V20': 11}[telescope]
+            if len(image_list) > 0:
+                time = [x['exposure start'] for x in image_list]
+                fwhm = [x['FWHM pix'] for x in image_list]
+                time_above_plot = [x['exposure start'] for x in image_list if x['FWHM pix'] > ymax]
+                fwhm_above_plot = [x['FWHM pix'] for x in image_list if x['FWHM pix'] > ymax]
+                logger.debug('  Adding FWHM to plot')
+                f_axes.plot_date(time, fwhm, 'ko', \
+                                 markersize=4, markeredgewidth=0, drawstyle="default", \
+                                 label="FWHM (pix)")
+                f_axes.plot_date(time_above_plot, fwhm_above_plot, 'r^', \
+                                 markersize=5, markeredgewidth=0)
+                f_axes.plot_date([plot_start, plot_end],\
+                                 [tel.config['threshold_FWHM'], tel.config['threshold_FWHM']],\
+                                 'r-')
 
-        ## Overplot Twilights
-        plt.axvspan(sunset, evening_civil_twilight, ymin=0, ymax=1, color='blue', alpha=0.1)
-        plt.axvspan(evening_civil_twilight, evening_nautical_twilight, ymin=0, ymax=1, color='blue', alpha=0.2)
-        plt.axvspan(evening_nautical_twilight, evening_astronomical_twilight, ymin=0, ymax=1, color='blue', alpha=0.3)
-        plt.axvspan(evening_astronomical_twilight, morning_astronomical_twilight, ymin=0, ymax=1, color='blue', alpha=0.5)
-        plt.axvspan(morning_astronomical_twilight, morning_nautical_twilight, ymin=0, ymax=1, color='blue', alpha=0.3)
-        plt.axvspan(morning_nautical_twilight, morning_civil_twilight, ymin=0, ymax=1, color='blue', alpha=0.2)
-        plt.axvspan(morning_civil_twilight, sunrise, ymin=0, ymax=1, color='blue', alpha=0.1)
+            ## Overplot Twilights
+            plt.axvspan(sunset, evening_civil_twilight, ymin=0, ymax=1, color='blue', alpha=0.1)
+            plt.axvspan(evening_civil_twilight, evening_nautical_twilight, ymin=0, ymax=1, color='blue', alpha=0.2)
+            plt.axvspan(evening_nautical_twilight, evening_astronomical_twilight, ymin=0, ymax=1, color='blue', alpha=0.3)
+            plt.axvspan(evening_astronomical_twilight, morning_astronomical_twilight, ymin=0, ymax=1, color='blue', alpha=0.5)
+            plt.axvspan(morning_astronomical_twilight, morning_nautical_twilight, ymin=0, ymax=1, color='blue', alpha=0.3)
+            plt.axvspan(morning_nautical_twilight, morning_civil_twilight, ymin=0, ymax=1, color='blue', alpha=0.2)
+            plt.axvspan(morning_civil_twilight, sunrise, ymin=0, ymax=1, color='blue', alpha=0.1)
 
-        f_axes.xaxis.set_major_locator(hours)
-        f_axes.xaxis.set_major_formatter(hours_fmt)
+            f_axes.xaxis.set_major_locator(hours)
+            f_axes.xaxis.set_major_formatter(hours_fmt)
 
-        plt.ylabel("FWHM (pix)")
-        plt.yticks(range(0,20))
-        plt.xlim(plot_start, plot_end)
-        plt.ylim(0,ymax)
-        plt.grid()
+            plt.ylabel("FWHM (pix)")
+            plt.yticks(range(0,20))
+            plt.xlim(plot_start, plot_end)
+            plt.ylim(0,ymax)
+            plt.grid()
 
-        ##------------------------------------------------------------------------
-        ## Zero Point
-        ##------------------------------------------------------------------------
-        logger.info('Adding Zero Point plot')
-        z_axes = plt.axes(plot_positions[1][1], xticklabels=[])
+            ##------------------------------------------------------------------------
+            ## Zero Point
+            ##------------------------------------------------------------------------
+            logger.info('Adding Zero Point plot')
+            z_axes = plt.axes(plot_positions[1][1])
 
-        image_list = [entry for entry in\
-                      images.find({'date':date_string,\
-                                   'exposure start':{'$exists':True},\
-                                   'zero point':{'$exists':True},\
-                                  }) ]
-        logger.debug("  Found {} lines for zero point".format(len(image_list)))
-        ymin = {'V5': 17.25, 'V20': 18.75}[telescope]
-        ymax = {'V5': 19.25, 'V20': 20.75}[telescope]
-        if len(image_list) > 0:
-            time = [x['exposure start'] for x in image_list]
-            zero_point = [x['zero point'] for x in image_list]
-            time_below_plot = [x['exposure start'] for x in image_list if x['zero point'] < ymin]
-            zero_point_below_plot = [x['zero point'] for x in image_list if x['zero point'] < ymin]
-            time_above_plot = [x['exposure start'] for x in image_list if x['zero point'] > ymax]
-            zero_point_above_plot = [x['zero point'] for x in image_list if x['zero point'] > ymax]
-            logger.debug('  Adding zero point to plot')
-            z_axes.plot_date(time, zero_point, 'ko', \
-                             markersize=4, markeredgewidth=0, drawstyle="default", \
-                             label="Zero Point")
-            z_axes.plot_date(time_above_plot, zero_point_above_plot, 'r^', \
-                             markersize=5, markeredgewidth=0)
-            z_axes.plot_date(time_below_plot, zero_point_below_plot, 'rv', \
-                             markersize=5, markeredgewidth=0)
-            z_axes.plot_date([plot_start, plot_end],\
-                             [tel.config['threshold_zeropoint'], tel.config['threshold_zeropoint']],\
-                             'r-')
+            image_list = [entry for entry in\
+                          images.find({'date':date_string,\
+                                       'exposure start':{'$exists':True},\
+                                       'zero point':{'$exists':True},\
+                                      }) ]
+            logger.debug("  Found {} lines for zero point".format(len(image_list)))
+            ymin = {'V5': 17.25, 'V20': 18.75}[telescope]
+            ymax = {'V5': 19.25, 'V20': 20.75}[telescope]
+            if len(image_list) > 0:
+                time = [x['exposure start'] for x in image_list]
+                zero_point = [x['zero point'] for x in image_list]
+                time_below_plot = [x['exposure start'] for x in image_list if x['zero point'] < ymin]
+                zero_point_below_plot = [x['zero point'] for x in image_list if x['zero point'] < ymin]
+                time_above_plot = [x['exposure start'] for x in image_list if x['zero point'] > ymax]
+                zero_point_above_plot = [x['zero point'] for x in image_list if x['zero point'] > ymax]
+                logger.debug('  Adding zero point to plot')
+                z_axes.plot_date(time, zero_point, 'ko', \
+                                 markersize=4, markeredgewidth=0, drawstyle="default", \
+                                 label="Zero Point")
+                z_axes.plot_date(time_above_plot, zero_point_above_plot, 'r^', \
+                                 markersize=5, markeredgewidth=0)
+                z_axes.plot_date(time_below_plot, zero_point_below_plot, 'rv', \
+                                 markersize=5, markeredgewidth=0)
+                z_axes.plot_date([plot_start, plot_end],\
+                                 [tel.config['threshold_zeropoint'], tel.config['threshold_zeropoint']],\
+                                 'r-')
+            z_axes.xaxis.set_major_locator(hours)
+            z_axes.xaxis.set_major_formatter(hours_fmt)
+            z_axes.xaxis.set_ticklabels([])
 
-        plt.ylabel("Zero Point")
-        plt.yticks(np.arange(10,30,0.5))
-        plt.xlim(plot_start, plot_end)
-        plt.ylim(ymin,ymax)
-        plt.grid()
-
-
-        ##------------------------------------------------------------------------
-        ## Ellipticity
-        ##------------------------------------------------------------------------
-        logger.info('Adding Ellipticity plot')
-        e_axes = plt.axes(plot_positions[2][1], xticklabels=[])
-
-        image_list = [entry for entry in\
-                      images.find({'date':date_string,\
-                                   'exposure start':{'$exists':True},\
-                                   'ellipticity':{'$exists':True},\
-                                  }) ]
-        logger.debug("  Found {} lines for ellipticity".format(len(image_list)))
-        ymax = {'V5': 4, 'V20': 6}[telescope]
-        if len(image_list) > 0:
-            time = [x['exposure start'] for x in image_list]
-            ellipticity = [x['ellipticity'] for x in image_list]
-            logger.debug('  Adding ellipticity to plot')
-            e_axes.plot_date(time, ellipticity, 'ko', \
-                             markersize=4, markeredgewidth=0, drawstyle="default", \
-                             label="ellipticity")
-            e_axes.plot_date([plot_start, plot_end],\
-                             [tel.config['threshold_ellipticity'], tel.config['threshold_ellipticity']],\
-                             'r-')
-
-        plt.ylabel("Ellipticity")
-        plt.yticks(np.arange(0,1.2,0.2))
-        plt.xlim(plot_start, plot_end)
-        plt.ylim(0,1)
-        plt.grid()
+            plt.ylabel("Zero Point")
+            plt.yticks(np.arange(10,30,0.5))
+            plt.xlim(plot_start, plot_end)
+            plt.ylim(ymin,ymax)
+            plt.grid()
 
 
-        ##------------------------------------------------------------------------
-        ## Pointing Error
-        ##------------------------------------------------------------------------
-        logger.info('Adding Pointing Error plot')
-        p_axes = plt.axes(plot_positions[3][1])
+            ##------------------------------------------------------------------------
+            ## Ellipticity
+            ##------------------------------------------------------------------------
+            logger.info('Adding Ellipticity plot')
+            e_axes = plt.axes(plot_positions[2][1])
 
-        image_list = [entry for entry in\
-                      images.find({'date':date_string,\
-                                   'exposure start':{'$exists':True},\
-                                   'pointing error arcmin':{'$exists':True},\
-                                  }) ]
-        logger.debug("  Found {} lines for pointing error".format(len(image_list)))
-        ymax = {'V5': 11, 'V20': 11}[telescope]
-        if len(image_list) > 0:
-            time = [x['exposure start'] for x in image_list]
-            pointing_err = [x['pointing error arcmin'] for x in image_list]
-            time_above_plot = [x['exposure start'] for x in image_list if x['pointing error arcmin'] > ymax]
-            pointing_err_above_plot = [x['pointing error arcmin'] for x in image_list if x['pointing error arcmin'] > ymax]
-            logger.debug('  Adding pointing error to plot')
-            p_axes.plot_date(time, pointing_err, 'ko', \
-                             markersize=4, markeredgewidth=0, drawstyle="default", \
-                             label="ellipticity")
-            p_axes.plot_date(time_above_plot, pointing_err_above_plot, 'r^', \
-                             markersize=5, markeredgewidth=0)
-            p_axes.plot_date([plot_start, plot_end],\
-                             [tel.config['threshold_pointing_err'], tel.config['threshold_pointing_err']],\
-                             'r-')
+            image_list = [entry for entry in\
+                          images.find({'date':date_string,\
+                                       'exposure start':{'$exists':True},\
+                                       'ellipticity':{'$exists':True},\
+                                      }) ]
+            logger.debug("  Found {} lines for ellipticity".format(len(image_list)))
+            ymax = {'V5': 4, 'V20': 6}[telescope]
+            if len(image_list) > 0:
+                time = [x['exposure start'] for x in image_list]
+                ellipticity = [x['ellipticity'] for x in image_list]
+                logger.debug('  Adding ellipticity to plot')
+                e_axes.plot_date(time, ellipticity, 'ko', \
+                                 markersize=4, markeredgewidth=0, drawstyle="default", \
+                                 label="ellipticity")
+                e_axes.plot_date([plot_start, plot_end],\
+                                 [tel.config['threshold_ellipticity'], tel.config['threshold_ellipticity']],\
+                                 'r-')
+            e_axes.xaxis.set_major_locator(hours)
+            e_axes.xaxis.set_major_formatter(hours_fmt)
+            e_axes.xaxis.set_ticklabels([])
 
-        plt.ylabel("Pointing Error (arcmin)")
-        plt.yticks(range(0,11,2))
-        plt.xlim(plot_start, plot_end)
-        plt.ylim(0,ymax)
-        plt.grid()
-        plt.xlabel("UT Time")
+            plt.ylabel("Ellipticity")
+            plt.yticks(np.arange(0,1.2,0.2))
+            plt.xlim(plot_start, plot_end)
+            plt.ylim(0,1)
+            plt.grid()
 
-        p_axes.xaxis.set_major_locator(hours)
-        p_axes.xaxis.set_major_formatter(hours_fmt)
+
+            ##------------------------------------------------------------------------
+            ## Pointing Error
+            ##------------------------------------------------------------------------
+            logger.info('Adding Pointing Error plot')
+            p_axes = plt.axes(plot_positions[3][1])
+
+            image_list = [entry for entry in\
+                          images.find({'date':date_string,\
+                                       'exposure start':{'$exists':True},\
+                                       'pointing error arcmin':{'$exists':True},\
+                                      }) ]
+            logger.debug("  Found {} lines for pointing error".format(len(image_list)))
+            ymax = {'V5': 11, 'V20': 11}[telescope]
+            if len(image_list) > 0:
+                time = [x['exposure start'] for x in image_list]
+                pointing_err = [x['pointing error arcmin'] for x in image_list]
+                time_above_plot = [x['exposure start'] for x in image_list if x['pointing error arcmin'] > ymax]
+                pointing_err_above_plot = [x['pointing error arcmin'] for x in image_list if x['pointing error arcmin'] > ymax]
+                logger.debug('  Adding pointing error to plot')
+                p_axes.plot_date(time, pointing_err, 'ko', \
+                                 markersize=4, markeredgewidth=0, drawstyle="default", \
+                                 label="ellipticity")
+                p_axes.plot_date(time_above_plot, pointing_err_above_plot, 'r^', \
+                                 markersize=5, markeredgewidth=0)
+                p_axes.plot_date([plot_start, plot_end],\
+                                 [tel.config['threshold_pointing_err'], tel.config['threshold_pointing_err']],\
+                                 'r-')
+
+            plt.ylabel("Pointing Error (arcmin)")
+            plt.yticks(range(0,11,2))
+            plt.xlim(plot_start, plot_end)
+            plt.ylim(0,ymax)
+            plt.grid()
+            plt.xlabel("UT Time")
+
+            p_axes.xaxis.set_major_locator(hours)
+            p_axes.xaxis.set_major_formatter(hours_fmt)
 
 
         logger.info('Saving figure: {}'.format(night_plot_file))
@@ -609,8 +663,10 @@ def main():
         help="Date of night to plot")
     args = parser.parse_args()
 
+    recent = False
     if not args.date:
         args.date = dt.utcnow().strftime("%Y%m%dUT")
+        recent = True
 
     ##-------------------------------------------------------------------------
     ## Create Logger Object
@@ -636,8 +692,10 @@ def main():
 #     LogFileHandler.setFormatter(LogFormat)
 #     logger.addHandler(LogFileHandler)
 
-
     make_plots(args.date, args.telescope, logger)
+    if recent:
+        make_plots(args.date, args.telescope, logger, recent=True)
+
 
 if __name__ == '__main__':
     main()
