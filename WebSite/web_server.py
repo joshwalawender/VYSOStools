@@ -244,38 +244,6 @@ class Status(RequestHandler):
         Observatory.date = nowut.strftime('%Y/%m/%d 01:00:00')
         Observatory.horizon = '0.0'
 
-#         twilight = {}
-#         Observatory.horizon = '0.0'
-#         twilight['sunset'] = Observatory.next_setting(ephem.Sun()).datetime()
-#         twilight['sunrise'] = Observatory.next_rising(ephem.Sun()).datetime()
-#         Observatory.horizon = '-6.0'
-#         twilight['evening civil'] = Observatory.next_setting(ephem.Sun(), use_center=True).datetime()
-#         twilight['morning civil'] = Observatory.next_rising(ephem.Sun(), use_center=True).datetime()
-#         Observatory.horizon = '-12.0'
-#         twilight['evening nautical'] = Observatory.next_setting(ephem.Sun(), use_center=True).datetime()
-#         twilight['morning nautical'] = Observatory.next_rising(ephem.Sun(), use_center=True).datetime()
-#         Observatory.horizon = '-18.0'
-#         twilight['evening astronomical'] = Observatory.next_setting(ephem.Sun(), use_center=True).datetime()
-#         twilight['morning astronomical'] = Observatory.next_rising(ephem.Sun(), use_center=True).datetime()
-#         if (nowut <= twilight['sunset']):
-#             twilight['now'] = 'day'
-#         elif (nowut > twilight['sunset']) and (nowut <= twilight['evening civil']):
-#             twilight['now'] = 'civil twilight'
-#         elif (nowut > twilight['evening civil']) and (nowut <= twilight['evening nautical']):
-#             twilight['now'] = 'nautical twilight'
-#         elif (nowut > twilight['evening nautical']) and (nowut <= twilight['evening astronomical']):
-#             twilight['now'] = 'astronomical twilight'
-#         elif (nowut > twilight['evening astronomical']) and (nowut <= twilight['morning astronomical']):
-#             twilight['now'] = 'night'
-#         elif (nowut > twilight['morning astronomical']) and (nowut <= twilight['morning nautical']):
-#             twilight['now'] = 'astronomical twilight'
-#         elif (nowut > twilight['morning nautical']) and (nowut <= twilight['morning civil']):
-#             twilight['now'] = 'nautical twilight'
-#         elif (nowut > twilight['morning civil']) and (nowut <= twilight['sunrise']):
-#             twilight['now'] = 'civil twilight'
-#         elif (nowut > twilight['sunrise']):
-#             twilight['now'] = 'day'
-
         Observatory.date = nowut.strftime('%Y/%m/%d %H:%M:%S')
         TheSun = ephem.Sun()
         TheSun.compute(Observatory)

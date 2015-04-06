@@ -237,7 +237,13 @@
 <!-- VYSOS-20 -->
 <!-- ###################################### -->
 <tr>
-    <th colspan=6><br><br><a href="V20/">VYSOS-20</a></th>
+    <th colspan=6>
+        <br>
+        <a href="V20/">VYSOS-20</a><br>
+        {{ nowut.strftime('%Y%m%dUT') }}: 
+        <a href="{{ '/V20/{}'.format(nowut.strftime('%Y%m%dUT')) }}">Image List</a> | 
+        <a href="{{ '/static/nights/{}_V20.png'.format(nowut.strftime('%Y%m%dUT')) }}">Nightly Plot</a>
+    </th>
 </tr>
 <tr>
     <td colspan=3><u>VYSOS-20 Status</u></td>
@@ -284,7 +290,13 @@
 <!-- VYSOS-5 -->
 <!-- ###################################### -->
 <tr>
-    <th colspan=6><br><br><a href="V5/">VYSOS-5</a></th>
+    <th colspan=6>
+        <br>
+        <a href="V5/">VYSOS-5</a><br>
+        {{ nowut.strftime('%Y%m%dUT') }}: 
+        <a href="{{ '/V5/{}'.format(nowut.strftime('%Y%m%dUT')) }}">Image List</a> | 
+        <a href="{{ '/static/nights/{}_V5.png'.format(nowut.strftime('%Y%m%dUT')) }}">Nightly Plot</a>
+    </th>
 </tr>
 <tr>
     <td colspan=3><u>VYSOS-5 Status</u></td>
