@@ -93,8 +93,8 @@ def make_plots(date_string, telescope, logger, recent=False):
         night_plot_file_name = 'recent_{}.png'.format(telescope)
         plot_start = now-tdelta(0,7200)
         plot_end = now+tdelta(0,300)
-#         hours = MinuteLocator(byminute=range(60), interval=15)
         hours = HourLocator(byhour=range(24), interval=1)
+        mins = MinuteLocator(range(0,60,15))
         hours_fmt = DateFormatter('%H:%M')
     else:
         night_plot_file_name = '{}_{}.png'.format(date_string, telescope)
@@ -133,7 +133,7 @@ def make_plots(date_string, telescope, logger, recent=False):
                                    ( [0.540, 0.665, 0.460, 0.155], None                         ),
                                    ( [0.540, 0.485, 0.460, 0.155], None                         ) ]
             else:
-                plot_positions = [ ( [0.000, 0.750, 0.460, 0.250], [0.535, 0.760, 0.465, 0.240] ),
+                plot_positions = [ ( [0.000, 0.760, 0.465, 0.240], [0.535, 0.760, 0.465, 0.240] ),
                                    ( None                        , [0.535, 0.495, 0.465, 0.240] ),
                                    ( None                        , [0.535, 0.245, 0.465, 0.240] ),
                                    ( [0.000, 0.495, 0.465, 0.240], [0.535, 0.000, 0.465, 0.235] ),
@@ -225,6 +225,7 @@ def make_plots(date_string, telescope, logger, recent=False):
                              label="Tube Temp")
 
         t_axes.xaxis.set_major_locator(hours)
+        if recent: t_axes.xaxis.set_minor_locator(mins)
         t_axes.xaxis.set_major_formatter(hours_fmt)
 
         ## Overplot Twilights
@@ -239,7 +240,8 @@ def make_plots(date_string, telescope, logger, recent=False):
         plt.legend(loc='best', prop={'size':10})
         plt.ylabel("Temperature (F)")
         plt.xlim(plot_start, plot_end)
-        plt.grid()
+        plt.grid(which='major', color='k')
+        if recent: plt.grid(which='minor', color='k', alpha=0.8)
 
         ## Overplot Moon Up Time
         m_axes = t_axes.twinx()
@@ -288,12 +290,14 @@ def make_plots(date_string, telescope, logger, recent=False):
                                      label="Truss Temp")
                 tdiff_axes.plot_date([plot_start, plot_end], [0,0], 'k-')
             tdiff_axes.xaxis.set_major_locator(hours)
+            if recent: tdiff_axes.xaxis.set_minor_locator(mins)
             tdiff_axes.xaxis.set_major_formatter(hours_fmt)
             tdiff_axes.xaxis.set_ticklabels([])
             plt.xlim(plot_start, plot_end)
             plt.ylim(-2.25,4.5)
             plt.ylabel("Difference (F)")
-            plt.grid()
+            plt.grid(which='major', color='k')
+            if recent: plt.grid(which='minor', color='k', alpha=0.8)
 
 
         ##------------------------------------------------------------------------
@@ -340,13 +344,15 @@ def make_plots(date_string, telescope, logger, recent=False):
                                      markersize=2, markeredgewidth=0, drawstyle="default", \
                                      label="Mirror Temp")
             fan_axes.xaxis.set_major_locator(hours)
+            if recent: fan_axes.xaxis.set_minor_locator(mins)
             fan_axes.xaxis.set_major_formatter(hours_fmt)
             fan_axes.xaxis.set_ticklabels([])
 
             plt.xlim(plot_start, plot_end)
             plt.ylim(-10,110)
             plt.yticks(np.linspace(0,100,3,endpoint=True))
-            plt.grid()
+            plt.grid(which='major', color='k')
+            if recent: plt.grid(which='minor', color='k', alpha=0.8)
 
 
         ##------------------------------------------------------------------------
@@ -382,12 +388,17 @@ def make_plots(date_string, telescope, logger, recent=False):
             plt.fill_between(time, -140, sky_temp, where=np.array(cloud_condition)==3,\
                              color='red', alpha=0.8)
         c_axes.xaxis.set_major_locator(hours)
+        if recent: c_axes.xaxis.set_minor_locator(mins)
         c_axes.xaxis.set_major_formatter(hours_fmt)
         c_axes.xaxis.set_ticklabels([])
         plt.ylabel("Cloudiness (F)")
         plt.xlim(plot_start, plot_end)
-        plt.ylim(-100,0)
-        plt.grid()
+        if telescope == 'V5':
+            plt.ylim(-100,0)
+        elif telescope == 'V20':
+            plt.ylim(-40,20)
+        plt.grid(which='major', color='k')
+        if recent: plt.grid(which='minor', color='k', alpha=0.8)
 
 
         ##------------------------------------------------------------------------
@@ -423,12 +434,14 @@ def make_plots(date_string, telescope, logger, recent=False):
             plt.fill_between(time, -140, humidity, where=np.array(rain_condition)==3,\
                              color='red', alpha=0.8)
         h_axes.xaxis.set_major_locator(hours)
+        if recent: h_axes.xaxis.set_minor_locator(mins)
         h_axes.xaxis.set_major_formatter(hours_fmt)
         h_axes.xaxis.set_ticklabels([])
         plt.ylabel("Humidity (%)")
         plt.xlim(plot_start, plot_end)
         plt.ylim(-5,105)
-        plt.grid()
+        plt.grid(which='major', color='k')
+        if recent: plt.grid(which='minor', color='k', alpha=0.8)
 
         ##------------------------------------------------------------------------
         ## Wind Speed
@@ -464,12 +477,14 @@ def make_plots(date_string, telescope, logger, recent=False):
                              color='red', alpha=0.8)
 
         w_axes.xaxis.set_major_locator(hours)
+        if recent: w_axes.xaxis.set_minor_locator(mins)
         w_axes.xaxis.set_major_formatter(hours_fmt)
 
         plt.ylabel("Wind Speed (mph)")
         plt.xlim(plot_start, plot_end)
         plt.ylim(0,35)
-        plt.grid()
+        plt.grid(which='major', color='k')
+        if recent: plt.grid(which='minor', color='k', alpha=0.8)
 
         plt.xlabel("UT Time")
 
@@ -519,7 +534,8 @@ def make_plots(date_string, telescope, logger, recent=False):
             plt.yticks(range(0,20))
             plt.xlim(plot_start, plot_end)
             plt.ylim(0,ymax)
-            plt.grid()
+            plt.grid(which='major', color='k')
+            if recent: plt.grid(which='minor', color='k', alpha=0.8)
 
             ##------------------------------------------------------------------------
             ## Zero Point
@@ -561,7 +577,8 @@ def make_plots(date_string, telescope, logger, recent=False):
             plt.yticks(np.arange(10,30,0.5))
             plt.xlim(plot_start, plot_end)
             plt.ylim(ymin,ymax)
-            plt.grid()
+            plt.grid(which='major', color='k')
+            if recent: plt.grid(which='minor', color='k', alpha=0.8)
 
 
             ##------------------------------------------------------------------------
@@ -595,7 +612,8 @@ def make_plots(date_string, telescope, logger, recent=False):
             plt.yticks(np.arange(0,1.2,0.2))
             plt.xlim(plot_start, plot_end)
             plt.ylim(0,1)
-            plt.grid()
+            plt.grid(which='major', color='k')
+            if recent: plt.grid(which='minor', color='k', alpha=0.8)
 
 
             ##------------------------------------------------------------------------
@@ -630,7 +648,8 @@ def make_plots(date_string, telescope, logger, recent=False):
             plt.yticks(range(0,11,2))
             plt.xlim(plot_start, plot_end)
             plt.ylim(0,ymax)
-            plt.grid()
+            plt.grid(which='major', color='k')
+            if recent: plt.grid(which='minor', color='k', alpha=0.8)
             plt.xlabel("UT Time")
 
             p_axes.xaxis.set_major_locator(hours)
