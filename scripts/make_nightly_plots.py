@@ -144,7 +144,7 @@ def make_plots(date_string, telescope, logger, recent=False):
         logger.info("Writing Output File: {}".format(night_plot_file_name))
         if recent:
             dpi=72
-            Figure = plt.figure(figsize=(13,9.5), dpi=dpi)
+            Figure = plt.figure(figsize=(12,12), dpi=dpi)
         else:
             dpi=100
             Figure = plt.figure(figsize=(13,9.5), dpi=dpi)
@@ -361,6 +361,7 @@ def make_plots(date_string, telescope, logger, recent=False):
         ##------------------------------------------------------------------------
         logger.info('Adding cloudiness plot')
         c_axes = plt.axes(plot_positions[3][0])
+        if recent: plt.title('(plot generated at {})'.format(now.strftime("%Y%m%d %H:%M:%S UT")))
 
         status_list = [entry for entry in\
                        status.find({'UT date':date_string,\
@@ -395,7 +396,7 @@ def make_plots(date_string, telescope, logger, recent=False):
         plt.ylabel("Cloudiness (F)")
         plt.xlim(plot_start, plot_end)
         if telescope == 'V5':
-            plt.ylim(-100,0)
+            plt.ylim(-110,10)
         elif telescope == 'V20':
             plt.ylim(-35,35)
         plt.grid(which='major', color='k')
