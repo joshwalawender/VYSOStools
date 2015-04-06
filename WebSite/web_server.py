@@ -24,6 +24,11 @@ import ephem
 
 import IQMon
 
+class MyStaticFileHandler(StaticFileHandler):
+    def set_extra_headers(self, path):
+        # Disable cache
+        self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+
 ##-------------------------------------------------------------------------
 ## Check Free Space on Drive
 ##-------------------------------------------------------------------------
@@ -638,7 +643,7 @@ def main():
                        url(r"/(V20$|V5$)", ListOfNights),
                        url(r"/(V20/?$|V5/?$)", ListOfNights),
                        url(r"/(V20|V5)/(\w*)", ListOfImages),
-                       (r"/static/(.*)", StaticFileHandler, {"path": "/var/www"}),
+                       (r"/static/(.*)", MyStaticFileHandler, {"path": "/var/www"}),
                      ])
     app.listen(80)
     IOLoop.current().start()
