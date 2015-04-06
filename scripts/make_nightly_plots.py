@@ -144,7 +144,7 @@ def make_plots(date_string, telescope, logger, recent=False):
         logger.info("Writing Output File: {}".format(night_plot_file_name))
         if recent:
             dpi=72
-            Figure = plt.figure(figsize=(12,12), dpi=dpi)
+            Figure = plt.figure(figsize=(12,8), dpi=dpi)
         else:
             dpi=100
             Figure = plt.figure(figsize=(13,9.5), dpi=dpi)
