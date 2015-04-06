@@ -111,9 +111,9 @@ def make_plots(date_string, telescope, logger, recent=False):
         
         if telescope == "V20":
             if recent:
-                plot_positions = [ ( [0.000, 0.750, 0.460, 0.250], None                         ),
-                                   ( [0.000, 0.570, 0.460, 0.155], None                         ),
-                                   ( [0.000, 0.485, 0.460, 0.075], None                         ),
+                plot_positions = [ ( [0.000, 0.600, 0.460, 0.400], None                         ),
+                                   ( None                        , None                         ),
+                                   ( [0.000, 0.485, 0.460, 0.085], None                         ),
                                    ( [0.540, 0.845, 0.460, 0.155], None                         ),
                                    ( [0.540, 0.665, 0.460, 0.155], None                         ),
                                    ( [0.540, 0.485, 0.460, 0.155], None                         ) ]
@@ -240,6 +240,7 @@ def make_plots(date_string, telescope, logger, recent=False):
         plt.legend(loc='best', prop={'size':10})
         plt.ylabel("Temperature (F)")
         plt.xlim(plot_start, plot_end)
+        plt.ylim(28,87)
         plt.grid(which='major', color='k')
         if recent: plt.grid(which='minor', color='k', alpha=0.8)
 
@@ -258,7 +259,7 @@ def make_plots(date_string, telescope, logger, recent=False):
         ##------------------------------------------------------------------------
         ## Temperature Differences (V20 Only)
         ##------------------------------------------------------------------------
-        if telescope == "V20":
+        if telescope == "V20" and not recent:
             logger.info('Adding temperature difference plot')
             tdiff_axes = plt.axes(plot_positions[1][0])
             status_list = [entry for entry in\
@@ -396,7 +397,7 @@ def make_plots(date_string, telescope, logger, recent=False):
         if telescope == 'V5':
             plt.ylim(-100,0)
         elif telescope == 'V20':
-            plt.ylim(-40,20)
+            plt.ylim(-35,35)
         plt.grid(which='major', color='k')
         if recent: plt.grid(which='minor', color='k', alpha=0.8)
 
