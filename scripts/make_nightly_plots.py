@@ -15,6 +15,7 @@ from pymongo import MongoClient
 
 import ephem
 from astropy.io import ascii
+import astropy.units as u
 from astropy import table
 import IQMon
 
@@ -511,18 +512,23 @@ def make_plots(date_string, telescope, logger, recent=False):
             f_axes = plt.axes(plot_positions[0][1])
             plt.title("IQMon Results for {} on the Night of {}".format(telescope, date_string))
 
+            if tel.config['units_for_FWHM'] == 'arcsec':
+                scaling_factor = 206.265*float(tel.config['pixel_size'])/float(tel.config['focal_length'])
+            else:
+                scaling_factor = 1.0
+
             image_list = [entry for entry in\
                           images.find({'date':date_string,\
                                        'exposure start':{'$exists':True},\
                                        'FWHM pix':{'$exists':True},\
                                       }) ]
             logger.debug("  Found {} lines for FWHM".format(len(image_list)))
-            ymax = {'V5': 4, 'V20': 11}[telescope]
+            ymax = {'V5': 4, 'V20': 6.5}[telescope]
             if len(image_list) > 0:
                 time = [x['exposure start'] for x in image_list]
-                fwhm = [x['FWHM pix'] for x in image_list]
-                time_above_plot = [x['exposure start'] for x in image_list if x['FWHM pix'] > ymax]
-                fwhm_above_plot = [x['FWHM pix'] for x in image_list if x['FWHM pix'] > ymax]
+                fwhm = [x['FWHM pix']*scaling_factor for x in image_list]
+                time_above_plot = [x['exposure start'] for x in image_list if x['FWHM pix']*scaling_factor > ymax]
+                fwhm_above_plot = [x['FWHM pix']*scaling_factor for x in image_list if x['FWHM pix']*scaling_factor > ymax]
                 logger.debug('  Adding FWHM to plot')
                 f_axes.plot_date(time, fwhm, 'ko', \
                                  markersize=4, markeredgewidth=0, drawstyle="default", \
@@ -530,7 +536,7 @@ def make_plots(date_string, telescope, logger, recent=False):
                 f_axes.plot_date(time_above_plot, fwhm_above_plot, 'r^', \
                                  markersize=5, markeredgewidth=0)
                 f_axes.plot_date([plot_start, plot_end],\
-                                 [tel.config['threshold_FWHM'], tel.config['threshold_FWHM']],\
+                                 [tel.config['threshold_FWHM']*scaling_factor, tel.config['threshold_FWHM']*scaling_factor],\
                                  'r-')
 
             ## Overplot Twilights
@@ -545,7 +551,7 @@ def make_plots(date_string, telescope, logger, recent=False):
             f_axes.xaxis.set_major_locator(hours)
             f_axes.xaxis.set_major_formatter(hours_fmt)
 
-            plt.ylabel("FWHM (pix)")
+            plt.ylabel("FWHM ({})".format(tel.config['units_for_FWHM']))
             plt.yticks(range(0,20))
             plt.xlim(plot_start, plot_end)
             plt.ylim(0,ymax)
