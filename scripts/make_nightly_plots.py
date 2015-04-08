@@ -163,17 +163,12 @@ def make_plots(date_string, telescope, logger, recent=False):
         ##------------------------------------------------------------------------
         ## Boltwood Temperature
         status_list = [entry for entry in\
-                       status.find({'UT date':date_string,\
+                       status.find({'$or':[ {'UT date':date_string_yesterday},\
+                                            {'UT date':date_string}],\
                                     'boltwood time':{'$exists':True},\
                                     'boltwood date':{'$exists':True},\
                                     'boltwood ambient temp':{'$exists':True},\
                                    }) ]
-        if recent: status_list.extend([entry for entry in\
-                       status.find({'UT date':date_string_yesterday,\
-                                    'boltwood time':{'$exists':True},\
-                                    'boltwood date':{'$exists':True},\
-                                    'boltwood ambient temp':{'$exists':True},\
-                                   }) ])
         logger.debug("  Found {} lines for boltwood temperature".format(len(status_list)))
         if len(status_list) > 1:
             time = [dt.strptime('{} {}'.format(entry['boltwood date'],\
@@ -190,17 +185,12 @@ def make_plots(date_string, telescope, logger, recent=False):
         ##------------------------------------------------------------------------
         ## RCOS Temperature
         status_list = [entry for entry in\
-                       status.find({'UT date':date_string,\
+                       status.find({'$or':[ {'UT date':date_string_yesterday},\
+                                            {'UT date':date_string}],\
                                     'UT time':{'$exists':True},\
                                     'RCOS temperature (primary)':{'$exists':True},\
                                     'RCOS temperature (truss)':{'$exists':True},\
                                    }) ]
-        if recent: status_list.extend([entry for entry in\
-                       status.find({'UT date':date_string_yesterday,\
-                                    'UT time':{'$exists':True},\
-                                    'RCOS temperature (primary)':{'$exists':True},\
-                                    'RCOS temperature (truss)':{'$exists':True},\
-                                   }) ])
         logger.debug("  Found {} lines for RCOS temperatures".format(len(status_list)))
         if len(status_list) > 1:
             time = [dt.strptime('{} {}'.format(entry['UT date'],\
@@ -221,15 +211,11 @@ def make_plots(date_string, telescope, logger, recent=False):
         ##------------------------------------------------------------------------
         ## FocusMax Temperature
         status_list = [entry for entry in\
-                       status.find({'UT date':date_string,\
+                       status.find({'$or':[ {'UT date':date_string_yesterday},\
+                                            {'UT date':date_string}],\
                                     'UT time':{'$exists':True},\
                                     'FocusMax temperature (tube)':{'$exists':True},\
                                    }) ]
-        if recent: status_list.extend([entry for entry in\
-                       status.find({'UT date':date_string_yesterday,\
-                                    'UT time':{'$exists':True},\
-                                    'FocusMax temperature (tube)':{'$exists':True},\
-                                   }) ])
         logger.debug("  Found {} lines for FocusMax temperatures".format(len(status_list)))
         if len(status_list) > 1:
             time = [dt.strptime('{} {}'.format(entry['UT date'],\
@@ -283,19 +269,13 @@ def make_plots(date_string, telescope, logger, recent=False):
             logger.info('Adding temperature difference plot')
             tdiff_axes = plt.axes(plot_positions[1][0])
             status_list = [entry for entry in\
-                           status.find({'UT date':date_string,\
+                           status.find({'$or':[ {'UT date':date_string_yesterday},\
+                                                {'UT date':date_string}],\
                                         'UT time':{'$exists':True},\
                                         'RCOS temperature (primary)':{'$exists':True},\
                                         'RCOS temperature (truss)':{'$exists':True},\
                                         'boltwood ambient temp':{'$exists':True},\
                                        }) ]
-            if recent: status_list.extend([entry for entry in\
-                           status.find({'UT date':date_string_yesterday,\
-                                        'UT time':{'$exists':True},\
-                                        'RCOS temperature (primary)':{'$exists':True},\
-                                        'RCOS temperature (truss)':{'$exists':True},\
-                                        'boltwood ambient temp':{'$exists':True},\
-                                       }) ])
             logger.debug("  Found {} lines for temperature differences".format(len(status_list)))
             if len(status_list) > 1:
                 time = [dt.strptime('{} {}'.format(entry['UT date'],\
@@ -337,15 +317,11 @@ def make_plots(date_string, telescope, logger, recent=False):
             ##------------------------------------------------------------------------
             ## V20 Dome Fan On
             status_list = [entry for entry in\
-                           status.find({'UT date':date_string,\
+                           status.find({'$or':[ {'UT date':date_string_yesterday},\
+                                                {'UT date':date_string}],\
                                         'UT time':{'$exists':True},\
                                         'CBW fan state':{'$exists':True},\
                                        }) ]
-            if recent: status_list.extend([entry for entry in\
-                           status.find({'UT date':date_string_yesterday,\
-                                        'UT time':{'$exists':True},\
-                                        'CBW fan state':{'$exists':True},\
-                                       }) ])
             logger.debug("  Found {} lines for dome fan state".format(len(status_list)))
             if len(status_list) > 1:
                 time = [dt.strptime('{} {}'.format(entry['UT date'],\
@@ -361,15 +337,11 @@ def make_plots(date_string, telescope, logger, recent=False):
             ##------------------------------------------------------------------------
             ## RCOS Fan Power
             status_list = [entry for entry in\
-                           status.find({'UT date':date_string,\
+                           status.find({'$or':[ {'UT date':date_string_yesterday},\
+                                                {'UT date':date_string}],\
                                         'UT time':{'$exists':True},\
                                         'RCOS fan speed':{'$exists':True},\
                                        }) ]
-            if recent: status_list.extend([entry for entry in\
-                           status.find({'UT date':date_string_yesterday,\
-                                        'UT time':{'$exists':True},\
-                                        'RCOS fan speed':{'$exists':True},\
-                                       }) ])
             logger.debug("  Found {} lines for RCOS fan speed".format(len(status_list)))
             if len(status_list) > 1:
                 time = [dt.strptime('{} {}'.format(entry['UT date'],\
@@ -403,19 +375,13 @@ def make_plots(date_string, telescope, logger, recent=False):
         if recent: plt.title('(plot generated at {})'.format(now.strftime("%Y%m%d %H:%M:%S UT")))
 
         status_list = [entry for entry in\
-                       status.find({'UT date':date_string,\
+                       status.find({'$or':[ {'UT date':date_string_yesterday},\
+                                            {'UT date':date_string}],\
                                     'boltwood time':{'$exists':True},\
                                     'boltwood date':{'$exists':True},\
                                     'boltwood sky temp':{'$exists':True},\
                                     'boltwood cloud condition':{'$exists':True},\
                                    }) ]
-        if recent: status_list.extend([entry for entry in\
-                       status.find({'UT date':date_string_yesterday,\
-                                    'boltwood time':{'$exists':True},\
-                                    'boltwood date':{'$exists':True},\
-                                    'boltwood sky temp':{'$exists':True},\
-                                    'boltwood cloud condition':{'$exists':True},\
-                                   }) ])
         logger.debug("  Found {} lines for boltwood sky temperature".format(len(status_list)))
         if len(status_list) > 1:
             time = [dt.strptime('{} {}'.format(entry['boltwood date'],\
@@ -454,21 +420,14 @@ def make_plots(date_string, telescope, logger, recent=False):
         ##------------------------------------------------------------------------
         logger.info('Adding humidity, wetness, rain plot')
         h_axes = plt.axes(plot_positions[4][0])
-
         status_list = [entry for entry in\
-                       status.find({'UT date':date_string,\
+                       status.find({'$or':[ {'UT date':date_string_yesterday},\
+                                            {'UT date':date_string}],\
                                     'boltwood time':{'$exists':True},\
                                     'boltwood date':{'$exists':True},\
                                     'boltwood humidity':{'$exists':True},\
                                     'boltwood rain condition':{'$exists':True},\
                                    }) ]
-        if recent: status_list.extend([entry for entry in\
-                       status.find({'UT date':date_string_yesterday,\
-                                    'boltwood time':{'$exists':True},\
-                                    'boltwood date':{'$exists':True},\
-                                    'boltwood humidity':{'$exists':True},\
-                                    'boltwood rain condition':{'$exists':True},\
-                                   }) ])
         logger.debug("  Found {} lines for boltwood humidity".format(len(status_list)))
         if len(status_list) > 1:
             time = [dt.strptime('{} {}'.format(entry['boltwood date'],\
@@ -505,19 +464,13 @@ def make_plots(date_string, telescope, logger, recent=False):
         w_axes = plt.axes(plot_positions[5][0])
 
         status_list = [entry for entry in\
-                       status.find({'UT date':date_string,\
+                       status.find({'$or':[ {'UT date':date_string_yesterday},\
+                                            {'UT date':date_string}],\
                                     'boltwood time':{'$exists':True},\
                                     'boltwood date':{'$exists':True},\
                                     'boltwood wind speed':{'$exists':True},\
                                     'boltwood wind condition':{'$exists':True},\
                                    }) ]
-        if recent: status_list.extend([entry for entry in\
-                       status.find({'UT date':date_string_yesterday,\
-                                    'boltwood time':{'$exists':True},\
-                                    'boltwood date':{'$exists':True},\
-                                    'boltwood wind speed':{'$exists':True},\
-                                    'boltwood wind condition':{'$exists':True},\
-                                   }) ])
         logger.debug("  Found {} lines for boltwood wind speed".format(len(status_list)))
         if len(status_list) > 1:
             time = [dt.strptime('{} {}'.format(entry['boltwood date'],\
