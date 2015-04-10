@@ -329,7 +329,7 @@ def make_plots(date_string, telescope, logger, recent=False):
                                                    entry['UT time']),\
                                                    '%Y%m%dUT %H:%M:%S')
                         for entry in status_list]
-                dome_fan = [x['CBW fan state'] for x in status_list]
+                dome_fan = [int(x['CBW fan state'])*100 for x in status_list]
                 logger.debug('  Adding dome fan state to plot')
                 fan_axes.plot_date(time, dome_fan, 'co', \
                                      markersize=2, markeredgewidth=0, drawstyle="default", \
