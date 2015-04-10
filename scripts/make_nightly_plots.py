@@ -362,6 +362,7 @@ def make_plots(date_string, telescope, logger, recent=False):
             plt.xlim(plot_start, plot_end)
             plt.ylim(-10,110)
             plt.yticks(np.linspace(0,100,3,endpoint=True))
+            plt.ylabel('Pwr (%)')
             plt.grid(which='major', color='k')
             if recent:
                 plt.grid(which='minor', color='k', alpha=0.8)
@@ -496,7 +497,7 @@ def make_plots(date_string, telescope, logger, recent=False):
         if recent: w_axes.xaxis.set_minor_locator(mins)
         w_axes.xaxis.set_major_formatter(hours_fmt)
 
-        plt.ylabel("Wind Speed (mph)")
+        plt.ylabel("Wind (mph)")
         plt.xlim(plot_start, plot_end)
         plt.ylim(0,35)
         plt.grid(which='major', color='k')
