@@ -348,16 +348,16 @@ def control_by_web(focuser_info, boltwood, logger):
         logger.debug('  Temp1 = {:.1f} {}'.format(CBW_info['CBW temp1'], CBW_info['CBW temperature units']))
         CBW_info['CBW temp2'] = float(xmldoc.getElementsByTagName('sensor2temp')[0].firstChild.nodeValue)
         logger.debug('  Temp2 = {:.1f} {}'.format(CBW_info['CBW temp2'], CBW_info['CBW temperature units']))
-        CBW_info['CBW fan state'] = bool(xmldoc.getElementsByTagName('relay1state')[0].firstChild.nodeValue)
-        logger.debug('  Fans On? = {}'.format(CBW_info['CBW fan state']))
-        CBW_info['CBW fan enable'] = bool(xmldoc.getElementsByTagName('relay2state')[0].firstChild.nodeValue)
-        logger.debug('  Fan Control Enabled? = {}'.format(CBW_info['CBW fan enable']))
         if CBW_info['CBW temperature units'] == "C":
             CBW_info['CBW temp1'] = CBW_info['CBW temp1']*9./5. + 32.
             CBW_info['CBW temp2'] = CBW_info['CBW temp2']*9./5. + 32.
             CBW_info['CBW temperature units'] = 'F'
-            logger.debug('  Temp1 = {:.1f} {}'.format(CBW_info['CBW temp1'], CBW_info['CBW temperature units']))
+            logger.info('  Temp1 = {:.1f} {}'.format(CBW_info['CBW temp1'], CBW_info['CBW temperature units']))
             logger.debug('  Temp2 = {:.1f} {}'.format(CBW_info['CBW temp2'], CBW_info['CBW temperature units']))
+        CBW_info['CBW fan state'] = bool(xmldoc.getElementsByTagName('relay1state')[0].firstChild.nodeValue)
+        logger.info('  Fans On? = {}'.format(CBW_info['CBW fan state']))
+        CBW_info['CBW fan enable'] = bool(xmldoc.getElementsByTagName('relay2state')[0].firstChild.nodeValue)
+        logger.debug('  Fan Control Enabled? = {}'.format(CBW_info['CBW fan enable']))
     except:
         logger.error('Could not connect to CBW temperature module.')
         return {}
