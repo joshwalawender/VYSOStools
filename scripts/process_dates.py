@@ -41,11 +41,13 @@ def main(startdate, enddate, logger, nice=False):
         V20_path = os.path.join("/Volumes", "Drobo", "V20", "Images", date_string)
         if os.path.exists(V5_path):
             V5_images = glob(os.path.join(V5_path, '*.fts'))
-            logger.info('  Found {} images for the night of {} for V5'.format(len(V5_images), date_string))
+            logger.info('  Found {} images for the night of {} for V5'.format(\
+                        len(V5_images), date_string))
             images.extend(V5_images)
         if os.path.exists(V20_path):
             V20_images = glob(os.path.join(V20_path, '*.fts'))
-            logger.info('  Found {} images for the night of {} for V20'.format(len(V20_images), date_string))
+            logger.info('  Found {} images for the night of {} for V20'.format(\
+                        len(V20_images), date_string))
             images.extend(V20_images)
         ## Sort Images by Observation time
         properties = []
@@ -59,13 +61,19 @@ def main(startdate, enddate, logger, nice=False):
                     images.remove(image)
                 else:
                     try:
-                        image_dt = dt.strptime('{} {}'.format(FNmatch.group(2), FNmatch.group(3)), '%Y%m%d %H%M%S')
+                        image_dt = dt.strptime('{} {}'.format(\
+                           FNmatch.group(2), FNmatch.group(3)), '%Y%m%d %H%M%S')
                     except:
                         image_dt = dt.utcnow()
                     properties.append([image, image_dt])
         properties = sorted(properties, key=lambda entry:entry[1])
         ## Process Images
+        count = 0
         for entry in properties:
+            count += 1
+            print('')
+            print('Processing image {} out of {} for the night of {}'.format(\
+                   count, len(properties), date_string))
             image = entry[0]
             if nice:
                 now = dt.utcnow()
