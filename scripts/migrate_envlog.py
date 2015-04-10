@@ -78,6 +78,7 @@ def main(startdate, enddate, logger):
                 id = V5status.insert(new_data)
                 logger.info('    Inserted datum for {} on {} {}'.format(\
                                telescope, new_data['UT date'], new_data['UT time']))
+                make_nightly_plots.make_plots(date_string, 'V5', logger)
 
 
         ## VYSOS-20
@@ -138,8 +139,8 @@ def main(startdate, enddate, logger):
                 logger.info('    Inserted datum for {} on {} {}'.format(\
                                telescope, new_data['UT date'], new_data['UT time']))
 
-        make_nightly_plots.make_plots(date_string, 'V5', logger)
-        make_nightly_plots.make_plots(date_string, 'V20', logger)
+                make_nightly_plots.make_plots(date_string, 'V20', logger)
+
         date += oneday
 
 
@@ -178,14 +179,14 @@ if __name__ == "__main__":
     LogConsoleHandler.setFormatter(LogFormat)
     logger.addHandler(LogConsoleHandler)
     ## Set up file output
-#     LogFilePath = os.path.join()
-#     if not os.path.exists(LogFilePath):
-#         os.mkdir(LogFilePath)
-#     LogFile = os.path.join(LogFilePath, 'get_status.log')
-#     LogFileHandler = logging.FileHandler(LogFile)
-#     LogFileHandler.setLevel(logging.DEBUG)
-#     LogFileHandler.setFormatter(LogFormat)
-#     logger.addHandler(LogFileHandler)
+    LogFilePath = os.path.expanduser('~')
+    if not os.path.exists(LogFilePath):
+        os.mkdir(LogFilePath)
+    LogFile = os.path.join(LogFilePath, 'migrate_envlog.log')
+    LogFileHandler = logging.FileHandler(LogFile)
+    LogFileHandler.setLevel(logging.DEBUG)
+    LogFileHandler.setFormatter(LogFormat)
+    logger.addHandler(LogFileHandler)
 
     startdate = dt.strptime(args.start, '%Y%m%dUT')
     enddate = dt.strptime(args.end, '%Y%m%dUT')
