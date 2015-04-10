@@ -78,7 +78,7 @@ def main(startdate, enddate, logger):
                 id = V5status.insert(new_data)
                 logger.info('    Inserted datum for {} on {} {}'.format(\
                                telescope, new_data['UT date'], new_data['UT time']))
-                make_nightly_plots.make_plots(date_string, 'V5', logger)
+        make_nightly_plots.make_plots(date_string, 'V5', logger)
 
 
         ## VYSOS-20
@@ -139,7 +139,7 @@ def main(startdate, enddate, logger):
                 logger.info('    Inserted datum for {} on {} {}'.format(\
                                telescope, new_data['UT date'], new_data['UT time']))
 
-                make_nightly_plots.make_plots(date_string, 'V20', logger)
+        make_nightly_plots.make_plots(date_string, 'V20', logger)
 
         date += oneday
 
