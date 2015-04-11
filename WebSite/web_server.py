@@ -45,6 +45,20 @@ def free_space(path):
 ##-----------------------------------------------------------------------------
 class ListOfImages(RequestHandler):
     def get(self, telescope, subject):
+        ##-------------------------------------------------------------------------
+        ## Create Logger Object
+        ##-------------------------------------------------------------------------
+#         verbose = True
+#         logger = logging.getLogger('my_ListOfImages_log')
+#         logger.setLevel(logging.DEBUG)
+#         LogConsoleHandler = logging.StreamHandler()
+#         LogConsoleHandler.setLevel(logging.DEBUG)
+#         LogFormat = logging.Formatter('%(asctime)23s %(levelname)8s: %(message)s')
+#         LogConsoleHandler.setFormatter(LogFormat)
+#         logger.addHandler(LogConsoleHandler)
+        logger = None
+
+        if logger: logger.info('ListOfImages handler called')
         assert telescope in ['V5', 'V20']
         names = {'V5': 'VYSOS-5', 'V20': 'VYSOS-20'}
         telescopename = names[telescope]
@@ -54,17 +68,23 @@ class ListOfImages(RequestHandler):
             config_file = os.path.join(os.path.expanduser('~'), '.VYSOS5.yaml')
         if telescope == 'V20':
             config_file = os.path.join(os.path.expanduser('~'), '.VYSOS20.yaml')
+        if logger: logger.debug('  Creating telescope object')
         tel = IQMon.Telescope(config_file)
+        if logger: logger.debug('  Done.')
 
-
+        if logger: logger.debug('  Linking to mongo')
         client = MongoClient('192.168.1.101', 27017)
+        if logger: logger.debug('  Connected to client.')
         collection = client.vysos['{}.images'.format(telescope)]
+        if logger: logger.debug('  Retrieved collection.')
 
+        if logger: logger.debug('Getting list of images from mongo')
         ## If subject matches a date, then get images from a date
         if re.match('\d{8}UT', subject):
             image_list = [entry for entry in\
                           collection.find({"date": subject}).sort(\
                           [('time', pymongo.ASCENDING)])]
+            if logger: logger.debug('  Got list of {} images for night.'.format(len(image_list)))
         ## If subject matches a target name, then get images from a date
         else:
             target_name_list = sorted(collection.distinct("target name"))
@@ -73,7 +93,7 @@ class ListOfImages(RequestHandler):
                               collection.find({"target name":subject}).sort(\
                               [('date', pymongo.DESCENDING),\
                               ('time', pymongo.DESCENDING)])]
-
+                if logger: logger.debug('  Got list of {} images for target.'.format(len(image_list)))
             else:
                 image_list = []
                 self.write('<html><head><style>')
@@ -90,6 +110,7 @@ class ListOfImages(RequestHandler):
                     self.write('<tr><td><a href="{0}">{0}</a></td><td>{1:d}</td></tr>'.format(target, len(target_images)))
                 self.write('</table></html>')
 
+        if logger: logger.debug('Looping over images for colors')
         for image in image_list:
             ## Set FWHM color
             image['FWHM color'] = ""
@@ -128,7 +149,10 @@ class ListOfImages(RequestHandler):
                     if 'zero point' in image['flags'].keys():
                         if image['flags']['zero point']:
                             image['zero point color'] = "#FF5C33" # red
+        if logger: logger.debug('  Done')
 
+        if logger: logger.debug('Looping over images for files')
+        for image in image_list:
             ## Check for jpegs
             image_basename = os.path.splitext(image['filename'])[0]
             jpegs = glob.glob(os.path.join(tel.plot_file_path, '{}*.jpg'.format(image_basename)))
@@ -155,9 +179,11 @@ class ListOfImages(RequestHandler):
                 match_static_path = re.match('/var/www/([\w\/\.\-]+)', zp_plot_file)
                 if match_static_path:
                     image['ZP plot'] = '/static/{}'.format(match_static_path.group(1))
+        if logger: logger.debug('  Done.')
 
 
         if len(image_list) > 0:
+            if logger: logger.debug('Rendering page')
             self.render("image_list.html", title="{} Results".format(telescopename),\
                         telescope = telescope,\
                         FWHM_units = tel.units_for_FWHM.to_string(),\
@@ -165,6 +191,7 @@ class ListOfImages(RequestHandler):
                         subject = subject,\
                         image_list = image_list,\
                        )
+            if logger: logger.debug('  Done.')
 
 ##-----------------------------------------------------------------------------
 ## Handler for list of nights
