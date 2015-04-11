@@ -14,6 +14,11 @@ import measure_image
 import make_nightly_plots
 
 def main(startdate, enddate, logger, nice=False):
+    if startdate > enddate:
+        oneday = tdelta(-1, 0)
+    else:
+        oneday = tdelta(1, 0)
+
     ##------------------------------------------------------------------------
     ## Use pyephem determine sunrise and sunset times
     ##------------------------------------------------------------------------
@@ -31,9 +36,9 @@ def main(startdate, enddate, logger, nice=False):
 
     MatchFilename = re.compile("(.*)\-([0-9]{8})at([0-9]{6})\.fts")
     MatchEmpty = re.compile(".*\-Empty\-.*\.fts")
-    oneday = tdelta(1, 0)
+
     date = startdate
-    while date <= enddate:
+    while True:
         date_string = date.strftime('%Y%m%dUT')
         logger.info('Checking for images from {}'.format(date_string))
         images = []
@@ -105,6 +110,8 @@ def main(startdate, enddate, logger, nice=False):
                                  analyze_image=False)
         make_nightly_plots.make_plots(date_string, 'V5', logger)
         make_nightly_plots.make_plots(date_string, 'V20', logger)
+        if date == enddate:
+            break
         date += oneday
 
     
