@@ -29,6 +29,7 @@ def main(startdate, enddate, logger):
     date = startdate
     while date <= enddate:
         date_string = date.strftime('%Y%m%dUT')
+        logger.info('')
         logger.info('Checking for environmental logs from {}'.format(date_string))
         ## VYSOS-5
         telescope = 'V5'
@@ -37,7 +38,13 @@ def main(startdate, enddate, logger):
             logger.warning('  No logfile found for {} on {}'.format(telescope, date_string))
         else:
             logger.info('  Found logfile: {}'.format(logfile))
-            env_table = ascii.read(logfile)
+            try:
+                env_table = ascii.read(logfile)
+            except:
+                logger.warning('astropy.io.ascii.read failed on {}'.format(logfile))
+                logger.info('  Trying again')
+                env_table = ascii.read(logfile)
+            
             for entry in env_table:
                 new_data = {}
                 ## Date and Time
@@ -88,7 +95,13 @@ def main(startdate, enddate, logger):
             logger.warning('  No logfile found for {} on {}'.format(telescope, date_string))
         else:
             logger.info('  Found logfile: {}'.format(logfile))
-            env_table = ascii.read(logfile)
+            try:
+                env_table = ascii.read(logfile)
+            except:
+                logger.warning('astropy.io.ascii.read failed on {}'.format(logfile))
+                logger.info('  Trying again')
+                env_table = ascii.read(logfile)
+
             for entry in env_table:
                 new_data = {}
                 ## Date and Time

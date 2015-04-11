@@ -225,6 +225,7 @@ def MeasureImage(filename,\
                             mark_detected_stars=True,\
                             mark_catalog_stars=False,\
                             mark_saturated=False,\
+                            quality=70,\
                             )
             cropped_JPEG = image.raw_file_basename+"_crop.jpg"
             image.make_JPEG(cropped_JPEG,\
@@ -234,7 +235,8 @@ def MeasureImage(filename,\
                             mark_detected_stars=True,\
                             mark_catalog_stars=False,\
                             mark_saturated=False,\
-                            crop=(1024, 1024, 3072, 3072),\
+                            crop=(int(image.nXPix/2)-800, int(image.nYPix/2)-800, int(image.nXPix/2)+800, int(image.nYPix/2)+800),\
+                            quality=40,\
                             )
 
         image.clean_up()
