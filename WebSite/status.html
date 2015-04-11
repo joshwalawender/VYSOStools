@@ -255,7 +255,8 @@
         Status<br>
         Alt<br>
         Az<br>
-        Target Coordinate<br>
+        Target RA<br>
+        Target Dec<br>
         ACP Data Age<br>
     </td>
     <td style="text-align: left;" colspan=2>
@@ -273,7 +274,8 @@
         
         {% if 'ACP alt' in v20data.keys() %} {{ '{:.1f}'.format(v20data['ACP alt']) }} {% end %}<br>
         {% if 'ACP az' in v20data.keys() %}  {{ '{:.1f}'.format(v20data['ACP az']) }} {% end %}<br>
-        {{ v20coord }}<br>
+        {{ v20coord.split(' ')[0] }}<br>
+        {{ v20coord.split(' ')[1] }}<br>
         <font color="{{ '{}'.format(v20data_color) }}">
         {{ '{:.0f} sec'.format(v20data_age) }}<br>
         </font>
@@ -313,7 +315,8 @@
         Status<br>
         Alt<br>
         Az<br>
-        Target Coordinate<br>
+        Target RA<br>
+        Target Dec<br>
         ACP Data Age<br>
     </td>
     <td style="text-align: left;" colspan=2>
@@ -332,7 +335,8 @@
         
         {% if 'ACP alt' in v5data.keys() %} {{ '{:.1f}'.format(v5data['ACP alt']) }} {% end %}<br>
         {% if 'ACP az' in v5data.keys() %}  {{ '{:.1f}'.format(v5data['ACP az']) }} {% end %}<br>
-        {{ v5coord }}<br>
+        {{ v5coord.split(' ')[0] }}<br>
+        {{ v5coord.split(' ')[1] }}<br>
         <font color="{{ '{}'.format(v5data_color) }}">
         {{ '{:.0f} sec'.format(v5data_age) }}<br>
         </font>
