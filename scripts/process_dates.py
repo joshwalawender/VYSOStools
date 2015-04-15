@@ -118,8 +118,8 @@ def main(startdate, enddate, logger, nice=False, skip=False):
                 if TheSun.alt < 0:
                     print('The Sun is down (alt = {:.1f})'.format(TheSun.alt*180./ephem.pi))
                     sunrise = Observatory.next_rising(TheSun).datetime()
-                    until_sunrise = (sunrise - now).total_seconds()
-                    logger.info('Sleeping {} seconds until sunrise'.format(until_sunrise))
+                    until_sunrise = (sunrise - now).total_seconds()/60./60.
+                    logger.info('Sleeping {:.1f} hours until sunrise'.format(until_sunrise))
                     time.sleep(until_sunrise + 300)
                     now = dt.utcnow()
                     Observatory.date = now.strftime('%Y/%m/%d %H:%M:%S')
