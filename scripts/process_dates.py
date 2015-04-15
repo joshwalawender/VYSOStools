@@ -9,11 +9,13 @@ from datetime import timedelta as tdelta
 from argparse import ArgumentParser
 import subprocess
 import ephem
+import pymongo
+from pymongo import MongoClient
 
 import measure_image
 import make_nightly_plots
 
-def main(startdate, enddate, logger, nice=False):
+def main(startdate, enddate, logger, nice=False, skip=False):
     if startdate > enddate:
         oneday = tdelta(-1, 0)
     else:
@@ -57,8 +59,37 @@ def main(startdate, enddate, logger, nice=False):
         ## Sort Images by Observation time
         properties = []
         for image in images:
-            FNmatch = MatchFilename.match(image)
-            Ematch = MatchEmpty.match(image)
+            imagename = os.path.split(image)[1]
+            FNmatch = MatchFilename.match(imagename)
+            Ematch = MatchEmpty.match(imagename)
+            ## If skip is enabled, skip images which are already in mongo db
+            if skip:
+                telescope = None
+                V5match = re.match("V5.*\.fi?ts", imagename)
+                V20match = re.match("V20.*\.fi?ts", imagename)
+                if V5match and not V20match:
+                    telescope = "V5"
+                elif V20match and not V5match:
+                    telescope = "V20"
+                else:
+                    with fits.open(image) as hdulist:
+                        if hdulist[0].header['OBSERVAT']:
+                            if re.search('VYSOS-?20', hdulist[0].header['OBSERVAT']):
+                                telescope = "V20"
+                            elif re.search('VYSOS-?5', hdulist[0].header['OBSERVAT']):
+                                telescope = "V5"
+                            else:
+                                print("Can not determine valid telescope from arguments or filename or header.")
+                        else:
+                            print("Can not determine valid telescope from arguments or filename or header.")
+                if telescope:
+                    client = MongoClient('192.168.1.101', 27017)
+                    db = client['vysos']
+                    data = db['{}.images'.format(telescope)]
+                    matches = [item for item in data.find( {"filename" : imagename} )]
+                    if len(matches) > 0:
+                        images.remove(image)
+            ## Remove images with Empty in filenme
             if Ematch:
                 images.remove(image)
             else:
@@ -77,7 +108,7 @@ def main(startdate, enddate, logger, nice=False):
         for entry in properties:
             count += 1
             print('')
-            print('Processing image {} out of {} for the night of {}'.format(\
+            print('Examining image {} out of {} for the night of {}'.format(\
                    count, len(properties), date_string))
             image = entry[0]
             if nice:
@@ -130,6 +161,12 @@ if __name__ == "__main__":
     parser.add_argument("--nice",
         action="store_true", dest="nice",
         default=False, help="Be nice by not processing data at night.")
+    parser.add_argument("--skip",
+        action="store_true", dest="skip",
+        default=False, help="Skip images already in mongo db.")
+#     parser.add_argument("--revise",
+#         action="store_true", dest="revise",
+#         default=False, help="Reprocess images if IQMon version is newer.")
     ## add arguments
     parser.add_argument("-s", "--start", 
         dest="start", required=True, type=str,
@@ -166,4 +203,4 @@ if __name__ == "__main__":
     startdate = dt.strptime(args.start, '%Y%m%dUT')
     enddate = dt.strptime(args.end, '%Y%m%dUT')
 
-    main(startdate, enddate, logger, nice=args.nice)
+    main(startdate, enddate, logger, nice=args.nice, skip=args.skip)
