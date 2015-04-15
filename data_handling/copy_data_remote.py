@@ -324,19 +324,19 @@ def main():
             logger.info('No Logs/{0} found.  Already deleted?'.format(date))
 
     ## Rename folders that are ok to delete on Drobo
-    if os.path.exists(drobo_path) and not Fail:
-        if os.path.exists(os.path.join(drobo_path, 'Images', date)):
-            logger.info('Renaming Images/{0} on Drobo to Images/ok2delete_{0}'.format(date))
-            shutil.move(os.path.join(drobo_path, 'Images', date),\
-                        os.path.join(drobo_path, 'Images', 'ok2delete_'+date))
-        else:
-            logger.info('No Images/{0} found.  Already deleted?'.format(date))
-        if os.path.exists(os.path.join(drobo_path, 'Logs', date)):
-            logger.info('Renaming Logs/{0} on Drobo to Logs/ok2delete_{0}'.format(date))
-            shutil.move(os.path.join(drobo_path, 'Logs', date),\
-                        os.path.join(drobo_path, 'Logs', 'ok2delete_'+date))
-        else:
-            logger.info('No Logs/{0} found.  Already deleted?'.format(date))
+#     if os.path.exists(drobo_path) and not Fail:
+#         if os.path.exists(os.path.join(drobo_path, 'Images', date)):
+#             logger.info('Renaming Images/{0} on Drobo to Images/ok2delete_{0}'.format(date))
+#             shutil.move(os.path.join(drobo_path, 'Images', date),\
+#                         os.path.join(drobo_path, 'Images', 'ok2delete_'+date))
+#         else:
+#             logger.info('No Images/{0} found.  Already deleted?'.format(date))
+#         if os.path.exists(os.path.join(drobo_path, 'Logs', date)):
+#             logger.info('Renaming Logs/{0} on Drobo to Logs/ok2delete_{0}'.format(date))
+#             shutil.move(os.path.join(drobo_path, 'Logs', date),\
+#                         os.path.join(drobo_path, 'Logs', 'ok2delete_'+date))
+#         else:
+#             logger.info('No Logs/{0} found.  Already deleted?'.format(date))
 
 
 if __name__ == '__main__':
