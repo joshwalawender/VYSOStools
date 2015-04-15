@@ -58,27 +58,6 @@ def make_plots(date_string, telescope, logger, recent=False):
     evening_astronomical_twilight = Observatory.previous_setting(ephem.Sun(), use_center=True).datetime()
     morning_astronomical_twilight = Observatory.next_rising(ephem.Sun(), use_center=True).datetime()
 
-    Observatory.date = '{}/{}/{} 0:00:01.0'.format(y, m, d)
-    TheMoon = ephem.Moon()
-    TheMoon.compute(Observatory)
-    moonset  = Observatory.next_setting(ephem.Moon()).datetime()
-    moonrise = Observatory.next_rising(ephem.Moon()).datetime()
-    
-    moon_time_list = [dt(int(y), int(m), int(d), int(math.floor(min/60)), int(min)%60, 0)\
-                      for min in np.arange(0,24*60,6)]
-    moon_alts = []
-    for moon_time in moon_time_list:
-        Observatory.date = moon_time.strftime('%Y/%m/%d %H:%M:%S')
-        TheMoon.compute(Observatory)
-        moon_alts.append(TheMoon.alt * 180. / ephem.pi)
-    ## Determine time of max alt for moon
-    moon_peak_alt = max(moon_alts)
-    moon_peak_time = moon_time_list[moon_alts.index(moon_peak_alt)]
-    Observatory.date = moon_peak_time.strftime('%Y/%m/%d %H:%M:%S')
-    TheMoon.compute(Observatory)
-    moon_phase = TheMoon.phase
-    moon_fill = moon_phase/100.*0.5+0.05
-
     ##------------------------------------------------------------------------
     ## Get status and IQMon results
     ##------------------------------------------------------------------------
@@ -252,6 +231,21 @@ def make_plots(date_string, telescope, logger, recent=False):
             plt.xlabel("UT Time")
 
         ## Overplot Moon Up Time
+        TheMoon = ephem.Moon()
+        moon_alts = []
+        moon_phases = []
+        moon_time_list = []
+        moon_time = plot_start
+        while moon_time <= plot_end:
+            Observatory.date = moon_time
+            TheMoon.compute(Observatory)
+            moon_time_list.append(moon_time)
+            moon_alts.append(TheMoon.alt * 180. / ephem.pi)
+            moon_phases.append(TheMoon.phase)
+            moon_time += tdelta(0, 60*5)
+        moon_phase = max(moon_phases)
+        moon_fill = moon_phase/100.*0.5+0.05
+
         m_axes = t_axes.twinx()
         m_axes.set_ylabel('Moon Alt (%.0f%% full)' % moon_phase, color='y')
         m_axes.plot_date(moon_time_list, moon_alts, 'y-')
