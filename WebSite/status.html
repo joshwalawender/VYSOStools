@@ -238,10 +238,11 @@
         VYSOS-20<br>
         <a href="V20/">List of Nights</a> | 
         <a href="V20/targets">List of Targets</a> | 
-        <a href="{{ '/V20/{}'.format(nowut.strftime('%Y%m%dUT')) }}">
-            Images from {{ nowut.strftime('%Y%m%dUT') }}</a> | 
-        <a href="{{ '/static/nights/{}_V20.png'.format(nowut.strftime('%Y%m%dUT')) }}">
-            Night Summary Plot for {{ nowut.strftime('%Y%m%dUT') }}</a>
+
+        <a href="{{ '/V20/{}'.format(link_date_string) }}">
+            Images from {{ link_date_string }}</a> | 
+        <a href="{{ '/static/nights/{}_V20.png'.format(link_date_string) }}">
+            Night Summary Plot for {{ link_date_string }}</a>
     </th>
 </tr>
 <tr>
@@ -296,10 +297,10 @@
         VYSOS-5<br>
         <a href="V5/">List of Nights</a> | 
         <a href="V5/targets">List of Targets</a> | 
-        <a href="{{ '/V5/{}'.format(nowut.strftime('%Y%m%dUT')) }}">
-            Images from {{ nowut.strftime('%Y%m%dUT') }}</a> | 
-        <a href="{{ '/static/nights/{}_V5.png'.format(nowut.strftime('%Y%m%dUT')) }}">
-            Night Summary Plot for {{ nowut.strftime('%Y%m%dUT') }}</a>
+        <a href="{{ '/V5/{}'.format(link_date_string) }}">
+            Images from {{ link_date_string }}</a> | 
+        <a href="{{ '/static/nights/{}_V5.png'.format(link_date_string) }}">
+            Night Summary Plot for {{ link_date_string }}</a>
     </th>
 </tr>
 <tr>

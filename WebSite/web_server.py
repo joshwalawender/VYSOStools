@@ -606,9 +606,14 @@ class Status(RequestHandler):
         ##---------------------------------------------------------------------
         ## Render
         ##---------------------------------------------------------------------
+        if nowut.hour >= 4:
+            link_date_string = nowut.strftime('%Y%m%dUT')
+        else:
+            link_date_string = (nowut - datetime.timedelta(1,0)).strftime('%Y%m%dUT')
         self.render("status.html", title="VYSOS Status",\
                     now = now,\
                     nowut = nowut,\
+                    link_date_string = link_date_string,\
                     v20clarity_age = v20clarity_age,\
                     v20clarity_color = v20clarity_color,\
                     v20data_time = v20data_time,\
