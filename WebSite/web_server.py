@@ -59,17 +59,12 @@ class ListOfImages(RequestHandler):
         logger = None
 
         if logger: logger.info('ListOfImages handler called')
-        assert telescope in ['V5', 'V20']
-        names = {'V5': 'VYSOS-5', 'V20': 'VYSOS-20'}
-        telescopename = names[telescope]
 
         ## Create Telescope Object
-        if telescope == 'V5':
-            config_file = os.path.join(os.path.expanduser('~'), '.VYSOS5.yaml')
-        if telescope == 'V20':
-            config_file = os.path.join(os.path.expanduser('~'), '.VYSOS20.yaml')
         if logger: logger.debug('  Creating telescope object')
+        config_file = os.path.join(os.path.expanduser('~'), '.{}.yaml'.format(telescope))
         tel = IQMon.Telescope(config_file)
+        telescopename = tel.name
         if logger: logger.debug('  Done.')
 
         if logger: logger.debug('  Linking to mongo')
@@ -200,9 +195,11 @@ class ListOfNights(RequestHandler):
 
     def get(self, telescope):
         telescope = telescope.strip('/')
-        assert telescope in ['V5', 'V20']
-        names = {'V5': 'VYSOS-5', 'V20': 'VYSOS-20'}
-        telescopename = names[telescope]
+
+        ## Create Telescope Object
+        config_file = os.path.join(os.path.expanduser('~'), '.{}.yaml'.format(telescope))
+        tel = IQMon.Telescope(config_file)
+        telescopename = tel.name
 
         client = MongoClient('192.168.1.101', 27017)
         collection = client.vysos['{}.images'.format(telescope)]
@@ -218,13 +215,6 @@ class ListOfNights(RequestHandler):
             date_list.append(thisdate.strftime('%Y%m%dUT'))
             thisdate -= oneday
 
-        ## Create Telescope Object
-        if telescope == 'V5':
-            config_file = os.path.join(os.path.expanduser('~'), '.VYSOS5.yaml')
-        if telescope == 'V20':
-            config_file = os.path.join(os.path.expanduser('~'), '.VYSOS20.yaml')
-        tel = IQMon.Telescope(config_file)
-
         night_plot_path = os.path.abspath('/var/www/nights/')
 
         nights = []
@@ -234,10 +224,6 @@ class ListOfNights(RequestHandler):
             night_graph_file = '{}_{}.png'.format(date_string, telescope)
             if os.path.exists(os.path.join(night_plot_path, night_graph_file)):
                 night_info['night graph'] = night_graph_file
-
-#             environmental_graph_file = '{}_{}_Env.png'.format(date_string, telescope)
-#             if os.path.exists(os.path.join(logs_path, environmental_graph_file)):
-#                 night_info['env graph'] = environmental_graph_file
 
             night_info['n images'] = collection.find( {"date":date_string} ).count()
             
