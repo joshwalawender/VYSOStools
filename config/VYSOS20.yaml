@@ -3,6 +3,8 @@ name: 'VYSOS-20'
 logs_file_path: '/var/www/logs/V20'
 plot_file_path: '/var/www/plots/V20'
 temp_file_path: '/tmp/V20'
+mongo_db: 'vysos'
+mongo_collection: 'V20.images'
 ## Telescope Properties
 focal_length: 4175            # mm
 pixel_size: 9.0               # um

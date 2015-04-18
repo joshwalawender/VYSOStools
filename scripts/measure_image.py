@@ -143,10 +143,7 @@ def MeasureImage(filename,\
     ##-------------------------------------------------------------------------
     ## Create Telescope Object
     ##-------------------------------------------------------------------------
-    if telescope == 'V5':
-        config_file = os.path.join(os.path.expanduser('~'), '.VYSOS5.yaml')
-    if telescope == 'V20':
-        config_file = os.path.join(os.path.expanduser('~'), '.VYSOS20.yaml')
+    config_file = os.path.join(os.path.expanduser('~'), '.{}.yaml'.format(telescope))
     tel = IQMon.Telescope(config_file)
 
     ##-------------------------------------------------------------------------

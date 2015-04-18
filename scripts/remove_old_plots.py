@@ -56,8 +56,8 @@ def main():
     LogFileHandler.setFormatter(LogFormat)
     logger.addHandler(LogFileHandler)
 
-    V5 = IQMon.Telescope(os.path.expanduser('~/.VYSOS5.yaml'))
-    V20 = IQMon.Telescope(os.path.expanduser('~/.VYSOS20.yaml'))
+    V5 = IQMon.Telescope(os.path.expanduser('~/.V5.yaml'))
+    V20 = IQMon.Telescope(os.path.expanduser('~/.V20.yaml'))
     telescopes = [V5, V20]
 
     days_to_keep = 60

@@ -70,7 +70,8 @@ class ListOfImages(RequestHandler):
         if logger: logger.debug('  Linking to mongo')
         client = MongoClient('192.168.1.101', 27017)
         if logger: logger.debug('  Connected to client.')
-        collection = client.vysos['{}.images'.format(telescope)]
+        db = client[tel.mongo_db]
+        collection = db[tel.mongo_collection]
         if logger: logger.debug('  Retrieved collection.')
 
         if logger: logger.debug('Getting list of images from mongo')
@@ -202,8 +203,8 @@ class ListOfNights(RequestHandler):
         telescopename = tel.name
 
         client = MongoClient('192.168.1.101', 27017)
-        collection = client.vysos['{}.images'.format(telescope)]
-#         date_list = sorted(collection.distinct("date"), reverse=True)
+        db = client[tel.mongo_db]
+        collection = db[tel.mongo_collection]
 
         first_date_string = sorted(collection.distinct("date"), reverse=False)[0]
         first_date = datetime.datetime.strptime('{} 00:00:00'.format(first_date_string), '%Y%m%dUT %H:%M:%S')
@@ -546,6 +547,9 @@ class Status(RequestHandler):
                     elif not P and S and not T:
                         v5data['ACP status string'] = 'Slewing'
                         v5data['ACP status color'] = 'orange'
+                    elif not P and S and T:
+                        v5data['ACP status string'] = 'Slewing'
+                        v5data['ACP status color'] = 'orange'
                     elif not P and not S and T:
                         v5data['ACP status string'] = 'Tracking'
                         v5data['ACP status color'] = 'green'
@@ -566,6 +570,9 @@ class Status(RequestHandler):
             else:
                 v5data['ACP connected color'] = ''
                 v5coord = ''
+        else:
+            v5data['ACP connected color'] = ''
+            v5coord = ''
 
         ##---------------------------------------------------------------------
         ## Get disk use info
@@ -614,7 +621,6 @@ class Status(RequestHandler):
                     v5data_color = v5data_color,\
                     v5data = v5data,\
                     v5coord = v5coord,\
-#                     twilight = twilight,\
                     moon = moon,\
                     sun = sun,\
                     disks = disks,\

@@ -3,6 +3,8 @@ name: 'VYSOS-5'
 logs_file_path: '/var/www/logs/V5'
 plot_file_path: '/var/www/plots/V5'
 temp_file_path: '/tmp/V5'
+mongo_db: 'vysos'
+mongo_collection: 'V5.images'
 ## Telescope Properties
 focal_length: 735             # mm
 pixel_size: 9.0               # um
