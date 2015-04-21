@@ -40,7 +40,7 @@
         {{ nowut.strftime('%Y/%m/%d %H:%M:%S UT') }}
     </td>
     <td width="410px" style="text-align: left;">
-        {{ 'It is currently {} (Sun alt = {:.0f})'.format(sun['now'], sun['alt']) }}<br>
+        {{ now.strftime('%Y/%m/%d %H:%M:%S HST') }}
     </td>
     <td width="215px" style="text-align: left;">
         {% if 'Drobo' in disks.keys() %}
@@ -55,10 +55,14 @@
 </tr>
 <tr>
     <td colspan=3 style="text-align: left;">
-        {{ now.strftime('%Y/%m/%d %H:%M:%S HST') }}
+        {{ 'It is currently {} (Sun alt = {:.0f})'.format(sun['now'], sun['alt']) }}<br>
     </td>
     <td width="410px" style="text-align: left;">
-        {{ 'A {:.0f}% illuminated moon is {}'.format(moon['phase'], moon['now']) }}
+        {% if sun['rise'] < sun['set'] %}
+            {{ 'Next sunrise is at {}'.format(sun['rise'].strftime('%Y/%m/%d %H:%M:%S UT')) }}
+        {% else %}
+            {{ 'Next sunset is at {}'.format(sun['set'].strftime('%Y/%m/%d %H:%M:%S UT')) }}
+        {% end %} 
     </td>
     <td width="215px" style="text-align: left;">
         {% if 'Vega' in disks.keys() %}
@@ -70,6 +74,20 @@
         <u>Black</u>: {{ '{:.0f}% used, {:.0f} GB avail.'.format(disks['Black'][2], disks['Black'][1]) }}
         {% end %}
     </td>
+</tr>
+<tr>
+    <td colspan=3 style="text-align: left;">
+        {{ 'A {:.0f}% illuminated moon is {}'.format(moon['phase'], moon['now']) }}
+    </td>
+    <td style="text-align: left;">
+        {% if sun['rise'] > sun['set'] %}
+            {{ 'Next sunrise is at {}'.format(sun['rise'].strftime('%Y/%m/%d %H:%M:%S UT')) }}
+        {% else %}
+            {{ 'Next sunset is at {}'.format(sun['set'].strftime('%Y/%m/%d %H:%M:%S UT')) }}
+        {% end %} 
+    </td>
+    <td style="text-align: left;"></td>
+    <td style="text-align: left;"></td>
 </tr>
 <!-- ###################################### -->
 <!-- Weather -->

@@ -262,8 +262,8 @@ class Status(RequestHandler):
         TheSun = ephem.Sun()
         TheSun.compute(Observatory)
         sun = {}
-        sun['set'] = Observatory.next_setting(ephem.Sun()).datetime()
-        sun['rise'] = Observatory.next_rising(ephem.Sun()).datetime()
+        sun['set'] = Observatory.next_setting(TheSun).datetime()
+        sun['rise'] = Observatory.next_rising(TheSun).datetime()
         sun['alt'] = TheSun.alt * 180. / ephem.pi
         if sun['alt'] <= -18:
             sun['now'] = 'night'
@@ -281,6 +281,8 @@ class Status(RequestHandler):
         moon = {}
         moon['phase'] = TheMoon.phase
         moon['alt'] = TheMoon.alt * 180. / ephem.pi
+        moon['set'] = Observatory.next_setting(TheMoon).datetime()
+        moon['rise'] = Observatory.next_rising(TheMoon).datetime()
         if moon['alt'] > 0:
             moon['now'] = 'up'
         else:
