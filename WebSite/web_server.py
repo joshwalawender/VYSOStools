@@ -255,16 +255,15 @@ class Status(RequestHandler):
         Observatory.elevation = 3400.0
         Observatory.temp = 10.0
         Observatory.pressure = 680.0
-        Observatory.date = nowut.strftime('%Y/%m/%d 01:00:00')
         Observatory.horizon = '0.0'
 
-        Observatory.date = nowut.strftime('%Y/%m/%d %H:%M:%S')
+        Observatory.date = nowut
         TheSun = ephem.Sun()
         TheSun.compute(Observatory)
         sun = {}
+        sun['alt'] = float(TheSun.alt) * 180. / ephem.pi
         sun['set'] = Observatory.next_setting(TheSun).datetime()
         sun['rise'] = Observatory.next_rising(TheSun).datetime()
-        sun['alt'] = TheSun.alt * 180. / ephem.pi
         if sun['alt'] <= -18:
             sun['now'] = 'night'
         elif sun['alt'] > -18 and sun['alt'] <= -12:
@@ -277,6 +276,7 @@ class Status(RequestHandler):
             sun['now'] = 'day'
 
         TheMoon = ephem.Moon()
+        Observatory.date = nowut
         TheMoon.compute(Observatory)
         moon = {}
         moon['phase'] = TheMoon.phase
