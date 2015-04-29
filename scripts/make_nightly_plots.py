@@ -406,9 +406,9 @@ def make_plots(date_string, telescope, logger, recent=False):
         plt.ylabel("Cloudiness (F)")
         plt.xlim(plot_start, plot_end)
         if telescope == 'V5':
-            plt.ylim(-110,10)
+            plt.ylim(-130,10)
         elif telescope == 'V20':
-            plt.ylim(-35,35)
+            plt.ylim(-45,35)
         plt.grid(which='major', color='k')
         if recent: plt.grid(which='minor', color='k', alpha=0.8)
 
@@ -495,7 +495,7 @@ def make_plots(date_string, telescope, logger, recent=False):
 
         plt.ylabel("Wind (mph)")
         plt.xlim(plot_start, plot_end)
-        plt.ylim(0,35)
+        plt.ylim(0,45)
         plt.grid(which='major', color='k')
         if recent: plt.grid(which='minor', color='k', alpha=0.8)
 
