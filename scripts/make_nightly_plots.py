@@ -61,9 +61,10 @@ def make_plots(date_string, telescope, logger, recent=False):
     ##------------------------------------------------------------------------
     ## Get status and IQMon results
     ##------------------------------------------------------------------------
-    client = MongoClient('192.168.1.101', 27017)
-    status = client.vysos['{}.status'.format(telescope)]
-    images = client.vysos['{}.images'.format(telescope)]
+    client = MongoClient(tel.mongo_address, tel.mongo_port)
+    db = client[tel.mongo_db]
+    images = db[tel.mongo_collection]
+    status = db['{}.status'.format(telescope)]
 
     ##------------------------------------------------------------------------
     ## Make Nightly Sumamry Plot (show only night time)

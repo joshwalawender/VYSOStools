@@ -68,7 +68,7 @@ class ListOfImages(RequestHandler):
         if logger: logger.debug('  Done.')
 
         if logger: logger.debug('  Linking to mongo')
-        client = MongoClient('192.168.1.101', 27017)
+        client = MongoClient(tel.mongo_address, tel.mongo_port)
         if logger: logger.debug('  Connected to client.')
         db = client[tel.mongo_db]
         collection = db[tel.mongo_collection]
@@ -202,7 +202,7 @@ class ListOfNights(RequestHandler):
         tel = IQMon.Telescope(config_file)
         telescopename = tel.name
 
-        client = MongoClient('192.168.1.101', 27017)
+        client = MongoClient(tel.mongo_address, tel.mongo_port)
         db = client[tel.mongo_db]
         collection = db[tel.mongo_collection]
 

@@ -15,6 +15,8 @@ from pymongo import MongoClient
 import measure_image
 import make_nightly_plots
 
+import IQMon
+
 def main(startdate, enddate, logger, nice=False, skip=False):
     if startdate > enddate:
         oneday = tdelta(-1, 0)
@@ -83,9 +85,11 @@ def main(startdate, enddate, logger, nice=False, skip=False):
                         else:
                             print("Can not determine valid telescope from arguments or filename or header.")
                 if telescope:
-                    client = MongoClient('192.168.1.101', 27017)
-                    db = client['vysos']
-                    data = db['{}.images'.format(telescope)]
+                    config_file = os.path.join(os.path.expanduser('~'), '.{}.yaml'.format(telescope))
+                    tel = IQMon.Telescope(config_file)
+                    client = MongoClient(tel.mongo_address, tel.mongo_port)
+                    db = client[tel.mongo_db]
+                    data = db[tel.mongo_collection]
                     matches = [item for item in data.find( {"filename" : imagename} )]
                     if len(matches) > 0:
                         images.remove(image)

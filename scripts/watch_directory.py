@@ -42,16 +42,14 @@ def main():
     ##-------------------------------------------------------------------------
     ## Set data path
     ##-------------------------------------------------------------------------
-    if telescope == "V5":
-        DataPath = os.path.join("/Volumes", "Data_V5", "Images", date_string)
-        zp = True
-    if telescope == "V20":
-        DataPath = os.path.join("/Volumes", "Data_V20", "Images", date_string)
-        zp = True
+    zp = True
+    DataPath = os.path.join("/Volumes", "Data_{}".format(telescope), "Images", date_string)
+    config_file = os.path.join(os.path.expanduser('~'), '.{}.yaml'.format(telescope))
+    tel = IQMon.Telescope(config_file)
 
-    client = MongoClient('192.168.1.101', 27017)
-    images = client.vysos['{}.images'.format(telescope)]
-
+    client = MongoClient(tel.mongo_address, tel.mongo_port)
+    db = client[tel.mongo_db]
+    images = db[tel.mongo_collection]
 
     ##-------------------------------------------------------------------------
     ## Operation Loop
