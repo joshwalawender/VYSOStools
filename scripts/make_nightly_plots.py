@@ -3,6 +3,7 @@ import os
 from argparse import ArgumentParser
 import re
 import string
+import time
 from datetime import datetime as dt
 from datetime import timedelta as tdelta
 import logging
@@ -675,7 +676,7 @@ def make_plots(date_string, telescope, logger, recent=False):
 
         logger.info('Saving figure: {}'.format(night_plot_file))
         plt.savefig(night_plot_file, dpi=dpi, bbox_inches='tight', pad_inches=0.10)
-
+        logger.info('Done.')
 
 
 
@@ -690,9 +691,12 @@ def main():
     parser.add_argument("-v", "--verbose",
         action="store_true", dest="verbose",
         default=False, help="Be verbose! (default = False)")
+    parser.add_argument("-l", "--loop",
+        action="store_true", dest="loop",
+        default=False, help="Make plots in continuous loop")
     ## add arguments
     parser.add_argument("-t", dest="telescope",
-        required=True, type=str,
+        required=False, type=str,
         help="Telescope which took the data ('V5' or 'V20')")
     parser.add_argument("-d", dest="date",
         required=False, type=str,
@@ -728,9 +732,28 @@ def main():
 #     LogFileHandler.setFormatter(LogFormat)
 #     logger.addHandler(LogFileHandler)
 
-    make_plots(args.date, args.telescope, logger)
-    if recent:
-        make_plots(args.date, args.telescope, logger, recent=True)
+    if args.loop:
+        while True:
+            ## Set date to tonight
+            now = dt.utcnow()
+            date_string = now.strftime("%Y%m%dUT")
+            make_plots(date_string, 'V5', logger)
+            make_plots(date_string, 'V5', logger, recent=True)
+            make_plots(date_string, 'V20', logger)
+            make_plots(date_string, 'V20', logger, recent=True)
+            time.sleep(120)
+    else:
+        if args.telescope:
+            make_plots(args.date, args.telescope, logger)
+            if recent:
+                make_plots(args.date, args.telescope, logger, recent=True)
+        else:
+            make_plots(args.date, 'V5', logger)
+            if recent:
+                make_plots(args.date, 'V5', logger, recent=True)
+            make_plots(args.date, 'V20', logger)
+            if recent:
+                make_plots(args.date, 'V20', logger, recent=True)
 
 
 if __name__ == '__main__':
