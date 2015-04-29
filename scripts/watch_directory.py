@@ -15,9 +15,10 @@ import time
 from datetime import datetime as dt
 import pymongo
 from pymongo import MongoClient
+import logging
 
 import measure_image
-
+import IQMon
 
 def main():  
     ##-------------------------------------------------------------------------
@@ -25,6 +26,10 @@ def main():
     ##-------------------------------------------------------------------------
     ## create a parser object for understanding command-line arguments
     parser = ArgumentParser(description="Describe the script")
+    ## add flags
+    parser.add_argument("-v", "--verbose",
+        action="store_true", dest="verbose",
+        default=False, help="Be verbose! (default = False)")
     ## add arguments
     parser.add_argument("-t", "--telescope",
         dest="telescope", required=True, type=str,
@@ -32,18 +37,25 @@ def main():
         help="Telescope which took the data ('V5' or 'V20')")
     args = parser.parse_args()
     telescope = args.telescope
-    
-    ##-------------------------------------------------------------------------
-    ## Set date to tonight
-    ##-------------------------------------------------------------------------
-    now = dt.utcnow()
-    date_string = now.strftime("%Y%m%dUT")
 
     ##-------------------------------------------------------------------------
-    ## Set data path
+    ## Create Logger Object
     ##-------------------------------------------------------------------------
-    zp = True
-    DataPath = os.path.join("/Volumes", "Data_{}".format(telescope), "Images", date_string)
+    logger = logging.getLogger('make_nightly_plots')
+    logger.setLevel(logging.DEBUG)
+    ## Set up console output
+    LogConsoleHandler = logging.StreamHandler()
+    if args.verbose:
+        LogConsoleHandler.setLevel(logging.DEBUG)
+    else:
+        LogConsoleHandler.setLevel(logging.INFO)
+    LogFormat = logging.Formatter('%(asctime)23s %(levelname)8s: %(message)s')
+    LogConsoleHandler.setFormatter(LogFormat)
+    logger.addHandler(LogConsoleHandler)
+
+    ##-------------------------------------------------------------------------
+    ## Telescope Configuration
+    ##-------------------------------------------------------------------------
     config_file = os.path.join(os.path.expanduser('~'), '.{}.yaml'.format(telescope))
     tel = IQMon.Telescope(config_file)
 
@@ -57,45 +69,41 @@ def main():
     Operate = True
     MatchFilename = re.compile("(.*)\-([0-9]{8})at([0-9]{6})\.fts")
     MatchEmpty = re.compile(".*\-Empty\-.*\.fts")
-    if not os.path.exists(DataPath): os.mkdir(DataPath)
-    analyzed = []
     while Operate:
         ## Set date to tonight
         now = dt.utcnow()
-        files = os.listdir(DataPath)
+        date_string = now.strftime("%Y%m%dUT")
+        DataPath = os.path.join("/Volumes", "Data_{}".format(telescope), "Images", date_string)
+        logger.info('Examining directory {}'.format(DataPath))
+        ## Look for files
+        if os.path.exists(DataPath):
+            files = os.listdir(DataPath)
+        else:
+            files = []
+        logger.info('  Found {} files'.format(len(files)))
         time.sleep(1)
         images_to_analyze = {}
         for file in files:
-            if file not in analyzed:
-                IsMatch = MatchFilename.match(file)
-                IsEmpty = MatchEmpty.match(file)
-                previous = [x for x in images.find( {"filename" : file} )]
-
-                if (len(previous) == 0) and IsMatch and not IsEmpty:
-                    print('Selecting {}'.format(file))
+            IsMatch = MatchFilename.match(file)
+            IsEmpty = MatchEmpty.match(file)
+            if IsMatch and not IsEmpty:
+                analyzed = [x for x in images.find( {"filename" : file} )]
+                if (len(analyzed) == 0):
                     target = IsMatch.group(1)
                     filetime = IsMatch.group(3)
                     images_to_analyze[filetime] = file
-                else:
-                    analyzed.append(file)
-
         for filetime in sorted(images_to_analyze.keys()):
             file = images_to_analyze[filetime]
-            print('Analyzing {}'.format(file))
             try:
                 measure_image.MeasureImage(os.path.join(DataPath, file),\
                                           clobber_logs=True,\
-                                          zero_point=zp, analyze_image=True)
+                                          zero_point=True, analyze_image=True)
             except:
-                print('WARNING:  MeasureImage failed on {}'.format(file))
+                logger.warning('  MeasureImage failed on {}'.format(file))
                 measure_image.MeasureImage(os.path.join(DataPath, file),\
                                           clobber_logs=True,\
-                                          zero_point=zp, analyze_image=False)
-            analyzed.append(file)
-
+                                          zero_point=False, analyze_image=False)
         time.sleep(30)
-        if now.hour >= 17:
-            Operate = False
 
 
 if __name__ == "__main__":
