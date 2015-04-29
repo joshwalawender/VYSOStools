@@ -240,7 +240,7 @@ def MeasureImage(filename,\
         image.calculate_process_time()
 
         if record:
-            image.add_mongo_entry('192.168.1.101', 'vysos', '{}.images'.format(telescope))
+            image.add_mongo_entry()
 
         image.logger.info('Done.')
 
