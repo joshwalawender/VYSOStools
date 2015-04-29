@@ -17,6 +17,7 @@ from pymongo import MongoClient
 from tornado.ioloop import IOLoop
 from tornado.web import RequestHandler, Application, url, StaticFileHandler
 from tornado import websocket
+import tornado.log as tlog
 
 from astropy import units as u
 from astropy.coordinates import SkyCoord
@@ -45,42 +46,29 @@ def free_space(path):
 ##-----------------------------------------------------------------------------
 class ListOfImages(RequestHandler):
     def get(self, telescope, subject):
-        ##-------------------------------------------------------------------------
-        ## Create Logger Object
-        ##-------------------------------------------------------------------------
-#         verbose = True
-#         logger = logging.getLogger('my_ListOfImages_log')
-#         logger.setLevel(logging.DEBUG)
-#         LogConsoleHandler = logging.StreamHandler()
-#         LogConsoleHandler.setLevel(logging.DEBUG)
-#         LogFormat = logging.Formatter('%(asctime)23s %(levelname)8s: %(message)s')
-#         LogConsoleHandler.setFormatter(LogFormat)
-#         logger.addHandler(LogConsoleHandler)
-        logger = None
-
-        if logger: logger.info('ListOfImages handler called')
+        tlog.app_log.info('Get request for ListOfImages recieved')
 
         ## Create Telescope Object
-        if logger: logger.debug('  Creating telescope object')
+        tlog.app_log.info('  Creating telescope object')
         config_file = os.path.join(os.path.expanduser('~'), '.{}.yaml'.format(telescope))
         tel = IQMon.Telescope(config_file)
         telescopename = tel.name
-        if logger: logger.debug('  Done.')
+        tlog.app_log.info('  Done.')
 
-        if logger: logger.debug('  Linking to mongo')
+        tlog.app_log.info('  Linking to mongo')
         client = MongoClient(tel.mongo_address, tel.mongo_port)
-        if logger: logger.debug('  Connected to client.')
+        tlog.app_log.info('  Connected to client.')
         db = client[tel.mongo_db]
         collection = db[tel.mongo_collection]
-        if logger: logger.debug('  Retrieved collection.')
+        tlog.app_log.info('  Retrieved collection.')
 
-        if logger: logger.debug('Getting list of images from mongo')
+        tlog.app_log.info('  Getting list of images from mongo')
         ## If subject matches a date, then get images from a date
         if re.match('\d{8}UT', subject):
             image_list = [entry for entry in\
                           collection.find({"date": subject}).sort(\
                           [('time', pymongo.ASCENDING)])]
-            if logger: logger.debug('  Got list of {} images for night.'.format(len(image_list)))
+            tlog.app_log.info('  Got list of {} images for night.'.format(len(image_list)))
         ## If subject matches a target name, then get images from a date
         else:
             target_name_list = sorted(collection.distinct("target name"))
@@ -89,7 +77,7 @@ class ListOfImages(RequestHandler):
                               collection.find({"target name":subject}).sort(\
                               [('date', pymongo.DESCENDING),\
                               ('time', pymongo.DESCENDING)])]
-                if logger: logger.debug('  Got list of {} images for target.'.format(len(image_list)))
+                tlog.app_log.info('  Got list of {} images for target.'.format(len(image_list)))
             else:
                 image_list = []
                 self.write('<html><head><style>')
@@ -106,7 +94,7 @@ class ListOfImages(RequestHandler):
                     self.write('<tr><td><a href="{0}">{0}</a></td><td>{1:d}</td></tr>'.format(target, len(target_images)))
                 self.write('</table></html>')
 
-        if logger: logger.debug('Looping over images for colors')
+        tlog.app_log.info('  Looping over images for colors')
         for image in image_list:
             ## Set FWHM color
             image['FWHM color'] = ""
@@ -145,9 +133,9 @@ class ListOfImages(RequestHandler):
                     if 'zero point' in image['flags'].keys():
                         if image['flags']['zero point']:
                             image['zero point color'] = "#FF5C33" # red
-        if logger: logger.debug('  Done')
+        tlog.app_log.info('  Done')
 
-        if logger: logger.debug('Looping over images for files')
+        tlog.app_log.info('  Looping over images for files')
         for image in image_list:
             ## Check for jpegs
             image_basename = os.path.splitext(image['filename'])[0]
@@ -175,11 +163,11 @@ class ListOfImages(RequestHandler):
                 match_static_path = re.match('/var/www/([\w\/\.\-]+)', zp_plot_file)
                 if match_static_path:
                     image['ZP plot'] = '/static/{}'.format(match_static_path.group(1))
-        if logger: logger.debug('  Done.')
+        tlog.app_log.info('  Done.')
 
 
         if len(image_list) > 0:
-            if logger: logger.debug('Rendering page')
+            tlog.app_log.info('  Rendering ListOfImages')
             self.render("image_list.html", title="{} Results".format(telescopename),\
                         telescope = telescope,\
                         FWHM_units = tel.units_for_FWHM.to_string(),\
@@ -187,7 +175,7 @@ class ListOfImages(RequestHandler):
                         subject = subject,\
                         image_list = image_list,\
                        )
-            if logger: logger.debug('  Done.')
+            tlog.app_log.info('  Done.')
 
 ##-----------------------------------------------------------------------------
 ## Handler for list of nights
@@ -195,6 +183,7 @@ class ListOfImages(RequestHandler):
 class ListOfNights(RequestHandler):
 
     def get(self, telescope):
+        tlog.app_log.info('Get request for ListOfNights recieved')
         telescope = telescope.strip('/')
 
         ## Create Telescope Object
@@ -210,14 +199,17 @@ class ListOfNights(RequestHandler):
         first_date = datetime.datetime.strptime('{} 00:00:00'.format(first_date_string), '%Y%m%dUT %H:%M:%S')
         oneday = datetime.timedelta(1, 0)
         
+        tlog.app_log.info('  Building date_list')
         date_list = []
         thisdate = datetime.datetime.utcnow()
         while thisdate >= first_date:
             date_list.append(thisdate.strftime('%Y%m%dUT'))
             thisdate -= oneday
+        tlog.app_log.info('  Done')
 
         night_plot_path = os.path.abspath('/var/www/nights/')
 
+        tlog.app_log.info('  Looping over date_list')
         nights = []
         for date_string in date_list:
             night_info = {'date': date_string }
@@ -229,18 +221,22 @@ class ListOfNights(RequestHandler):
             night_info['n images'] = collection.find( {"date":date_string} ).count()
             
             nights.append(night_info)
+        tlog.app_log.info('  Done')
 
+        tlog.app_log.info('  Rendering ListOfNights')
         self.render("night_list.html", title="{} Results".format(telescopename),\
                     telescope = telescope,\
                     telescopename = telescopename,\
                     nights = nights,\
                    )
+        tlog.app_log.info('  Done')
 
 ##-----------------------------------------------------------------------------
 ## Handler for Status Page
 ##-----------------------------------------------------------------------------
 class Status(RequestHandler):
     def get(self):
+        tlog.app_log.info('Get request for Status recieved')
         nowut = datetime.datetime.utcnow()
         now = nowut - datetime.timedelta(0,10*60*60)
 
@@ -605,6 +601,8 @@ class Status(RequestHandler):
             link_date_string = nowut.strftime('%Y%m%dUT')
         else:
             link_date_string = (nowut - datetime.timedelta(1,0)).strftime('%Y%m%dUT')
+
+        tlog.app_log.info('  Rendering Status')
         self.render("status.html", title="VYSOS Status",\
                     now = now,\
                     nowut = nowut,\
@@ -627,11 +625,27 @@ class Status(RequestHandler):
                     sun = sun,\
                     disks = disks,\
                     )
+        tlog.app_log.info('  Done')
 
 ##-----------------------------------------------------------------------------
 ## Main
 ##-----------------------------------------------------------------------------
 def main():
+#     from tornado.options import options, parse_command_line
+#     options.logging = None
+#     parse_command_line()
+
+    LogConsoleHandler = logging.StreamHandler()
+    LogConsoleHandler.setLevel(logging.DEBUG)
+    LogFormat = logging.Formatter('%(asctime)23s %(levelname)8s: %(message)s')
+    LogConsoleHandler.setFormatter(LogFormat)
+    tlog.app_log.addHandler(LogConsoleHandler)
+    tlog.app_log.setLevel(logging.DEBUG)
+    tlog.access_log.addHandler(LogConsoleHandler)
+    tlog.access_log.setLevel(logging.DEBUG)
+    tlog.gen_log.addHandler(LogConsoleHandler)
+    tlog.gen_log.setLevel(logging.DEBUG)
+
     app = Application([
                        url(r"/", Status),
                        url(r"/(V20$|V5$)", ListOfNights),
