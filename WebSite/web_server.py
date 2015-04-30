@@ -71,8 +71,10 @@ class ListOfImages(RequestHandler):
             tlog.app_log.info('  Got list of {} images for night.'.format(len(image_list)))
         ## If subject matches a target name, then get images from a date
         else:
+            tlog.app_log.info('    Getting list of target names from mongo')
             target_name_list = sorted(collection.distinct("target name"))
             if subject in target_name_list:
+                tlog.app_log.info('    Getting list of image list for {} from mongo'.format(subject))
                 image_list = [entry for entry in\
                               collection.find({"target name":subject}).sort(\
                               [('date', pymongo.DESCENDING),\
@@ -138,6 +140,7 @@ class ListOfImages(RequestHandler):
         tlog.app_log.info('  Looping over images for files')
         for image in image_list:
             ## Check for jpegs
+            tlog.app_log.info('    Checking for jpegs')
             image_basename = os.path.splitext(image['filename'])[0]
             jpegs = glob.glob(os.path.join(tel.plot_file_path, '{}*.jpg'.format(image_basename)))
             image['jpegs'] = []
@@ -146,18 +149,21 @@ class ListOfImages(RequestHandler):
                 if match_static_path:
                     image['jpegs'].append('/static/{}'.format(match_static_path.group(1)))
             ## Check for IQMon log file
+            tlog.app_log.info('    Checking for IQMon log file')
             log_file = os.path.join(tel.logs_file_path, '{}_IQMon.log'.format(image_basename))
             if os.path.exists(log_file):
                 match_static_path = re.match('/var/www/([\w\/\.\-]+)', log_file)
                 if match_static_path:
                     image['logfile'] = '/static/{}'.format(match_static_path.group(1))
             ## Check for PSFinfo plot
+            tlog.app_log.info('    Checking for PSF plot')
             psf_plot_file = os.path.join(tel.plot_file_path, '{}_PSFinfo.png'.format(image_basename))
             if os.path.exists(psf_plot_file):
                 match_static_path = re.match('/var/www/([\w\/\.\-]+)', psf_plot_file)
                 if match_static_path:
                     image['PSF plot'] = '/static/{}'.format(match_static_path.group(1))
             ## Check for zero point plot
+            tlog.app_log.info('    Checking for zero point plot')
             zp_plot_file = os.path.join(tel.plot_file_path, '{}_ZeroPoint.png'.format(image_basename))
             if os.path.exists(zp_plot_file):
                 match_static_path = re.match('/var/www/([\w\/\.\-]+)', zp_plot_file)
