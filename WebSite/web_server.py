@@ -637,10 +637,6 @@ class Status(RequestHandler):
 ## Main
 ##-----------------------------------------------------------------------------
 def main():
-#     from tornado.options import options, parse_command_line
-#     options.logging = None
-#     parse_command_line()
-
     LogConsoleHandler = logging.StreamHandler()
     LogConsoleHandler.setLevel(logging.DEBUG)
     LogFormat = logging.Formatter('%(asctime)23s %(levelname)8s: %(message)s')
@@ -652,6 +648,8 @@ def main():
     tlog.gen_log.addHandler(LogConsoleHandler)
     tlog.gen_log.setLevel(logging.DEBUG)
 
+    
+
     app = Application([
                        url(r"/", Status),
                        url(r"/(V20$|V5$)", ListOfNights),
@@ -659,7 +657,7 @@ def main():
                        url(r"/(V20|V5)/(\w*)", ListOfImages),
                        (r"/static/(.*)", MyStaticFileHandler, {"path": "/var/www"}),
                      ])
-    app.listen(80)
+    app.listen(8001)
     IOLoop.current().start()
 
 if __name__ == '__main__':
