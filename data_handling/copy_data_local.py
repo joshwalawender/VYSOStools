@@ -207,7 +207,7 @@ def main():
                 if args.delete:
                     extdrive_hash = subprocess.check_output(['shasum', extdrive_file]).split()[0]
         ## Delete Original File
-        if args.delete:
+        if args.delete and copy_to_extdrive and copy_to_drobo:
             if (original_hash == drobo_hash) and (original_hash == extdrive_hash):
                 logger.info('  All three SHA sums match.  Deleting file.')
                 os.remove(file)
