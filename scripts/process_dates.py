@@ -61,6 +61,7 @@ def main(startdate, enddate, logger, nice=False, skip=False):
         ## Sort Images by Observation time
         properties = []
         for image in images:
+            skip_this_image = False
             imagename = os.path.split(image)[1]
             FNmatch = MatchFilename.match(imagename)
             Ematch = MatchEmpty.match(imagename)
@@ -92,20 +93,24 @@ def main(startdate, enddate, logger, nice=False, skip=False):
                     data = db[tel.mongo_collection]
                     matches = [item for item in data.find( {"filename" : imagename} )]
                     if len(matches) > 0:
-                        images.remove(image)
+#                         images.remove(image)
+                        skip_this_image = True
             ## Remove images with Empty in filenme
             if Ematch:
-                images.remove(image)
-            else:
-                if not FNmatch:
-                    images.remove(image)
-                else:
-                    try:
-                        image_dt = dt.strptime('{} {}'.format(\
-                           FNmatch.group(2), FNmatch.group(3)), '%Y%m%d %H%M%S')
-                    except:
-                        image_dt = dt.utcnow()
-                    properties.append([image, image_dt])
+#                 images.remove(image)
+                skip_this_image = True
+
+            if not FNmatch:
+#                 images.remove(image)
+                skip_this_image = True
+
+            if not skip_this_image:
+                try:
+                    image_dt = dt.strptime('{} {}'.format(\
+                       FNmatch.group(2), FNmatch.group(3)), '%Y%m%d %H%M%S')
+                except:
+                    image_dt = dt.utcnow()
+                properties.append([image, image_dt])
         properties = sorted(properties, key=lambda entry:entry[1])
         ## Process Images
         count = 0

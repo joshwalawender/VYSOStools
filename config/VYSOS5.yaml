@@ -18,7 +18,6 @@ threshold_FWHM: 2.5           # pix
 threshold_pointing_err: 5.0   # arcmin
 threshold_ellipticity: 0.25
 threshold_zeropoint: 18.7
-SCAMP_aheader: '~/.VYSOS5.ahead'
 units_for_FWHM: 'pix'
 PSF_measurement_radius: 1024  # pix
 pointing_marker_size: 3       # arcmin
@@ -34,6 +33,7 @@ SExtractor_params:
     FILTER: 'N'
 ## SCAMP Parameters
 SCAMP_params:
+    AHEADER_GLOBAL: '~/.VYSOS5.ahead'
     DISTORT_DEGREES: 5
     CROSSID_RADIUS: 5
     CHECKPLOT_TYPE: 'NONE'
@@ -41,6 +41,7 @@ SCAMP_params:
 ## Photometric Catalog Info
 catalog:
     name: 'UCAC4'
+    columns: ['_RAJ2000', '_DEJ2000', 'UCAC4', 'Bmag', 'Vmag', 'gmag', 'rmag', 'imag']
     magmax: 15.0
     PSi: 'imag'
     PSr: 'rmag'
