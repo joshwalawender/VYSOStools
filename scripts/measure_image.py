@@ -161,13 +161,13 @@ def MeasureImage(filename,\
                 hdulist[0].header.remove('RADECSYS')
                 hdulist.flush()
         image.read_header()
-        if image.tel.ROI:
-            image.crop()
         if analyze_image:
             darks = ListDarks(image)
             if darks and len(darks) > 0:
                 image.dark_subtract(darks)
 
+            if image.tel.ROI:
+                image.crop()
             image.run_SExtractor()
             image.determine_FWHM()
 
@@ -217,7 +217,7 @@ def MeasureImage(filename,\
             if tel.name == 'VYSOS-20':
                 p1, p2 = (3.0, 0.50)
             small_JPEG = image.raw_file_basename+"_fullframe.jpg"
-            image.make_JPEG(small_JPEG, binning=3,\
+            image.make_JPEG(small_JPEG, binning=2,\
                             p1=p1, p2=p2,\
                             make_hist=False,\
                             mark_pointing=True,\
