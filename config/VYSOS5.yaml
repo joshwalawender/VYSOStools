@@ -14,6 +14,7 @@ aperture: 135                 # mm
 gain: 1.6                     # 1/ADU
 saturation: 30000             # ADU
 ## Preferences
+ROI: '[1025:3072,1025:3072]'
 threshold_FWHM: 2.5           # pix
 threshold_pointing_err: 5.0   # arcmin
 threshold_ellipticity: 0.25
@@ -34,7 +35,7 @@ SExtractor_params:
 ## SCAMP Parameters
 SCAMP_params:
     AHEADER_GLOBAL: '~/.VYSOS5.ahead'
-    DISTORT_DEGREES: 5
+    DISTORT_DEGREES: 3
     CROSSID_RADIUS: 5
     CHECKPLOT_TYPE: 'NONE'
     ASTREF_CATALOG: 'UCAC-3'
