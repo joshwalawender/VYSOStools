@@ -43,6 +43,6 @@ SCAMP_params:
 catalog:
     name: 'UCAC4'
     columns: ['_RAJ2000', '_DEJ2000', 'UCAC4', 'Bmag', 'Vmag', 'gmag', 'rmag', 'imag']
-    magmax: 15.0
+    magmax: 16.0
     PSi: 'imag'
     PSr: 'rmag'

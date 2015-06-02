@@ -189,10 +189,10 @@ def MeasureImage(filename,\
                     image.read_header()
 
                     if telescope == 'V20':
-    #                    image.get_catalog()
-                        local_UCAC = os.path.join(os.path.expanduser('~'), 'UCAC4')
-                        image.get_local_UCAC4(local_UCAC_command=os.path.join(local_UCAC, 'access', 'u4test'),\
-                                              local_UCAC_data=os.path.join(local_UCAC, 'u4b'))
+                        image.get_catalog()
+#                         local_UCAC = os.path.join(os.path.expanduser('~'), 'UCAC4')
+#                         image.get_local_UCAC4(local_UCAC_command=os.path.join(local_UCAC, 'access', 'u4test'),\
+#                                               local_UCAC_data=os.path.join(local_UCAC, 'u4b'))
                     if telescope == 'V5':
     #                     image.get_catalog()
                         local_UCAC = os.path.join(os.path.expanduser('~'), 'UCAC4')

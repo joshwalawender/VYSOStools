@@ -17,7 +17,7 @@ saturation: 30000             # ADU
 threshold_FWHM: 5.7           # pix (roughly 2.5 arcsec on VYSOS-20)
 threshold_pointing_err: 4.0   # arcmin
 threshold_ellipticity: 0.25
-threshold_zeropoint: 20.2
+threshold_zeropoint: 19.9
 units_for_FWHM: 'arcsec'
 PSF_measurement_radius: 2048  # pix
 pointing_marker_size: 1       # arcmin
@@ -40,9 +40,14 @@ SCAMP_params:
     ASTREF_CATALOG: 'USNO-B1'
 ## Photometric Catalog Info
 catalog:
-    name: 'UCAC4'
-    columns: ['_RAJ2000', '_DEJ2000', 'UCAC4', 'Bmag', 'Vmag', 'gmag', 'rmag', 'imag']
-    magmax: 18.0
-    PSi: 'imag'
-    PSr: 'rmag'
-    V: 'Vmag'
+#    name: 'UCAC4'
+#    columns: ['_RAJ2000', '_DEJ2000', 'UCAC4', 'Bmag', 'Vmag', 'gmag', 'rmag', 'imag']
+#    magmax: 19.0
+#    PSi: 'imag'
+#    PSr: 'rmag'
+#    V: 'Vmag'
+    name: 'USNO-B1.0'
+    columns: ['USNO-B1.0', 'RAJ2000', 'DEJ2000', 'R2mag', 'Imag']
+    magmax: 19.0
+    PSi: 'Imag'
+    PSr: 'R2mag'
