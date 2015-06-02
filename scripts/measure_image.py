@@ -161,6 +161,8 @@ def MeasureImage(filename,\
                 hdulist[0].header.remove('RADECSYS')
                 hdulist.flush()
         image.read_header()
+        if image.tel.ROI:
+            image.crop()
         if analyze_image:
             darks = ListDarks(image)
             if darks and len(darks) > 0:
