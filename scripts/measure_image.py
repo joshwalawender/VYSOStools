@@ -177,7 +177,6 @@ def MeasureImage(filename,\
 
             if not image.image_WCS and not is_blank:
                 image.solve_astrometry()
-                image.read_header()
                 image.run_SExtractor()
             image.determine_pointing_error()
 
