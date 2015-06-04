@@ -198,8 +198,6 @@ def MeasureImage(filename,\
 #                        image.get_local_UCAC4(local_UCAC_command=os.path.join(local_UCAC, 'access', 'u4test'),\
 #                                              local_UCAC_data=os.path.join(local_UCAC, 'u4b'))
 
-#                    image.tel.SExtractor_params['ANALYSIS_THRESH'] = 3.0
-#                    image.tel.SExtractor_params['DETECT_THRESH'] = 3.0
                     image.run_SExtractor(assoc=True)
                     image.determine_FWHM()
                     image.measure_zero_point(plot=True)
