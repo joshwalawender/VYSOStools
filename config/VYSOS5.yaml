@@ -32,11 +32,12 @@ SExtractor_params:
     DETECT_THRESH: 9.0
     ANALYSIS_THRESH: 9.0
     FILTER: 'N'
+    ASSOC_RADIUS: 10.0
 ## SCAMP Parameters
 SCAMP_params:
     AHEADER_GLOBAL: '~/.VYSOS5.ahead'
-    DISTORT_DEGREES: 3
-    CROSSID_RADIUS: 5
+    DISTORT_DEGREES: 5
+    CROSSID_RADIUS: 10.0
     CHECKPLOT_TYPE: 'NONE'
     ASTREF_CATALOG: 'UCAC-3'
 ## Photometric Catalog Info
