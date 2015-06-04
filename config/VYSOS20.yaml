@@ -31,21 +31,16 @@ SExtractor_params:
     DETECT_THRESH: 2.0
     ANALYSIS_THRESH: 2.0
     FILTER: 'N'
+    ASSOC_RADIUS: 10.0
 ## SCAMP Parameters
 SCAMP_params:
     AHEADER_GLOBAL: '~/.VYSOS20.ahead'
     DISTORT_DEGREES: 1
-    CROSSID_RADIUS: 3
+    CROSSID_RADIUS: 10.0
     CHECKPLOT_TYPE: 'NONE'
     ASTREF_CATALOG: 'USNO-B1'
 ## Photometric Catalog Info
 catalog:
-#    name: 'UCAC4'
-#    columns: ['_RAJ2000', '_DEJ2000', 'UCAC4', 'Bmag', 'Vmag', 'gmag', 'rmag', 'imag']
-#    magmax: 19.0
-#    PSi: 'imag'
-#    PSr: 'rmag'
-#    V: 'Vmag'
     name: 'USNO-B1.0'
     columns: ['USNO-B1.0', 'RAJ2000', 'DEJ2000', 'R2mag', 'Imag']
     magmax: 19.0

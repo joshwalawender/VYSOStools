@@ -43,7 +43,7 @@ SCAMP_params:
 ## Photometric Catalog Info
 catalog:
     name: 'UCAC4'
-    columns: ['_RAJ2000', '_DEJ2000', 'UCAC4', 'Bmag', 'Vmag', 'gmag', 'rmag', 'imag']
+    columns: ['_RAJ2000', '_DEJ2000', 'UCAC4', 'Vmag', 'gmag', 'rmag', 'imag']
     magmax: 16.0
     PSi: 'imag'
     PSr: 'rmag'
