@@ -14,7 +14,7 @@ aperture: 135                 # mm
 gain: 1.6                     # 1/ADU
 saturation: 30000             # ADU
 ## Preferences
-ROI: '[1025:3072,1025:3072]'
+ROI: '[513:3584,513:3584]'
 threshold_FWHM: 2.5           # pix
 threshold_pointing_err: 5.0   # arcmin
 threshold_ellipticity: 0.25
