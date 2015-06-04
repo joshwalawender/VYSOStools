@@ -185,7 +185,6 @@ def MeasureImage(filename,\
                 image.run_SCAMP()
                 if image.SCAMP_successful:
                     image.run_SWarp()
-                    image.read_header()
 
                     if telescope == 'V20':
                         image.get_catalog()
@@ -206,7 +205,10 @@ def MeasureImage(filename,\
                     image.logger.info('  SCAMP failed.  Skipping photometric calculations.')
 
             if not nographics and image.FWHM:
-                image.make_PSF_plot()
+                try:
+                    image.make_PSF_plot()
+                except:
+                    image.logger.warning('Failed to make PSF plot')
 
         if record and not nographics:
             if tel.name == 'VYSOS-5':
