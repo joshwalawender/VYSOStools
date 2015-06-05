@@ -41,7 +41,7 @@ def main():
     ##-------------------------------------------------------------------------
     ## Create Logger Object
     ##-------------------------------------------------------------------------
-    logger = logging.getLogger('make_nightly_plots')
+    logger = logging.getLogger('watch_directory')
     logger.setLevel(logging.DEBUG)
     ## Set up console output
     LogConsoleHandler = logging.StreamHandler()
@@ -52,6 +52,13 @@ def main():
     LogFormat = logging.Formatter('%(asctime)23s %(levelname)8s: %(message)s')
     LogConsoleHandler.setFormatter(LogFormat)
     logger.addHandler(LogConsoleHandler)
+    ## Set up file output
+    LogFileName = 'watch_directory.txt'
+    LogFile = os.path.join('/', 'var', 'www', 'logs', telescope, LogFileName)
+    LogFileHandler = logging.FileHandler(LogFile)
+    LogFileHandler.setLevel(logging.DEBUG)
+    LogFileHandler.setFormatter(LogFormat)
+    logger.addHandler(LogFileHandler)
 
     ##-------------------------------------------------------------------------
     ## Telescope Configuration
