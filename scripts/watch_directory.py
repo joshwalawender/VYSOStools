@@ -101,7 +101,7 @@ def main():
             except:
                 logger.warning('  MeasureImage failed on {}'.format(file))
                 measure_image.MeasureImage(os.path.join(DataPath, file),\
-                                          clobber_logs=True,\
+                                          clobber_logs=False,\
                                           zero_point=False, analyze_image=False)
         time.sleep(30)
 
