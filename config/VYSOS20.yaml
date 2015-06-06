@@ -41,8 +41,13 @@ SCAMP_params:
     ASTREF_CATALOG: 'USNO-B1'
 ## Photometric Catalog Info
 catalog:
-    name: 'USNO-B1.0'
-    columns: ['USNO-B1.0', 'RAJ2000', 'DEJ2000', 'R2mag', 'Imag']
+#    name: 'USNO-B1.0'
+#    columns: ['USNO-B1.0', 'RAJ2000', 'DEJ2000', 'R2mag', 'Imag']
+#    magmax: 19.0
+#    PSi: 'Imag'
+#    PSr: 'R2mag'
+    name: 'UCAC4'
+    columns: ['_RAJ2000', '_DEJ2000', 'UCAC4', 'Vmag', 'gmag', 'rmag', 'imag']
     magmax: 19.0
-    PSi: 'Imag'
-    PSr: 'R2mag'
+    PSi: 'imag'
+    PSr: 'rmag'
