@@ -481,6 +481,14 @@ def get_status_and_log(telescope):
         id = status.insert(new_data)
         logger.debug('  Inserted datum with ID: {}'.format(id))
 
+        ## Insert second copy with current flag
+        current_data = {'status': 'current'}
+        current_data.update(new_data)
+        result = status.find_one_and_update({'status': 'current'}, current_data)
+        print(result)
+
+
+
     logger.info("Done")
 
 
