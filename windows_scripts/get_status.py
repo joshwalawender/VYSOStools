@@ -489,7 +489,7 @@ def get_status_and_log(telescope):
             for match in matches:
                 status.remove( {"_id" : match["_id"]} )
                 self.logger.debug('  Removed "_id": {}'.format(match["_id"]))
-        id = status.insert(new_data)
+        id = status.insert(current_data)
         logger.debug('  Inserted datum with ID: {}'.format(id))
 
 
