@@ -484,7 +484,7 @@ def get_status_and_log(telescope):
         ## Insert second copy with current flag
         current_data = {'status': 'current'}
         current_data.update(new_data)
-        matches = [item for item in data.find( {'status': 'current'} )]
+        matches = [item for item in status.find( {'status': 'current'} )]
         if len(matches) > 0:
             for match in matches:
                 status.remove( {"_id" : match["_id"]} )
