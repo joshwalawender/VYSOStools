@@ -468,7 +468,7 @@ def get_status_and_log(telescope):
         status = client.vysos['{}.status'.format(telescope)]
         logger.debug('  Getting {}.status collection'.format(telescope))
 
-        new_data = {}
+        new_data = {'current': False}
         new_data.update({'UT date': DateString,\
                          'UT time': TimeString,\
                          'UT timestamp': now})
@@ -482,17 +482,12 @@ def get_status_and_log(telescope):
         logger.info('  Inserted datum with ID: {}'.format(id))
 
         ## Insert second copy with current flag
-        current_data = {'status': 'current'}
-        current_data.update(new_data)
-        matches = [item for item in status.find( {'status': 'current'} )]
-        if len(matches) > 0:
-            for match in matches:
-                status.remove( {"_id" : match["_id"]} )
-                self.logger.info('  Removed "_id": {}'.format(match["_id"]))
-        print(current_data)
-        id = status.insert(current_data)
-        logger.info('  Inserted datum with ID: {}'.format(id))
-
+        new_data['current'] = True
+        result = status.replace_one( {'current': True}, new_data, upsert=True)
+        if result.matched_count > 1:
+            logger.warning('Matched {} documents with current = True'.format(result.matched_count))
+        if result.acknowledged:
+            logger.info('  Replaced the current document')
 
     logger.info("Done")
 
