@@ -482,8 +482,17 @@ def get_status_and_log(telescope):
         logger.info('  Inserted datum with ID: {}'.format(id))
 
         ## Insert second copy with current flag
-        new_data['current'] = True
-        result = status.replace_one( {'current': True}, new_data, upsert=True)
+        current_data = {'current': True}
+        current_data.update({'UT date': DateString,\
+                         'UT time': TimeString,\
+                         'UT timestamp': now})
+        current_data.update(boltwood)
+        current_data.update(telescope_info)
+        current_data.update(focuser_info)
+        if telescope == 'V20':
+            current_data.update(CBW_info)
+
+        result = status.replace_one( {'current': True}, current_data, upsert=True)
         if result.matched_count > 1:
             logger.warning('Matched {} documents with current = True'.format(result.matched_count))
         if result.acknowledged:
