@@ -479,7 +479,7 @@ def get_status_and_log(telescope):
             new_data.update(CBW_info)
 
         id = status.insert(new_data)
-        logger.debug('  Inserted datum with ID: {}'.format(id))
+        logger.info('  Inserted datum with ID: {}'.format(id))
 
         ## Insert second copy with current flag
         current_data = {'status': 'current'}
@@ -488,9 +488,10 @@ def get_status_and_log(telescope):
         if len(matches) > 0:
             for match in matches:
                 status.remove( {"_id" : match["_id"]} )
-                self.logger.debug('  Removed "_id": {}'.format(match["_id"]))
+                self.logger.info('  Removed "_id": {}'.format(match["_id"]))
+        print(current_data)
         id = status.insert(current_data)
-        logger.debug('  Inserted datum with ID: {}'.format(id))
+        logger.info('  Inserted datum with ID: {}'.format(id))
 
 
     logger.info("Done")
