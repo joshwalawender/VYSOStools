@@ -20,7 +20,7 @@ threshold_pointing_err: 5.0   # arcmin
 threshold_ellipticity: 0.25
 threshold_zeropoint: 18.7
 units_for_FWHM: 'pix'
-PSF_measurement_radius: 1024  # pix
+PSF_measurement_radius: 1536  # pix
 pointing_marker_size: 3       # arcmin
 ## Source Extractor Parameters
 SExtractor_params:
