@@ -193,9 +193,9 @@ def MeasureImage(filename,\
 #                                               local_UCAC_data=os.path.join(local_UCAC, 'u4b'))
                     if telescope == 'V5':
                         image.get_catalog()
-#                        local_UCAC = os.path.join(os.path.expanduser('~'), 'UCAC4')
-#                        image.get_local_UCAC4(local_UCAC_command=os.path.join(local_UCAC, 'access', 'u4test'),\
-#                                              local_UCAC_data=os.path.join(local_UCAC, 'u4b'))
+#                         local_UCAC = os.path.join(os.path.expanduser('~'), 'UCAC4')
+#                         image.get_local_UCAC4(local_UCAC_command=os.path.join(local_UCAC, 'access', 'u4test'),\
+#                                               local_UCAC_data=os.path.join(local_UCAC, 'u4b'))
 
                     image.run_SExtractor(assoc=True)
                     image.determine_FWHM()
@@ -264,7 +264,7 @@ def main():
         default=False, help="Calculate zero point")
     parser.add_argument("-n", "--norecord",
         action="store_true", dest="no_record",
-        default=False, help="Do not record results in HTML or YAML")
+        default=False, help="Do not record results")
     ## add arguments
     parser.add_argument("filename",
         type=str,
