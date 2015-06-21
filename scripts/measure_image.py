@@ -151,7 +151,7 @@ def MeasureImage(filename,\
     ##-------------------------------------------------------------------------
     with IQMon.Image(FitsFile, tel) as image:
         image.make_logger(verbose=verbose, clobber=clobber_logs)
-        print('Logging to {}'.format(image.logfile))
+#         print('Logging to {}'.format(image.logfile))
         image.read_image()
         if telescope == 'V5':
             image.edit_header('FILTER', 'PSr')
@@ -212,7 +212,7 @@ def MeasureImage(filename,\
 
         if record and not nographics:
             if tel.name == 'VYSOS-5':
-                p1, p2 = (0.15, 0.50)
+                p1, p2 = (1.50, 0.50)
             if tel.name == 'VYSOS-20':
                 p1, p2 = (3.0, 0.50)
             small_JPEG = image.raw_file_basename+"_fullframe.jpg"
@@ -221,7 +221,7 @@ def MeasureImage(filename,\
                             make_hist=False,\
                             mark_pointing=True,\
                             mark_detected_stars=True,\
-                            mark_catalog_stars=False,\
+                            mark_catalog_stars=True,\
                             mark_saturated=False,\
                             quality=70,\
                             )
