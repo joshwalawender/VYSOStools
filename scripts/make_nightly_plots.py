@@ -379,7 +379,9 @@ def make_plots(date_string, telescope, logger, recent=False):
                                     'boltwood date':{'$exists':True},\
                                     'boltwood sky temp':{'$exists':True},\
                                     'boltwood cloud condition':{'$exists':True},\
-                                   }) ]
+                                   }) \
+                       if not 'current' in entry.keys()\
+                       or not entry['current']]
         logger.debug("  Found {} lines for boltwood sky temperature".format(len(status_list)))
         if len(status_list) > 1:
             time = [dt.strptime('{} {}'.format(entry['boltwood date'],\
@@ -425,7 +427,9 @@ def make_plots(date_string, telescope, logger, recent=False):
                                     'boltwood date':{'$exists':True},\
                                     'boltwood humidity':{'$exists':True},\
                                     'boltwood rain condition':{'$exists':True},\
-                                   }) ]
+                                   }) \
+                       if not 'current' in entry.keys()\
+                       or not entry['current']]
         logger.debug("  Found {} lines for boltwood humidity".format(len(status_list)))
         if len(status_list) > 1:
             time = [dt.strptime('{} {}'.format(entry['boltwood date'],\
@@ -468,7 +472,9 @@ def make_plots(date_string, telescope, logger, recent=False):
                                     'boltwood date':{'$exists':True},\
                                     'boltwood wind speed':{'$exists':True},\
                                     'boltwood wind condition':{'$exists':True},\
-                                   }) ]
+                                   }) \
+                       if not 'current' in entry.keys()\
+                       or not entry['current']]
         logger.debug("  Found {} lines for boltwood wind speed".format(len(status_list)))
         if len(status_list) > 1:
             time = [dt.strptime('{} {}'.format(entry['boltwood date'],\
