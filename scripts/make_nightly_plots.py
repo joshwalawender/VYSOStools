@@ -410,7 +410,7 @@ def make_plots(date_string, telescope, logger, recent=False):
         if telescope == 'V5':
             plt.ylim(-130,10)
         elif telescope == 'V20':
-            plt.ylim(-45,35)
+            plt.ylim(-10,40)
         plt.grid(which='major', color='k')
         if recent: plt.grid(which='minor', color='k', alpha=0.8)
 
