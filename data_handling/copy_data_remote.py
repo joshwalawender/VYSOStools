@@ -161,7 +161,7 @@ def copy_night(telescope, date, verbose=False, skip_file_checksums=False, copy=T
     n_source_files = len(files)
     logger.info('Found {} files to analyze'.format(n_source_files))
 
-    remote_computer_string = 'vysosuser@deneb.ifa.hawaii.edu'
+    remote_computer_string = 'vysosuser@128.171.168.133'
     remote_computer = paramiko.SSHClient()
     remote_computer.load_system_host_keys()
     remote_computer.set_missing_host_key_policy(paramiko.AutoAddPolicy())
