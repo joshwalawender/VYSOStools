@@ -20,6 +20,8 @@ import astropy.units as u
 import astropy.io.fits as fits
 
 import IQMon
+from IQMon.image import Image
+from IQMon.telescope import Telescope
 
 
 ##############################################################
@@ -144,12 +146,12 @@ def MeasureImage(filename,\
     ## Create Telescope Object
     ##-------------------------------------------------------------------------
     config_file = os.path.join(os.path.expanduser('~'), '.{}.yaml'.format(telescope))
-    tel = IQMon.Telescope(config_file)
+    tel = Telescope(config_file)
 
     ##-------------------------------------------------------------------------
     ## Perform Actual Image Analysis
     ##-------------------------------------------------------------------------
-    with IQMon.Image(FitsFile, tel) as image:
+    with Image(FitsFile, tel) as image:
         image.make_logger(verbose=verbose, clobber=clobber_logs)
 #         print('Logging to {}'.format(image.logfile))
         image.read_image()

@@ -19,6 +19,8 @@ import logging
 
 import measure_image
 import IQMon
+from IQMon.image import Image
+from IQMon.telescope import Telescope
 
 def main():  
     ##-------------------------------------------------------------------------
@@ -64,7 +66,7 @@ def main():
     ## Telescope Configuration
     ##-------------------------------------------------------------------------
     config_file = os.path.join(os.path.expanduser('~'), '.{}.yaml'.format(telescope))
-    tel = IQMon.Telescope(config_file)
+    tel = Telescope(config_file)
 
     client = MongoClient(tel.mongo_address, tel.mongo_port)
     db = client[tel.mongo_db]
@@ -99,6 +101,7 @@ def main():
                     target = IsMatch.group(1)
                     filetime = IsMatch.group(3)
                     images_to_analyze[filetime] = file
+        logger.debug('  Found {} files to analyze'.format(len(images_to_analyze)))
         for filetime in sorted(images_to_analyze.keys()):
             file = images_to_analyze[filetime]
             try:

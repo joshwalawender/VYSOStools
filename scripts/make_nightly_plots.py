@@ -19,6 +19,8 @@ from astropy.io import ascii
 import astropy.units as u
 from astropy import table
 import IQMon
+from IQMon.telescope import Telescope
+
 
 def make_plots(date_string, telescope, logger, recent=False):
     logger.info("#### Making Nightly Plots for "+telescope+" on the Night of "+date_string+" ####")
@@ -32,7 +34,7 @@ def make_plots(date_string, telescope, logger, recent=False):
     ## Set up pathnames and filenames
     ##------------------------------------------------------------------------
     config_file = os.path.expanduser('~/.VYSOS{}.yaml'.format(telescope[1:]))
-    tel = IQMon.Telescope(config_file)
+    tel = Telescope(config_file)
     destination_path = os.path.abspath('/var/www/nights/')
 
     ##------------------------------------------------------------------------
