@@ -154,7 +154,7 @@ def MeasureImage(filename,\
     with Image(FitsFile, tel) as image:
         image.make_logger(verbose=verbose, clobber=clobber_logs)
 #         print('Logging to {}'.format(image.logfile))
-        image.read_image()
+        image.read_image(timeout=60)
         if telescope == 'V5':
             image.edit_header('FILTER', 'PSr')
         with fits.open(image.working_file, ignore_missing_end=True, mode='update') as hdulist:
