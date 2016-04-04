@@ -495,11 +495,18 @@ def get_status_and_log(telescope):
         if telescope == 'V20':
             current_data.update(CBW_info)
 
-        result = status.replace_one( {'current': True}, current_data, upsert=True)
-        if result.matched_count > 1:
-            logger.warning('Matched {} documents with current = True'.format(result.matched_count))
-        if result.acknowledged:
-            logger.info('  Replaced the current document')
+        updated = False
+        while not updated:
+            try:
+                result = status.replace_one( {'current': True}, current_data, upsert=True)
+                if result.matched_count > 1:
+                    logger.warning('Matched {} documents with current = True'.format(result.matched_count))
+                if result.acknowledged:
+                    logger.info('  Replaced the current document')
+                    updated = True
+            except:
+                logger.warning('  Failed to replace document.  Will try again in 10 seconds.')
+                time.sleep(10)
 
     logger.info("Done")
 
