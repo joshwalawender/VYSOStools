@@ -481,8 +481,15 @@ def get_status_and_log(telescope):
         if telescope == 'V20':
             new_data.update(CBW_info)
 
-        id = status.insert(new_data)
-        logger.info('  Inserted datum with ID: {}'.format(id))
+        updated = False
+        while not updated:
+            try:
+                id = status.insert(new_data)
+                logger.info('  Inserted datum with ID: {}'.format(id))
+                updated = True
+            except:
+                logger.warning('  Failed to insert new document.  Will try again in 10 seconds.')
+                time.sleep(10)
 
         ## Insert second copy with current flag
         current_data = {'current': True}
@@ -495,15 +502,15 @@ def get_status_and_log(telescope):
         if telescope == 'V20':
             current_data.update(CBW_info)
 
-        updated = False
-        while not updated:
+        current_updated = False
+        while not current_updated:
             try:
                 result = status.replace_one( {'current': True}, current_data, upsert=True)
                 if result.matched_count > 1:
                     logger.warning('Matched {} documents with current = True'.format(result.matched_count))
                 if result.acknowledged:
                     logger.info('  Replaced the current document')
-                    updated = True
+                    current_updated = True
             except:
                 logger.warning('  Failed to replace document.  Will try again in 10 seconds.')
                 time.sleep(10)
