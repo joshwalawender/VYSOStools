@@ -106,13 +106,25 @@ def main():
             file = images_to_analyze[filetime]
             try:
                 measure_image.MeasureImage(os.path.join(DataPath, file),\
-                                          clobber_logs=True,\
-                                          zero_point=True, analyze_image=True)
+                                           clobber_logs=True,\
+                                           zero_point=True,\
+                                           analyze_image=True)
             except:
-                logger.warning('  MeasureImage failed on {}'.format(file))
-                measure_image.MeasureImage(os.path.join(DataPath, file),\
-                                          clobber_logs=False,\
-                                          zero_point=False, analyze_image=False)
+                logger.warning('  MeasureImage failed on {}.  Trying without zero point.'.format(file))
+                logger.error(sys.exc_info())
+                try:
+                    measure_image.MeasureImage(os.path.join(DataPath, file),\
+                                               clobber_logs=False,\
+                                               zero_point=False,\
+                                               analyze_image=True)
+                except:
+                    logger.warning('  MeasureImage failed on {}.  Trying without image analysis.'.format(file))
+                    logger.error(sys.exc_info())
+                    measure_image.MeasureImage(os.path.join(DataPath, file),\
+                                               clobber_logs=False,\
+                                               zero_point=False,\
+                                               analyze_image=False)
+
         time.sleep(30)
 
 
