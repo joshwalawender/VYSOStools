@@ -194,23 +194,23 @@ def make_plots(date_string, telescope, logger, recent=False):
 
         ##------------------------------------------------------------------------
         ## FocusMax Temperature
-        status_list = [entry for entry in\
-                       status.find({'$or':[ {'UT date':date_string_yesterday},\
-                                            {'UT date':date_string}],\
-                                    'UT time':{'$exists':True},\
-                                    'FocusMax temperature (tube)':{'$exists':True},\
-                                   }) ]
-        logger.debug("  Found {} lines for FocusMax temperatures".format(len(status_list)))
-        if len(status_list) > 1:
-            time = [dt.strptime('{} {}'.format(entry['UT date'],\
-                                               entry['UT time']),\
-                                               '%Y%m%dUT %H:%M:%S')
-                    for entry in status_list]
-            FM_temp = [x['FocusMax temperature (tube)'] for x in status_list]
-            logger.debug('  Adding FocusMax tube temp to plot')
-            t_axes.plot_date(time, FM_temp, 'ro', \
-                             markersize=2, markeredgewidth=0, drawstyle="default", \
-                             label="Tube Temp")
+#         status_list = [entry for entry in\
+#                        status.find({'$or':[ {'UT date':date_string_yesterday},\
+#                                             {'UT date':date_string}],\
+#                                     'UT time':{'$exists':True},\
+#                                     'FocusMax temperature (tube)':{'$exists':True},\
+#                                    }) ]
+#         logger.debug("  Found {} lines for FocusMax temperatures".format(len(status_list)))
+#         if len(status_list) > 1:
+#             time = [dt.strptime('{} {}'.format(entry['UT date'],\
+#                                                entry['UT time']),\
+#                                                '%Y%m%dUT %H:%M:%S')
+#                     for entry in status_list]
+#             FM_temp = [x['FocusMax temperature (tube)'] for x in status_list]
+#             logger.debug('  Adding FocusMax tube temp to plot')
+#             t_axes.plot_date(time, FM_temp, 'ro', \
+#                              markersize=2, markeredgewidth=0, drawstyle="default", \
+#                              label="Tube Temp")
 
         t_axes.xaxis.set_major_locator(hours)
         if recent: t_axes.xaxis.set_minor_locator(mins)
