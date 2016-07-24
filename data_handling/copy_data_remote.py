@@ -219,9 +219,22 @@ def copy_night(telescope, date, verbose=False, skip_file_checksums=False, copy=T
     ## If all ok, then change name of data directory on USB drive to indicate
     ## that it can be deleted
     
-    logger.info('Starting final check of files for night')
+    email_file = os.path.join(os.path.expanduser('~'), 'Dropbox', 'DataSyncReports', 
+                              '{}_{}.txt'.format(telescope, date))
+
+    outputlines = []
+    
+    def info(msg):
+        logger.info(msg)
+        outputlines.append('INFO: {}\n'.format(msg))
+
+    def warning(msg):
+        logger.warning(msg)
+        outputlines.append('WARNING: {}\n'.format(msg))
+    
+    info('Starting final check of files for night')
     Fail = False
-    logger.info('  Found {} files on local drive'.format(n_source_files))
+    info('  Found {} files on local drive'.format(n_source_files))
     
     ## Get count of files in remote directory
     ansi_escape = re.compile(r'\x1b[^m]*m')
@@ -246,45 +259,49 @@ def copy_night(telescope, date, verbose=False, skip_file_checksums=False, copy=T
         stdout = []
 
     n_remote_files = len(stdout)
-    logger.info('  Found {} files on remote drive'.format(n_remote_files))
+    info('  Found {} files on remote drive'.format(n_remote_files))
 
     if n_source_files == n_remote_files:
-        logger.info('  Number of source and destination files match.  PASS')
+        info('  Number of source and destination files match.  PASS')
     else:
-        logger.warning('  Number of source and destination files do NOT match.  FAIL')
+        warning('  Number of source and destination files do NOT match.  FAIL')
         Fail = True
 
     ## Check for number of "success" lines in log
-    logger.info('Checking for reported success in transfer log')
+    info('Checking for reported success in transfer log')
     list_file = os.path.join(drobo_path, 'transfer_logs', 'remote_{}_{}.txt'.format(telescope, date))
     with open(list_file, 'r') as listFO:
         lines = listFO.readlines()
         n_loglines = len(lines)
         if n_source_files == n_loglines:
-            logger.info('  Number of source files and log lines match.  PASS')
+            info('  Number of source files and log lines match.  PASS')
         else:
-            logger.warning('  Number of source files and log lines do NOT match.  FAIL')
+            warning('  Number of source files and log lines do NOT match.  FAIL')
             Fail = True
         for line in lines:
             if not re.match('Success:.*', line):
-                logger.warning('Failure in Log: {}'.format(line))
+                warning('Failure in Log: {}'.format(line))
                 Fail = True
 
     ## Rename folders that are ok to delete on USB drive
     if extdrive_path and not Fail:
         if os.path.exists(os.path.join(extdrive_path, 'Images', date)):
-            logger.info('Renaming Images/{0} on USB drive to Images/ok2delete_{0}'.format(date))
+            info('Renaming Images/{0} on USB drive to Images/ok2delete_{0}'.format(date))
             shutil.move(os.path.join(extdrive_path, 'Images', date),\
                         os.path.join(extdrive_path, 'Images', 'ok2delete_'+date))
         else:
-            logger.info('No Images/{0} found.  Already deleted?'.format(date))
+            info('No Images/{0} found.  Already deleted?'.format(date))
         if os.path.exists(os.path.join(extdrive_path, 'Logs', date)):
-            logger.info('Renaming Logs/{0} on USB drive to Logs/ok2delete_{0}'.format(date))
+            info('Renaming Logs/{0} on USB drive to Logs/ok2delete_{0}'.format(date))
             shutil.move(os.path.join(extdrive_path, 'Logs', date),\
                         os.path.join(extdrive_path, 'Logs', 'ok2delete_'+date))
         else:
-            logger.info('No Logs/{0} found.  Already deleted?'.format(date))
+            info('No Logs/{0} found.  Already deleted?'.format(date))
 
+    if Fail:
+        with open(email_file, 'w') as FO:
+            for line in outputlines:
+                FO.write('{}\n'.format(line))
 
 def main():
     ##-------------------------------------------------------------------------
