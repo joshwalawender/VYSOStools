@@ -200,7 +200,7 @@ def MeasureImage(filename,\
 #                                               local_UCAC_data=os.path.join(local_UCAC, 'u4b'))
 
                     image.run_SExtractor(assoc=True)
-                    image.determine_FWHM()
+#                     image.determine_FWHM()
                     image.measure_zero_point(plot=True)
                     mark_catalog = True
                 else:
