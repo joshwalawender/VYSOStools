@@ -306,7 +306,8 @@ def copy_night(telescope, date, verbose=False, skip_file_checksums=False, copy=T
 
 def copy_nights(telescope, verbose=False, skip_file_checksums=False, copy=True):
     path = os.path.join('/', 'Volumes', 'WD500B', telescope, 'Images')
-    dirs = glob.glob(os.path.join(path, '2*UT'))
+    dirs = sorted(glob.glob(os.path.join(path, '2*UT')))
+
     for dir in dirs:
         date = os.path.split(dir)[1]
         if re.match('\d{8}UT', date):
@@ -344,6 +345,8 @@ def main():
     args = parser.parse_args()
 
     if args.date:
+        print('Attempting to copy data from {} for {} to remote disk array'.format(
+              args.date, args.telescope))
         if re.match('\d{8}UT', args.date):
             date = args.date
         elif args.date == 'today':
@@ -358,6 +361,8 @@ def main():
                    skip_file_checksums=args.skip_file_checksums,\
                    copy=args.copy)
     else:
+        print('Attempting to copy data from {} to remote disk array'.format(
+              args.telescope))
         copy_nights(args.telescope,
                     verbose=args.verbose,\
                     skip_file_checksums=args.skip_file_checksums,\
