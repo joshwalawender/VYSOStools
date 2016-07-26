@@ -303,6 +303,19 @@ def copy_night(telescope, date, verbose=False, skip_file_checksums=False, copy=T
             for line in outputlines:
                 FO.write('{}\n'.format(line))
 
+
+def copy_nights(telescope, verbose=False, skip_file_checksums=False, copy=True):
+    path = os.path.join('/', 'Volumes', 'WD500B', telescope, 'Images')
+    dirs = glob.glob(os.path.join(path, '2*UT'))
+    for dir in dirs:
+        date = os.path.split(dir)[1]
+        if re.match('\d{8}UT', date):
+            copy_night(telescope, dir,
+                       verbose=verbose,
+                       skip_file_checksums=skip_file_checksums,
+                       copy=copy)
+
+
 def main():
     ##-------------------------------------------------------------------------
     ## Parse Command Line Arguments
@@ -333,17 +346,24 @@ def main():
     if args.date:
         if re.match('\d{8}UT', args.date):
             date = args.date
+        elif args.date == 'today':
+            today = datetime.datetime.utcnow()
+            date = today.strftime('%Y%m%dUT')
         elif args.date == 'yesterday':
             today = datetime.datetime.utcnow()
             oneday = datetime.timedelta(1, 0)
             date = (today - oneday).strftime('%Y%m%dUT')
+        copy_night(args.telescope, date,\
+                   verbose=args.verbose,\
+                   skip_file_checksums=args.skip_file_checksums,\
+                   copy=args.copy)
     else:
-        date = datetime.datetime.utcnow().strftime('%Y%m%dUT')
+        copy_nights(args.telescope,
+                    verbose=args.verbose,\
+                    skip_file_checksums=args.skip_file_checksums,\
+                    copy=args.copy)
 
-    copy_night(args.telescope, date,\
-               verbose=args.verbose,\
-               skip_file_checksums=args.skip_file_checksums,\
-               copy=args.copy)
-               
+
 if __name__ == '__main__':
     main()
+
