@@ -310,7 +310,7 @@ def copy_nights(telescope, verbose=False, skip_file_checksums=False, copy=True):
     for dir in dirs:
         date = os.path.split(dir)[1]
         if re.match('\d{8}UT', date):
-            copy_night(telescope, dir,
+            copy_night(telescope, date,
                        verbose=verbose,
                        skip_file_checksums=skip_file_checksums,
                        copy=copy)
