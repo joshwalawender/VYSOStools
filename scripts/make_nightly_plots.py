@@ -503,7 +503,7 @@ def make_plots(date_string, telescope, logger, recent=False):
 
         plt.ylabel("Wind (mph)")
         plt.xlim(plot_start, plot_end)
-        plt.ylim(0,45)
+        plt.ylim(0,85)
         plt.grid(which='major', color='k')
         if recent: plt.grid(which='minor', color='k', alpha=0.8)
 
