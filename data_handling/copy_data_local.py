@@ -13,6 +13,7 @@ import shutil
 import subprocess
 import re
 
+from astropy.io import fits
 
 ##-------------------------------------------------------------------------
 ## Check Free Space on Drive
@@ -163,56 +164,44 @@ def main():
     logger.info('Found {} files to analyze'.format(len(files)))
 
 
-    counter = 0
-    for file in files:
-        counter += 1
+    for i,file in enumerate(files):
         filename = os.path.split(file)[1]
-        logger.info('Checking file {}/{}: {}'.format(counter, len(files), filename))
+        logger.info('Checking file {}/{}: {}'.format(i, len(files), filename))
         drobo_file = file.replace(windows_path, drobo_path)
         extdrive_file = file.replace(windows_path, extdrive_path)
-        original_hash = subprocess.check_output(['shasum', file]).split()[0]
 
-        ## Copy to Drobo
-        if not os.path.exists(drobo_file) and copy_to_drobo:
-            logger.info('  File does not exist on drobo.  Copying.')
-            shutil.copy2(file, drobo_file)
-        if os.path.exists(drobo_file):
-            logger.debug('  File exists on drobo.  Checking SHAsum.')
-            drobo_hash = subprocess.check_output(['shasum', drobo_file]).split()[0]
-            if original_hash == drobo_hash:
-                logger.info('  SHA sum on drobo confirmed')
-            else:
-                logger.warning('  SHA sum does not match')
-                logger.debug('  Original SHA sum: {}'.format(original_hash))
-                logger.debug('  Drobo SHA sum:    {}'.format(drobo_hash))
-                logger.info('  Copying file.')
+        if os.path.splitext(file)[1] in ['.fits', '.fts']:
+            ## Open file from windows drive, write CHECKSUM and DATASUM
+            ## Write out to drobo and extdrive
+            with fits.open(file, 'readonly', checksum=True) as hdul:
+                if not os.path.exists(drobo_file) and copy_to_drobo:
+                    logger.info('  File does not exist on drobo.  Writing file.')
+                    hdul.writeto(drobo_file, checksum=True)
+                if not os.path.exists(extdrive_file) and copy_to_extdrive:
+                    logger.info('  File does not exist on external.  Writing file.')
+                    hdul.writeto(extdrive_file, checksum=True)
+            ## Delete Original File
+            if args.delete and copy_to_extdrive and copy_to_drobo:
+                hdr_orig = fits.getheader(file)
+                hdr_drobo = fits.getheader(drobo_file)
+                hdr_ext = fits.getheader(extdrive_file)
+
+                if (hdr_orig['CHECKSUM'] == hdr_orig['CHECKSUM'])\
+                   and (hdr_orig['CHECKSUM'] == hdr_ext['CHECKSUM'])\
+                   and (hdr_orig['DATASUM'] == hdr_orig['DATASUM'])\
+                   and (hdr_orig['DATASUM'] == hdr_ext['DATASUM']) ):
+                    logger.info('  All CHECKSUMs and DATASUMs sums match.  Deleting file.')
+                    os.remove(file)
+                else:
+                    logger.warning('  CHECKSUM or DATASUM mismatch.  File not deleted.')
+        ## No checksum verification for non-FITS files
+        else:
+            if not os.path.exists(drobo_file) and copy_to_drobo:
                 shutil.copy2(file, drobo_file)
-                if args.delete:
-                    drobo_hash = subprocess.check_output(['shasum', drobo_file]).split()[0]
-        ## Copy to External Drive
-        if not os.path.exists(extdrive_file) and copy_to_extdrive:
-            logger.info('  File does not exist on external drive.  Copying.')
-            shutil.copy2(file, extdrive_file)
-        if os.path.exists(extdrive_file):
-            logger.debug('  File exists on external drive.  Checking SHAsum.')
-            extdrive_hash = subprocess.check_output(['shasum', extdrive_file]).split()[0]
-            if original_hash == extdrive_hash:
-                logger.info('  SHA sum on external drive confirmed')
-            else:
-                logger.warning('  SHA sum does not match')
-                logger.info('  Original SHA sum: {}'.format(original_hash))
-                logger.info('  External SHA sum: {}'.format(extdrive_hash))
-                logger.info('  Copying file.')
-                shutil.copy2(file, extdrive_file)
-                if args.delete:
-                    extdrive_hash = subprocess.check_output(['shasum', extdrive_file]).split()[0]
-        ## Delete Original File
-        if args.delete and copy_to_extdrive and copy_to_drobo:
-            if (original_hash == drobo_hash) and (original_hash == extdrive_hash):
-                logger.info('  All three SHA sums match.  Deleting file.')
+            if not os.path.exists(extdrive_file) and copy_to_extdrive:
+                shutil.copy2(file, drobo_file)
+            if args.delete and copy_to_extdrive and copy_to_drobo:
                 os.remove(file)
-            else:
-                logger.warning('  SHA sum mismatch.  File not deleted.')
 
     if args.delete:
         ## Remove Calibration directory if empty
