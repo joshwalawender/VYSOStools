@@ -166,7 +166,7 @@ def main():
 
     for i,file in enumerate(files):
         filename = os.path.split(file)[1]
-        logger.info('Checking file {}/{}: {}'.format(i, len(files), filename))
+        logger.info('Checking file {}/{}: {}'.format(i+1, len(files), filename))
         drobo_file = file.replace(windows_path, drobo_path)
         extdrive_file = file.replace(windows_path, extdrive_path)
 
@@ -174,38 +174,55 @@ def main():
             ## Open file from windows drive, write CHECKSUM and DATASUM
             ## Write out to drobo and extdrive
             with fits.open(file, checksum=True) as hdul:
-                if not os.path.exists(drobo_file) and copy_to_drobo:
-                    logger.info('  File does not exist on drobo.  Writing file.')
+                hdul[0].add_checksum()
+                if not os.path.exists(drobo_file)\
+                   and not os.path.exists('{}.fz'.format(drobo_file))\
+                   and copy_to_drobo:
+                    logger.info('  File does not exist on drobo.  Writing compressed file.')
                     hdul.writeto(drobo_file, checksum=True)
                     subprocess.call(['fpack', drobo_file])
                     if os.path.exists('{}.fz'.format(drobo_file)):
                         os.remove(drobo_file)
-                if not os.path.exists(extdrive_file) and copy_to_extdrive:
-                    logger.info('  File does not exist on external.  Writing file.')
+                if not os.path.exists(extdrive_file)\
+                   and not os.path.exists('{}.fz'.format(extdrive_file))\
+                   and copy_to_extdrive:
+                    logger.info('  File does not exist on external.  Writing compressed file.')
                     hdul.writeto(extdrive_file, checksum=True)
                     subprocess.call(['fpack', extdrive_file])
                     if os.path.exists('{}.fz'.format(extdrive_file)):
                         os.remove(extdrive_file)
-            ## Delete Original File
-            if args.delete and copy_to_extdrive and copy_to_drobo:
-                hdr_orig = fits.getheader(file)
-                if os.path.exists('{}.fz'.format(drobo_file)):
-                    hdr_drobo = fits.getheader('{}.fz'.format(drobo_file), ext=1)
-                else:
-                    hdr_drobo = fits.getheader(drobo_file)
-                if os.path.exists('{}.fz'.format(extdrive_file)):
-                    hdr_ext = fits.getheader('{}.fz'.format(extdrive_file), ext=1)
-                else:
-                    hdr_ext = fits.getheader(extdrive_file)
-
-                if ( (hdr_orig['CHECKSUM'] == hdr_orig['CHECKSUM'])\
-                   and (hdr_orig['CHECKSUM'] == hdr_ext['CHECKSUM'])\
-                   and (hdr_orig['DATASUM'] == hdr_orig['DATASUM'])\
-                   and (hdr_orig['DATASUM'] == hdr_ext['DATASUM']) ):
-                    logger.info('  All CHECKSUMs and DATASUMs sums match.  Deleting file.')
-                    os.remove(file)
-                else:
-                    logger.warning('  CHECKSUM or DATASUM mismatch.  File not deleted.')
+                ## Verify Checksum and (if args.delete) Delete Original File
+                if copy_to_extdrive and copy_to_drobo:
+                    hdr_orig = hdul[0].header
+                    if os.path.exists('{}.fz'.format(drobo_file)):
+                        hdr_drobo = fits.getheader('{}.fz'.format(drobo_file), ext=1)
+                    else:
+                        hdr_drobo = fits.getheader(drobo_file)
+                    if os.path.exists('{}.fz'.format(extdrive_file)):
+                        hdr_ext = fits.getheader('{}.fz'.format(extdrive_file), ext=1)
+                    else:
+                        hdr_ext = fits.getheader(extdrive_file)
+                    checksumsok = (hdr_orig['CHECKSUM'] == hdr_orig['CHECKSUM'])\
+                              and (hdr_orig['CHECKSUM'] == hdr_ext['CHECKSUM'])
+                    datasumsok = (hdr_orig['DATASUM'] == hdr_orig['DATASUM'])\
+                             and (hdr_orig['DATASUM'] == hdr_ext['DATASUM'])
+                    if checksumsok and datasumsok:
+                        if args.delete:
+                            logger.info('  All CHECKSUMs and DATASUMs sums match.  Deleting file.')
+                            os.remove(file)
+                        else:
+                            logger.info('  All CHECKSUMs and DATASUMs sums match.')
+                    else:
+                        if not checksumsok:
+                            logger.warning('  CHECKSUM mismatch.')
+                            logger.warning('    Original: {}'.format(hdr_orig['CHECKSUM']))
+                            logger.warning('    Drobo:    {}'.format(hdr_drobo['CHECKSUM']))
+                            logger.warning('    External: {}'.format(hdr_ext['CHECKSUM']))
+                        if not datasumsok:
+                            logger.warning('  DATASUM mismatch.')
+                            logger.warning('    Original: {}'.format(hdr_orig['DATASUM']))
+                            logger.warning('    Drobo:    {}'.format(hdr_drobo['DATASUM']))
+                            logger.warning('    External: {}'.format(hdr_ext['DATASUM']))
         ## No checksum verification for non-FITS files
         else:
             if not os.path.exists(drobo_file) and copy_to_drobo:
