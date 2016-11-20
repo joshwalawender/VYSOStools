@@ -198,7 +198,7 @@ def main():
                 else:
                     hdr_ext = fits.getheader(extdrive_file)
 
-                if (hdr_orig['CHECKSUM'] == hdr_orig['CHECKSUM'])\
+                if ( (hdr_orig['CHECKSUM'] == hdr_orig['CHECKSUM'])\
                    and (hdr_orig['CHECKSUM'] == hdr_ext['CHECKSUM'])\
                    and (hdr_orig['DATASUM'] == hdr_orig['DATASUM'])\
                    and (hdr_orig['DATASUM'] == hdr_ext['DATASUM']) ):
