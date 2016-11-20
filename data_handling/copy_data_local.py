@@ -5,6 +5,8 @@ from __future__ import division, print_function
 ## Import General Tools
 import sys
 import os
+from os.path import exists
+from os.path import join
 import argparse
 import logging
 import datetime
@@ -63,10 +65,6 @@ def main():
     else:
         date = datetime.datetime.utcnow().strftime('%Y%m%dUT')
 
-    ## Safety Feature: do not have delete active if working on today's data
-    if date == datetime.datetime.utcnow().strftime('%Y%m%dUT'):
-        args.delete = False
-
     ##-------------------------------------------------------------------------
     ## Create logger object
     ##-------------------------------------------------------------------------
@@ -83,8 +81,8 @@ def main():
     logger.addHandler(LogConsoleHandler)
     ## Set up file output
     LogFileName = 'DataHandler_{}_{}.log'.format(args.telescope, date)
-    LogFilePath = os.path.join('/', 'Users', 'vysosuser', 'logs')
-    LogFileHandler = logging.FileHandler(os.path.join(LogFilePath, LogFileName))
+    LogFilePath = join('/', 'Users', 'vysosuser', 'logs')
+    LogFileHandler = logging.FileHandler(join(LogFilePath, LogFileName))
     LogFileHandler.setLevel(logging.DEBUG)
     LogFileHandler.setFormatter(LogFormat)
     logger.addHandler(LogFileHandler)
@@ -94,13 +92,13 @@ def main():
     ##-------------------------------------------------------------------------
     ## Copy Data from Windows Share to Drobo and USB Drive
     ##-------------------------------------------------------------------------
-    windows_path = os.path.join('/', 'Volumes', 'Data_{}'.format(args.telescope))
-    drobo_path = os.path.join('/', 'Volumes', 'Drobo', args.telescope)
-    extdrive_paths = [os.path.join('/', 'Volumes', 'WD500B', args.telescope),\
-                      os.path.join('/', 'Volumes', 'WD500_C', args.telescope)]
-    if os.path.exists(extdrive_paths[0]):
+    windows_path = join('/', 'Volumes', 'Data_{}'.format(args.telescope))
+    drobo_path = join('/', 'Volumes', 'Drobo', args.telescope)
+    extdrive_paths = [join('/', 'Volumes', 'WD500B', args.telescope),\
+                      join('/', 'Volumes', 'WD500_C', args.telescope)]
+    if exists(extdrive_paths[0]):
         extdrive_path = extdrive_paths[0]
-    elif os.path.exists(extdrive_paths[1]):
+    elif exists(extdrive_paths[1]):
         extdrive_path = extdrive_paths[1]
     else:
         print("Can't find path for external drive")
@@ -119,12 +117,12 @@ def main():
     else:
         copy_to_drobo = True
     ## Check that date directory has been made on Drobo
-    if not os.path.exists(os.path.join(drobo_path, 'Images', date)):
-        logger.info('Making directory: {}'.format(os.path.join(drobo_path, 'Images', date)))
-        os.mkdir(os.path.join(drobo_path, 'Images', date))
-    if not os.path.exists(os.path.join(drobo_path, 'Logs', date)):
-        logger.info('Making directory: {}'.format(os.path.join(drobo_path, 'Logs', date)))
-        os.mkdir(os.path.join(drobo_path, 'Logs', date))
+    if not exists(join(drobo_path, 'Images', date)):
+        logger.info('Making directory: {}'.format(join(drobo_path, 'Images', date)))
+        os.mkdir(join(drobo_path, 'Images', date))
+    if not exists(join(drobo_path, 'Logs', date)):
+        logger.info('Making directory: {}'.format(join(drobo_path, 'Logs', date)))
+        os.mkdir(join(drobo_path, 'Logs', date))
 
     ## Check free space on external drive
     threshold = 20
@@ -138,132 +136,135 @@ def main():
         copy_to_extdrive = False
     else:
         copy_to_extdrive = True
+
     ## Check that date directory has been made on external drive
-    if not os.path.exists(os.path.join(extdrive_path, 'Images', date)):
-        logger.info('Making directory: {}'.format(os.path.join(extdrive_path, 'Images', date)))
-        os.mkdir(os.path.join(extdrive_path, 'Images', date))
-    if not os.path.exists(os.path.join(extdrive_path, 'Logs', date)):
-        logger.info('Making directory: {}'.format(os.path.join(extdrive_path, 'Logs', date)))
-        os.mkdir(os.path.join(extdrive_path, 'Logs', date))
+    if not exists(join(extdrive_path, 'Images', date)):
+        logger.info('Making directory: {}'.format(join(extdrive_path, 'Images', date)))
+        os.mkdir(join(extdrive_path, 'Images', date))
+    if not exists(join(extdrive_path, 'Logs', date)):
+        logger.info('Making directory: {}'.format(join(extdrive_path, 'Logs', date)))
+        os.mkdir(join(extdrive_path, 'Logs', date))
 
     ## Make list of files to analyze
-    files = glob.glob(os.path.join(windows_path, 'Images', date, '*.fts'))
-    if os.path.exists(os.path.join(windows_path, 'Images', date, 'Calibration')):
-        files.extend(glob.glob(os.path.join(windows_path, 'Images', date, 'Calibration', '*.fts')))
-        if not os.path.exists(os.path.join(drobo_path, 'Images', date, 'Calibration')):
-            os.mkdir(os.path.join(drobo_path, 'Images', date, 'Calibration'))
-        if not os.path.exists(os.path.join(extdrive_path, 'Images', date, 'Calibration')):
-            os.mkdir(os.path.join(extdrive_path, 'Images', date, 'Calibration'))
-    if os.path.exists(os.path.join(windows_path, 'Images', date, 'AutoFlat')):
-        files.extend(glob.glob(os.path.join(windows_path, 'Images', date, 'AutoFlat', '*.fts')))
-        if not os.path.exists(os.path.join(drobo_path, 'Images', date, 'AutoFlat')):
-            os.mkdir(os.path.join(drobo_path, 'Images', date, 'AutoFlat'))
-        if not os.path.exists(os.path.join(extdrive_path, 'Images', date, 'AutoFlat')):
-            os.mkdir(os.path.join(extdrive_path, 'Images', date, 'AutoFlat'))
-    files.extend(glob.glob(os.path.join(windows_path, 'Logs', date, '*.*')))
+    files = glob.glob(join(windows_path, 'Images', date, '*.fts'))
+    if exists(join(windows_path, 'Images', date, 'Calibration')):
+        files.extend(glob.glob(join(windows_path, 'Images', date, 'Calibration', '*.fts')))
+        if not exists(join(drobo_path, 'Images', date, 'Calibration')):
+            os.mkdir(join(drobo_path, 'Images', date, 'Calibration'))
+        if not exists(join(extdrive_path, 'Images', date, 'Calibration')):
+            os.mkdir(join(extdrive_path, 'Images', date, 'Calibration'))
+    if exists(join(windows_path, 'Images', date, 'AutoFlat')):
+        files.extend(glob.glob(join(windows_path, 'Images', date, 'AutoFlat', '*.fts')))
+        if not exists(join(drobo_path, 'Images', date, 'AutoFlat')):
+            os.mkdir(join(drobo_path, 'Images', date, 'AutoFlat'))
+        if not exists(join(extdrive_path, 'Images', date, 'AutoFlat')):
+            os.mkdir(join(extdrive_path, 'Images', date, 'AutoFlat'))
+    files.extend(glob.glob(join(windows_path, 'Logs', date, '*.*')))
     logger.info('Found {} files to analyze'.format(len(files)))
 
-
+    # Loop over all files
     for i,file in enumerate(files):
         filename = os.path.split(file)[1]
         logger.info('Checking file {}/{}: {}'.format(i+1, len(files), filename))
         drobo_file = file.replace(windows_path, drobo_path)
-        extdrive_file = file.replace(windows_path, extdrive_path)
+        ext_file = file.replace(windows_path, extdrive_path)
 
         if os.path.splitext(file)[1] in ['.fits', '.fts']:
-            ## Open file from windows drive, write CHECKSUM and DATASUM
-            ## Write out to drobo and extdrive
-            with fits.open(file, checksum=True) as hdul:
-                hdul[0].add_checksum()
-                if not os.path.exists(drobo_file)\
-                   and not os.path.exists('{}.fz'.format(drobo_file))\
-                   and copy_to_drobo:
-                    logger.info('  File does not exist on drobo.  Writing compressed file.')
-                    hdul.writeto(drobo_file, checksum=True)
+            drobo_fz = '{}.fz'.format(drobo_file)
+            ext_fz = '{}.fz'.format(ext_file)
+
+            to_drobo = False
+            if copy_to_drobo:
+                if not exists(drobo_file) and not exists(drobo_fz):
+                    to_drobo=True
+                elif exists(drobo_file) and not exists(drobo_fz):
+                    print('  Compressing existing file on drobo')
                     subprocess.call(['fpack', drobo_file])
-                    if os.path.exists('{}.fz'.format(drobo_file)):
+                    if exists(drobo_fz):
                         os.remove(drobo_file)
-                if not os.path.exists(extdrive_file)\
-                   and not os.path.exists('{}.fz'.format(extdrive_file))\
-                   and copy_to_extdrive:
-                    logger.info('  File does not exist on external.  Writing compressed file.')
-                    hdul.writeto(extdrive_file, checksum=True)
-                    subprocess.call(['fpack', extdrive_file])
-                    if os.path.exists('{}.fz'.format(extdrive_file)):
-                        os.remove(extdrive_file)
-                ## Verify Checksum and (if args.delete) Delete Original File
-                if copy_to_extdrive and copy_to_drobo:
-                    hdr_orig = hdul[0].header
-                    if os.path.exists('{}.fz'.format(drobo_file)):
-                        hdr_drobo = fits.getheader('{}.fz'.format(drobo_file), ext=1)
-                    else:
-                        hdr_drobo = fits.getheader(drobo_file)
-                    if os.path.exists('{}.fz'.format(extdrive_file)):
-                        hdr_ext = fits.getheader('{}.fz'.format(extdrive_file), ext=1)
-                    else:
-                        hdr_ext = fits.getheader(extdrive_file)
-                    checksumsok = (hdr_orig['CHECKSUM'] == hdr_orig['CHECKSUM'])\
-                              and (hdr_orig['CHECKSUM'] == hdr_ext['CHECKSUM'])
-                    datasumsok = (hdr_orig['DATASUM'] == hdr_orig['DATASUM'])\
-                             and (hdr_orig['DATASUM'] == hdr_ext['DATASUM'])
-                    if checksumsok and datasumsok:
-                        if args.delete:
-                            logger.info('  All CHECKSUMs and DATASUMs sums match.  Deleting file.')
-                            os.remove(file)
-                        else:
-                            logger.info('  All CHECKSUMs and DATASUMs sums match.')
-                    else:
-                        if not checksumsok:
-                            logger.warning('  CHECKSUM mismatch.')
-                            logger.warning('    Original: {}'.format(hdr_orig['CHECKSUM']))
-                            logger.warning('    Drobo:    {}'.format(hdr_drobo['CHECKSUM']))
-                            logger.warning('    External: {}'.format(hdr_ext['CHECKSUM']))
-                        if not datasumsok:
-                            logger.warning('  DATASUM mismatch.')
-                            logger.warning('    Original: {}'.format(hdr_orig['DATASUM']))
-                            logger.warning('    Drobo:    {}'.format(hdr_drobo['DATASUM']))
-                            logger.warning('    External: {}'.format(hdr_ext['DATASUM']))
+
+            to_ext = False
+            if copy_to_extdrive:
+                if not exists(ext_file) and not exists(ext_fz):
+                    to_ext=True
+                elif exists(ext_file) and not exists(ext_fz):
+                    print('  Compressing existing file on ext')
+                    subprocess.call(['fpack', ext_file])
+                    if exists(ext_fz):
+                        os.remove(ext_file)
+
+            if to_drobo or to_ext:
+                with fits.open(file, checksum=True) as hdul:
+                    hdul[0].add_checksum()
+                    if to_drobo:
+                        logger.info('  File does not exist on drobo.  Writing compressed file.')
+                        hdul.writeto(drobo_file, checksum=True)
+                        subprocess.call(['fpack', drobo_file])
+                        if exists(drobo_fz):
+                            os.remove(drobo_file)
+                    if to_ext:
+                        logger.info('  File does not exist on external.  Writing compressed file.')
+                        hdul.writeto(ext_file, checksum=True)
+                        subprocess.call(['fpack', ext_file])
+                        if exists(ext_fz):
+                            os.remove(ext_file)
+            # Verify checksums on drobo
+            failcheck_drobo = bool(subprocess.call(['fitscheck', drobo_fz]))
+            if failcheck_drobo:
+                logger.warning('Checksum failed on {}'.format(drobo_fz))
+            # Verify checksums on ext
+            failcheck_ext = bool(subprocess.call(['fitscheck', ext_fz]))
+            if failcheck_ext:
+                logger.warning('Checksum failed on {}'.format(ext_fz))
+
+            if not failcheck_drobo and not failcheck_ext:
+                if args.delete:
+                    logger.info('  All CHECKSUM verifications passed.  Deleting file.')
+                    os.remove(file)
+                else:
+                    logger.info('  All CHECKSUM verifications passed.')
+
         ## No checksum verification for non-FITS files
         else:
-            if not os.path.exists(drobo_file) and copy_to_drobo:
+            if not exists(drobo_file) and copy_to_drobo:
                 shutil.copy2(file, drobo_file)
-            if not os.path.exists(extdrive_file) and copy_to_extdrive:
+            if not exists(ext_file) and copy_to_extdrive:
                 shutil.copy2(file, drobo_file)
             if args.delete and copy_to_extdrive and copy_to_drobo:
                 os.remove(file)
 
     if args.delete:
         ## Remove Calibration directory if empty
-        Calibration_path = os.path.join(windows_path, 'Images', date, 'Calibration')
-        if os.path.exists(Calibration_path):
-            if len(glob.glob(os.path.join(Calibration_path, '*'))) == 0:
+        Calibration_path = join(windows_path, 'Images', date, 'Calibration')
+        if exists(Calibration_path):
+            if len(glob.glob(join(Calibration_path, '*'))) == 0:
                 logger.info('Removing {}'.format(Calibration_path))
                 os.rmdir(Calibration_path)
             else:
                 logger.warning('Files still remain in {}'.format(Calibration_path))
 
         ## Remove AutoFlat directory if empty
-        AutoFlat_path = os.path.join(windows_path, 'Images', date, 'AutoFlat')
-        if os.path.exists(AutoFlat_path):
-            if len(glob.glob(os.path.join(AutoFlat_path, '*'))) == 0:
+        AutoFlat_path = join(windows_path, 'Images', date, 'AutoFlat')
+        if exists(AutoFlat_path):
+            if len(glob.glob(join(AutoFlat_path, '*'))) == 0:
                 logger.info('Removing {}'.format(AutoFlat_path))
                 os.rmdir(AutoFlat_path)
             else:
                 logger.warning('Files still remain in {}'.format(AutoFlat_path))
 
         ## Remove Images directory if empty
-        Images_path = os.path.join(windows_path, 'Images', date)
-        if os.path.exists(Images_path):
-            if len(glob.glob(os.path.join(Images_path, '*'))) == 0:
+        Images_path = join(windows_path, 'Images', date)
+        if exists(Images_path):
+            if len(glob.glob(join(Images_path, '*'))) == 0:
                 logger.info('Removing {}'.format(Images_path))
                 os.rmdir(Images_path)
             else:
                 logger.warning('Files still remain in {}'.format(Images_path))
 
         ## Remove Logs directory if empty
-        Logs_path = os.path.join(windows_path, 'Logs', date)
-        if os.path.exists(Logs_path):
-            if len(glob.glob(os.path.join(Logs_path, '*'))) == 0:
+        Logs_path = join(windows_path, 'Logs', date)
+        if exists(Logs_path):
+            if len(glob.glob(join(Logs_path, '*'))) == 0:
                 logger.info('Removing {}'.format(Logs_path))
                 os.rmdir(Logs_path)
             else:
