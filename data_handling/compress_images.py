@@ -22,31 +22,39 @@ def compress_files(telescope, date):
     assert os.path.exists(ext_path)
     files = glob(os.path.join(ext_path, '*.fts'))
     files.extend(glob(os.path.join(ext_path, '*.fits')))
-    for file in files:
+    nfiles = len(files)
+    for i,file in enumerate(files):
         filename = os.path.basename(file)
         drobo_file = os.path.join(drobo_path, filename)
 
-        print(file)
+        print('Examining {}/{}: {}'.format(i, nfiles, filename))
         assert os.path.exists(file)
-        print('  Verifying checksum')
+        print('  {}'.format(file))
+        print('    Verifying checksum')
         with fits.open(file, 'update', checksum=True) as hdul:
             for hdu in hdul:
                 if not 'CHECKSUM' in hdu.header.keys():
                     hdu.add_checksum()
             hdul.flush()
-        print('  Compressing')
+        print('    Compressing')
         subprocess.call(['fpack', file])
+        if os.path.exists('{}.fz'.format(file)):
+            print('.   Removing uncompressed file')
+            os.remove(file)
 
-        print(drobo_file)
+        print('  {}'.format(drobo_file))
         assert os.path.exists(drobo_file)
-        print('  Verifying checksum')
+        print('    Verifying checksum')
         with fits.open(drobo_file, 'update', checksum=True) as hdul:
             for hdu in hdul:
                 if not 'CHECKSUM' in hdu.header.keys():
                     hdu.add_checksum()
             hdul.flush()
-        print('  Compressing')
+        print('    Compressing')
         subprocess.call(['fpack', drobo_file])
+        if os.path.exists('{}.fz'.format(drobo_file)):
+            print('.   Removing uncompressed file')
+            os.remove(drobo_file)
 
 
 
@@ -155,4 +163,23 @@ def main():
 
 
 if __name__ == '__main__':
-    compress_files('V5', '20161118UT')
+    ##-------------------------------------------------------------------------
+    ## Parse Command Line Arguments
+    ##-------------------------------------------------------------------------
+    ## create a parser object for understanding command-line arguments
+    parser = argparse.ArgumentParser(
+             description="Program description.")
+    ## add flags
+    parser.add_argument("-v", "--verbose",
+        action="store_true", dest="verbose",
+        default=False, help="Be verbose! (default = False)")
+    ## add arguments
+    parser.add_argument("telescope",
+        type=str,
+        help="Telescope (V5 or V20)")
+    parser.add_argument("date",
+        type=str,
+        help="Date (e.g. 20161125UT)")
+    args = parser.parse_args()
+    
+    compress_files(args.telescope, args.date)
