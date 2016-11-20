@@ -173,20 +173,30 @@ def main():
         if os.path.splitext(file)[1] in ['.fits', '.fts']:
             ## Open file from windows drive, write CHECKSUM and DATASUM
             ## Write out to drobo and extdrive
-            with fits.open(file, 'readonly', checksum=True) as hdul:
+            with fits.open(file, checksum=True) as hdul:
                 if not os.path.exists(drobo_file) and copy_to_drobo:
                     logger.info('  File does not exist on drobo.  Writing file.')
                     hdul.writeto(drobo_file, checksum=True)
-                    subprocess.call('fpack {}'.format(drobo_file))
+                    subprocess.call(['fpack', drobo_file])
+                    if os.path.exists('{}.fz'.format(drobo_file)):
+                        os.remove(drobo_file)
                 if not os.path.exists(extdrive_file) and copy_to_extdrive:
                     logger.info('  File does not exist on external.  Writing file.')
                     hdul.writeto(extdrive_file, checksum=True)
-                    subprocess.call('fpack {}'.format(extdrive_file))
+                    subprocess.call(['fpack', extdrive_file])
+                    if os.path.exists('{}.fz'.format(extdrive_file)):
+                        os.remove(extdrive_file)
             ## Delete Original File
             if args.delete and copy_to_extdrive and copy_to_drobo:
                 hdr_orig = fits.getheader(file)
-                hdr_drobo = fits.getheader(drobo_file)
-                hdr_ext = fits.getheader(extdrive_file)
+                if os.path.exists('{}.fz'.format(drobo_file)):
+                    hdr_drobo = fits.getheader('{}.fz'.format(drobo_file), ext=1)
+                else:
+                    hdr_drobo = fits.getheader(drobo_file)
+                if os.path.exists('{}.fz'.format(extdrive_file)):
+                    hdr_ext = fits.getheader('{}.fz'.format(extdrive_file), ext=1)
+                else:
+                    hdr_ext = fits.getheader(extdrive_file)
 
                 if (hdr_orig['CHECKSUM'] == hdr_orig['CHECKSUM'])\
                    and (hdr_orig['CHECKSUM'] == hdr_ext['CHECKSUM'])\
