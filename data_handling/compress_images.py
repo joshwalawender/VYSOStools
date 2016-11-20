@@ -8,8 +8,48 @@ import os
 import argparse
 import logging
 import subprocess
+from glob import glob
 import re
 import astropy.io.fits as fits
+
+def compress_files(telescope, date):
+    drobo_path = '/Volumes/Drobo/{}/Images/{}'.format(telescope, date)
+    ext_path = '/Volumes/WD500B/{}/Images/{}'.format(telescope, date)
+    print('Exmining files in:')
+    print('  {}'.format(ext_path))
+    print('  {}'.format(drobo_path))
+    assert os.path.exists(drobo_path)
+    assert os.path.exists(ext_path)
+    files = glob(os.path.join(ext_path, '*.fts'))
+    files.extend(glob(os.path.join(ext_path, '*.fits')))
+    for file in files:
+        filename = os.path.basename(file)
+        drobo_file = os.path.join(drobo_path, filename)
+
+        print(file)
+        assert os.path.exists(file)
+        print('  Verifying checksum')
+        with fits.open(file, 'update', checksum=True) as hdul:
+            for hdu in hdul:
+                if not 'CHECKSUM' in hdu.header.keys():
+                    hdu.add_checksum()
+            hdul.flush()
+        print('  Compressing')
+        subprocess.call(['fpack', file])
+
+        print(drobo_file)
+        assert os.path.exists(drobo_file)
+        print('  Verifying checksum')
+        with fits.open(drobo_file, 'update', checksum=True) as hdul:
+            for hdu in hdul:
+                if not 'CHECKSUM' in hdu.header.keys():
+                    hdu.add_checksum()
+            hdul.flush()
+        print('  Compressing')
+        subprocess.call(['fpack', drobo_file])
+
+
+
 
 def check_compressed(file, logger):
     is_compressed = False
@@ -115,4 +155,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    compress_files('V5', '20161118UT')
