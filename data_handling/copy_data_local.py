@@ -177,9 +177,11 @@ def main():
                 if not os.path.exists(drobo_file) and copy_to_drobo:
                     logger.info('  File does not exist on drobo.  Writing file.')
                     hdul.writeto(drobo_file, checksum=True)
+                    subprocess.call('fpack {}'.format(drobo_file))
                 if not os.path.exists(extdrive_file) and copy_to_extdrive:
                     logger.info('  File does not exist on external.  Writing file.')
                     hdul.writeto(extdrive_file, checksum=True)
+                    subprocess.call('fpack {}'.format(extdrive_file))
             ## Delete Original File
             if args.delete and copy_to_extdrive and copy_to_drobo:
                 hdr_orig = fits.getheader(file)
