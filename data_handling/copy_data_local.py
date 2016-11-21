@@ -146,15 +146,15 @@ def main():
         os.mkdir(join(extdrive_path, 'Logs', date))
 
     ## Make list of files to analyze
-    files = glob.glob(join(windows_path, 'Images', date, '*.fts'))
+    files = glob.glob(join(windows_path, 'Images', date, '*.*'))
     if exists(join(windows_path, 'Images', date, 'Calibration')):
-        files.extend(glob.glob(join(windows_path, 'Images', date, 'Calibration', '*.fts')))
+        files.extend(glob.glob(join(windows_path, 'Images', date, 'Calibration', '*.*')))
         if not exists(join(drobo_path, 'Images', date, 'Calibration')):
             os.mkdir(join(drobo_path, 'Images', date, 'Calibration'))
         if not exists(join(extdrive_path, 'Images', date, 'Calibration')):
             os.mkdir(join(extdrive_path, 'Images', date, 'Calibration'))
     if exists(join(windows_path, 'Images', date, 'AutoFlat')):
-        files.extend(glob.glob(join(windows_path, 'Images', date, 'AutoFlat', '*.fts')))
+        files.extend(glob.glob(join(windows_path, 'Images', date, 'AutoFlat', '*.*')))
         if not exists(join(drobo_path, 'Images', date, 'AutoFlat')):
             os.mkdir(join(drobo_path, 'Images', date, 'AutoFlat'))
         if not exists(join(extdrive_path, 'Images', date, 'AutoFlat')):
@@ -178,7 +178,7 @@ def main():
                 if not exists(drobo_file) and not exists(drobo_fz):
                     to_drobo=True
                 elif exists(drobo_file) and not exists(drobo_fz):
-                    print('  Compressing existing file on drobo')
+                    logger.info('  Compressing existing file on drobo')
                     subprocess.call(['fpack', drobo_file])
                     if exists(drobo_fz):
                         os.remove(drobo_file)
@@ -188,7 +188,7 @@ def main():
                 if not exists(ext_file) and not exists(ext_fz):
                     to_ext=True
                 elif exists(ext_file) and not exists(ext_fz):
-                    print('  Compressing existing file on ext')
+                    logger.info('  Compressing existing file on ext')
                     subprocess.call(['fpack', ext_file])
                     if exists(ext_fz):
                         os.remove(ext_file)
@@ -227,10 +227,13 @@ def main():
         ## No checksum verification for non-FITS files
         else:
             if not exists(drobo_file) and copy_to_drobo:
+                logger.info('Copying {} to drobo'.format(file))
                 shutil.copy2(file, drobo_file)
             if not exists(ext_file) and copy_to_extdrive:
+                logger.info('Copying {} to external'.format(file))
                 shutil.copy2(file, drobo_file)
             if args.delete and copy_to_extdrive and copy_to_drobo:
+                logger.info('Deleting {}'.format(file))
                 os.remove(file)
 
     if args.delete:
