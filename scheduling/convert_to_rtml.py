@@ -1,6 +1,6 @@
 import sys
 import os
-
+import numpy as np
 from astropy.table import Table
 from astropy.coordinates import SkyCoord
 from astropy import units as u
@@ -63,8 +63,11 @@ if __name__ == '__main__':
         f.write('       <Email>vysostelescope@gmail.com</Email>\n')
         f.write('   </Contact>\n')
         f.write('\n')
-        bymonitor = tab.group_by('period')
-        for entry in bymonitor:
+        byperiod = tab.group_by('period')
+        periods = byperiod.groups
+        for entry in byperiod:
+            moncount = np.where(byperiod.groups.keys['period'] == entry['period'])[0][0]
+            entry['priority'] += 10*moncount
             write_request(f, entry)
         f.write('</RTML>\n')
 
