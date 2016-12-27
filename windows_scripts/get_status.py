@@ -447,7 +447,7 @@ def get_status_and_log(telescope):
     ## Get Status Info
     ##-------------------------------------------------------------------------
     if telescope == 'V5':
-        boltwood_file = os.path.join("C:\\", "Users", "vysosuser", "Documents", "ClarityII", "ClarityData.txt")
+        boltwood_file = os.path.join("Z:\\", "ClarityData.txt")
     elif telescope == 'V20':
         boltwood_file = r'\\192.168.1.122\ClarityII\ClarityData.txt'
     boltwood = get_boltwood(boltwood_file, logger)
