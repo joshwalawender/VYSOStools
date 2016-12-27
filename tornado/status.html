@@ -43,31 +43,14 @@
     </td>
     <td width="210px" style="text-align: left;">
     </td>
-    <td width="210px" style="text-align: left;">
-        {% if 'Drobo' in disks.keys() %}
-            {% if disks['Drobo'][1] < 300 %}
+    <td width="420px" style="text-align: left;">
+        {% if 'DroboPro' in disks.keys() %}
+            {% if disks['DroboPro'][1] < 20 %}
                 <font color="red"> 
             {% else %}
                 <font color="black"> 
             {% end %}
-            Drobo: {{ '{:.0f}GB free ({:.0f}% full)'.format(disks['Drobo'][1], disks['Drobo'][2]) }}
-        {% end %}
-    </td>
-    <td width="210px" style="text-align: left;">
-        {% if 'USB Drive B' in disks.keys() %}
-            {% if disks['USB Drive B'][1] < 40 %}
-                <font color="red"> 
-            {% else %}
-                <font color="black"> 
-            {% end %}
-            USB(B): {{ '{:.0f}GB free ({:.0f}% full)'.format(disks['USB Drive B'][1], disks['USB Drive B'][2]) }}</font>
-        {% elif 'USB Drive C' in disks.keys() %}
-            {% if disks['USB Drive C'][1] < 40 %}
-                <font color="red"> 
-            {% else %}
-                <font color="black"> 
-            {% end %}
-            USB(C): {{ '{:.0f}GB free ({:.0f}% full)'.format(disks['USB Drive C'][1], disks['USB Drive C'][2]) }}</font>
+            MLOData: {{ '{:.0f}GB free ({:.0f}% full)'.format(disks['DroboPro'][1], disks['DroboPro'][2]) }}</font>
         {% end %}
     </td>
 </tr>
@@ -83,16 +66,14 @@
         {% end %} 
     </td>
     <td style="text-align: left;">
-        {% if 'macOS' in disks.keys() %}
-            {% if disks['macOS'][1] < 40 %}
+        {% if 'Drobo' in disks.keys() %}
+            {% if disks['Drobo'][1] < 300 %}
                 <font color="red"> 
             {% else %}
                 <font color="black"> 
             {% end %}
-            macOS: {{ '{:.0f}GB free ({:.0f}% full)'.format(disks['macOS'][1], disks['macOS'][2]) }}</font>
+            DataCopy: {{ '{:.0f}GB free ({:.0f}% full)'.format(disks['Drobo'][1], disks['Drobo'][2]) }}
         {% end %}
-    </td>
-    <td style="text-align: left;">
     </td>
 </tr>
 <tr>
@@ -107,23 +88,13 @@
         {% end %} 
     </td>
     <td style="text-align: left;">
-        {% if 'Vega' in disks.keys() %}
-            {% if disks['Vega'][1] < 40 %}
+        {% if 'macOS' in disks.keys() %}
+            {% if disks['macOS'][1] < 40 %}
                 <font color="red"> 
             {% else %}
                 <font color="black"> 
             {% end %}
-            Vega: {{ '{:.0f}GB free ({:.0f}% full)'.format(disks['Vega'][1], disks['Vega'][2]) }}
-        {% end %}
-    </td>
-    <td style="text-align: left;">
-        {% if 'Black' in disks.keys() %}
-            {% if disks['Black'][1] < 40 %}
-                <font color="red"> 
-            {% else %}
-                <font color="black"> 
-            {% end %}
-            Black: {{ '{:.0f}GB free ({:.0f}% full)'.format(disks['Black'][1], disks['Black'][2]) }}</font>
+            macOS: {{ '{:.0f}GB free ({:.0f}% full)'.format(disks['macOS'][1], disks['macOS'][2]) }}</font>
         {% end %}
     </td>
 </tr>
@@ -136,7 +107,7 @@
 <tr>
     <td><u>Boltwood Data</u></td>
     <td colspan=2><u>Weather Plot</u></td>
-    <td colspan=2><u>Atlas All Sky Image (Color)</u></td>
+    <td><u>Atlas All Sky Image (Color)</u></td>
 </tr>
 <tr>
     <td>
@@ -257,7 +228,7 @@
         </a><br>
         <a href="../static/Weather_VYSOS5.gif"><img width=400 src="../static/Weather_VYSOS5.gif"></a>
     </td>
-    <td colspan=2 style="vertical-align: middle;">
+    <td style="vertical-align: middle;">
         <table style="border:0px; border-style: none;">
             <tr style="border:0px; border-style: none;">
                 <td style="border:0px; border-style: none; vertical-align: middle;">E</td>
@@ -279,10 +250,10 @@
 <!-- ###################################### -->
 
 <tr>
-    <td colspan=5><u>Live Images</u></td>
+    <td colspan=4><u>Live Images</u></td>
 </tr>
 <tr>
-    <td colspan=5>
+    <td colspan=4>
         <object data=http://166.122.71.162:8080/html/live.htm width="1100" height="520">
         <embed   src=http://166.122.71.162:8080/html/live.htm width="1100" height="520"> </embed>
         Error: Embedded data could not be displayed. </object>
@@ -294,8 +265,8 @@
 <!-- ###################################### -->
 <tr>
     <td colspan=2>VYSOS-5 Status</td>
-    <td width="210px"></td>
-    <td colspan=2>VYSOS-20 Status</td>
+    <td></td>
+    <td>VYSOS-20 Status</td>
 </tr>
 <tr>
     <td colspan=2>
@@ -407,7 +378,7 @@
     </td>
     <td>
     </td>
-    <td colspan=2>
+    <td>
 
         <table style="border:0px; border-style:none;">
         <tr style="border:0px; border-style:none;">

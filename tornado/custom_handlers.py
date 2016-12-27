@@ -45,10 +45,27 @@ def get_nflats(telescope, date):
 ##-------------------------------------------------------------------------
 def free_space(path):
     statvfs = os.statvfs(path)
-    size_GB = statvfs.f_frsize * statvfs.f_blocks / 1024 / 1024 / 1024
-    avail_GB = statvfs.f_frsize * statvfs.f_bfree / 1024 / 1024 / 1024
-    pcnt_used = float(size_GB - avail_GB)/float(size_GB) * 100
-    return (size_GB, avail_GB, pcnt_used)
+    size = statvfs.f_frsize * statvfs.f_blocks * u.byte
+    avail = statvfs.f_frsize * statvfs.f_bfree * u.byte
+
+    if re.search('\/Volumes\/DataCopy', path):
+        print('Correcting for 4.97 TB disk capacity')
+        capacity = (4.97*u.TB).to(u.byte)
+        correction = size - capacity
+        size -= correction
+        avail -= correction
+    elif re.search('\/Volumes\/MLOData', path):
+        print('Correcting for 16 TB disk capacity')
+        capacity = (16.89*u.TB).to(u.byte)
+        correction = size - capacity
+        size -= correction
+        avail -= correction
+        if capacity > 16*u.TB:
+            correction2 = (capacity - 16*u.TB).to(u.byte)
+            size -= correction2
+    used = (size - avail)/size
+
+    return (size.to(u.GB).value, avail.to(u.GB).value, used.to(u.percent).value)
 
 
 ##-----------------------------------------------------------------------------
@@ -462,20 +479,17 @@ class Status(RequestHandler):
         ##---------------------------------------------------------------------
         paths = {'Drobo': os.path.join('/', 'Volumes', 'DataCopy'),\
                  'macOS': os.path.expanduser('~'),\
-                 'USB Drive B': os.path.join('/', 'Volumes', 'WD500B'),\
-                 'USB Drive C': os.path.join('/', 'Volumes', 'WD500_C'),\
-                 'Vega': os.path.join('/', 'Volumes', 'Data_V5'),\
-                 'Black': os.path.join('/', 'Volumes', 'Data_V20'),\
+                 'DroboPro': os.path.join('/', 'Volumes', 'MLOData'),\
+#                  'USB Drive B': os.path.join('/', 'Volumes', 'WD500B'),\
+#                  'USB Drive C': os.path.join('/', 'Volumes', 'WD500_C'),\
+#                  'Vega': os.path.join('/', 'Volumes', 'Data_V5'),\
+#                  'Black': os.path.join('/', 'Volumes', 'Data_V20'),\
                 }
 
         disks = {}
         for disk in paths.keys():
             if os.path.exists(paths[disk]):
                 size_GB, avail_GB, pcnt_used = free_space(paths[disk])
-                if disk == 'Drobo':
-                    size_GB -= 12226.56
-                    avail_GB -= 12226.56
-                    pcnt_used = float(size_GB - avail_GB)/float(size_GB) * 100
                 disks[disk] = [size_GB, avail_GB, pcnt_used]
 
         tlog.app_log.info('  Disk use data determined')
