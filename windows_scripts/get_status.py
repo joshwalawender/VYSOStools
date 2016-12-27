@@ -432,7 +432,7 @@ def get_status_and_log(telescope):
         LogConsoleHandler.setFormatter(LogFormat)
         logger.addHandler(LogConsoleHandler)
         ## Set up file output
-        LogFilePath = os.path.join('C:\\', 'Data_'+telescope, 'Logs', DateString)
+        LogFilePath = os.path.join('Z:\\', 'Logs', DateString)
         if not os.path.exists(LogFilePath):
             os.mkdir(LogFilePath)
         LogFile = os.path.join(LogFilePath, 'get_status_{}.log'.format(DateString))
