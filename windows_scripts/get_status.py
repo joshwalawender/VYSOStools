@@ -485,7 +485,7 @@ def get_status_and_log(telescope):
         while not updated:
             try:
                 id = status.insert(new_data)
-                logger.info('  Inserted datum with ID: {}'.format(id))
+                logger.info('  Inserted datum ID: {}'.format(id))
                 updated = True
             except:
                 logger.warning('  Failed to insert new document.  Will try again in 10 seconds.')
