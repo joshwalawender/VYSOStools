@@ -67,6 +67,9 @@ if __name__ == '__main__':
     LogFileHandler.setFormatter(LogFormat)
     logger.addHandler(LogFileHandler)
 
-    for folder in glob('/Volumes/MLOData/uncompressed/V5/Images/20*/*'):
+#     for folder in glob('/Volumes/MLOData/uncompressed/V5/Images/20*/*'):
+#         process_folder(folder, logger=logger)
+
+    for folder in glob('/Volumes/MLOData/uncompressed/V20/Images/20*/*'):
         process_folder(folder, logger=logger)
 
