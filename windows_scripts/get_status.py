@@ -383,11 +383,11 @@ def get_status_and_log(telescope):
     ##-------------------------------------------------------------------------
     ## Get Status Info
     ##-------------------------------------------------------------------------
-    if telescope == 'V5':
-        boltwood_file = os.path.join("Z:\\", "ClarityData.txt")
-    elif telescope == 'V20':
-        boltwood_file = r'\\192.168.1.122\ClarityII\ClarityData.txt'
-    boltwood = get_boltwood(boltwood_file, logger)
+#     if telescope == 'V5':
+#         boltwood_file = os.path.join("Z:\\", "ClarityData.txt")
+#     elif telescope == 'V20':
+#         boltwood_file = r'\\192.168.1.122\ClarityII\ClarityData.txt'
+#     boltwood = get_boltwood(boltwood_file, logger)
 
     telescope_info = get_telescope_info(logger)
 
@@ -412,7 +412,7 @@ def get_status_and_log(telescope):
         new_data.update({'UT date': DateString,\
                          'UT time': TimeString,\
                          'UT timestamp': now})
-        new_data.update(boltwood)
+#         new_data.update(boltwood)
         new_data.update(telescope_info)
         new_data.update(focuser_info)
         if telescope == 'V20':
