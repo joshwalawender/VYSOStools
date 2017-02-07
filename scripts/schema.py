@@ -51,10 +51,26 @@ class Image(me.Document):
     filename = me.StringField(max_length=128, required=True)
     compressed = me.BooleanField(required=True)
     analyzed = me.BooleanField(required=True)
-
+    
     SIDREversion = me.StringField(max_length=12)
     full_field_jpeg = me.ImageField(thumbnail_size=(128,128,True))
     cropped_jpeg = me.ImageField(thumbnail_size=(128,128,True))
     
-
+    FWHM_pix = me.DecimalField(min_value=0, precision=1)
+    ellipticity = me.DecimalField(min_value=0, precision=2)
+    
+    exptime = me.DecimalField(min_value=0, precision=1)
+    exposure_start = me.DateTimeField()
+    filter = me.StringField(max_length=15)
+    header_RA = me.DecimalField(min_value=0, max_value=360, precision=4)
+    header_DEC = me.DecimalField(min_value=-90, max_value=90, precision=4)
+    RA = me.DecimalField(min_value=0, max_value=360, precision=4)
+    DEC = me.DecimalField(min_value=-90, max_value=90, precision=4)
+    perr_arcmin = me.DecimalField(min_value=0, precision=2)
+    alt = me.DecimalField(min_value=0, max_value=90, precision=2)
+    az = me.DecimalField(min_value=0, max_value=360, precision=2)
+    airmass = me.DecimalField(min_value=1, precision=3)
+    moon_illumination = me.DecimalField(min_value=0, max_value=100, precision=1)
+    moon_separation = me.DecimalField(min_value=0, max_value=180, precision=1)
+    
     meta = {'indexes': ['telescope', 'date', 'filename']}
