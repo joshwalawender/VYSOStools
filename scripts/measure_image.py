@@ -26,8 +26,9 @@ import SIDRE
 
 
 import mongoengine as me
+
 class Image(me.Document):
-    date = me.DateTimeField(default=dt.now, required=True)
+    date = me.DateTimeField(default=datetime.datetime.now, required=True)
     telescope = me.StringField(max_length=3, required=True, choices=['V5', 'V20'])
     filename = me.StringField(max_length=128, required=True)
     compressed = me.BooleanField(required=True)
@@ -54,7 +55,8 @@ class Image(me.Document):
     moon_illumination = me.DecimalField(min_value=0, max_value=100, precision=1)
     moon_separation = me.DecimalField(min_value=0, max_value=180, precision=1)
     
-    meta = {'indexes': ['telescope', 'date', 'filename']}
+    meta = {'collection': 'images',
+            'indexes': ['telescope', 'date', 'filename']}
 
 
 ##-------------------------------------------------------------------------
