@@ -10,15 +10,16 @@ import logging
 import time
 import datetime
 import re
-# import yaml
 import numpy as np
 
 import win32com.client
 import pywintypes
 import urllib
 from xml.dom import minidom
-import pymongo
-from pymongo import MongoClient
+# import pymongo
+# from pymongo import MongoClient
+
+import mongoenegine as me
 
 def get_boltwood(ClarityDataFile, logger):
     logger.info('Reading Clarity file')
@@ -152,63 +153,50 @@ def get_boltwood(ClarityDataFile, logger):
 ##-------------------------------------------------------------------------
 ## Query ASCOM ACPHub for Telescope Position and State
 ##-------------------------------------------------------------------------
-def get_telescope_info(logger):
+def get_telescope_info(status, logger):
     logger.info('Getting ACP status')
     try:
         ACP = win32com.client.Dispatch("ACP.Telescope")
     except:
         logger.error('Could not connect to ACP ASCOM object.')
-        return {}
+        return
 
-    telescope_info = {}
     try:
-        telescope_info['ACP connected'] = ACP.Connected
-        logger.debug('  ACP Connected = {}'.format(telescope_info['ACP connected']))
-        if ACP.Connected:
-            telescope_info['ACP park status'] = ACP.AtPark
-            logger.info('  ACP At Park = {}'.format(telescope_info['ACP park status']))
-            telescope_info['ACP alt'] = float(ACP.Altitude)
-            logger.info('  ACP Alt = {:.2f}'.format(telescope_info['ACP alt']))
-            telescope_info['ACP az']  = float(ACP.Azimuth)
-            logger.info('  ACP Az = {:.2f}'.format(telescope_info['ACP az']))
-            telescope_info['ACP slewing status']  = ACP.Slewing
-            logger.info('  ACP Slewing = {}'.format(telescope_info['ACP slewing status']))
-            telescope_info['ACP tracking status'] = ACP.Tracking
-            logger.info('  ACP Tracking = {}'.format(telescope_info['ACP tracking status']))
+        status.connected = ACP.Connected
+        logger.debug('  ACP Connected = {}'.format(status.connected))
+        if status.connected:
+            status.park = ACP.AtPark
+            logger.info('  ACP At Park = {}'.format(status.park))
+            status.slewing = ACP.Slewing
+            logger.info('  ACP Slewing = {}'.format(status.slewing))
+            status.tracking = ACP.Tracking
+            logger.info('  ACP Tracking = {}'.format(status.tracking))
+            status.alt = float(ACP.Altitude)
+            logger.info('  ACP Alt = {:.2f}'.format(status.alt))
+            status.az = float(ACP.Azimuth)
+            logger.info('  ACP Az = {:.2f}'.format(status.az))
             try:
-                telescope_info['ACP target RA'] = ACP.TargetRightAscension
-                telescope_info['ACP target Dec'] = ACP.TargetDeclination
-                logger.info('  ACP target RA = {}'.format(telescope_info['ACP target RA']))
-                logger.info('  ACP target Dec = {}'.format(telescope_info['ACP target Dec']))
+                status.RA = ACP.TargetRightAscension
+                status.DEC = ACP.TargetDeclination
+                logger.info('  ACP target RA = {}'.format(status.RA))
+                logger.info('  ACP target Dec = {}'.format(status.DEC))
             except:
                 logger.info('  Could not get target info')
     except pywintypes.com_error as err:
         logger.warning('COM error:')
         logger.warning('  {}'.format(err.message))
-        telescope_info['ACP COM Error'] = '  {}'.format(err.message)
-#         time.sleep(2)
-#         ## Try Reconnecting to ACP
-#         logger.info('  Reconnecting ACP to Telescope')
-#         try:
-#             ACP.Connected = False
-#             time.sleep(2)
-#             ACP.Connected = True
-#         except:
-#             logger.warning('  Failed to reconnect')
-#         time.sleep(2)
-#         telescope_info['ACP connected'] = ACP.Connected
-#         logger.debug('  ACP Connected = {}'.format(telescope_info['ACP connected']))
+        status.ACPerr = '{}'.format(err.message)
     except:
-        telescope_info['ACP connected'] = False
+        status.connected = False
         logger.warning('Queries to ACP object failed')
 
-    return telescope_info
+    return status
 
 
 ##-------------------------------------------------------------------------
 ## Query ASCOM Focuser for Position, Temperature, Fan State
 ##-------------------------------------------------------------------------
-def get_focuser_info(telescope, logger):
+def get_focuser_info(logger):
     logger.info('Getting ASCOM focuser status')
     focuser_info = {}
     try:
@@ -348,14 +336,12 @@ def control_by_web(focuser_info, boltwood, logger):
 
 
 def get_status_and_log(telescope):
-
     ##-------------------------------------------------------------------------
     ## Create logger object
     ##-------------------------------------------------------------------------
     now = datetime.datetime.utcnow()
     DateString = now.strftime("%Y%m%dUT")
     TimeString = now.strftime("%H:%M:%S")
-
     logger = logging.getLogger('get_status_{}'.format(DateString))
     if len(logger.handlers) < 1:
         logger.setLevel(logging.DEBUG)
@@ -383,76 +369,24 @@ def get_status_and_log(telescope):
     ##-------------------------------------------------------------------------
     ## Get Status Info
     ##-------------------------------------------------------------------------
-#     if telescope == 'V5':
-#         boltwood_file = os.path.join("Z:\\", "ClarityData.txt")
-#     elif telescope == 'V20':
-#         boltwood_file = r'\\192.168.1.122\ClarityII\ClarityData.txt'
-#     boltwood = get_boltwood(boltwood_file, logger)
-
-    telescope_info = get_telescope_info(logger)
-
-    focuser_info = get_focuser_info(telescope, logger)
-
-    if telescope == 'V20':
-        CBW_info = control_by_web(focuser_info, boltwood, logger)
-
-    ##-------------------------------------------------------------------------
-    ## Write Environmental Log
-    ##-------------------------------------------------------------------------
-    logger.info('Writing results to mongo db at 192.168.1.101')
+    logger.info('Connecting to mongo db at 192.168.1.101')
     try:
-        client = MongoClient('192.168.1.101', 27017)
+        me.connect('vysos', host='192.168.1.101')
     except:
         logger.error('Could not connect to mongo db')
+        raise Error('Failed to connect to mongo')
     else:
-        status = client.vysos['{}.status'.format(telescope)]
-        logger.debug('  Getting {}.status collection'.format(telescope))
-
-        new_data = {'current': False}
-        new_data.update({'UT date': DateString,\
-                         'UT time': TimeString,\
-                         'UT timestamp': now})
-#         new_data.update(boltwood)
-        new_data.update(telescope_info)
-        new_data.update(focuser_info)
         if telescope == 'V20':
-            new_data.update(CBW_info)
+            status = V20status()
+        elif telescope == 'V5':
+            status = V5status()
 
-        updated = False
-        while not updated:
-            try:
-                id = status.insert(new_data)
-                logger.info('  Inserted datum ID: {}'.format(id))
-                updated = True
-            except:
-                logger.warning('  Failed to insert new document.  Will try again in 10 seconds.')
-                time.sleep(10)
-
-        ## Insert second copy with current flag
-        current_data = {'current': True}
-        current_data.update({'UT date': DateString,\
-                         'UT time': TimeString,\
-                         'UT timestamp': now})
-        current_data.update(boltwood)
-        current_data.update(telescope_info)
-        current_data.update(focuser_info)
-        if telescope == 'V20':
-            current_data.update(CBW_info)
-
-        current_updated = False
-        while not current_updated:
-            try:
-                result = status.replace_one( {'current': True}, current_data, upsert=True)
-                if result.matched_count > 1:
-                    logger.warning('Matched {} documents with current = True'.format(result.matched_count))
-                if result.acknowledged:
-                    logger.info('  Replaced the current document')
-                    current_updated = True
-            except:
-                logger.warning('  Failed to replace document.  Will try again in 10 seconds.')
-                time.sleep(10)
-
-    logger.info("Done")
+        status = get_telescope_info(status, logger)
+        status.save()
+#         get_focuser_info(status, logger)
+#         if telescope == 'V20':
+#             control_by_web(focuser_info, boltwood, logger)
+        logger.info("Done")
 
 
 if __name__ == '__main__':
