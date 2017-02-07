@@ -211,102 +211,39 @@ def get_telescope_info(logger):
 def get_focuser_info(telescope, logger):
     logger.info('Getting ASCOM focuser status')
     focuser_info = {}
-    if telescope == "V20":
-        try:
-            RCOST = win32com.client.Dispatch("RCOS_AE.Temperature")
-            RCOSF = win32com.client.Dispatch("RCOS_AE.Focuser")
-            logger.debug('  Connected to RCOS focuser')
-        except:
-            logger.error('Could not connect to RCOS ASCOM object.')
-            return {}
-
-        ## Get Average of 5 Temperature Readings
-        RCOS_Truss_Temps = []
-        RCOS_Primary_Temps = []
-        RCOS_Secondary_Temps = []
-        RCOS_Fan_Speeds = []
-        RCOS_Focus_Positions = []
-        logger.debug('  {:>7s}, {:>7s}, {:>7s}, {:>7s}, {:>5s}'.format('Truss', 'Pri', 'Sec', 'Fan', 'Foc'))
-        for i in range(0,5,1):
+    try:
+        FocusMax = win32com.client.Dispatch("FocusMax.Focuser")
+        if not FocusMax.Link:
             try:
-                new_Truss_Temp = RCOST.AmbientTemp
-                if new_Truss_Temp > 20 and new_Truss_Temp < 120:
-                    RCOS_Truss_Temps.append(new_Truss_Temp)
-                else:
-                    new_Truss_Temp = float('nan')
-
-                new_Pri_Temp = RCOST.PrimaryTemp
-                if new_Pri_Temp > 20 and new_Pri_Temp < 120:
-                    RCOS_Primary_Temps.append(new_Pri_Temp)
-                else:
-                    new_Pri_Temp = float('nan')
-
-                new_Sec_Temp = RCOST.SecondaryTemp
-                if new_Sec_Temp > 20 and new_Sec_Temp < 120:
-                    RCOS_Secondary_Temps.append(new_Sec_Temp)
-                else:
-                    new_Sec_Temp = float('nan')
-
-                new_Fan_Speed = RCOST.FanSpeed
-                RCOS_Fan_Speeds.append(new_Fan_Speed)
-
-                new_Focus_Pos = RCOSF.Position
-                RCOS_Focus_Positions.append(new_Focus_Pos)
-
-                logger.debug('  {:5.1f} F, {:5.1f} F, {:5.1f} F, {:5.0f} %, {:5d}'.format(new_Truss_Temp, new_Pri_Temp, new_Sec_Temp, new_Fan_Speed, new_Focus_Pos))
+                FocusMax.Link = True
             except:
-                pass
-            time.sleep(1)
-        focuser_info['RCOS temperature units'] = 'F'
-        if len(RCOS_Truss_Temps) >= 3:
-            focuser_info['RCOS temperature (truss)'] = float(np.median(RCOS_Truss_Temps))
-            logger.info('  RCOS temperature (truss) = {:.1f} {}'.format(focuser_info['RCOS temperature (truss)'], focuser_info['RCOS temperature units']))
-        if len(RCOS_Primary_Temps) >= 3:
-            focuser_info['RCOS temperature (primary)'] = float(np.median(RCOS_Primary_Temps))
-            logger.info('  RCOS temperature (primary) = {:.1f} {}'.format(focuser_info['RCOS temperature (primary)'], focuser_info['RCOS temperature units']))
-        if len(RCOS_Secondary_Temps) >= 3:
-            focuser_info['RCOS temperature (secondary)'] = float(np.median(RCOS_Secondary_Temps))
-            logger.info('  RCOS temperature (secondary) = {:.1f} {}'.format(focuser_info['RCOS temperature (secondary)'], focuser_info['RCOS temperature units']))
-        if len(RCOS_Fan_Speeds) >= 3:
-            focuser_info['RCOS fan speed'] = int(np.median(RCOS_Fan_Speeds))
-            logger.info('  RCOS fan speed = {:d} %'.format(focuser_info['RCOS fan speed']))
-        if len(RCOS_Focus_Positions) >= 3:
-            focuser_info['RCOS focuser position'] = int(np.median(RCOS_Focus_Positions))
-            logger.info('  RCOS focuser position = {:d}'.format(focuser_info['RCOS focuser position']))
-    elif telescope == "V5":
-        try:
-            FocusMax = win32com.client.Dispatch("FocusMax.Focuser")
-            if not FocusMax.Link:
-                try:
-                    FocusMax.Link = True
-                except:
-                    logger.error('Could not start FocusMax ASCOM link.')
-            logger.debug('  Connected to FocusMax')
-        except:
-            logger.error('Could not connect to FocusMax ASCOM object.')
+                logger.error('Could not start FocusMax ASCOM link.')
+        logger.debug('  Connected to FocusMax')
+    except:
+        logger.error('Could not connect to FocusMax ASCOM object.')
 
-        ## Get Average of 3 Temperature Readings
-        FocusMax_Temps = []
-        for i in range(0,3,1):
-            try:
-                newtemp = float(FocusMax.Temperature)*9./5. + 32.
-                logger.debug('  Queried FocusMax temperature = {:.1f}'.format(newtemp))
-                FocusMax_Temps.append(newtemp)
-            except:
-                pass
-        if len(FocusMax_Temps) > 0:
-            ## Filter out bad values
-            median_temp = np.median(FocusMax_Temps)
-            if (median_temp > -10) and (median_temp < 150):
-                focuser_info['FocusMax temperature (tube)'] = median_temp
-                focuser_info['FocusMax units'] = 'F'
-                logger.info('  FocusMax temperature = {:.1f} {}'.format(median_temp, focuser_info['FocusMax units']))
-        ## Get Position
+    ## Get Average of 3 Temperature Readings
+    FocusMax_Temps = []
+    for i in range(0,3,1):
         try:
-            focuser_info['FocusMax focuser position'] = int(FocusMax.Position)
-            logger.info('  FocusMax position = {:d}'.format(focuser_info['FocusMax focuser position']))
+            newtemp = float(FocusMax.Temperature)*9./5. + 32.
+            logger.debug('  Queried FocusMax temperature = {:.1f}'.format(newtemp))
+            FocusMax_Temps.append(newtemp)
         except:
             pass
+    if len(FocusMax_Temps) > 0:
+        ## Filter out bad values
+        median_temp = np.median(FocusMax_Temps)
+        if (median_temp > -10) and (median_temp < 150):
+            focuser_info['FocusMax temperature (tube)'] = median_temp
+            focuser_info['FocusMax units'] = 'F'
+            logger.info('  FocusMax temperature = {:.1f} {}'.format(median_temp, focuser_info['FocusMax units']))
+    ## Get Position
+    try:
+        focuser_info['FocusMax focuser position'] = int(FocusMax.Position)
+        logger.info('  FocusMax position = {:d}'.format(focuser_info['FocusMax focuser position']))
+    except:
+        pass
 
     return focuser_info
 
