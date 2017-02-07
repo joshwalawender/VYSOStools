@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """
-This is the basic tool for analyzing an image using the IQMon toolkit.  This
+This is the basic tool for analyzing an image using the SIDRE toolkit.  This
 script has been customized to the VYSOS telescopes.
 """
 
@@ -11,240 +11,140 @@ import sys
 import os
 from argparse import ArgumentParser
 import re
-import datetime
-import math
+from datetime import datetime as dt
 import time
 
+import numpy as np
 import astropy.units as u
+from astropy import coordinates as c
 import astropy.io.fits as fits
+from astropy.table import Table, Column, vstack
 
-import IQMon
-from IQMon.image import Image
-from IQMon.telescope import Telescope
+import SIDRE
+
+# from .schema import Image
 
 
-##############################################################
-## Obtain Master Dark Frame
-## - look for raw dark frames from previous night
-## - if not found, look back in time for MaxNights
-## - once a qualifying set of darks is found (same telescope, same exptime)
-## - check that CCD temp is within tolerance for darks and image
-## - if not same temp, then continue going back in time
-## - once a set of dark frames which satify the criterion is found, combine all via a median combine
-## - write that combined dark to a file named for the DataNight (not the night it was taken)
-##############################################################
-def ListDarks(image):
-    nDarksMin = 5  ## Minimum number of dark files to return for combination
-    SearchNDays = 10 ## Number of days back in time to look for dark frames
-    image.logger.info("Looking for master dark frame or darks to combine.")
-    ## Extract night data was taken from path
-    DataPath = os.path.split(image.raw_file)[0]
-    BaseDirectory, DataNightString = os.path.split(DataPath)
-    try:
-        DataNight = datetime.datetime.strptime(DataNightString, "%Y%m%dUT")
-    except:
-        return []
-
-    OneDay = datetime.timedelta(days=1)
-    NewDate = DataNight
-    NewDateString = datetime.datetime.strftime(NewDate, "%Y%m%dUT")
-    DateLimit = DataNight - datetime.timedelta(days=SearchNDays)
+import mongoengine as me
+class Image(me.Document):
+    date = me.DateTimeField(default=dt.now, required=True)
+    telescope = me.StringField(max_length=3, required=True, choices=['V5', 'V20'])
+    filename = me.StringField(max_length=128, required=True)
+    compressed = me.BooleanField(required=True)
+    analyzed = me.BooleanField(required=True)
     
-    ## Check to see if MasterDark Exists for this Observation Date
-    MasterDarkFilename = 'MasterDark_{}_{}_{}.fits'.format(\
-                         image.tel.name,\
-                         DataNightString,\
-                         int(math.floor(image.exptime.to(u.s).value)),\
-                         )
-    MasterDarkFile  = os.path.join(image.tel.temp_file_path, MasterDarkFilename)    
-    ## Is that Master Dark File does not exist, see if the raw files exit to build one.
-    if os.path.exists(MasterDarkFile):
-        image.logger.info("  Found Master Dark: %s" % MasterDarkFilename)
-        return [MasterDarkFile]
-    else:
-        image.logger.info("  Could Not Find Master Dark.  Looking for raw frames.")
-        Darks = []
-        while NewDate > DateLimit:
-            ## Look for this directory
-            SearchPath = os.path.join(BaseDirectory, NewDateString, "Calibration")
-            if os.path.exists(SearchPath):
-                ## Now look for darks in that directory
-                image.logger.debug("  Looking for darks in {0}".format(SearchPath))
-                Files = os.listdir(SearchPath)
-                for File in Files:
-                    IsDark = re.match("Dark\-([0-9]{3})\-([0-9]{8})at([0-9]{6})\.fi?ts", File)
-                    if IsDark:
-                        DarkExp = float(IsDark.group(1))
-                        if DarkExp == image.exptime.value:
-                            Darks.append(os.path.join(SearchPath, File))
-                if len(Darks) >= nDarksMin:
-                    ## Once we have found enough dark files, return the list of dark files
-                    image.logger.info("  Found %d dark files in %s" % (len(Darks), SearchPath))
-                    for Dark in Darks:
-                        image.logger.debug("  Found Dark File: {0}".format(Dark))
-                    return Darks
-            NewDate = NewDate - OneDay
-            NewDateString = datetime.datetime.strftime(NewDate, "%Y%m%dUT")
-        if len(Darks) == 0:
-            image.logger.warning("  No darks found to combine.")
+    SIDREversion = me.StringField(max_length=12)
+    full_field_jpeg = me.ImageField(thumbnail_size=(128,128,True))
+    cropped_jpeg = me.ImageField(thumbnail_size=(128,128,True))
+    
+    FWHM_pix = me.DecimalField(min_value=0, precision=1)
+    ellipticity = me.DecimalField(min_value=0, precision=2)
+    
+    exptime = me.DecimalField(min_value=0, precision=1)
+    exposure_start = me.DateTimeField()
+    filter = me.StringField(max_length=15)
+    header_RA = me.DecimalField(min_value=0, max_value=360, precision=4)
+    header_DEC = me.DecimalField(min_value=-90, max_value=90, precision=4)
+    RA = me.DecimalField(min_value=0, max_value=360, precision=4)
+    DEC = me.DecimalField(min_value=-90, max_value=90, precision=4)
+    perr_arcmin = me.DecimalField(min_value=0, precision=2)
+    alt = me.DecimalField(min_value=0, max_value=90, precision=2)
+    az = me.DecimalField(min_value=0, max_value=360, precision=2)
+    airmass = me.DecimalField(min_value=1, precision=3)
+    moon_illumination = me.DecimalField(min_value=0, max_value=100, precision=1)
+    moon_separation = me.DecimalField(min_value=0, max_value=180, precision=1)
+    
+    meta = {'indexes': ['telescope', 'date', 'filename']}
 
 
 ##-------------------------------------------------------------------------
 ## Measure Image
 ##-------------------------------------------------------------------------
-def MeasureImage(filename,\
-                 telescope=None,\
-                 clobber_logs=False,\
+def measure_image(file,\
                  verbose=False,\
                  nographics=False,\
-                 analyze_image=True,\
                  record=True,\
-                 zero_point=False,\
                  ):
 
-    ##-------------------------------------------------------------------------
-    ## Deconstruct input filename in to path, filename and extension
-    ##-------------------------------------------------------------------------
-    FitsFile = os.path.abspath(filename)
-    if not os.path.exists(FitsFile):
-        raise IOError("Unable to find input file: %s" % FitsFile)
-    FitsFileDirectory, FitsFilename = os.path.split(FitsFile)
-    DataNightString = os.path.split(FitsFileDirectory)[1]
-    FitsBasename, FitsExt = os.path.splitext(FitsFilename)
 
+    im = SIDRE.ScienceImage(file, verbose=False)
 
-    ##-------------------------------------------------------------------------
-    ## Determine which VYSOS Telescope Image is from
-    ##-------------------------------------------------------------------------
-    if telescope == 'V5' or telescope == 'V20':
-        pass
+    if not SIDRE.utils.get_master(im.date, type='Bias'):
+        SIDRE.calibration.make_master_bias(im.date)
+    im.bias_correct()
+    im.gain_correct()
+    im.create_deviation()
+    im.make_source_mask()
+    im.subtract_background()
+    wcs = im.solve_astrometry(downsample=2, SIPorder=4)
+    perr = im.calculate_pointing_error()
+
+    ## Load (local) photometric reference catalog
+    field_name = im.ccd.header.get('OBJECT', None)
+    vprc_path = '/Users/jwalawender/Dropbox/SIDREtest/'
+    vprc_file = os.path.join(vprc_path, 'VPRC_{}.fit'.format(field_name))
+    if os.path.exists(vprc_file):
+        im.log.info('Reading VPRC catalog file')
+        cathdul = fits.open(vprc_file, 'readonly')
+        vprc = Table(cathdul[1].data)
+        vprc.add_column(Column(vprc['raMean'], name='RA'))
+        vprc.add_column(Column(vprc['decMean'], name='DEC'))
+        vprc = vprc[vprc['rMeanPSFMag'] != -999.] # Remove entries with invalid r magnitude
+        vprc = vprc[vprc['rMeanPSFMagErr'] != -999.] # Remove entries with invalid r magnitude error
+        vprc = vprc[vprc['rMeanPSFMagErr'] < 0.1] # Remove entries with r magnitude error > 0.1
+        vprc = vprc[vprc['rMeanPSFMag'] < 16.0] # Remove entries r magnitude > 16
+        vprc = vprc[vprc['nDetections'] >= 6] # Remove entried with fewer than 6 detections
+        vprc.keep_columns(['objID', 'RA', 'DEC', 'rMeanPSFMag', 'rMeanPSFMagErr', 'nDetections'])
+        coords = c.SkyCoord(vprc['RA'], vprc['DEC'], unit=u.deg)
+
+        im.extract()
+        im.associate(vprc, magkey='rMeanPSFMag')
+        im.calculate_zero_point(plot='ZP_PanSTARRS.png')
+
+    if not nographics:
+        jpegfilename='test_PS.jpg'
+        im.render_jpeg(jpegfilename=jpegfilename, overplot_catalog=vprc,
+                       overplot_assoc=True, overplot_pointing=True)
+
+    tel = 'V5'
+    filter = 'PSr'
+    if im.header_altaz:
+        alt = im.header_altaz.alt.deg
+        az = im.header_altaz.az.deg
+        airmass = 1./np.cos( (90.-im.header_altaz.alt.deg)*np.pi/180. )
     else:
-        V5match = re.match("V5.*\.fi?ts", FitsFilename)
-        V20match = re.match("V20.*\.fi?ts", FitsFilename)
-        NoTelMatch = re.match(".*\d{8}at\d{6}\.fts", FitsFilename)
-        if V5match and not V20match:
-            telescope = "V5"
-        elif V20match and not V5match:
-            telescope = "V20"
-        else:
-            with fits.open(FitsFile) as hdulist:
-                if hdulist[0].header['OBSERVAT']:
-                    if re.search('VYSOS-?20', hdulist[0].header['OBSERVAT']):
-                        telescope = "V20"
-                    elif re.search('VYSOS-?5', hdulist[0].header['OBSERVAT']):
-                        telescope = "V5"
-                    else:
-                        print("Can not determine valid telescope from arguments or filename or header.")
-                        sys.exit(0)
-                else:
-                    print("Can not determine valid telescope from arguments or filename or header.")
-                    sys.exit(0)
+        alt = None
+        az = None
+        airmass = None
+    try:
+        exposure_start = dt.strptime(im.ccd.header.get('DATE-OBS'),
+                                     '%Y-%m-%dT%H:%M:%S')
+    except:
+        exposure_start = None
+    result = Image(filename=im.file,
+                   date=im.date,
+                   telescope=tel,
+                   compressed=(os.path.splitext(im.file) == '.fz'),
+                   analyzed=True,
+                   SIDREversion=SIDRE.version.version,
+                   exptime=float(im.ccd.header.get('EXPTIME', 'nan')),
+                   exposure_start=exposure_start,
+                   filter=filter,
+                   header_RA=im.header_pointing.ra.deg,
+                   header_DEC=im.header_pointing.dec.deg,
+                   RA=im.wcs_pointing.ra.deg,
+                   DEC=im.wcs_pointing.dec.deg,
+                   perr_arcmin=perr.value,
+                   alt=alt,
+                   az=az,
+                   airmass=airmass,
+#                    moon_illumination
+#                    moon_separation
+#                    FWHM_pix
+#                    ellipticity
+#                    full_field_jpeg=open(jpegfilename),
+                   )
 
-
-    ##-------------------------------------------------------------------------
-    ## Create Telescope Object
-    ##-------------------------------------------------------------------------
-    config_file = os.path.join(os.path.expanduser('~'), '.{}.yaml'.format(telescope))
-    tel = Telescope(config_file)
-
-    ##-------------------------------------------------------------------------
-    ## Perform Actual Image Analysis
-    ##-------------------------------------------------------------------------
-    with Image(FitsFile, tel) as image:
-        image.make_logger(verbose=verbose, clobber=clobber_logs)
-#         print('Logging to {}'.format(image.logfile))
-        image.read_image(timeout=60)
-        if telescope == 'V5':
-            image.edit_header('FILTER', 'PSr')
-        with fits.open(image.working_file, ignore_missing_end=True, mode='update') as hdulist:
-            if ('RADESYSa' not in hdulist[0].header.keys()) and ('RADECSYS' in hdulist[0].header.keys()):
-                hdulist[0].header['RADESYSa'] = hdulist[0].header['RADECSYS']
-                hdulist[0].header.remove('RADECSYS')
-                hdulist.flush()
-        image.read_header()
-        if analyze_image:
-            darks = ListDarks(image)
-            if darks and len(darks) > 0:
-                image.dark_subtract(darks)
-
-            if image.tel.ROI:
-                image.crop()
-            image.run_SExtractor()
-            image.determine_FWHM()
-
-            is_blank = (image.n_stars_SExtracted < 100)
-            if is_blank:
-                image.logger.warning('Only {} stars found.  Image may be blank.'.format(image.n_stars_SExtracted))
-
-            if not image.image_WCS and not is_blank:
-                image.solve_astrometry()
-                image.run_SExtractor()
-            image.determine_pointing_error()
-
-
-            if zero_point and not is_blank:
-                image.run_SCAMP()
-                if image.SCAMP_successful:
-                    image.run_SWarp()
-
-                    if telescope == 'V20':
-                        image.get_catalog()
-#                         local_UCAC = os.path.join(os.path.expanduser('~'), 'UCAC4')
-#                         image.get_local_UCAC4(local_UCAC_command=os.path.join(local_UCAC, 'access', 'u4test'),\
-#                                               local_UCAC_data=os.path.join(local_UCAC, 'u4b'))
-                    if telescope == 'V5':
-                        image.get_catalog()
-#                         local_UCAC = os.path.join(os.path.expanduser('~'), 'UCAC4')
-#                         image.get_local_UCAC4(local_UCAC_command=os.path.join(local_UCAC, 'access', 'u4test'),\
-#                                               local_UCAC_data=os.path.join(local_UCAC, 'u4b'))
-
-                    image.run_SExtractor(assoc=True)
-#                     image.determine_FWHM()
-                    image.measure_zero_point(plot=True)
-                    mark_catalog = True
-                else:
-                    image.logger.info('  SCAMP failed.  Skipping photometric calculations.')
-
-            if not nographics and image.FWHM:
-                try:
-                    image.make_PSF_plot()
-                except:
-                    image.logger.warning('Failed to make PSF plot')
-
-        if record and not nographics:
-            if tel.name == 'VYSOS-5':
-                p1, p2 = (1.50, 0.50)
-            if tel.name == 'VYSOS-20':
-                p1, p2 = (3.0, 0.50)
-            small_JPEG = image.raw_file_basename+"_fullframe.jpg"
-            image.make_JPEG(small_JPEG, binning=2,\
-                            p1=p1, p2=p2,\
-                            make_hist=False,\
-                            mark_pointing=True,\
-                            mark_detected_stars=True,\
-                            mark_catalog_stars=True,\
-                            mark_saturated=False,\
-                            quality=70,\
-                            )
-            cropped_JPEG = image.raw_file_basename+"_crop.jpg"
-            image.make_JPEG(cropped_JPEG,\
-                            p1=p1, p2=p2,\
-                            make_hist=False,\
-                            mark_pointing=True,\
-                            mark_detected_stars=True,\
-                            mark_catalog_stars=False,\
-                            mark_saturated=False,\
-                            crop=(int(image.nXPix/2)-800, int(image.nYPix/2)-800, int(image.nXPix/2)+800, int(image.nYPix/2)+800),\
-                            quality=40,\
-                            )
-
-        image.clean_up()
-        image.calculate_process_time()
-
-        if record:
-            image.add_mongo_entry()
-
-        image.logger.info('Done.')
 
 
 def main():
@@ -260,29 +160,15 @@ def main():
     parser.add_argument("--no-graphics",
         action="store_true", dest="nographics",
         default=False, help="Turn off generation of graphics")
-    parser.add_argument("-z", "--zp",
-        action="store_true", dest="zero_point",
-        default=False, help="Calculate zero point")
-    parser.add_argument("-n", "--norecord",
-        action="store_true", dest="no_record",
-        default=False, help="Do not record results")
     ## add arguments
     parser.add_argument("filename",
         type=str,
         help="File Name of Input Image File")
-    parser.add_argument("-t", dest="telescope",
-        required=False, type=str,
-        help="Telescope which took the data ('V5' or 'V20')")
     args = parser.parse_args()
 
-    record = not args.no_record
-
-    MeasureImage(args.filename,\
-                 telescope=args.telescope,\
-                 nographics=args.nographics,\
-                 zero_point=args.zero_point,\
-                 record=record,\
-                 verbose=args.verbose)
+    measure_image(args.filename,\
+                  nographics=args.nographics,\
+                  verbose=args.verbose)
 
 
 if __name__ == '__main__':
