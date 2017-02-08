@@ -23,7 +23,7 @@ import mongoengine as me
 
 class telstatus(me.Document):
     telescope = me.StringField(max_length=3, required=True, choices=['V5', 'V20'])
-    date = me.DateTimeField(default=datetime.datetime.now, required=True)
+    date = me.DateTimeField(default=datetime.datetime.utcnow(), required=True)
     current = me.BooleanField(default=True, required=True)
     ## ACP Status
     connected = me.BooleanField()
