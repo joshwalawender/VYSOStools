@@ -22,18 +22,15 @@ from astropy.table import Table, Column, vstack
 
 import SIDRE
 
-# from .schema import Image
-
-
 import mongoengine as me
 
 class Image(me.Document):
-    date = me.DateTimeField(default=datetime.datetime.now, required=True)
-    telescope = me.StringField(max_length=3, required=True, choices=['V5', 'V20'])
     filename = me.StringField(max_length=128, required=True)
-    compressed = me.BooleanField(required=True)
-    analyzed = me.BooleanField(required=True)
-    
+    date = me.DateTimeField(default=dt.now(), required=True)
+    telescope = me.StringField(max_length=3, choices=['V5', 'V20'])
+    compressed = me.BooleanField()
+
+    analyzed = me.BooleanField()
     SIDREversion = me.StringField(max_length=12)
     full_field_jpeg = me.ImageField(thumbnail_size=(128,128,True))
     cropped_jpeg = me.ImageField(thumbnail_size=(128,128,True))
@@ -68,8 +65,35 @@ def measure_image(file,\
                  record=True,\
                  ):
 
+    ## Try to determine which telescope
+    image_info = Image(filename=os.path.basename(file))
+    try:
+        image_info.telescope = re.match('(V[25]0?)_.+', image_info.filename).group(1)
+    except:
+        pass
+    image_info.compressed = (os.path.splitext(image_info.filename)[1] == '.fz')
 
     im = SIDRE.ScienceImage(file, verbose=False)
+    # Exposure Time
+    try:
+        image_info.exptime = float(im.ccd.header.get('EXPTIME'))
+    except:
+        pass
+    # Exposure Start Time
+    try:
+        image_info.exposure_start = dt.strptime(im.ccd.header.get('DATE-OBS'), 
+                                            '%Y-%m-%dT%H:%M:%S')
+    except:
+        pass
+    # Filter
+    if tel == 'V5':
+        image_info.filter = 'PSr'
+    else:
+        try:
+            image_info.filter = float(im.ccd.header.get('EXPTIME'))
+        except:
+            pass
+
 
     if not SIDRE.utils.get_master(im.date, type='Bias'):
         SIDRE.calibration.make_master_bias(im.date)
@@ -80,6 +104,19 @@ def measure_image(file,\
     im.subtract_background()
     wcs = im.solve_astrometry(downsample=2, SIPorder=4)
     perr = im.calculate_pointing_error()
+    try:
+        image_info.perr_arcmin=perr.value
+        image_info.header_RA=im.header_pointing.ra.deg
+        image_info.header_DEC=im.header_pointing.dec.deg
+        image_info.RA=im.wcs_pointing.ra.deg
+        image_info.DEC=im.wcs_pointing.dec.deg
+        image_info.alt = im.header_altaz.alt.deg
+        image_info.az = im.header_altaz.az.deg
+        image_info.airmass = 1./np.cos( (90.-im.header_altaz.alt.deg)*np.pi/180. )
+    except:
+        pass
+
+
 
     ## Load (local) photometric reference catalog
     field_name = im.ccd.header.get('OBJECT', None)
@@ -108,44 +145,9 @@ def measure_image(file,\
         im.render_jpeg(jpegfilename=jpegfilename, overplot_catalog=vprc,
                        overplot_assoc=True, overplot_pointing=True)
 
-    tel = 'V5'
-    filter = 'PSr'
-    if im.header_altaz:
-        alt = im.header_altaz.alt.deg
-        az = im.header_altaz.az.deg
-        airmass = 1./np.cos( (90.-im.header_altaz.alt.deg)*np.pi/180. )
-    else:
-        alt = None
-        az = None
-        airmass = None
-    try:
-        exposure_start = dt.strptime(im.ccd.header.get('DATE-OBS'),
-                                     '%Y-%m-%dT%H:%M:%S')
-    except:
-        exposure_start = None
-    result = Image(filename=im.file,
-                   date=im.date,
-                   telescope=tel,
-                   compressed=(os.path.splitext(im.file) == '.fz'),
-                   analyzed=True,
-                   SIDREversion=SIDRE.version.version,
-                   exptime=float(im.ccd.header.get('EXPTIME', 'nan')),
-                   exposure_start=exposure_start,
-                   filter=filter,
-                   header_RA=im.header_pointing.ra.deg,
-                   header_DEC=im.header_pointing.dec.deg,
-                   RA=im.wcs_pointing.ra.deg,
-                   DEC=im.wcs_pointing.dec.deg,
-                   perr_arcmin=perr.value,
-                   alt=alt,
-                   az=az,
-                   airmass=airmass,
-#                    moon_illumination
-#                    moon_separation
-#                    FWHM_pix
-#                    ellipticity
-#                    full_field_jpeg=open(jpegfilename),
-                   )
+    image_info.analyzed=True
+    image_info.SIDREversion=SIDRE.version.version
+    
 
 
 
