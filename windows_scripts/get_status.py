@@ -30,7 +30,7 @@ class telstatus(me.Document):
     park = me.BooleanField()
     slewing = me.BooleanField()
     tracking = me.BooleanField()
-    alt = me.DecimalField(min_value=0, max_value=90, precision=4)
+    alt = me.DecimalField(min_value=-90, max_value=90, precision=4)
     az = me.DecimalField(min_value=0, max_value=360, precision=4)
     RA = me.DecimalField(min_value=0, max_value=360, precision=4)
     DEC = me.DecimalField(min_value=-90, max_value=90, precision=4)
