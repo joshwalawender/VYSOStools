@@ -286,34 +286,31 @@ def get_status_and_log(telescope):
 
 
 if __name__ == '__main__':
-    foo = telstatus()
-    print(foo)
+    import win32com.client
+    import pywintypes
+    import urllib
+    from xml.dom import minidom
 
-#     import win32com.client
-#     import pywintypes
-#     import urllib
-#     from xml.dom import minidom
-# 
-#     ##-------------------------------------------------------------------------
-#     ## Parse Command Line Arguments
-#     ##-------------------------------------------------------------------------
-#     ## create a parser object for understanding command-line arguments
-#     parser = argparse.ArgumentParser(
-#              description="Program description.")
-#     ## add flags
-#     parser.add_argument("-v", "--verbose",
-#         action="store_true", dest="verbose",
-#         default=False, help="Be verbose! (default = False)")
-#     ## add arguments
-#     parser.add_argument("-t",
-#         type=str, dest="telescope",
-#         choices=['V5', 'V20'], required=True,
-#         help="The telescope system we are querying.")
-#     args = parser.parse_args()
-# 
-#     telescope = args.telescope
-# 
-#     while True:
-#         get_status_and_log(telescope)
-#         logging.shutdown()
-#         time.sleep(10)
+    ##-------------------------------------------------------------------------
+    ## Parse Command Line Arguments
+    ##-------------------------------------------------------------------------
+    ## create a parser object for understanding command-line arguments
+    parser = argparse.ArgumentParser(
+             description="Program description.")
+    ## add flags
+    parser.add_argument("-v", "--verbose",
+        action="store_true", dest="verbose",
+        default=False, help="Be verbose! (default = False)")
+    ## add arguments
+    parser.add_argument("-t",
+        type=str, dest="telescope",
+        choices=['V5', 'V20'], required=True,
+        help="The telescope system we are querying.")
+    args = parser.parse_args()
+
+    telescope = args.telescope
+
+    while True:
+        get_status_and_log(telescope)
+        logging.shutdown()
+        time.sleep(10)
