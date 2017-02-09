@@ -292,7 +292,7 @@ def get_status_and_log(telescope):
         logger.error('Could not connect to mongo db')
         raise Error('Failed to connect to mongo')
     else:
-        status = telstatus(telescope=telescope)
+        status = telstatus(telescope=telescope, date=datetime.datetime.utcnow())
         status = get_telescope_info(status, logger)
         status = get_focuser_info(status, logger)
 #         if telescope == 'V20':
