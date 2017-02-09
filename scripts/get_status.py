@@ -47,7 +47,7 @@ class telstatus(me.Document):
             'indexes': ['telescope', 'current', 'date']}
 
     def __str__(self):
-        output = 'MongoEngine Document at: {}\n'.format(self.date.isoformat())
+        output = 'MongoEngine Document at: {}\n'.format(self.date.strftime('%Y%m%d %H:%M:%S'))
         if self.telescope: output += '  Telescope: {}\n'.format(self.telescope)
         if self.current: output += '  Current: {}\n'.format(self.current)
         if self.connected: output += '  connected: {}\n'.format(self.connected)
