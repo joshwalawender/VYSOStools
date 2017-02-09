@@ -59,7 +59,7 @@ class telstatus(me.Document):
         if self.RA: output += '  RA: {:.4f}\n'.format(self.RA)
         if self.DEC: output += '  DEC: {:.4f}\n'.format(self.DEC)
         if self.ACPerr: output += '  ACPerr: {}\n'.format(self.ACPerr)
-        if self.focuser_temperature: output += '  focuser_temperature: {}\n'.format(self.focuser_temperature)
+        if self.focuser_temperature: output += '  focuser_temperature: {:.1f}\n'.format(self.focuser_temperature)
         if self.focuser_position: output += '  focuser_position: {}\n'.format(self.focuser_position)
         return output
 
