@@ -47,7 +47,7 @@ class telstatus(me.Document):
             'indexes': ['telescope', 'current', 'date']}
 
     def __str__(self):
-        output = 'MongoEngine Document for: {}\n'.format(self.date)
+        output = 'MongoEngine Document at: {}\n'.format(self.date.isoformat())
         if self.telescope: output += '  Telescope: {}\n'.format(self.telescope)
         if self.current: output += '  Current: {}\n'.format(self.current)
         if self.connected: output += '  connected: {}\n'.format(self.connected)
@@ -266,7 +266,8 @@ def get_status_and_log(telescope):
             LogConsoleHandler.setLevel(logging.DEBUG)
         else:
             LogConsoleHandler.setLevel(logging.INFO)
-        LogFormat = logging.Formatter('%(asctime)23s %(levelname)8s: %(message)s')
+        LogFormat = logging.Formatter('%(asctime)23s %(levelname)8s: %(message)s',
+                                      datefmt='%Y%m%d %H:%M:%S')
         LogConsoleHandler.setFormatter(LogFormat)
         logger.addHandler(LogConsoleHandler)
         ## Set up file output
@@ -334,4 +335,4 @@ if __name__ == '__main__':
     while True:
         get_status_and_log(telescope)
         logging.shutdown()
-        time.sleep(10)
+        time.sleep(20)
