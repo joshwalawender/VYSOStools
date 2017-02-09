@@ -46,6 +46,25 @@ class telstatus(me.Document):
     meta = {'collection': 'telstatus',
             'indexes': ['telescope', 'current', 'date']}
 
+    def __str__(self):
+        output = 'MongoEngine Document for: {}\n'.format(self.date)
+        if self.telescope: output += '  Telescope: {}\n'.format(self.telescope)
+        if self.current: output += '  Current: {}\n'.format(self.current)
+        if self.connected: output += '  connected: {}\n'.format(self.connected)
+        if self.park: output += '  park: {}\n'.format(self.park)
+        if self.slewing: output += '  slewing: {}\n'.format(self.slewing)
+        if self.tracking: output += '  tracking: {}\n'.format(self.tracking)
+        if self.alt: output += '  Altitude: {:.4f}\n'.format(self.alt)
+        if self.az: output += '  Azimuth: {:.4f}\n'.format(self.az)
+        if self.RA: output += '  RA: {:.4f}\n'.format(self.RA)
+        if self.DEC: output += '  DEC: {:.4f}\n'.format(self.DEC)
+        if self.ACPerr: output += '  ACPerr: {}\n'.format(self.ACPerr)
+        if self.focuser_temperature: output += '  focuser_temperature: {}\n'.format(self.focuser_temperature)
+        if self.focuser_position: output += '  focuser_position: {}\n'.format(self.focuser_position)
+        return output
+
+    def __repr__(self):
+        return self.__str__()
 
 
 ##-------------------------------------------------------------------------
@@ -281,6 +300,8 @@ def get_status_and_log(telescope):
         assert len(telstatus.objects(__raw__={'current': True, 'telescope': telescope})) <= 1
         if len(telstatus.objects(__raw__={'current': True, 'telescope': telescope})) == 1:
             telstatus.objects(__raw__={'current': True, 'telescope': telescope}).update_one(set__current=False)
+        logger.info('Saving document:')
+        logger.info(status)
         status.save()
         logger.info("Done")
 
