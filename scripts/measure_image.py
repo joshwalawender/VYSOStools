@@ -54,6 +54,32 @@ class Image(me.Document):
     meta = {'collection': 'images',
             'indexes': ['telescope', 'date', 'filename']}
 
+    def __str__(self):
+        output = 'MongoEngine Document for: {}\n'.format(self.filename)
+        output += '  Analysis Date: {}\n'.format(self.analysis_date.isoformat())
+        if self.telescope: output += '  Telescope: {}\n'.format(self.telescope)
+        if self.target: output += '  Target Field: {}\n'.format(self.target)
+        if self.date: output += '  Image Date: {}\n'.format(self.date.isoformat())
+        if self.exptime: output += '  Exposure Time: {:.1f}\n'.format(self.exptime)
+        if self.filter: output += '  Filter: {}\n'.format(self.filter)
+        if self.header_RA: output += '  Header RA: {:.4f}\n'.format(self.header_RA)
+        if self.header_DEC: output += '  Header Dec: {:.4f}\n'.format(self.header_DEC)
+        if self.alt: output += '  Altitude: {:.4f}\n'.format(self.alt)
+        if self.az: output += '  Azimuth: {:.4f}\n'.format(self.az)
+        if self.airmass: output += '  Airmass: {:.3f}\n'.format(self.airmass)
+        if self.moon_illumination: output += '  moon_illumination: {:.2f}\n'.format(self.moon_illumination)
+        if self.moon_separation: output += '  moon_separation: {:.0f}\n'.format(self.moon_separation)
+        if self.SIDREversion: output += '  SIDREversion: {}\n'.format(self.SIDREversion)
+        if self.FWHM_pix: output += '  FWHM_pix: {:.1f}\n'.format(self.FWHM_pix)
+        if self.ellipticity: output += '  ellipticity: {:.2f}\n'.format(self.ellipticity)
+        if self.RA: output += '  WCS RA: {:.4f}\n'.format(self.RA)
+        if self.DEC: output += '  WCS DEC: {:.4f}\n'.format(self.DEC)
+        if self.perr_arcmin: output += '  Pointing Error: {:.1f} arcmin\n'.format(self.perr_arcmin)
+        return output
+
+    def __repr__(self):
+        return self.__str__()
+
 
 ##-------------------------------------------------------------------------
 ## Measure Image
@@ -95,6 +121,7 @@ def measure_image(file,\
         except:
             pass
 
+    print(image_info)
 
     if not SIDRE.utils.get_master(im.date, type='Bias'):
         SIDRE.calibration.make_master_bias(im.date)
@@ -106,7 +133,7 @@ def measure_image(file,\
     wcs = im.solve_astrometry(downsample=2, SIPorder=4)
     perr = im.calculate_pointing_error()
     try:
-        image_info.perr_arcmin=perr.value
+        image_info.perr_arcmin=perr.to(u.arcmin).value
         image_info.header_RA=im.header_pointing.ra.deg
         image_info.header_DEC=im.header_pointing.dec.deg
         image_info.RA=im.wcs_pointing.ra.deg
@@ -159,7 +186,8 @@ def measure_image(file,\
             raise Error('Failed to connect to mongo')
         else:
             image_info.save()
-
+    else:
+        print(image_info)
 
 
 def main():
