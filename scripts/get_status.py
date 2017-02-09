@@ -14,7 +14,7 @@ import numpy as np
 
 import mongoengine as me
 
-from schema import telstatus
+from .. import telstatus
 
 
 ##-------------------------------------------------------------------------
