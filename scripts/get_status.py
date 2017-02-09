@@ -302,7 +302,7 @@ def get_status_and_log(telescope):
         if len(telstatus.objects(__raw__={'current': True, 'telescope': telescope})) == 1:
             logger.info('Modifying old "current" document')
             telstatus.objects(__raw__={'current': True, 'telescope': telescope}).update_one(set__current=False)
-            logger.info('   Done')
+            logger.info('  Done')
         logger.info('Saving new "current" document')
         status.save()
         logger.info("  Done")
