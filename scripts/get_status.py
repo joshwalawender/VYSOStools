@@ -306,7 +306,7 @@ def get_status_and_log(telescope):
         logger.info('Saving new "current" document')
         status.save()
         logger.info("  Done")
-        logger.info("\n".format(status))
+        logger.info("\n{}".format(status))
 
 
 if __name__ == '__main__':
