@@ -27,23 +27,23 @@
     </style>
 
 </head>
-
 <body>
 
+<!-- ###################################### -->
+<!-- Time, Weather, and Disks -->
+<!-- ###################################### -->
 <table>
-<!-- ###################################### -->
-<!-- Status Header -->
-<!-- ###################################### -->
-<tr>
-    <td width="210px" style="text-align: left;">
-        {{ now[1].strftime('%Y/%m/%d %H:%M:%S UT') }}
-    </td>
-    <td width="210px" style="text-align: left;">
-        {{ now[0].strftime('%Y/%m/%d %H:%M:%S HST') }}
-    </td>
-    <td width="210px" style="text-align: left;">
-    </td>
-    <td width="420px" style="text-align: left;">
+    <tr>
+        <th style="width: 300px;">Time</td>
+        <th style="width: 250px;">Weather</td>
+        <th style="width: 100px;"></td>
+        <th style="width: 250px;">Disks</td>
+    </tr>
+    <tr>
+        <td style="text-align: left;">{{ now[0].strftime('%Y/%m/%d %H:%M:%S HST') }}</td>
+        <td style="text-align: right;">Ambient Temperature</td>
+        <td style="text-align: left;"></td>
+        <td style="text-align: right;">
         {% if 'DroboPro' in disks.keys() %}
             {% if disks['DroboPro'][1] < 20 %}
                 <font color="red"> 
@@ -52,20 +52,13 @@
             {% end %}
             MLOData: {{ '{:.0f}GB free ({:.0f}% full)'.format(disks['DroboPro'][1], disks['DroboPro'][2]) }}</font>
         {% end %}
-    </td>
-</tr>
-<tr>
-    <td style="text-align: left;">
-        {{ 'It is currently {} (Sun alt = {:.0f})'.format(sun['now'], sun['alt']) }}<br>
-    </td>
-    <td colspan=2 style="text-align: left;">
-        {% if sun['rise'] < sun['set'] %}
-            {{ 'Next sunrise is at {}'.format(sun['rise'].strftime('%Y/%m/%d %H:%M:%S UT')) }}
-        {% else %}
-            {{ 'Next sunset is at {}'.format(sun['set'].strftime('%Y/%m/%d %H:%M:%S UT')) }}
-        {% end %} 
-    </td>
-    <td style="text-align: left;">
+        </td>
+    </tr>
+    <tr>
+        <td style="text-align: left;">{{ now[1].strftime('%Y/%m/%d %H:%M:%S UT') }}</td>
+        <td style="text-align: right;">Sky Temperature</td>
+        <td style="text-align: left;"></td>
+        <td style="text-align: right;">
         {% if 'Drobo' in disks.keys() %}
             {% if disks['Drobo'][1] < 300 %}
                 <font color="red"> 
@@ -74,20 +67,13 @@
             {% end %}
             DataCopy: {{ '{:.0f}GB free ({:.0f}% full)'.format(disks['Drobo'][1], disks['Drobo'][2]) }}
         {% end %}
-    </td>
-</tr>
-<tr>
-    <td style="text-align: left;">
-        {{ 'A {:.0f}% illuminated moon is {}'.format(moon['phase'], moon['now']) }}
-    </td>
-    <td colspan=2 style="text-align: left;">
-        {% if sun['rise'] > sun['set'] %}
-            {{ 'Next sunrise is at {}'.format(sun['rise'].strftime('%Y/%m/%d %H:%M:%S UT')) }}
-        {% else %}
-            {{ 'Next sunset is at {}'.format(sun['set'].strftime('%Y/%m/%d %H:%M:%S UT')) }}
-        {% end %} 
-    </td>
-    <td style="text-align: left;">
+        </td>
+    </tr>
+    <tr>
+        <td style="text-align: left;">{{ 'It is currently {} (Sun alt = {:.0f})'.format(sun['now'], sun['alt']) }}</td>
+        <td style="text-align: right;">Wind Speed</td>
+        <td style="text-align: left;"></td>
+        <td style="text-align: right;">
         {% if 'macOS' in disks.keys() %}
             {% if disks['macOS'][1] < 40 %}
                 <font color="red"> 
@@ -96,281 +82,280 @@
             {% end %}
             macOS: {{ '{:.0f}GB free ({:.0f}% full)'.format(disks['macOS'][1], disks['macOS'][2]) }}</font>
         {% end %}
-    </td>
-</tr>
+        </td>
+    </tr>
+    <tr>
+        <td style="text-align: left;">{{ 'A {:.0f}% illuminated moon is {}'.format(moon['phase'], moon['now']) }}</td>
+        <td style="text-align: right;">Rain Status</td>
+        <td style="text-align: left;"></td>
+        <td style="text-align: right;"></td>
+    </tr>
+    <tr>
+        <td style="text-align: left;">
+        {% if sun['rise'] < sun['set'] %}
+            {{ 'Next sunrise is at {}'.format(sun['rise'].strftime('%Y/%m/%d %H:%M:%S UT')) }}
+        {% else %}
+            {{ 'Next sunset is at {}'.format(sun['set'].strftime('%Y/%m/%d %H:%M:%S UT')) }}
+        {% end %} 
+        </td>
+        <td style="text-align: right;">Safe</td>
+        <td style="text-align: left;"></td>
+        <td style="text-align: right;"></td>
+    </tr>
+    <tr>
+        <td style="text-align: left;">
+        {% if sun['rise'] > sun['set'] %}
+            {{ 'Next sunrise is at {}'.format(sun['rise'].strftime('%Y/%m/%d %H:%M:%S UT')) }}
+        {% else %}
+            {{ 'Next sunset is at {}'.format(sun['set'].strftime('%Y/%m/%d %H:%M:%S UT')) }}
+        {% end %} 
+        </td>
+        <td style="text-align: right;">Humidity</td>
+        <td style="text-align: left;"></td>
+        <td style="text-align: right;"></td>
+    </tr>
+
+</table>
+<br>
 <!-- ###################################### -->
-<!-- Weather -->
+<!-- Telescope Status and All Sky Image -->
 <!-- ###################################### -->
-<tr>
-    <th colspan=5><br><br>Weather</th>
-</tr>
-<tr>
-    <td><u>Weather Data</u></td>
-    <td colspan=2><u>Weather Plot</u></td>
-    <td><u>Atlas All Sky Image (Color)</u></td>
-</tr>
-<tr>
-    <td>
-    </td>
-    <td colspan=2 style="vertical-align: middle;">
-    </td>
-    <td style="vertical-align: middle;">
-        <table style="border:0px; border-style: none;">
-            <tr style="border:0px; border-style: none;">
-                <td style="border:0px; border-style: none; vertical-align: middle;">E</td>
-                <td style="border:0px; border-style: none;">
-                    N<br>
-                    <a href="http://www.fallingstar.com/weather/mlo/">
-                        <img width=375 src="http://www.fallingstar.com/weather/mlo/latest_bw400.jpg">
-                    </a><br>
-                    S
+
+<table>
+    <tr>
+        <th style="width: 250px;">VYSOS-5 Status</td>
+        <th style="width: 250px;">VYSOS-20 Status</td>
+        <th style="width: 400px;">ATLAS All Sky Image</td>
+    </tr>
+    <tr>
+        <td>
+        <table style="border:0px; border-style:none;">
+            <tr style="border:0px; border-style:none;">
+                <td style="border:0px; border-style:none; text-align: right;">ACP Connected</td>
+                <td style="border:0px; border-style:none; text-align: left;">
+                    {% if v5status.connected %}
+                        {{ v5status.connected }}
+                    {% end %}
                 </td>
-                <td style="border:0px; border-style: none; vertical-align: middle;">W</td>
+            </tr>
+            <tr style="border:0px; border-style:none;">
+                <td style="border:0px; border-style:none; text-align: right;">Status</td>
+                <td style="border:0px; border-style:none; text-align: left;">
+                    {% if v5status.slewing %}
+                        <font color="orange">Slewing</font>
+                    {% elif v5status.tracking %}
+                        <font color="green">Tracking</font>
+                    {% elif v5status.park %}
+                        <font color="black">Parked</font>
+                    {% else %}
+                        <font color="black">Stationary</font>
+                    {% end %}
+                </td>
+            </tr>
+            <tr style="border:0px; border-style:none;">
+                <td style="border:0px; border-style:none; text-align: right;">Alt</td>
+                <td style="border:0px; border-style:none; text-align: left;">
+                    {% if v5status.alt %}{{ '{:.1f}'.format(v5status.alt) }}{% end %}
+                </td>
+            </tr>
+            <tr style="border:0px; border-style:none;">
+                <td style="border:0px; border-style:none; text-align: right;">Az</td>
+                <td style="border:0px; border-style:none; text-align: left;">
+                    {% if v5status.az %}{{ '{:.1f}'.format(v5status.az) }}{% end %}
+                </td>
+            </tr>
+            <tr style="border:0px; border-style:none;">
+                <td style="border:0px; border-style:none; text-align: right;">Target RA</td>
+                <td style="border:0px; border-style:none; text-align: left;">
+                    {% if v5status.RA %}{{ '{:.4f}'.format(v5status.RA) }}{% end %}
+                </td>
+            </tr>
+            <tr style="border:0px; border-style:none;">
+                <td style="border:0px; border-style:none; text-align: right;">Target Dec</td>
+                <td style="border:0px; border-style:none; text-align: left;">
+                    {% if v5status.DEC %}{{ '{:.4f}'.format(v5status.DEC) }}{% end %}
+                </td>
+            </tr>
+            <tr style="border:0px; border-style:none;">
+                <td style="border:0px; border-style:none; text-align: right;">ACP Data Age</td>
+                <td style="border:0px; border-style:none; text-align: left;">
+                    {{ '{:.1f} min'.format((now[1]-v5status.date).total_seconds()/60.) }}
+                </td>
+            </tr>
+            <tr style="border:0px; border-style:none;">            
+                <td style="border:0px; border-style:none; text-align: center;" colspan=2><b>
+                  {{ files_string }}
+                </b></td>
+            </tr>
+            <tr style="border:0px; border-style:none;">            
+                <td style="border:0px; border-style:none; text-align: right;">N Images</td>
+                <td style="border:0px; border-style:none; text-align: left;">
+                    {{ '{:d}'.format(v5_nimages) }}
+                </td>
+            </tr>
+            <tr style="border:0px; border-style:none;">
+                <td style="border:0px; border-style:none; text-align: right;">N Flats</td>
+                <td style="border:0px; border-style:none; text-align: left;">
+                    {{ '{:d}'.format(v5_nflats) }}
+                </td>
+            </tr>
+
+            <tr style="border:0px; border-style:none;">            
+                <td style="border:0px; border-style:none; text-align: left;" colspan=2><b>
+                  IQMon Results
+                </b></td>
+            </tr>
+            <tr style="border:0px; border-style:none;">
+                <td colspan=2 style="border:0px; border-style:none; text-align: left;">
+                <a href="{{ '/static/nights/{}_V5.png'.format(link_date_string) }}">
+                Night Summary {{ link_date_string }}</a>
+                </td>
+            </tr>
+            <tr style="border:0px; border-style:none;">
+                <td colspan=2 style="border:0px; border-style:none; text-align: left;">
+                <a href="{{ '/V5/{}'.format(link_date_string) }}">
+                Image List {{ link_date_string }}</a>
+                </td>
+            </tr>
+            <tr style="border:0px; border-style:none;">
+                <td colspan=2 style="border:0px; border-style:none; text-align: left;">
+                <a href="V5/">List of Nights</a>
+                </td>
+            </tr>
+            <tr style="border:0px; border-style:none;">
+                <td colspan=2 style="border:0px; border-style:none; text-align: left;">
+                <a href="V5/targets">List of Targets</a>
+                </td>
             </tr>
         </table>
-    </td>
-</tr>
+        </td>
+        <td>
+        <table style="border:0px; border-style:none;">
+            <tr style="border:0px; border-style:none;">
+                <td style="border:0px; border-style:none; text-align: right;">ACP Connected</td>
+                <td style="border:0px; border-style:none; text-align: left;">
+                    {% if v20status.connected %}
+                        {{ v20status.connected }}
+                    {% end %}
+                </td>
+            </tr>
+            <tr style="border:0px; border-style:none;">
+                <td style="border:0px; border-style:none; text-align: right;">Status</td>
+                <td style="border:0px; border-style:none; text-align: left;">
+                    {% if v20status.slewing %}
+                        <font color="orange">Slewing</font>
+                    {% elif v20status.tracking %}
+                        <font color="green">Tracking</font>
+                    {% elif v20status.park %}
+                        <font color="black">Parked</font>
+                    {% else %}
+                        <font color="black">Stationary</font>
+                    {% end %}
+                </td>
+            </tr>
+            <tr style="border:0px; border-style:none;">
+                <td style="border:0px; border-style:none; text-align: right;">Alt</td>
+                <td style="border:0px; border-style:none; text-align: left;">
+                    {% if v20status.alt %}{{ '{:.1f}'.format(v20status.alt) }}{% end %}
+                </td>
+            </tr>
+            <tr style="border:0px; border-style:none;">
+                <td style="border:0px; border-style:none; text-align: right;">Az</td>
+                <td style="border:0px; border-style:none; text-align: left;">
+                    {% if v20status.az %}{{ '{:.1f}'.format(v20status.az) }}{% end %}
+                </td>
+            </tr>
+            <tr style="border:0px; border-style:none;">
+                <td style="border:0px; border-style:none; text-align: right;">Target RA</td>
+                <td style="border:0px; border-style:none; text-align: left;">
+                    {% if v20status.RA %}{{ '{:.4f}'.format(v20status.RA) }}{% end %}
+                </td>
+            </tr>
+            <tr style="border:0px; border-style:none;">
+                <td style="border:0px; border-style:none; text-align: right;">Target Dec</td>
+                <td style="border:0px; border-style:none; text-align: left;">
+                    {% if v20status.DEC %}{{ '{:.4f}'.format(v20status.DEC) }}{% end %}
+                </td>
+            </tr>
+            <tr style="border:0px; border-style:none;">
+                <td style="border:0px; border-style:none; text-align: right;">ACP Data Age</td>
+                <td style="border:0px; border-style:none; text-align: left;">
+                    {{ '{:.1f} min'.format((now[1]-v20status.date).total_seconds()/60.) }}
+                </td>
+            </tr>
+            <tr style="border:0px; border-style:none;">            
+                <td style="border:0px; border-style:none; text-align: center;" colspan=2><b>
+                  {{ files_string }}
+                </b></td>
+            </tr>
+            <tr style="border:0px; border-style:none;">
+                <td style="border:0px; border-style:none; text-align: right;">N Images</td>
+                <td style="border:0px; border-style:none; text-align: left;">
+                    {{ '{:d}'.format(v20_nimages) }}
+                </td>
+            </tr>
+            <tr style="border:0px; border-style:none;">
+                <td style="border:0px; border-style:none; text-align: right;">N Flats</td>
+                <td style="border:0px; border-style:none; text-align: left;">
+                    {{ '{:d}'.format(v20_nflats) }}
+                </td>
+            </tr>
+
+            <tr style="border:0px; border-style:none;">            
+                <td style="border:0px; border-style:none; text-align: left;" colspan=2><b>
+                  IQMon Results
+                </b></td>
+            </tr>
+            <tr style="border:0px; border-style:none;">
+                <td colspan=2 style="border:0px; border-style:none; text-align: left;">
+                <a href="{{ '/static/nights/{}_V20.png'.format(link_date_string) }}">
+                Night Summary {{ link_date_string }}</a>
+                </td>
+            </tr>
+            <tr style="border:0px; border-style:none;">
+                <td colspan=2 style="border:0px; border-style:none; text-align: left;">
+                <a href="{{ '/V20/{}'.format(link_date_string) }}">
+                Image List {{ link_date_string }}</a>
+                </td>
+            </tr>
+            <tr style="border:0px; border-style:none;">
+                <td colspan=2 style="border:0px; border-style:none; text-align: left;">
+                <a href="V20/">List of Nights</a>
+                </td>
+            </tr>
+            <tr style="border:0px; border-style:none;">
+                <td colspan=2 style="border:0px; border-style:none; text-align: left;">
+                <a href="V20/targets">List of Targets</a>
+                </td>
+            </tr>
+        </table>
+        </td>
+        <td style="vertical-align: middle;">
+            <table style="border:0px; border-style: none;">
+                <tr style="border:0px; border-style: none;">
+                    <td style="border:0px; border-style: none; vertical-align: middle;">E</td>
+                    <td style="border:0px; border-style: none;">
+                        N<br>
+                        <a href="http://www.fallingstar.com/weather/mlo/">
+                            <img width=350 src="http://www.fallingstar.com/weather/mlo/latest_bw400.jpg">
+                        </a><br>
+                        S
+                    </td>
+                    <td style="border:0px; border-style: none; vertical-align: middle;">W</td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
 
 <!-- ###################################### -->
 <!-- Live Images -->
 <!-- ###################################### -->
-
-<tr>
-    <td colspan=4><u>Live Images</u></td>
-</tr>
-<tr>
-    <td colspan=4>
-        <object data=http://166.122.71.162:8080/html/live.htm width="1100" height="520">
-        <embed   src=http://166.122.71.162:8080/html/live.htm width="1100" height="520"> </embed>
-        Error: Embedded data could not be displayed. </object>
-    </td>
-</tr>
-
-<!-- ###################################### -->
-<!-- VYSOS-5 -->
-<!-- ###################################### -->
-<tr>
-    <td colspan=2>VYSOS-5 Status</td>
-    <td></td>
-    <td>VYSOS-20 Status</td>
-</tr>
-<tr>
-    <td colspan=2>
-        <table style="border:0px; border-style:none;">
-        <tr style="border:0px; border-style:none;">
-            <td style="border:0px; border-style:none; text-align: right;">ACP Connected</td>
-            <td style="border:0px; border-style:none; text-align: left;">
-                {% if v5status.connected %}
-                    {{ v5status.connected }}
-                {% end %}
-            </td>
-        </tr>
-        <tr style="border:0px; border-style:none;">
-            <td style="border:0px; border-style:none; text-align: right;">Status</td>
-            <td style="border:0px; border-style:none; text-align: left;">
-                {% if v5status.slewing %}
-                    <font color="orange">Slewing</font>
-                {% elif v5status.tracking %}
-                    <font color="green">Tracking</font>
-                {% elif v5status.park %}
-                    <font color="black">Parked</font>
-                {% else %}
-                    <font color="black">Stationary</font>
-                {% end %}
-            </td>
-        </tr>
-        <tr style="border:0px; border-style:none;">
-            <td style="border:0px; border-style:none; text-align: right;">Alt</td>
-            <td style="border:0px; border-style:none; text-align: left;">
-                {% if v5status.alt %}{{ '{:.1f}'.format(v5status.alt) }}{% end %}
-            </td>
-        </tr>
-        <tr style="border:0px; border-style:none;">
-            <td style="border:0px; border-style:none; text-align: right;">Az</td>
-            <td style="border:0px; border-style:none; text-align: left;">
-                {% if v5status.az %}{{ '{:.1f}'.format(v5status.az) }}{% end %}
-            </td>
-        </tr>
-        <tr style="border:0px; border-style:none;">
-            <td style="border:0px; border-style:none; text-align: right;">Target RA</td>
-            <td style="border:0px; border-style:none; text-align: left;">
-                {% if v5status.RA %}{{ '{:.4f}'.format(v5status.RA) }}{% end %}
-            </td>
-        </tr>
-        <tr style="border:0px; border-style:none;">
-            <td style="border:0px; border-style:none; text-align: right;">Target Dec</td>
-            <td style="border:0px; border-style:none; text-align: left;">
-                {% if v5status.DEC %}{{ '{:.4f}'.format(v5status.DEC) }}{% end %}
-            </td>
-        </tr>
-        <tr style="border:0px; border-style:none;">
-            <td style="border:0px; border-style:none; text-align: right;">ACP Data Age</td>
-            <td style="border:0px; border-style:none; text-align: left;">
-                {{ '{:.1f} min'.format((now[1]-v5status.date).total_seconds()/60.) }}
-            </td>
-        </tr>
-        <tr style="border:0px; border-style:none;">            
-            <td style="border:0px; border-style:none; text-align: center;" colspan=2><b>
-              {{ files_string }}
-            </b></td>
-        </tr>
-        <tr style="border:0px; border-style:none;">            
-            <td style="border:0px; border-style:none; text-align: right;">N Images</td>
-            <td style="border:0px; border-style:none; text-align: left;">
-                {{ '{:d}'.format(v5_nimages) }}
-            </td>
-        </tr>
-        <tr style="border:0px; border-style:none;">
-            <td style="border:0px; border-style:none; text-align: right;">N Flats</td>
-            <td style="border:0px; border-style:none; text-align: left;">
-                {{ '{:d}'.format(v5_nflats) }}
-            </td>
-        </tr>
-
-        <tr style="border:0px; border-style:none;">            
-            <td style="border:0px; border-style:none; text-align: left;" colspan=2><b>
-              IQMon Results
-            </b></td>
-        </tr>
-        <tr style="border:0px; border-style:none;">
-            <td colspan=2 style="border:0px; border-style:none; text-align: left;">
-            <a href="{{ '/static/nights/{}_V5.png'.format(link_date_string) }}">
-            Night Summary Plot for {{ link_date_string }}</a>
-            </td>
-        </tr>
-        <tr style="border:0px; border-style:none;">
-            <td colspan=2 style="border:0px; border-style:none; text-align: left;">
-            <a href="{{ '/V5/{}'.format(link_date_string) }}">
-            Images from {{ link_date_string }}</a>
-            </td>
-        </tr>
-        <tr style="border:0px; border-style:none;">
-            <td colspan=2 style="border:0px; border-style:none; text-align: left;">
-            <a href="V5/">List of Nights</a>
-            </td>
-        </tr>
-        <tr style="border:0px; border-style:none;">
-            <td colspan=2 style="border:0px; border-style:none; text-align: left;">
-            <a href="V5/targets">List of Targets</a>
-            </td>
-        </tr>
-        </table>
-    </td>
-    <td>
-    </td>
-    <td>
-        <table style="border:0px; border-style:none;">
-        <tr style="border:0px; border-style:none;">
-            <td style="border:0px; border-style:none; text-align: right;">ACP Connected</td>
-            <td style="border:0px; border-style:none; text-align: left;">
-                {% if v20status.connected %}
-                    {{ v20status.connected }}
-                {% end %}
-            </td>
-        </tr>
-        <tr style="border:0px; border-style:none;">
-            <td style="border:0px; border-style:none; text-align: right;">Status</td>
-            <td style="border:0px; border-style:none; text-align: left;">
-                {% if v20status.slewing %}
-                    <font color="orange">Slewing</font>
-                {% elif v20status.tracking %}
-                    <font color="green">Tracking</font>
-                {% elif v20status.park %}
-                    <font color="black">Parked</font>
-                {% else %}
-                    <font color="black">Stationary</font>
-                {% end %}
-            </td>
-        </tr>
-        <tr style="border:0px; border-style:none;">
-            <td style="border:0px; border-style:none; text-align: right;">Alt</td>
-            <td style="border:0px; border-style:none; text-align: left;">
-                {% if v20status.alt %}{{ '{:.1f}'.format(v20status.alt) }}{% end %}
-            </td>
-        </tr>
-        <tr style="border:0px; border-style:none;">
-            <td style="border:0px; border-style:none; text-align: right;">Az</td>
-            <td style="border:0px; border-style:none; text-align: left;">
-                {% if v20status.az %}{{ '{:.1f}'.format(v20status.az) }}{% end %}
-            </td>
-        </tr>
-        <tr style="border:0px; border-style:none;">
-            <td style="border:0px; border-style:none; text-align: right;">Target RA</td>
-            <td style="border:0px; border-style:none; text-align: left;">
-                {% if v20status.RA %}{{ '{:.4f}'.format(v20status.RA) }}{% end %}
-            </td>
-        </tr>
-        <tr style="border:0px; border-style:none;">
-            <td style="border:0px; border-style:none; text-align: right;">Target Dec</td>
-            <td style="border:0px; border-style:none; text-align: left;">
-                {% if v20status.DEC %}{{ '{:.4f}'.format(v20status.DEC) }}{% end %}
-            </td>
-        </tr>
-        <tr style="border:0px; border-style:none;">
-            <td style="border:0px; border-style:none; text-align: right;">ACP Data Age</td>
-            <td style="border:0px; border-style:none; text-align: left;">
-                {{ '{:.1f} min'.format((now[1]-v20status.date).total_seconds()/60.) }}
-            </td>
-        </tr>
-        <tr style="border:0px; border-style:none;">            
-            <td style="border:0px; border-style:none; text-align: center;" colspan=2><b>
-              {{ files_string }}
-            </b></td>
-        </tr>
-        <tr style="border:0px; border-style:none;">
-            <td style="border:0px; border-style:none; text-align: right;">N Images</td>
-            <td style="border:0px; border-style:none; text-align: left;">
-                {{ '{:d}'.format(v20_nimages) }}
-            </td>
-        </tr>
-        <tr style="border:0px; border-style:none;">
-            <td style="border:0px; border-style:none; text-align: right;">N Flats</td>
-            <td style="border:0px; border-style:none; text-align: left;">
-                {{ '{:d}'.format(v20_nflats) }}
-            </td>
-        </tr>
-
-        <tr style="border:0px; border-style:none;">            
-            <td style="border:0px; border-style:none; text-align: left;" colspan=2><b>
-              IQMon Results
-            </b></td>
-        </tr>
-        <tr style="border:0px; border-style:none;">
-            <td colspan=2 style="border:0px; border-style:none; text-align: left;">
-            <a href="{{ '/static/nights/{}_V20.png'.format(link_date_string) }}">
-            Night Summary Plot for {{ link_date_string }}</a>
-            </td>
-        </tr>
-        <tr style="border:0px; border-style:none;">
-            <td colspan=2 style="border:0px; border-style:none; text-align: left;">
-            <a href="{{ '/V20/{}'.format(link_date_string) }}">
-            Images from {{ link_date_string }}</a>
-            </td>
-        </tr>
-        <tr style="border:0px; border-style:none;">
-            <td colspan=2 style="border:0px; border-style:none; text-align: left;">
-            <a href="V20/">List of Nights</a>
-            </td>
-        </tr>
-        <tr style="border:0px; border-style:none;">
-            <td colspan=2 style="border:0px; border-style:none; text-align: left;">
-            <a href="V20/targets">List of Targets</a>
-            </td>
-        </tr>
-        </table>
-
-
-    </td>
-</tr>
-
-
-
-
-
-
-</table>
-
-<br><br>
-
+<center>
+<h3>Live Images</h3>
+<object data=http://166.122.71.162:8080/html/live.htm width="1100" height="850">
+<embed   src=http://166.122.71.162:8080/html/live.htm width="1100" height="850"> </embed>
+Error: Embedded data could not be displayed. </object>
+</center>
 </body>
 </html>
