@@ -215,7 +215,7 @@ class Status(RequestHandler):
         v5status = telstatus.objects(__raw__={'current': True, 'telescope': 'V5'})[0]
         v20status = telstatus.objects(__raw__={'current': True, 'telescope': 'V20'})[0]
         cctv = False
-        if input not in ["status", "status.html"]:
+        if input.lower() in ["cctv", "cctv.html"]:
             cctv = True
         self.render("status.html", title="VYSOS Status",
                     now = (now, nowut),

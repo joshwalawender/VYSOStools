@@ -28,7 +28,7 @@
 
 </head>
 <body>
-
+<center>
 <!-- ###################################### -->
 <!-- Time, Weather, and Disks -->
 <!-- ###################################### -->
@@ -350,12 +350,13 @@
 <!-- ###################################### -->
 <!-- Live Images -->
 <!-- ###################################### -->
-<center>
 {% if cctv %}
     <h3>Live Images</h3>
     <object data=http://166.122.71.162:8080/html/live.htm width="1100" height="850">
     <embed   src=http://166.122.71.162:8080/html/live.htm width="1100" height="850"> </embed>
     Error: Embedded data could not be displayed. </object>
+{% else %}
+    <a href="http://166.122.71.162/CCTV">Show CCTV</a>
 {% end %}
 </center>
 </body>
