@@ -197,16 +197,17 @@ def main():
     tlog.gen_log.setLevel(logging.DEBUG)
 
     list_of_handlers = [
-                        url(r"/(\w+/?$)", ListOfNights),
-                        url(r"/(\w+)/(\w+)", ListOfImages),
+                        url(r"/(V\w+/?$)", ListOfNights),
+                        url(r"/(V\w+)/(\w+)", ListOfImages),
                         (r"/static/(.*)", MyStaticFileHandler, {"path": "/var/www"}),
                        ]
 
     if args.status:
         tlog.app_log.info('Importing status handler')
         from custom_handlers import Status
-        list_of_handlers.append(url(r"/", Status))
-        tlog.app_log.info('  Done')
+        list_of_handlers.append(url(r"/([sS]?.*/?$)", Status))
+
+
 #         try:
 #             from custom_handlers import Status
 #             list_of_handlers.append(url(r"/", Status))

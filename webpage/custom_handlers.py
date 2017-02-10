@@ -126,8 +126,8 @@ def free_space(path):
 ## Handler for Status Page
 ##-----------------------------------------------------------------------------
 class Status(RequestHandler):
-    def get(self):
-        tlog.app_log.info('Get request for Status recieved')
+    def get(self, input):
+        tlog.app_log.info('Get request for Status "{}" recieved'.format(input))
         nowut = dt.utcnow()
         now = nowut - tdelta(0,10*60*60)
 
@@ -214,6 +214,9 @@ class Status(RequestHandler):
         me.connect('vysos', host='192.168.1.101')
         v5status = telstatus.objects(__raw__={'current': True, 'telescope': 'V5'})[0]
         v20status = telstatus.objects(__raw__={'current': True, 'telescope': 'V20'})[0]
+        cctv = False
+        if input not in ["status", "status.html"]:
+            cctv = True
         self.render("status.html", title="VYSOS Status",
                     now = (now, nowut),
                     disks = disks,
@@ -227,6 +230,6 @@ class Status(RequestHandler):
                     v20_nimages = get_nimages('V20', link_date_string),\
                     v5_nflats = get_nflats('V5', link_date_string),\
                     v20_nflats = get_nflats('V20', link_date_string),\
+                    cctv=cctv
                     )
         tlog.app_log.info('  Done')
-
