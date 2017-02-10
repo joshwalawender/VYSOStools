@@ -24,7 +24,7 @@ class telstatus(me.Document):
     park = me.BooleanField()
     slewing = me.BooleanField()
     tracking = me.BooleanField()
-    alt = me.DecimalField(min_value=0, max_value=90, precision=4)
+    alt = me.DecimalField(min_value=-90, max_value=90, precision=4)
     az = me.DecimalField(min_value=0, max_value=360, precision=4)
     RA = me.DecimalField(min_value=0, max_value=360, precision=4)
     DEC = me.DecimalField(min_value=-90, max_value=90, precision=4)
@@ -46,6 +46,25 @@ class telstatus(me.Document):
     meta = {'collection': 'telstatus',
             'indexes': ['telescope', 'current', 'date']}
 
+    def __str__(self):
+        output = 'MongoEngine Document at: {}\n'.format(self.date.strftime('%Y%m%d %H:%M:%S'))
+        if self.telescope: output += '  Telescope: {}\n'.format(self.telescope)
+        if self.current: output += '  Current: {}\n'.format(self.current)
+        if self.connected: output += '  connected: {}\n'.format(self.connected)
+        if self.park: output += '  park: {}\n'.format(self.park)
+        if self.slewing: output += '  slewing: {}\n'.format(self.slewing)
+        if self.tracking: output += '  tracking: {}\n'.format(self.tracking)
+        if self.alt: output += '  Altitude: {:.4f}\n'.format(self.alt)
+        if self.az: output += '  Azimuth: {:.4f}\n'.format(self.az)
+        if self.RA: output += '  RA: {:.4f}\n'.format(self.RA)
+        if self.DEC: output += '  DEC: {:.4f}\n'.format(self.DEC)
+        if self.ACPerr: output += '  ACPerr: {}\n'.format(self.ACPerr)
+        if self.focuser_temperature: output += '  focuser_temperature: {:.1f}\n'.format(self.focuser_temperature)
+        if self.focuser_position: output += '  focuser_position: {}\n'.format(self.focuser_position)
+        return output
+
+    def __repr__(self):
+        return self.__str__()
 
 
 ##-------------------------------------------------------------------------
@@ -247,7 +266,8 @@ def get_status_and_log(telescope):
             LogConsoleHandler.setLevel(logging.DEBUG)
         else:
             LogConsoleHandler.setLevel(logging.INFO)
-        LogFormat = logging.Formatter('%(asctime)23s %(levelname)8s: %(message)s')
+        LogFormat = logging.Formatter('%(asctime)s %(levelname)8s: %(message)s',
+                                      datefmt='%Y%m%d %H:%M:%S')
         LogConsoleHandler.setFormatter(LogFormat)
         logger.addHandler(LogConsoleHandler)
         ## Set up file output
@@ -272,7 +292,7 @@ def get_status_and_log(telescope):
         logger.error('Could not connect to mongo db')
         raise Error('Failed to connect to mongo')
     else:
-        status = telstatus(telescope=telescope)
+        status = telstatus(telescope=telescope, date=datetime.datetime.utcnow())
         status = get_telescope_info(status, logger)
         status = get_focuser_info(status, logger)
 #         if telescope == 'V20':
@@ -280,9 +300,13 @@ def get_status_and_log(telescope):
 
         assert len(telstatus.objects(__raw__={'current': True, 'telescope': telescope})) <= 1
         if len(telstatus.objects(__raw__={'current': True, 'telescope': telescope})) == 1:
+            logger.info('Modifying old "current" document')
             telstatus.objects(__raw__={'current': True, 'telescope': telescope}).update_one(set__current=False)
+            logger.info('  Done')
+        logger.info('Saving new "current" document')
         status.save()
-        logger.info("Done")
+        logger.info("  Done")
+        logger.info("\n{}".format(status))
 
 
 if __name__ == '__main__':
@@ -313,4 +337,4 @@ if __name__ == '__main__':
     while True:
         get_status_and_log(telescope)
         logging.shutdown()
-        time.sleep(10)
+        time.sleep(20)
