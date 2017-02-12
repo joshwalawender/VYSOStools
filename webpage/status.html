@@ -8,6 +8,9 @@
     content="text/html; charset=ISO-8859-1">
 
     <style>
+        p {
+            font-family: Arial, Helvetica, sans-serif;
+        }
         table
         {
             border-collapse:collapse;
@@ -50,7 +53,7 @@
             {% else %}
                 <font color="black"> 
             {% end %}
-            MLOData: {{ '{:.0f}GB free ({:.0f}% full)'.format(disks['DroboPro'][1], disks['DroboPro'][2]) }}</font>
+            <font style="font-family: Courier, monospace">MLOData</font>: {{ '{:.0f}GB free ({:.0f}% full)'.format(disks['DroboPro'][1], disks['DroboPro'][2]) }}</font>
         {% end %}
         </td>
     </tr>
@@ -65,7 +68,7 @@
             {% else %}
                 <font color="black"> 
             {% end %}
-            DataCopy: {{ '{:.0f}GB free ({:.0f}% full)'.format(disks['Drobo'][1], disks['Drobo'][2]) }}
+            <font style="font-family: Courier, monospace">DataCopy</font>: {{ '{:.0f}GB free ({:.0f}% full)'.format(disks['Drobo'][1], disks['Drobo'][2]) }}
         {% end %}
         </td>
     </tr>
@@ -80,7 +83,7 @@
             {% else %}
                 <font color="black"> 
             {% end %}
-            macOS: {{ '{:.0f}GB free ({:.0f}% full)'.format(disks['macOS'][1], disks['macOS'][2]) }}</font>
+            <font style="font-family: Courier, monospace">macOS</font>: {{ '{:.0f}GB free ({:.0f}% full)'.format(disks['macOS'][1], disks['macOS'][2]) }}</font>
         {% end %}
         </td>
     </tr>
