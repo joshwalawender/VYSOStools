@@ -13,12 +13,14 @@
         }
         table
         {
+            font-family: Arial, Helvetica, sans-serif;
             border-collapse:collapse;
             margin-left: auto;
             margin-right: auto;
         }
         table,th,td
         {
+            font-family: Arial, Helvetica, sans-serif;
             border:1px solid black;
             vertical-align: top;
             text-align: center; 
@@ -38,14 +40,20 @@
 <table>
     <tr>
         <th style="width: 300px;">Time</td>
-        <th style="width: 250px;">Weather</td>
-        <th style="width: 100px;"></td>
+        <th style="width: 250px; text-align: right;">Weather</td>
+        <th style="width: 100px; text-align: left;">
+        {% if currentweather.safe == True %} <font color="green">Safe</font>
+        {% elif currentweather.safe == False %} <font color="red">Unsafe</font>
+        {% else %} <font color="red">Unknown</font> {% end %}
+        </td>
         <th style="width: 250px;">Disks</td>
     </tr>
     <tr>
         <td style="text-align: left;">{{ now[0].strftime('%Y/%m/%d %H:%M:%S HST') }}</td>
         <td style="text-align: right;">Ambient Temperature:</td>
-        <td style="text-align: left;"></td>
+        <td style="text-align: left;">
+        {% if currentweather.temp %} {{ '{:.1f} F'.format(currentweather.temp) }}{% end %}
+        </td>
         <td style="text-align: right;">
         {% if 'DroboPro' in disks.keys() %}
             {% if disks['DroboPro'][1] < 20 %}
@@ -59,8 +67,10 @@
     </tr>
     <tr>
         <td style="text-align: left;">{{ now[1].strftime('%Y/%m/%d %H:%M:%S UT') }}</td>
-        <td style="text-align: right;">Sky Temperature:</td>
-        <td style="text-align: left;"></td>
+        <td style="text-align: right;">Sky Delta:</td>
+        <td style="text-align: left;">
+        {% if currentweather.clouds %} {{ '{:.1f} F'.format(currentweather.clouds) }}{% end %}
+        </td>
         <td style="text-align: right;">
         {% if 'Drobo' in disks.keys() %}
             {% if disks['Drobo'][1] < 300 %}
@@ -75,7 +85,9 @@
     <tr>
         <td style="text-align: left;">{{ 'It is currently {} (Sun alt = {:.0f})'.format(sun['now'], sun['alt']) }}</td>
         <td style="text-align: right;">Wind Speed:</td>
-        <td style="text-align: left;"></td>
+        <td style="text-align: left;">
+        {% if currentweather.wind %} {{ '{:.1f} kph'.format(currentweather.wind) }}{% end %}
+        </td>
         <td style="text-align: right;">
         {% if 'macOS' in disks.keys() %}
             {% if disks['macOS'][1] < 40 %}
@@ -89,8 +101,10 @@
     </tr>
     <tr>
         <td style="text-align: left;">{{ 'A {:.0f}% illuminated moon is {}'.format(moon['phase'], moon['now']) }}</td>
-        <td style="text-align: right;">Rain Status:</td>
-        <td style="text-align: left;"></td>
+        <td style="text-align: right;">Gusts:</td>
+        <td style="text-align: left;">
+        {% if currentweather.gust %} {{ '{:.1f} kph'.format(currentweather.gust) }}{% end %}
+        </td>
         <td style="text-align: right;"></td>
     </tr>
     <tr>
@@ -101,8 +115,10 @@
             {{ 'Next sunset is at {}'.format(sun['set'].strftime('%Y/%m/%d %H:%M:%S UT')) }}
         {% end %} 
         </td>
-        <td style="text-align: right;">Safe:</td>
-        <td style="text-align: left;"></td>
+        <td style="text-align: right;">Rain:</td>
+        <td style="text-align: left;">
+        {% if currentweather.rain %} {{ '{}'.format(currentweather.rain) }}{% end %}
+        </td>
         <td style="text-align: right;"></td>
     </tr>
     <tr>
@@ -114,7 +130,8 @@
         {% end %} 
         </td>
         <td style="text-align: right;">Humidity:</td>
-        <td style="text-align: left;"></td>
+        <td style="text-align: left;">
+        </td>
         <td style="text-align: right;"></td>
     </tr>
 </table>
