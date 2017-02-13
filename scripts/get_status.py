@@ -235,102 +235,125 @@ def get_focuser_info(status, logger):
 ##-------------------------------------------------------------------------
 ## Query ControlByWeb Temperature Module for Temperature and Fan State
 ##-------------------------------------------------------------------------
-def control_by_web(focuser_info, boltwood, logger):
-    import urllib
-    from xml.dom import minidom
+def control_by_web(status, logger):
     logger.info('Getting CBW temperature module status')
-    if ('RCOS temperature units' in focuser_info.keys()) and ('RCOS temperature (truss)' in focuser_info.keys()):
-        if focuser_info['RCOS temperature units'] == 'F':
-            InsideTemp = focuser_info['RCOS temperature (truss)']
-        else:
-            logger.error('  Focuser temperature unit mismatch')
-            return {}
-    else:
-        logger.error('  Focuser temperature unit not found')
-        return {}
+    address = 'http://192.168.1.115/state.xml'
+    import urllib2
+    response = urllib2.urlopen(address)
+    raw_result = response.read()
+    tunits = re.search('<units>(\w+)</units>', raw_result).group(1)
+    assert tunits in ['F', 'C']
+    temp1 = float(re.search('<sensor1temp>(\d+\.\d*)</sensor1temp>', raw_result).group(1))
+    r1state = bool(int(re.search('<relay1state>(\d)</relay1state>', raw_result).group(1)))
+    r2state = bool(int(re.search('<relay2state>(\d)</relay2state>', raw_result).group(1)))
 
-    if ('boltwood temp units' in boltwood.keys()) and ('boltwood ambient temp' in boltwood.keys()):
-        if boltwood['boltwood temp units'] == 'F':
-            OutsideTemp = boltwood['boltwood ambient temp']
-        else:
-            logger.error('  Boltwood temperature unit mismatch')
-            return{}
-    else:
-        logger.error('  Boltwood temperature unit not found')
-        return{}
+    if tunits == 'C':
+        temp1 = temp1*9./5. + 32.
+        tunits = 'F'
 
-    CBW_info = {}
-    IPaddress = "192.168.1.115"
-    try:
-        page = urllib.urlopen("http://"+IPaddress+"/state.xml")
-        contents = page.read()
-        ContentLines = contents.splitlines()
-        xmldoc = minidom.parseString(contents)
-        CBW_info['CBW temperature units'] = str(xmldoc.getElementsByTagName('units')[0].firstChild.nodeValue)
-        CBW_info['CBW temp1'] = float(xmldoc.getElementsByTagName('sensor1temp')[0].firstChild.nodeValue)
-        logger.debug('  Temp1 = {:.1f} {}'.format(CBW_info['CBW temp1'], CBW_info['CBW temperature units']))
-        CBW_info['CBW temp2'] = float(xmldoc.getElementsByTagName('sensor2temp')[0].firstChild.nodeValue)
-        logger.debug('  Temp2 = {:.1f} {}'.format(CBW_info['CBW temp2'], CBW_info['CBW temperature units']))
-        if CBW_info['CBW temperature units'] == "C":
-            CBW_info['CBW temp1'] = CBW_info['CBW temp1']*9./5. + 32.
-            CBW_info['CBW temp2'] = CBW_info['CBW temp2']*9./5. + 32.
-            CBW_info['CBW temperature units'] = 'F'
-            logger.info('  Temp1 = {:.1f} {}'.format(CBW_info['CBW temp1'], CBW_info['CBW temperature units']))
-            logger.debug('  Temp2 = {:.1f} {}'.format(CBW_info['CBW temp2'], CBW_info['CBW temperature units']))
-        CBW_info['CBW fan state'] = bool(xmldoc.getElementsByTagName('relay1state')[0].firstChild.nodeValue)
-        logger.info('  Fans On? = {}'.format(CBW_info['CBW fan state']))
-        CBW_info['CBW fan enable'] = bool(xmldoc.getElementsByTagName('relay2state')[0].firstChild.nodeValue)
-        logger.debug('  Fan Control Enabled? = {}'.format(CBW_info['CBW fan enable']))
-    except:
-        logger.error('Could not connect to CBW temperature module.')
-        return {}
+    status.dome_temperature = temp1
+    status.fan_state = r1state
+    status.fan_enable = r2state
 
-    ## Control Fans
-    DeadbandHigh = 0.5
-    DeadbandLow = 3.0
 
-    ## If fan enable not on, return values and stop
-    if not CBW_info['CBW fan enable']:
-        if CBW_info['CBW fan state']:
-            logger.info("  Turning Dome Fan Off.  Remote Control Set to Off.")
-            page = urllib.urlopen("http://"+IPaddress+"/state.xml?relay1State=0")
-        return CBW_info
-    
-    ## If fans should be on or off based on the time of day
-    operate_fans_now = True
-    
-    ## Set state of fans based on temperature
-    if OutsideTemp and InsideTemp:
-        logger.debug('  Inside Temp = {:.1f}'.format(InsideTemp))
-        logger.debug('  Outside Temp = {:.1f}'.format(OutsideTemp))
-        DeltaT = InsideTemp - OutsideTemp
 
-        ## Turn on Fans if Inside Temperature is High
-        if operate_fans_now and (InsideTemp > OutsideTemp + DeadbandHigh):
-            if not CBW_info['CBW fan state']:
-                logger.info("  Turning Dome Fan On.  DeltaT = %.1f" % DeltaT)
-                page = urllib.urlopen("http://"+IPaddress+"/state.xml?relay1State=1")
-                CBW_info['CBW fan state'] = True
-            else:
-                logger.debug("  Leaving Dome Fan On.  DeltaT = %.1f" % DeltaT)
-        ## Turn off Fans if Inside Temperature is Low
-        elif operate_fans_now and (InsideTemp < OutsideTemp - DeadbandLow):
-            if CBW_info['CBW fan state']:
-                logger.info("  Turning Dome Fan Off.  DeltaT = %.1f" % DeltaT)
-                page = urllib.urlopen("http://"+IPaddress+"/state.xml?relay1State=0")
-                CBW_info['CBW fan state'] = False
-            else:
-                logger.debug("  Leaving Dome Fan Off.  DeltaT = %.1f" % DeltaT)
-        ## Turn off Fans if it is night
-        elif not operate_fans_now:
-            if CBW_info['CBW fan state']:
-                logger.info("  Turning Dome Fan Off for Night.  DeltaT = %.1f" % DeltaT)
-                page = urllib.urlopen("http://"+IPaddress+"/state.xml?relay1State=0")
-                CBW_info['CBW fan state'] = False
-            else:
-                logger.debug("  Leaving Dome Fan Off.  DeltaT = %.1f" % DeltaT)
 
-    return CBW_info
+
+#     import urllib
+#     from xml.dom import minidom
+#     logger.info('Getting CBW temperature module status')
+#     if ('RCOS temperature units' in focuser_info.keys()) and ('RCOS temperature (truss)' in focuser_info.keys()):
+#         if focuser_info['RCOS temperature units'] == 'F':
+#             InsideTemp = focuser_info['RCOS temperature (truss)']
+#         else:
+#             logger.error('  Focuser temperature unit mismatch')
+#             return {}
+#     else:
+#         logger.error('  Focuser temperature unit not found')
+#         return {}
+# 
+#     if ('boltwood temp units' in boltwood.keys()) and ('boltwood ambient temp' in boltwood.keys()):
+#         if boltwood['boltwood temp units'] == 'F':
+#             OutsideTemp = boltwood['boltwood ambient temp']
+#         else:
+#             logger.error('  Boltwood temperature unit mismatch')
+#             return{}
+#     else:
+#         logger.error('  Boltwood temperature unit not found')
+#         return{}
+# 
+#     CBW_info = {}
+#     IPaddress = "192.168.1.115"
+#     try:
+#         page = urllib.urlopen("http://"+IPaddress+"/state.xml")
+#         contents = page.read()
+#         ContentLines = contents.splitlines()
+#         xmldoc = minidom.parseString(contents)
+#         CBW_info['CBW temperature units'] = str(xmldoc.getElementsByTagName('units')[0].firstChild.nodeValue)
+#         CBW_info['CBW temp1'] = float(xmldoc.getElementsByTagName('sensor1temp')[0].firstChild.nodeValue)
+#         logger.debug('  Temp1 = {:.1f} {}'.format(CBW_info['CBW temp1'], CBW_info['CBW temperature units']))
+#         CBW_info['CBW temp2'] = float(xmldoc.getElementsByTagName('sensor2temp')[0].firstChild.nodeValue)
+#         logger.debug('  Temp2 = {:.1f} {}'.format(CBW_info['CBW temp2'], CBW_info['CBW temperature units']))
+#         if CBW_info['CBW temperature units'] == "C":
+#             CBW_info['CBW temp1'] = CBW_info['CBW temp1']*9./5. + 32.
+#             CBW_info['CBW temp2'] = CBW_info['CBW temp2']*9./5. + 32.
+#             CBW_info['CBW temperature units'] = 'F'
+#             logger.info('  Temp1 = {:.1f} {}'.format(CBW_info['CBW temp1'], CBW_info['CBW temperature units']))
+#             logger.debug('  Temp2 = {:.1f} {}'.format(CBW_info['CBW temp2'], CBW_info['CBW temperature units']))
+#         CBW_info['CBW fan state'] = bool(xmldoc.getElementsByTagName('relay1state')[0].firstChild.nodeValue)
+#         logger.info('  Fans On? = {}'.format(CBW_info['CBW fan state']))
+#         CBW_info['CBW fan enable'] = bool(xmldoc.getElementsByTagName('relay2state')[0].firstChild.nodeValue)
+#         logger.debug('  Fan Control Enabled? = {}'.format(CBW_info['CBW fan enable']))
+#     except:
+#         logger.error('Could not connect to CBW temperature module.')
+#         return {}
+# 
+#     ## Control Fans
+#     DeadbandHigh = 0.5
+#     DeadbandLow = 3.0
+# 
+#     ## If fan enable not on, return values and stop
+#     if not CBW_info['CBW fan enable']:
+#         if CBW_info['CBW fan state']:
+#             logger.info("  Turning Dome Fan Off.  Remote Control Set to Off.")
+#             page = urllib.urlopen("http://"+IPaddress+"/state.xml?relay1State=0")
+#         return CBW_info
+#     
+#     ## If fans should be on or off based on the time of day
+#     operate_fans_now = True
+#     
+#     ## Set state of fans based on temperature
+#     if OutsideTemp and InsideTemp:
+#         logger.debug('  Inside Temp = {:.1f}'.format(InsideTemp))
+#         logger.debug('  Outside Temp = {:.1f}'.format(OutsideTemp))
+#         DeltaT = InsideTemp - OutsideTemp
+# 
+#         ## Turn on Fans if Inside Temperature is High
+#         if operate_fans_now and (InsideTemp > OutsideTemp + DeadbandHigh):
+#             if not CBW_info['CBW fan state']:
+#                 logger.info("  Turning Dome Fan On.  DeltaT = %.1f" % DeltaT)
+#                 page = urllib.urlopen("http://"+IPaddress+"/state.xml?relay1State=1")
+#                 CBW_info['CBW fan state'] = True
+#             else:
+#                 logger.debug("  Leaving Dome Fan On.  DeltaT = %.1f" % DeltaT)
+#         ## Turn off Fans if Inside Temperature is Low
+#         elif operate_fans_now and (InsideTemp < OutsideTemp - DeadbandLow):
+#             if CBW_info['CBW fan state']:
+#                 logger.info("  Turning Dome Fan Off.  DeltaT = %.1f" % DeltaT)
+#                 page = urllib.urlopen("http://"+IPaddress+"/state.xml?relay1State=0")
+#                 CBW_info['CBW fan state'] = False
+#             else:
+#                 logger.debug("  Leaving Dome Fan Off.  DeltaT = %.1f" % DeltaT)
+#         ## Turn off Fans if it is night
+#         elif not operate_fans_now:
+#             if CBW_info['CBW fan state']:
+#                 logger.info("  Turning Dome Fan Off for Night.  DeltaT = %.1f" % DeltaT)
+#                 page = urllib.urlopen("http://"+IPaddress+"/state.xml?relay1State=0")
+#                 CBW_info['CBW fan state'] = False
+#             else:
+#                 logger.debug("  Leaving Dome Fan Off.  DeltaT = %.1f" % DeltaT)
+
+    return status
 
 
 def get_status_and_log(telescope, logger):
@@ -359,8 +382,8 @@ def get_status_and_log(telescope, logger):
         status = telstatus(telescope=telescope, date=datetime.datetime.utcnow())
         status = get_telescope_info(status, logger)
         status = get_focuser_info(status, logger)
-#         if telescope == 'V20':
-#             control_by_web(focuser_info, boltwood, logger)
+        if telescope == 'V20':
+            control_by_web(status, logger)
 
         assert len(telstatus.objects(__raw__={'current': True, 'telescope': telescope})) <= 1
         if len(telstatus.objects(__raw__={'current': True, 'telescope': telescope})) == 1:
