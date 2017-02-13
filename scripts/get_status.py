@@ -382,8 +382,6 @@ def get_status_and_log(telescope, logger):
         status = telstatus(telescope=telescope, date=datetime.datetime.utcnow())
         status = get_telescope_info(status, logger)
         status = get_focuser_info(status, logger)
-        if telescope == 'V20':
-            control_by_web(status, logger)
 
         assert len(telstatus.objects(__raw__={'current': True, 'telescope': telescope})) <= 1
         if len(telstatus.objects(__raw__={'current': True, 'telescope': telescope})) == 1:
