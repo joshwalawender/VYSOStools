@@ -23,9 +23,9 @@ class weather(me.Document):
     temp = me.DecimalField(precision=2)
     wind = me.DecimalField(precision=1)
     gust = me.DecimalField(precision=1)
-    rain = me.DecimalField(precision=2)
-    light = me.DecimalField(precision=2)
-    switch = me.BooleanField()
+    rain = me.IntField()
+    light = me.IntField()
+    switch = me.IntField()
     safe = me.BooleanField()
 
     meta = {'collection': 'weather',
@@ -112,11 +112,39 @@ def get_weather(logger):
     address = 'http://192.168.1.105/cgi-bin/cgiLastData'
     r = requests.get(address)
     lines = r.text.splitlines()
-    for i,line in enumerate(lines):
+    result = {}
+    for line in lines:
         key, val = line.split('=')
-        lines[i] = str(key), str(val)
+        result[str(key)] = str(val)
 
-    print(lines)
+    weatherdoc = weather(date=datetime.datetime.strptime(result['dataGMTTime'], '%Y/%m/%d %H:%M:%S'))
+    weatherdoc.clouds = float(result['clouds'])
+    weatherdoc.temp = float(result['temp'])
+    weatherdoc.wind = float(result['wind'])
+    weatherdoc.gust = float(result['gust'])
+    weatherdoc.rain = int(result['rain'])
+    weatherdoc.light = int(result['light'])
+    weatherdoc.switch = int(result['switch'])
+    weatherdoc.safe = {'1': True, '0': False}[result['safe']]
+
+    threshold = 30
+    age = (weatherdoc.querydate - weatherdoc.date).total_seconds()
+    if age > threshold:
+        logger.warning('Age of weather data ({:.1f}) is greater than {:.0f} seconds'.format(
+                       age, threshold))
+
+    me.connect('vysos', host='192.168.1.101')
+    assert len(weather.objects(__raw__={'current': True})) <= 1
+    if len(weather.objects(__raw__={'current': True})) == 1:
+        logger.info('Modifying old "current" document')
+        weather.objects(__raw__={'current': True}).update_one(set__current=False)
+        logger.info('  Done')
+    logger.info('Saving new "current" document')
+    weatherdoc.save()
+    logger.info("  Done")
+    logger.info("\n{}".format(weatherdoc))
+
+
 
 
 ##-------------------------------------------------------------------------
@@ -307,6 +335,17 @@ def get_status_and_log(telescope, logger):
     import pywintypes
     import urllib
     from xml.dom import minidom
+
+    ## Set up log file output
+    LogFilePath = os.path.join('Z:\\', 'Logs', DateString)
+    if not os.path.exists(LogFilePath):
+        os.mkdir(LogFilePath)
+    LogFile = os.path.join(LogFilePath, 'get_status_{}.log'.format(DateString))
+    LogFileHandler = logging.FileHandler(LogFile)
+    LogFileHandler.setLevel(logging.DEBUG)
+    LogFileHandler.setFormatter(LogFormat)
+    logger.addHandler(LogFileHandler)
+
     logger.info('#### Starting Status Queries ####')
 
     ##-------------------------------------------------------------------------
@@ -376,15 +415,7 @@ if __name__ == '__main__':
                                       datefmt='%Y%m%d %H:%M:%S')
         LogConsoleHandler.setFormatter(LogFormat)
         logger.addHandler(LogConsoleHandler)
-        ## Set up file output
-        LogFilePath = os.path.join('Z:\\', 'Logs', DateString)
-        if not os.path.exists(LogFilePath):
-            os.mkdir(LogFilePath)
-        LogFile = os.path.join(LogFilePath, 'get_status_{}.log'.format(DateString))
-        LogFileHandler = logging.FileHandler(LogFile)
-        LogFileHandler.setLevel(logging.DEBUG)
-        LogFileHandler.setFormatter(LogFormat)
-        logger.addHandler(LogFileHandler)
+
 
     while True:
         if telescope in ['V5', 'V20']:
