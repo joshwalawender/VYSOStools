@@ -15,6 +15,40 @@ import numpy as np
 import datetime
 import mongoengine as me
 
+class weather(me.Document):
+    querydate = me.DateTimeField(default=datetime.datetime.utcnow(), required=True)
+    date = me.DateTimeField(required=True)
+    current = me.BooleanField(default=True, required=True)
+    clouds = me.DecimalField(precision=2)
+    temp = me.DecimalField(precision=2)
+    wind = me.DecimalField(precision=1)
+    gust = me.DecimalField(precision=1)
+    rain = me.DecimalField(precision=2)
+    light = me.DecimalField(precision=2)
+    switch = me.BooleanField()
+    safe = me.BooleanField()
+
+    meta = {'collection': 'weather',
+            'indexes': ['current', 'querydate', 'date']}
+
+    def __str__(self):
+        output = 'MongoEngine Document at: {}\n'.format(self.querydate.strftime('%Y%m%d %H:%M:%S'))
+        if self.date: output += '  Date: {}\n'.format(self.date.strftime('%Y%m%d %H:%M:%S'))
+        if self.current: output += '  Current: {}\n'.format(self.current)
+        if self.clouds: output += '  clouds: {:.2f}\n'.format(self.clouds)
+        if self.temp: output += '  temp: {:.2f}\n'.format(self.temp)
+        if self.wind: output += '  wind: {:.1f}\n'.format(self.wind)
+        if self.gust: output += '  gust: {:.1f}\n'.format(self.gust)
+        if self.rain: output += '  rain: {:.0f}\n'.format(self.rain)
+        if self.light: output += '  light: {:.0f}\n'.format(self.light)
+        if self.switch: output += '  switch: {}\n'.format(self.switch)
+        if self.safe: output += '  safe: {}\n'.format(self.safe)
+        return output
+
+    def __repr__(self):
+        return self.__str__()
+
+
 class telstatus(me.Document):
     telescope = me.StringField(max_length=3, required=True, choices=['V5', 'V20'])
     date = me.DateTimeField(default=datetime.datetime.utcnow(), required=True)
@@ -65,6 +99,24 @@ class telstatus(me.Document):
 
     def __repr__(self):
         return self.__str__()
+
+
+##-------------------------------------------------------------------------
+## Query AAG Solo for Weather Data
+##-------------------------------------------------------------------------
+def get_weather(logger):
+    logger.info('Getting Weather status')
+    import requests
+    # http://aagsolo/cgi-bin/cgiLastData
+    # http://aagsolo/cgi-bin/cgiHistData
+    address = 'http://192.168.1.105/cgi-bin/cgiLastData'
+    r = requests.get(address)
+    lines = r.text.splitlines()
+    for i,line in enumerate(lines):
+        key, val = line.split('=')
+        lines[i] = str(key), str(val)
+
+    print(lines)
 
 
 ##-------------------------------------------------------------------------
@@ -250,36 +302,11 @@ def control_by_web(focuser_info, boltwood, logger):
     return CBW_info
 
 
-def get_status_and_log(telescope):
-    ##-------------------------------------------------------------------------
-    ## Create logger object
-    ##-------------------------------------------------------------------------
-    now = datetime.datetime.utcnow()
-    DateString = now.strftime("%Y%m%dUT")
-    TimeString = now.strftime("%H:%M:%S")
-    logger = logging.getLogger('get_status_{}'.format(DateString))
-    if len(logger.handlers) < 1:
-        logger.setLevel(logging.DEBUG)
-        ## Set up console output
-        LogConsoleHandler = logging.StreamHandler()
-        if args.verbose:
-            LogConsoleHandler.setLevel(logging.DEBUG)
-        else:
-            LogConsoleHandler.setLevel(logging.INFO)
-        LogFormat = logging.Formatter('%(asctime)s %(levelname)8s: %(message)s',
-                                      datefmt='%Y%m%d %H:%M:%S')
-        LogConsoleHandler.setFormatter(LogFormat)
-        logger.addHandler(LogConsoleHandler)
-        ## Set up file output
-        LogFilePath = os.path.join('Z:\\', 'Logs', DateString)
-        if not os.path.exists(LogFilePath):
-            os.mkdir(LogFilePath)
-        LogFile = os.path.join(LogFilePath, 'get_status_{}.log'.format(DateString))
-        LogFileHandler = logging.FileHandler(LogFile)
-        LogFileHandler.setLevel(logging.DEBUG)
-        LogFileHandler.setFormatter(LogFormat)
-        logger.addHandler(LogFileHandler)
-
+def get_status_and_log(telescope, logger):
+    import win32com.client
+    import pywintypes
+    import urllib
+    from xml.dom import minidom
     logger.info('#### Starting Status Queries ####')
 
     ##-------------------------------------------------------------------------
@@ -310,10 +337,6 @@ def get_status_and_log(telescope):
 
 
 if __name__ == '__main__':
-    import win32com.client
-    import pywintypes
-    import urllib
-    from xml.dom import minidom
 
     ##-------------------------------------------------------------------------
     ## Parse Command Line Arguments
@@ -327,14 +350,46 @@ if __name__ == '__main__':
         default=False, help="Be verbose! (default = False)")
     ## add arguments
     parser.add_argument("-t",
-        type=str, dest="telescope",
-        choices=['V5', 'V20'], required=True,
-        help="The telescope system we are querying.")
+        type=str, dest="telescope", default='',
+        choices=['V5', 'V20', ''], required=False,
+        help="The telescope system we are querying.  Will query weather if not specified.")
     args = parser.parse_args()
 
     telescope = args.telescope
 
+    ##-------------------------------------------------------------------------
+    ## Create logger object
+    ##-------------------------------------------------------------------------
+    now = datetime.datetime.utcnow()
+    DateString = now.strftime("%Y%m%dUT")
+    TimeString = now.strftime("%H:%M:%S")
+    logger = logging.getLogger('get_status_{}'.format(DateString))
+    if len(logger.handlers) < 1:
+        logger.setLevel(logging.DEBUG)
+        ## Set up console output
+        LogConsoleHandler = logging.StreamHandler()
+        if args.verbose:
+            LogConsoleHandler.setLevel(logging.DEBUG)
+        else:
+            LogConsoleHandler.setLevel(logging.INFO)
+        LogFormat = logging.Formatter('%(asctime)s %(levelname)8s: %(message)s',
+                                      datefmt='%Y%m%d %H:%M:%S')
+        LogConsoleHandler.setFormatter(LogFormat)
+        logger.addHandler(LogConsoleHandler)
+        ## Set up file output
+        LogFilePath = os.path.join('Z:\\', 'Logs', DateString)
+        if not os.path.exists(LogFilePath):
+            os.mkdir(LogFilePath)
+        LogFile = os.path.join(LogFilePath, 'get_status_{}.log'.format(DateString))
+        LogFileHandler = logging.FileHandler(LogFile)
+        LogFileHandler.setLevel(logging.DEBUG)
+        LogFileHandler.setFormatter(LogFormat)
+        logger.addHandler(LogFileHandler)
+
     while True:
-        get_status_and_log(telescope)
+        if telescope in ['V5', 'V20']:
+            get_status_and_log(telescope, logger)
+        else:
+            get_weather(logger)
         logging.shutdown()
         time.sleep(20)
