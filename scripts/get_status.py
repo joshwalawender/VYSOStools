@@ -156,7 +156,7 @@ def get_telescope_info(status, logger):
         ACP = win32com.client.Dispatch("ACP.Telescope")
     except:
         logger.error('Could not connect to ACP ASCOM object.')
-        return
+        return status
 
     try:
         status.connected = ACP.Connected
@@ -205,6 +205,7 @@ def get_focuser_info(status, logger):
         logger.debug('  Connected to FocusMax')
     except:
         logger.error('Could not connect to FocusMax ASCOM object.')
+        return status
 
     ## Get Average of 3 Temperature Readings
     FocusMax_Temps = []
@@ -235,6 +236,8 @@ def get_focuser_info(status, logger):
 ## Query ControlByWeb Temperature Module for Temperature and Fan State
 ##-------------------------------------------------------------------------
 def control_by_web(focuser_info, boltwood, logger):
+    import urllib
+    from xml.dom import minidom
     logger.info('Getting CBW temperature module status')
     if ('RCOS temperature units' in focuser_info.keys()) and ('RCOS temperature (truss)' in focuser_info.keys()):
         if focuser_info['RCOS temperature units'] == 'F':
@@ -331,11 +334,6 @@ def control_by_web(focuser_info, boltwood, logger):
 
 
 def get_status_and_log(telescope, logger):
-    import win32com.client
-    import pywintypes
-    import urllib
-    from xml.dom import minidom
-
     ## Set up log file output
     LogFilePath = os.path.join('Z:\\', 'Logs', DateString)
     if not os.path.exists(LogFilePath):
@@ -419,6 +417,8 @@ if __name__ == '__main__':
 
     while True:
         if telescope in ['V5', 'V20']:
+            import win32com.client
+            import pywintypes
             get_status_and_log(telescope, logger)
         else:
             get_weather(logger)
