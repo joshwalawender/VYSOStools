@@ -42,9 +42,13 @@
         <th style="width: 300px;">Time</td>
         <th style="width: 250px; text-align: right;">Weather</td>
         <th style="width: 100px; text-align: left;">
-        {% if currentweather.safe == True %} <font color="green">Safe</font>
-        {% elif currentweather.safe == False %} <font color="red">Unsafe</font>
-        {% else %} <font color="red">Unknown</font> {% end %}
+        {% if (currentweather.querydate - currentweather.date).total_seconds() < 60 %}
+            {% if currentweather.safe == True %} <font color="green">Safe</font>
+            {% elif currentweather.safe == False %} <font color="red">Unsafe</font>
+            {% else %} <font color="red">Unknown</font> {% end %}
+        {% else %}
+            <font color="red">Stale</font>
+        {% end %}
         </td>
         <th style="width: 250px;">Disks</td>
     </tr>
@@ -67,7 +71,7 @@
     </tr>
     <tr>
         <td style="text-align: left;">{{ now[1].strftime('%Y/%m/%d %H:%M:%S UT') }}</td>
-        <td style="text-align: right;">Sky Delta:</td>
+        <td style="text-align: right;">Cloudiness:</td>
         <td style="text-align: left;">
         {% if currentweather.clouds %} {{ '{:.1f} F'.format(currentweather.clouds) }}{% end %}
         </td>
