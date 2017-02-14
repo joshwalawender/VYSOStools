@@ -180,17 +180,21 @@
     <tr>
         <td style="text-align: right;">Status:</td>
         <td style="text-align: left;">
-            {% if v5status.slewing %} <font color="orange">Slewing</font>
-            {% elif v5status.tracking %} <font color="green">Tracking</font>
-            {% elif v5status.park %} <font color="black">Parked</font>
-            {% else %} <font color="black">Stationary</font>
+            {% if v5status.connected %}
+                {% if v5status.slewing %} <font color="orange">Slewing</font>
+                {% elif v5status.tracking %} <font color="green">Tracking</font>
+                {% elif v5status.park %} <font color="black">Parked</font>
+                {% else %} <font color="black">Stationary</font>
+                {% end %}
             {% end %}
         </td>
         <td style="text-align: left;">
-            {% if v20status.slewing %} <font color="orange">Slewing</font>
-            {% elif v20status.tracking %} <font color="green">Tracking</font>
-            {% elif v20status.park %} <font color="black">Parked</font>
-            {% else %} <font color="black">Stationary</font>
+            {% if v20status.connected %}
+                {% if v20status.slewing %} <font color="orange">Slewing</font>
+                {% elif v20status.tracking %} <font color="green">Tracking</font>
+                {% elif v20status.park %} <font color="black">Parked</font>
+                {% else %} <font color="black">Stationary</font>
+                {% end %}
             {% end %}
         </td>
     </tr>
