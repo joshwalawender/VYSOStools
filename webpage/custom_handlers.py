@@ -244,6 +244,16 @@ class Status(RequestHandler):
         me.connect('vysos', host='192.168.1.101')
         v5status = telstatus.objects(__raw__={'current': True, 'telescope': 'V5'})[0]
         v20status = telstatus.objects(__raw__={'current': True, 'telescope': 'V20'})[0]
+        if v5status.RA and v5status.DEC:
+            v5coord = SkyCoord(v5status.RA, v5status.DEC, unit=u.deg)
+            tlog.app_log.info('{} {}'.format(v5status.RA, v5status.DEC))
+            tlog.app_log.info('{}'.format(v5coord.to_string('hmsdms', sep=':', precision=0).split()))
+            v5status.RA, v5status.DEC = v5coord.to_string('hmsdms', sep=':', precision=0).split()
+        if v20status.RA and v20status.DEC:
+            v20coord = SkyCoord(v20status.RA, v20status.DEC, unit=u.deg)
+            tlog.app_log.info('{} {}'.format(v20status.RA, v20status.DEC))
+            tlog.app_log.info('{}'.format(v20coord.to_string('hmsdms', sep=':', precision=0).split()))
+            v20status.RA, v20status.DEC = v20coord.to_string('hmsdms', sep=':', precision=0).split()
         currentweather = weather.objects(__raw__={'current': True})[0]
         cctv = False
         if input.lower() in ["cctv", "cctv.html"]:
