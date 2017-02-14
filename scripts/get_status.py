@@ -136,14 +136,17 @@ def get_weather(logger):
     me.connect('vysos', host='192.168.1.101')
 
     ncurrent = len(weather.objects(__raw__={'current': True}))
-    if ncurrent <= 1:
+    if ncurrent < 1:
         logger.error('No exiting "current" document found!')
     elif ncurrent == 1:
         logger.info('Modifying old "current" document')
-        weather.objects(__raw__={'current': True}).update_one(set__current=False)
+        weather.objects(__raw__={'current': True, 'telescope': telescope}).update_one(set__current=False)
         logger.info('  Done')
     else:
-        logger.error('Multiple {} exiting "currnet" document found!'.format(ncurrent))
+        logger.error('Multiple ({}) exiting "current" document found!'.format(ncurrent))
+        logger.info('Updating old "current" documents')
+        weather.objects(__raw__={'current': True, 'telescope': telescope}).update(set__current=False, multi=True)
+        logger.info('  Done')
 
     try:
         logger.info('Saving new "current" document')
@@ -388,19 +391,23 @@ def get_status_and_log(telescope, logger):
         logger.error('Could not connect to mongo db')
         raise Error('Failed to connect to mongo')
     else:
-        status = telstatus(telescope=telescope, date=datetime.datetime.utcnow())
+        status = telstatus(telescope=telescope, current=True,
+                           date=datetime.datetime.utcnow())
         status = get_telescope_info(status, logger)
         status = get_focuser_info(status, logger)
 
     ncurrent = len(telstatus.objects(__raw__={'current': True, 'telescope': telescope}))
-    if ncurrent <= 1:
+    if ncurrent < 1:
         logger.error('No exiting "current" document found!')
     elif ncurrent == 1:
         logger.info('Modifying old "current" document')
         telstatus.objects(__raw__={'current': True, 'telescope': telescope}).update_one(set__current=False)
         logger.info('  Done')
     else:
-        logger.error('Multiple {} exiting "currnet" document found!'.format(ncurrent))
+        logger.error('Multiple ({}) exiting "current" document found!'.format(ncurrent))
+        logger.info('Updating old "current" documents')
+        telstatus.objects(__raw__={'current': True, 'telescope': telescope}).update(set__current=False, multi=True)
+        logger.info('  Done')
 
     try:
         logger.info('Saving new "current" document')
