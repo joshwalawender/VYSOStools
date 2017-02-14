@@ -185,7 +185,7 @@ def get_telescope_info(status, logger):
             status.az = float(ACP.Azimuth)
             logger.info('  ACP Az = {:.2f}'.format(status.az))
             try:
-                status.RA = ACP.TargetRightAscension
+                status.RA = ACP.TargetRightAscension * 15.0
                 status.DEC = ACP.TargetDeclination
                 logger.info('  ACP target RA = {:.4f}'.format(status.RA))
                 logger.info('  ACP target Dec = {:.4f}'.format(status.DEC))
