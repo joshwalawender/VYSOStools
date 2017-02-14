@@ -152,7 +152,7 @@ def get_weather(logger):
         logger.info('Saving new "current" document')
         weatherdoc.save()
         logger.info("  Done")
-        logger.info("\n{}".format(status))
+        logger.info("\n{}".format(weatherdoc))
     except:
         logger.error('Failed to add new document')
 
