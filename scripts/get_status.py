@@ -134,15 +134,24 @@ def get_weather(logger):
                        age, threshold))
 
     me.connect('vysos', host='192.168.1.101')
-    assert len(weather.objects(__raw__={'current': True})) <= 1
-    if len(weather.objects(__raw__={'current': True})) == 1:
+
+    if len(weather.objects(__raw__={'current': True})) <= 1:
+        logger.error('No exiting "current" document found!')
+    elif len(weather.objects(__raw__={'current': True})) == 1:
         logger.info('Modifying old "current" document')
         weather.objects(__raw__={'current': True}).update_one(set__current=False)
         logger.info('  Done')
-    logger.info('Saving new "current" document')
-    weatherdoc.save()
-    logger.info("  Done")
-    logger.info("\n{}".format(weatherdoc))
+    else:
+        logger.error('Multiple {} exiting "currnet" document found!'.format(
+               len(weather.objects(__raw__={'current': True}))))
+
+    try:
+        logger.info('Saving new "current" document')
+        weatherdoc.save()
+        logger.info("  Done")
+        logger.info("\n{}".format(status))
+    except:
+        logger.error('Failed to add new document')
 
 
 
@@ -383,15 +392,23 @@ def get_status_and_log(telescope, logger):
         status = get_telescope_info(status, logger)
         status = get_focuser_info(status, logger)
 
-        assert len(telstatus.objects(__raw__={'current': True, 'telescope': telescope})) <= 1
-        if len(telstatus.objects(__raw__={'current': True, 'telescope': telescope})) == 1:
-            logger.info('Modifying old "current" document')
-            telstatus.objects(__raw__={'current': True, 'telescope': telescope}).update_one(set__current=False)
-            logger.info('  Done')
+    if len(telstatus.objects(__raw__={'current': True, 'telescope': telescope})) <= 1:
+        logger.error('No exiting "current" document found!')
+    elif len(telstatus.objects(__raw__={'current': True, 'telescope': telescope})) == 1:
+        logger.info('Modifying old "current" document')
+        telstatus.objects(__raw__={'current': True, 'telescope': telescope}).update_one(set__current=False)
+        logger.info('  Done')
+    else:
+        logger.error('Multiple {} exiting "currnet" document found!'.format(
+               len(telstatus.objects(__raw__={'current': True, 'telescope': telescope}))))
+
+    try:
         logger.info('Saving new "current" document')
         status.save()
         logger.info("  Done")
         logger.info("\n{}".format(status))
+    except:
+        logger.error('Failed to add new document')
 
 
 if __name__ == '__main__':
