@@ -9,6 +9,7 @@ from datetime import datetime as dt
 from datetime import timedelta as tdelta
 import re
 import glob
+from time import sleep
 
 import pymongo
 from pymongo import MongoClient
@@ -242,8 +243,23 @@ class Status(RequestHandler):
 
         tlog.app_log.info('  Rendering Status')
         me.connect('vysos', host='192.168.1.101')
-        v5status = telstatus.objects(__raw__={'current': True, 'telescope': 'V5'})[0]
-        v20status = telstatus.objects(__raw__={'current': True, 'telescope': 'V20'})[0]
+        
+        v5status = None
+        while not v5status:
+            try:
+                v5status = telstatus.objects(__raw__={'current': True, 'telescope': 'V5'})[0]
+            except:
+                tlog.app_log.info('Failed to get V5 status, retrying after 100ms')
+                sleep(0.100)
+        
+        v20status = None
+        while not v20status:
+            try:
+                v20status = telstatus.objects(__raw__={'current': True, 'telescope': 'V20'})[0]
+            except:
+                tlog.app_log.info('Failed to get V20 status, retrying after 100ms')
+                sleep(0.100)
+        
         if v5status.RA and v5status.DEC:
             v5coord = SkyCoord(v5status.RA, v5status.DEC, unit=u.deg)
             tlog.app_log.info('{} {}'.format(v5status.RA, v5status.DEC))
