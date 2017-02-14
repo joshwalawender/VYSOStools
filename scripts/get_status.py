@@ -135,15 +135,15 @@ def get_weather(logger):
 
     me.connect('vysos', host='192.168.1.101')
 
-    if len(weather.objects(__raw__={'current': True})) <= 1:
+    ncurrent = len(weather.objects(__raw__={'current': True}))
+    if ncurrent <= 1:
         logger.error('No exiting "current" document found!')
-    elif len(weather.objects(__raw__={'current': True})) == 1:
+    elif ncurrent == 1:
         logger.info('Modifying old "current" document')
         weather.objects(__raw__={'current': True}).update_one(set__current=False)
         logger.info('  Done')
     else:
-        logger.error('Multiple {} exiting "currnet" document found!'.format(
-               len(weather.objects(__raw__={'current': True}))))
+        logger.error('Multiple {} exiting "currnet" document found!'.format(ncurrent))
 
     try:
         logger.info('Saving new "current" document')
@@ -392,15 +392,15 @@ def get_status_and_log(telescope, logger):
         status = get_telescope_info(status, logger)
         status = get_focuser_info(status, logger)
 
-    if len(telstatus.objects(__raw__={'current': True, 'telescope': telescope})) <= 1:
+    ncurrent = len(telstatus.objects(__raw__={'current': True, 'telescope': telescope}))
+    if ncurrent <= 1:
         logger.error('No exiting "current" document found!')
-    elif len(telstatus.objects(__raw__={'current': True, 'telescope': telescope})) == 1:
+    elif ncurrent == 1:
         logger.info('Modifying old "current" document')
         telstatus.objects(__raw__={'current': True, 'telescope': telescope}).update_one(set__current=False)
         logger.info('  Done')
     else:
-        logger.error('Multiple {} exiting "currnet" document found!'.format(
-               len(telstatus.objects(__raw__={'current': True, 'telescope': telescope}))))
+        logger.error('Multiple {} exiting "currnet" document found!'.format(ncurrent))
 
     try:
         logger.info('Saving new "current" document')
