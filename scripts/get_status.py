@@ -370,14 +370,14 @@ def control_by_web(status, logger):
 
 def get_status_and_log(telescope, logger):
     ## Set up log file output
-    LogFilePath = os.path.join('Z:\\', 'Logs', DateString)
-    if not os.path.exists(LogFilePath):
-        os.mkdir(LogFilePath)
-    LogFile = os.path.join(LogFilePath, 'get_status_{}.log'.format(DateString))
-    LogFileHandler = logging.FileHandler(LogFile)
-    LogFileHandler.setLevel(logging.DEBUG)
-    LogFileHandler.setFormatter(LogFormat)
-    logger.addHandler(LogFileHandler)
+#     LogFilePath = os.path.join('Z:\\', 'Logs', DateString)
+#     if not os.path.exists(LogFilePath):
+#         os.mkdir(LogFilePath)
+#     LogFile = os.path.join(LogFilePath, 'get_status_{}.log'.format(DateString))
+#     LogFileHandler = logging.FileHandler(LogFile)
+#     LogFileHandler.setLevel(logging.DEBUG)
+#     LogFileHandler.setFormatter(LogFormat)
+#     logger.addHandler(LogFileHandler)
 
     logger.info('#### Starting Status Queries ####')
 
