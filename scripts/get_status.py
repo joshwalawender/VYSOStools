@@ -68,10 +68,10 @@ class telstatus(me.Document):
     focuser_position = me.DecimalField(min_value=0, max_value=105000, precision=1)
 
     ## RCOS TCC Status
-    fan_speed = me.DecimalField(min_value=0, max_value=100, precision=0)
+    fan_speed = me.DecimalField(min_value=0, max_value=100, precision=1)
     truss_temperature  = me.DecimalField(min_value=-50, max_value=120, precision=1)
     primary_temperature = me.DecimalField(min_value=-50, max_value=120, precision=1)
-    secondary_temperature = me.DecimalField(min_value=-50, max_value=120, precision=0)
+    secondary_temperature = me.DecimalField(min_value=-50, max_value=120, precision=1)
     ## CBW Status
     dome_temperature = me.DecimalField(min_value=-50, max_value=120, precision=1)
     fan_state = me.BooleanField()
@@ -95,6 +95,13 @@ class telstatus(me.Document):
         if self.ACPerr: output += '  ACPerr: {}\n'.format(self.ACPerr)
         if self.focuser_temperature: output += '  focuser_temperature: {:.1f}\n'.format(self.focuser_temperature)
         if self.focuser_position: output += '  focuser_position: {}\n'.format(self.focuser_position)
+        if self.truss_temperature: output += '  truss_temperature: {}\n'.format(self.truss_temperature)
+        if self.primary_temperature: output += '  primary_temperature: {}\n'.format(self.primary_temperature)
+        if self.secondary_temperature: output += '  secondary_temperature: {}\n'.format(self.secondary_temperature)
+        if self.fan_speed: output += '  fan_speed: {}\n'.format(self.fan_speed)
+        if self.dome_temperature: output += '  dome_temperature: {}\n'.format(self.dome_temperature)
+        if self.fan_state: output += '  fan_state: {}\n'.format(self.fan_state)
+        if self.fan_enable: output += '  fan_enable: {}\n'.format(self.fan_enable)
         return output
 
     def __repr__(self):
@@ -140,12 +147,12 @@ def get_weather(logger):
         logger.error('No exiting "current" document found!')
     elif ncurrent == 1:
         logger.info('Modifying old "current" document')
-        weather.objects(__raw__={'current': True, 'telescope': telescope}).update_one(set__current=False)
+        weather.objects(__raw__={'current': True}).update_one(set__current=False)
         logger.info('  Done')
     else:
         logger.error('Multiple ({}) exiting "current" document found!'.format(ncurrent))
         logger.info('Updating old "current" documents')
-        weather.objects(__raw__={'current': True, 'telescope': telescope}).update(set__current=False, multi=True)
+        weather.objects(__raw__={'current': True}).update(set__current=False, multi=True)
         logger.info('  Done')
 
     try:
@@ -223,7 +230,7 @@ def get_focuser_info(status, logger):
     FocusMax_Temps = []
     for i in range(0,3,1):
         try:
-            newtemp = float(FocusMax.Temperature)*9./5. + 32.
+            newtemp = float(FocusMax.Temperature)
             logger.debug('  Queried FocusMax temperature = {:.1f}'.format(newtemp))
             FocusMax_Temps.append(newtemp)
         except:
@@ -233,7 +240,7 @@ def get_focuser_info(status, logger):
         median_temp = np.median(FocusMax_Temps)
         if (median_temp > -10) and (median_temp < 150):
             status.focuser_temperature = median_temp
-            logger.info('  FocusMax temperature = {:.1f} {}'.format(status.focuser_temperature, 'F'))
+            logger.info('  FocusMax temperature = {:.1f} {}'.format(status.focuser_temperature, 'C'))
     ## Get Position
     try:
         status.focuser_position = int(FocusMax.Position)
@@ -242,6 +249,76 @@ def get_focuser_info(status, logger):
         pass
 
     return status
+
+
+##-------------------------------------------------------------------------
+## Query RCOS TCC
+##-------------------------------------------------------------------------
+def get_RCOS_info(status, logger):
+    logger.info('Getting RCOS TCC status')
+    try:
+        RCOST = win32com.client.Dispatch("RCOS_AE.Temperature")
+        RCOSF = win32com.client.Dispatch("RCOS_AE.Focuser")
+        logger.debug('  Connected to RCOS focuser')
+    except:
+        logger.error('Could not connect to RCOS ASCOM object.')
+        return status
+
+    ## Get Average of 5 Temperature Readings
+    RCOS_Truss_Temps = []
+    RCOS_Primary_Temps = []
+    RCOS_Secondary_Temps = []
+    RCOS_Fan_Speeds = []
+    RCOS_Focus_Positions = []
+    logger.debug('  {:>7s}, {:>7s}, {:>7s}, {:>7s}, {:>5s}'.format('Truss', 'Pri', 'Sec', 'Fan', 'Foc'))
+    for i in range(0,5,1):
+        try:
+            new_Truss_Temp = RCOST.AmbientTemp
+            if new_Truss_Temp > 20 and new_Truss_Temp < 120:
+                RCOS_Truss_Temps.append(new_Truss_Temp)
+            else:
+                new_Truss_Temp = float('nan')
+
+            new_Pri_Temp = RCOST.PrimaryTemp
+            if new_Pri_Temp > 20 and new_Pri_Temp < 120:
+                RCOS_Primary_Temps.append(new_Pri_Temp)
+            else:
+                new_Pri_Temp = float('nan')
+
+            new_Sec_Temp = RCOST.SecondaryTemp
+            if new_Sec_Temp > 20 and new_Sec_Temp < 120:
+                RCOS_Secondary_Temps.append(new_Sec_Temp)
+            else:
+                new_Sec_Temp = float('nan')
+
+            new_Fan_Speed = RCOST.FanSpeed
+            RCOS_Fan_Speeds.append(new_Fan_Speed)
+
+            new_Focus_Pos = RCOSF.Position
+            RCOS_Focus_Positions.append(new_Focus_Pos)
+
+            logger.debug('  {:5.1f} F, {:5.1f} F, {:5.1f} F, {:5.0f} %, {:5d}'.format(new_Truss_Temp, new_Pri_Temp, new_Sec_Temp, new_Fan_Speed, new_Focus_Pos))
+        except:
+            pass
+        time.sleep(1)
+    if len(RCOS_Truss_Temps) >= 3:
+        status.truss_temperature = (float(np.median(RCOS_Truss_Temps)) - 32.)/1.8
+        logger.info('  RCOS temperature (truss) = {:.1f} {}'.format(
+                    status.truss_temperature, 'C'))
+    if len(RCOS_Primary_Temps) >= 3:
+        status.primary_temperature = (float(np.median(RCOS_Primary_Temps)) - 32.)/1.8
+        logger.info('  RCOS temperature (primary) = {:.1f} {}'.format(
+                    status.primary_temperature, 'C'))
+    if len(RCOS_Secondary_Temps) >= 3:
+        status.secondary_temperature = (float(np.median(RCOS_Secondary_Temps)) - 32.)/1.8
+        logger.info('  RCOS temperature (secondary) = {:.1f} {}'.format(
+                    status.secondary_temperature, 'C'))
+    if len(RCOS_Fan_Speeds) >= 3:
+        status.fan_speed = float(np.median(RCOS_Fan_Speeds))
+        logger.info('  RCOS fan speed = {:.0f} %'.format(status.fan_speed))
+
+    return status
+
 
 
 ##-------------------------------------------------------------------------
@@ -387,6 +464,8 @@ def get_status_and_log(telescope, logger):
                        date=datetime.datetime.utcnow())
     status = get_telescope_info(status, logger)
     status = get_focuser_info(status, logger)
+    if telescope == 'V20':
+        status = get_RCOS_info(status, logger)
 
     ##-------------------------------------------------------------------------
     ## Write to Mongo
