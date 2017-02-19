@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 from matplotlib.dates import HourLocator, MinuteLocator, DateFormatter
 
 import mongoengine as me
+from VYSOS.schema import weather
 
 import astropy.units as u
 from astropy.table import Table, Column
@@ -18,39 +19,6 @@ from astropy.time import Time
 from astropy.coordinates import EarthLocation
 from astroplan import Observer
 
-
-class weather(me.Document):
-    querydate = me.DateTimeField(default=datetime.datetime.utcnow(), required=True)
-    date = me.DateTimeField(required=True)
-    current = me.BooleanField(default=True, required=True)
-    clouds = me.DecimalField(precision=2)
-    temp = me.DecimalField(precision=2)
-    wind = me.DecimalField(precision=1)
-    gust = me.DecimalField(precision=1)
-    rain = me.IntField()
-    light = me.IntField()
-    switch = me.IntField()
-    safe = me.BooleanField()
-
-    meta = {'collection': 'weather',
-            'indexes': ['current', 'querydate', 'date']}
-
-    def __str__(self):
-        output = 'MongoEngine Document at: {}\n'.format(self.querydate.strftime('%Y%m%d %H:%M:%S'))
-        if self.date: output += '  Date: {}\n'.format(self.date.strftime('%Y%m%d %H:%M:%S'))
-        if self.current: output += '  Current: {}\n'.format(self.current)
-        if self.clouds: output += '  clouds: {:.2f}\n'.format(self.clouds)
-        if self.temp: output += '  temp: {:.2f}\n'.format(self.temp)
-        if self.wind: output += '  wind: {:.1f}\n'.format(self.wind)
-        if self.gust: output += '  gust: {:.1f}\n'.format(self.gust)
-        if self.rain: output += '  rain: {:.0f}\n'.format(self.rain)
-        if self.light: output += '  light: {:.0f}\n'.format(self.light)
-        if self.switch: output += '  switch: {}\n'.format(self.switch)
-        if self.safe: output += '  safe: {}\n'.format(self.safe)
-        return output
-
-    def __repr__(self):
-        return self.__str__()
 
 
 
@@ -86,7 +54,8 @@ def get_twilights(start, end):
                  ]
 
     twilights.sort(key=lambda x: x[0])
-    final = {'sunset': 0.1, 'ec': 0.2, 'en': 0.3, 'ea': 0.5, 'ma': 0.3, 'mn': 0.2, 'mc': 0.1, 'sunrise': 0.0}
+    final = {'sunset': 0.1, 'ec': 0.2, 'en': 0.3, 'ea': 0.5,
+             'ma': 0.3, 'mn': 0.2, 'mc': 0.1, 'sunrise': 0.0}
     twilights.append((end, 'end', final[twilights[-1][1]]))
 
     return twilights
@@ -111,77 +80,82 @@ def plot_weather(date=None):
     time = [x.date for x in data]
 
     dpi=72
-    fig = plt.figure(figsize=(18,8), dpi=dpi)
+    fig = plt.figure(figsize=(14,6), dpi=dpi)
     night_plot_file_name = 'weather.png'
     destination_path = os.path.abspath('/var/www/')
     night_plot_file = os.path.join(destination_path, night_plot_file_name)
-    plot_positions = [ ( [0.060, 0.730, 0.600, 0.230], [0.700, 0.730, 0.290, 0.230] ),
-                       ( [0.060, 0.480, 0.600, 0.230], [0.700, 0.480, 0.290, 0.230] ) ]
-
+    plot_positions = [ [ [0.060, 0.700, 0.600, 0.220], [0.670, 0.700, 0.320, 0.220] ],
+                       [ [0.060, 0.470, 0.600, 0.220], [0.670, 0.470, 0.320, 0.220] ],
+                       [ [0.060, 0.240, 0.600, 0.220], [0.670, 0.240, 0.320, 0.220] ],
+                       [ [0.060, 0.090, 0.600, 0.140], [0.670, 0.090, 0.320, 0.140] ],
+                       [ [0.060, 0.020, 0.600, 0.060], [0.670, 0.020, 0.320, 0.060] ],
+                     ]
+    labels = ['Outside Temp', 'Cloudiness', 'Wind Speed (kph)', 'Rain', 'Safe']
+    data = [ [(float(x.temp)*1.8+32.) for x in data],
+             [float(x.clouds) for x in data],
+             [float(x.wind) for x in data],
+             [float(x.rain) for x in data],
+             [float(x.safe) for x in data],
+           ]
+    ylims = [ (28,87),
+              (-50,0),
+              (0,170),
+              (3000,0),
+              (-0.25, 1.25),
+            ]
 
     ##-------------------------------------------------------------------------
     ## Temperature
     ##-------------------------------------------------------------------------
-    for lr in range(2):
-        temps = [(float(x.temp)*1.8+32.) for x in data]
-        t_axes = plt.axes(plot_positions[0][lr])
-        plt.title("Weather")
-        t_axes.plot_date(time, temps, 'ko', \
-                         markersize=2, markeredgewidth=0, drawstyle="default", \
-                         label="Outside Temp")
+    for i,label in enumerate(labels):
+        print(label)
+        for lr in range(2):
+            t_axes = plt.axes(plot_positions[i][lr])
+            t_axes.plot_date(time, data[i], 'ko', \
+                             markersize=2, markeredgewidth=0, drawstyle="default", \
+                             label=label)
+            if label == 'Safe':
+                plt.bar(time, data[i], color='g', edgecolor='g', linewidth=0, alpha=0.6)
+            ## Overplot Twilights
+            twilights = get_twilights(start, end)
+            for j in range(len(twilights)-1):
+                plt.axvspan(twilights[j][0], twilights[j+1][0], ymin=0, ymax=1,
+                            color='blue', alpha=twilights[j+1][2])
+            if lr==0:
+                if i==0:
+                    plt.title('Weather (at {})'.format(end.strftime('%Y/%m/%d %H:%M:%S UT')))
+                plt.ylabel(label)
+                plt.xlim(start, end)
+                t_axes.xaxis.set_major_locator(HourLocator(byhour=range(24)))
+                if label == 'Rain':
+                    t_axes.get_yaxis().set_ticklabels([])
+                if i == len(labels)-1:
+                    t_axes.set_yticks([])
+                    t_axes.get_yaxis().set_ticklabels([])
+                    t_axes.xaxis.set_major_formatter(DateFormatter('%H'))
+                else:
+                    plt.legend(loc='best')
+                    plt.grid(which='major', color='k')
+                    plt.grid(which='minor', color='k', alpha=0.8)
+                    t_axes.xaxis.set_major_formatter(plt.NullFormatter())
+            elif lr==1:
+                plt.xlim(end - tdelta(0,1.25*60*60), end)
+                t_axes.get_xaxis().set_ticklabels([])
+                t_axes.get_yaxis().set_ticklabels([])
+                t_axes.xaxis.set_major_locator(HourLocator(byhour=range(24)))
+                t_axes.xaxis.set_minor_locator(MinuteLocator(range(0,60,15)))
+                if i == len(labels)-1:
+                    t_axes.set_yticks([])
+                    t_axes.xaxis.set_major_formatter(DateFormatter('%H:%M'))
+                else:
+                    plt.grid(which='major', color='k')
+                    plt.grid(which='minor', color='k', alpha=0.8)
+                    t_axes.xaxis.set_major_formatter(plt.NullFormatter())
+            plt.ylim(ylims[i])
+            if i == len(labels)-1:
+                plt.xlabel("UT Time")
 
-        ## Overplot Twilights
-        twilights = get_twilights(start, end)
-        for i in range(len(twilights)-1):
-            plt.axvspan(twilights[i][0], twilights[i+1][0], ymin=0, ymax=1,
-                        color='blue', alpha=twilights[i+1][2])
-
-        plt.legend(loc='best')
-        plt.ylabel("Temperature (F)")
-        if lr==0:
-            plt.xlim(start, end)
-            t_axes.xaxis.set_major_locator(HourLocator(byhour=range(24)))
-            t_axes.xaxis.set_major_formatter(DateFormatter('%H'))
-        elif lr==1:
-            plt.xlim(end - tdelta(0,2*60*60), end)
-            t_axes.xaxis.set_major_locator(HourLocator(byhour=range(24)))
-            t_axes.xaxis.set_minor_locator(MinuteLocator(range(0,60,15)))
-            t_axes.xaxis.set_major_formatter(DateFormatter('%H:%M'))
-        plt.ylim(28,87)
-        plt.grid(which='major', color='k')
-        plt.grid(which='minor', color='k', alpha=0.8)
-        plt.xlabel("UT Time")
-
-
-    ##-------------------------------------------------------------------------
-    ## Cloudiness
-    ##-------------------------------------------------------------------------
-    for lr in range(2):
-        clouds = [float(x.clouds) for x in data]
-        t_axes = plt.axes(plot_positions[1][lr])
-        t_axes.plot_date(time, clouds, 'ko', \
-                         markersize=2, markeredgewidth=0, drawstyle="default", \
-                         label="Cloudiness")
-
-        plt.legend(loc='best')
-        plt.ylabel("Cloudiness (C)")
-        if lr==0:
-            plt.xlim(start, end)
-            t_axes.xaxis.set_major_locator(HourLocator(byhour=range(24)))
-            t_axes.xaxis.set_major_formatter(DateFormatter('%H'))
-        elif lr==1:
-            plt.xlim(end - tdelta(0,2*60*60), end)
-            t_axes.xaxis.set_major_locator(HourLocator(byhour=range(24)))
-            t_axes.xaxis.set_minor_locator(MinuteLocator(range(0,60,15)))
-            t_axes.xaxis.set_major_formatter(DateFormatter('%H:%M'))
-        plt.ylim(-50,0)
-        plt.grid(which='major', color='k')
-        plt.grid(which='minor', color='k', alpha=0.8)
-        plt.xlabel("UT Time")
-
-
-
-    plt.savefig(night_plot_file, dpi=dpi)
+    plt.savefig(night_plot_file, dpi=dpi, bbox_inches='tight')
 
 
 def main():
