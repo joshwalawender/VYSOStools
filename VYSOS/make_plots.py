@@ -20,6 +20,17 @@ from astropy.coordinates import EarthLocation
 from astroplan import Observer
 
 
+def moving_averagexy(x, y, window_size):
+    if window_size > len(y):
+        window_size = len(y)
+    if window_size % 2 == 0:
+        window_size += 1
+    nxtrim = int((window_size - 1) / 2)
+    window = np.ones(int(window_size)) / float(window_size)
+    yma = np.convolve(y, window, 'valid')
+    xma = x[2 * nxtrim:]
+    assert len(xma) == len(yma)
+    return xma, yma
 
 
 def get_twilights(start, end):
@@ -90,7 +101,7 @@ def plot_weather(date=None):
                        [ [0.060, 0.090, 0.600, 0.140], [0.670, 0.090, 0.320, 0.140] ],
                        [ [0.060, 0.020, 0.600, 0.060], [0.670, 0.020, 0.320, 0.060] ],
                      ]
-    labels = ['Outside Temp', 'Cloudiness', 'Wind Speed (kph)', 'Rain', 'Safe']
+    labels = ['Outside Temp (F)', 'Cloudiness (C)', 'Wind (kph)', 'Rain', 'Safe']
     data = [ [(float(x.temp)*1.8+32.) for x in data],
              [float(x.clouds) for x in data],
              [float(x.wind) for x in data],
@@ -98,10 +109,10 @@ def plot_weather(date=None):
              [float(x.safe) for x in data],
            ]
     ylims = [ (28,87),
-              (-50,0),
-              (0,170),
+              (-45,5),
+              (-2,max([65, max(data[2])])),
               (3000,0),
-              (-0.25, 1.25),
+              (-0.25, 1.1),
             ]
 
     ##-------------------------------------------------------------------------
@@ -111,11 +122,16 @@ def plot_weather(date=None):
         print(label)
         for lr in range(2):
             t_axes = plt.axes(plot_positions[i][lr])
-            t_axes.plot_date(time, data[i], 'ko', \
-                             markersize=2, markeredgewidth=0, drawstyle="default", \
-                             label=label)
-            if label == 'Safe':
-                plt.bar(time, data[i], color='g', edgecolor='g', linewidth=0, alpha=0.6)
+            if label != 'Safe':
+                t_axes.plot_date(time, data[i], 'ko', label=label,
+                                 markersize=2, markeredgewidth=0,
+                                 drawstyle="default")
+            else:
+                plt.fill_between(time, -1, data[i], where=np.array(data[i])>0, facecolor='green')
+                plt.fill_between(time, -1, data[i], where=np.array(data[i])<=0, facecolor='red')
+            if label == 'Wind (kph)':
+                matime, wind_mavg = moving_averagexy(time, data[i], 9)
+                t_axes.plot_date(matime, wind_mavg, 'b-')
             ## Overplot Twilights
             twilights = get_twilights(start, end)
             for j in range(len(twilights)-1):
@@ -134,7 +150,6 @@ def plot_weather(date=None):
                     t_axes.get_yaxis().set_ticklabels([])
                     t_axes.xaxis.set_major_formatter(DateFormatter('%H'))
                 else:
-                    plt.legend(loc='best')
                     plt.grid(which='major', color='k')
                     plt.grid(which='minor', color='k', alpha=0.8)
                     t_axes.xaxis.set_major_formatter(plt.NullFormatter())
