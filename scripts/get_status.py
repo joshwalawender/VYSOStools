@@ -12,42 +12,6 @@ import datetime
 import re
 import numpy as np
 
-import datetime
-import mongoengine as me
-
-class weather(me.Document):
-    querydate = me.DateTimeField(default=datetime.datetime.utcnow(), required=True)
-    date = me.DateTimeField(required=True)
-    current = me.BooleanField(default=True, required=True)
-    clouds = me.DecimalField(precision=2)
-    temp = me.DecimalField(precision=2)
-    wind = me.DecimalField(precision=1)
-    gust = me.DecimalField(precision=1)
-    rain = me.IntField()
-    light = me.IntField()
-    switch = me.IntField()
-    safe = me.BooleanField()
-
-    meta = {'collection': 'weather',
-            'indexes': ['current', 'querydate', 'date']}
-
-    def __str__(self):
-        output = 'MongoEngine Document at: {}\n'.format(self.querydate.strftime('%Y%m%d %H:%M:%S'))
-        if self.date: output += '  Date: {}\n'.format(self.date.strftime('%Y%m%d %H:%M:%S'))
-        if self.current: output += '  Current: {}\n'.format(self.current)
-        if self.clouds: output += '  clouds: {:.2f}\n'.format(self.clouds)
-        if self.temp: output += '  temp: {:.2f}\n'.format(self.temp)
-        if self.wind: output += '  wind: {:.1f}\n'.format(self.wind)
-        if self.gust: output += '  gust: {:.1f}\n'.format(self.gust)
-        if self.rain: output += '  rain: {:.0f}\n'.format(self.rain)
-        if self.light: output += '  light: {:.0f}\n'.format(self.light)
-        if self.switch: output += '  switch: {}\n'.format(self.switch)
-        if self.safe: output += '  safe: {}\n'.format(self.safe)
-        return output
-
-    def __repr__(self):
-        return self.__str__()
-
 
 class telstatus(me.Document):
     telescope = me.StringField(max_length=3, required=True, choices=['V5', 'V20'])
@@ -106,63 +70,6 @@ class telstatus(me.Document):
 
     def __repr__(self):
         return self.__str__()
-
-
-##-------------------------------------------------------------------------
-## Query AAG Solo for Weather Data
-##-------------------------------------------------------------------------
-def get_weather(logger):
-    logger.info('Getting Weather status')
-    import requests
-    # http://aagsolo/cgi-bin/cgiLastData
-    # http://aagsolo/cgi-bin/cgiHistData
-    address = 'http://192.168.1.105/cgi-bin/cgiLastData'
-    r = requests.get(address)
-    lines = r.text.splitlines()
-    result = {}
-    for line in lines:
-        key, val = line.split('=')
-        result[str(key)] = str(val)
-
-    weatherdoc = weather(date=datetime.datetime.strptime(result['dataGMTTime'], '%Y/%m/%d %H:%M:%S'))
-    weatherdoc.clouds = float(result['clouds'])
-    weatherdoc.temp = float(result['temp'])
-    weatherdoc.wind = float(result['wind'])
-    weatherdoc.gust = float(result['gust'])
-    weatherdoc.rain = int(result['rain'])
-    weatherdoc.light = int(result['light'])
-    weatherdoc.switch = int(result['switch'])
-    weatherdoc.safe = {'1': True, '0': False}[result['safe']]
-
-    threshold = 30
-    age = (weatherdoc.querydate - weatherdoc.date).total_seconds()
-    if age > threshold:
-        logger.warning('Age of weather data ({:.1f}) is greater than {:.0f} seconds'.format(
-                       age, threshold))
-
-    me.connect('vysos', host='192.168.1.101')
-
-    ncurrent = len(weather.objects(__raw__={'current': True}))
-    if ncurrent < 1:
-        logger.error('No exiting "current" document found!')
-    elif ncurrent == 1:
-        logger.info('Modifying old "current" document')
-        weather.objects(__raw__={'current': True}).update_one(set__current=False)
-        logger.info('  Done')
-    else:
-        logger.error('Multiple ({}) exiting "current" document found!'.format(ncurrent))
-        logger.info('Updating old "current" documents')
-        weather.objects(__raw__={'current': True}).update(set__current=False, multi=True)
-        logger.info('  Done')
-
-    try:
-        logger.info('Saving new "current" document')
-        weatherdoc.save()
-        logger.info("  Done")
-        logger.info("\n{}".format(weatherdoc))
-    except:
-        logger.error('Failed to add new document')
-
 
 
 
