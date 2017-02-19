@@ -12,6 +12,7 @@ import datetime
 import re
 import numpy as np
 
+import mongoengine as me
 from VYSOS.schema import telstatus
 
 ##-------------------------------------------------------------------------
