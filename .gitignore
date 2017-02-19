@@ -3,3 +3,4 @@
 *jpg
 build
 dist
+*.egg-info
