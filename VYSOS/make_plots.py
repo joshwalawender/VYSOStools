@@ -116,13 +116,18 @@ def plot_weather(date=None):
             ]
 
     ##-------------------------------------------------------------------------
-    ## Temperature
+    ## Loop Over Plots
     ##-------------------------------------------------------------------------
     for i,label in enumerate(labels):
         print(label)
         for lr in range(2):
             t_axes = plt.axes(plot_positions[i][lr])
             if label != 'Safe':
+                ## Overplot Twilights
+                twilights = get_twilights(start, end)
+                for j in range(len(twilights)-1):
+                    plt.axvspan(twilights[j][0], twilights[j+1][0], ymin=0, ymax=1,
+                                color='blue', alpha=twilights[j+1][2])
                 t_axes.plot_date(time, data[i], 'ko', label=label,
                                  markersize=2, markeredgewidth=0,
                                  drawstyle="default")
@@ -132,14 +137,9 @@ def plot_weather(date=None):
             if label == 'Wind (kph)':
                 matime, wind_mavg = moving_averagexy(time, data[i], 9)
                 t_axes.plot_date(matime, wind_mavg, 'b-')
-            ## Overplot Twilights
-            twilights = get_twilights(start, end)
-            for j in range(len(twilights)-1):
-                plt.axvspan(twilights[j][0], twilights[j+1][0], ymin=0, ymax=1,
-                            color='blue', alpha=twilights[j+1][2])
             if lr==0:
                 if i==0:
-                    plt.title('Weather (at {})'.format(end.strftime('%Y/%m/%d %H:%M:%S UT')))
+                    plt.title('VYSOS Weather (at {})'.format(end.strftime('%Y/%m/%d %H:%M:%S UT')))
                 plt.ylabel(label)
                 plt.xlim(start, end)
                 t_axes.xaxis.set_major_locator(HourLocator(byhour=range(24)))
