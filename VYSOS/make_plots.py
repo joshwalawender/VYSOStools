@@ -169,7 +169,7 @@ def plot_weather(date=None, verbose=False):
                 plt.fill_between(time, -1, data[i], where=np.array(data[i])<=0, facecolor='red')
             if label == 'Wind (kph)':
                 matime, wind_mavg = moving_averagexy(time, data[i], 9)
-                t_axes.plot_date(matime, wind_mavg, 'b-')
+                t_axes.plot_date(matime, wind_mavg, 'k-')
             if lr==0:
                 if i==0:
                     plt.title('VYSOS Weather (at {})'.format(end.strftime('%Y/%m/%d %H:%M:%S UT')))
