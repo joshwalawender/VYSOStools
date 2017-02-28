@@ -11,18 +11,13 @@ import matplotlib.pyplot as plt
 from matplotlib.dates import HourLocator, MinuteLocator, DateFormatter
 
 import mongoengine as me
-from VYSOS.schema import weather
+from VYSOS.schema import weather, weather_limits
 
 import astropy.units as u
 from astropy.table import Table, Column
 from astropy.time import Time
 from astropy.coordinates import EarthLocation
 from astroplan import Observer
-
-weather_limits = {'Cloudiness (C)': [-40, -20],
-                  'Wind (kph)': [20, 40],
-                  'Rain': [1800, 1800],
-                  }
 
 def moving_averagexy(x, y, window_size):
     if window_size > len(y):
@@ -79,7 +74,7 @@ def get_twilights(start, end):
 
 
 
-def plot_weather(date=None):
+def plot_weather(date=None, verbose=False):
     '''
     Make plot of the last 24 hours of weather or, if keyword date is set, make
     plot of that UT day's weather.
@@ -123,13 +118,13 @@ def plot_weather(date=None):
     ## Loop Over Plots
     ##-------------------------------------------------------------------------
     for i,label in enumerate(labels):
-        print(label)
+        if verbose: print(label)
         if label in weather_limits.keys():
             wsafe = np.where(data[i] < weather_limits[label][0])[0]
             wwarn = np.where(np.array(data[i] >= weather_limits[label][0])\
                              & np.array(data[i] < weather_limits[label][1]) )[0]
             wunsafe = np.where(data[i] >= weather_limits[label][1])[0]
-            print(len(data[i]), len(wsafe), len(wwarn), len(wunsafe))
+            if verbose: print(len(data[i]), len(wsafe), len(wwarn), len(wunsafe))
             assert len(data[i]) - len(wsafe) - len(wwarn) - len(wunsafe) == 0
 
 
@@ -232,10 +227,10 @@ def main():
             ## Set date to tonight
             now = dt.utcnow()
             date_string = now.strftime("%Y%m%dUT")
-            plot_weather()
+            plot_weather(verbose=args.verbose)
             time.sleep(120)
     else:
-        plot_weather()
+        plot_weather(verbose=args.verbose)
 
 
 if __name__ == '__main__':
