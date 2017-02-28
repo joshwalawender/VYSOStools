@@ -1,6 +1,11 @@
 import datetime
 import mongoengine as me
 
+weather_limits = {'Cloudiness (C)': [-40, -20],
+                  'Wind (kph)': [20, 40],
+                  'Rain': [1800, 1800],
+                  }
+
 class weatherbase(me.Document):
     querydate = me.DateTimeField(default=datetime.datetime.utcnow(), required=True)
     date = me.DateTimeField(required=True)
@@ -14,6 +19,7 @@ class weatherbase(me.Document):
     safe = me.BooleanField()
 
     meta = {'allow_inheritance': True,
+            'abstract': True,
             'collection': 'weather'}
 
     def __str__(self):
