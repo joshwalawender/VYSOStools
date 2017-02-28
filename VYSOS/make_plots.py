@@ -104,13 +104,13 @@ def plot_weather(date=None, verbose=False):
     data = [ np.array([(float(x.temp)*1.8+32.) for x in data]),
              np.array([float(x.clouds) for x in data]),
              np.array([float(x.wind) for x in data]),
-             np.array([-1.*float(x.rain) for x in data]),
+             np.array([float(x.rain) for x in data]),
              np.array([float(x.safe) for x in data]),
            ]
     ylims = [ (28,87),
               (-45,5),
-              (-2,max([65, max(data[2])])),
-              (-3000,0),
+              (-2,max([65, 1.1*max(data[2])])),
+              (3000,0),
               (-0.25, 1.1),
             ]
 
@@ -120,10 +120,16 @@ def plot_weather(date=None, verbose=False):
     for i,label in enumerate(labels):
         if verbose: print(label)
         if label in weather_limits.keys():
-            wsafe = np.where(data[i] < weather_limits[label][0])[0]
-            wwarn = np.where(np.array(data[i] >= weather_limits[label][0])\
-                             & np.array(data[i] < weather_limits[label][1]) )[0]
-            wunsafe = np.where(data[i] >= weather_limits[label][1])[0]
+            if label == 'Rain':
+                wsafe = np.where(data[i] > weather_limits[label][0])[0]
+                wwarn = np.where(np.array(data[i] <= weather_limits[label][0])\
+                                 & np.array(data[i] > weather_limits[label][1]) )[0]
+                wunsafe = np.where(data[i] <= weather_limits[label][1])[0]
+            else:
+                wsafe = np.where(data[i] < weather_limits[label][0])[0]
+                wwarn = np.where(np.array(data[i] >= weather_limits[label][0])\
+                                 & np.array(data[i] < weather_limits[label][1]) )[0]
+                wunsafe = np.where(data[i] >= weather_limits[label][1])[0]
             if verbose: print(len(data[i]), len(wsafe), len(wwarn), len(wunsafe))
             assert len(data[i]) - len(wsafe) - len(wwarn) - len(wunsafe) == 0
 

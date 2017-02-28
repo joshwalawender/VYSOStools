@@ -3,7 +3,7 @@ import mongoengine as me
 
 weather_limits = {'Cloudiness (C)': [-40, -20],
                   'Wind (kph)': [20, 40],
-                  'Rain': [1800, 1800],
+                  'Rain': [2000, 1000],
                   }
 
 class weatherbase(me.Document):
