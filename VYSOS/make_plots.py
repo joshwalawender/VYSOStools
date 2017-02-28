@@ -19,6 +19,10 @@ from astropy.time import Time
 from astropy.coordinates import EarthLocation
 from astroplan import Observer
 
+weather_limits = {'Cloudiness (C)': [-40, -20],
+                  'Wind (kph)': [20, 40],
+                  'Rain': [1800, 1800],
+                  }
 
 def moving_averagexy(x, y, window_size):
     if window_size > len(y):
@@ -88,7 +92,7 @@ def plot_weather(date=None):
     start = end - tdelta(1,0)
     me.connect('vysos', host='192.168.1.101')
     data = weather.objects(__raw__={'date': {'$gt': start, '$lt': end}})
-    time = [x.date for x in data]
+    time = np.array([x.date for x in data])
 
     dpi=72
     fig = plt.figure(figsize=(14,6), dpi=dpi)
@@ -102,11 +106,11 @@ def plot_weather(date=None):
                        [ [0.060, 0.020, 0.600, 0.060], [0.670, 0.020, 0.320, 0.060] ],
                      ]
     labels = ['Outside Temp (F)', 'Cloudiness (C)', 'Wind (kph)', 'Rain', 'Safe']
-    data = [ [(float(x.temp)*1.8+32.) for x in data],
-             [float(x.clouds) for x in data],
-             [float(x.wind) for x in data],
-             [float(x.rain) for x in data],
-             [float(x.safe) for x in data],
+    data = [ np.array([(float(x.temp)*1.8+32.) for x in data]),
+             np.array([float(x.clouds) for x in data]),
+             np.array([float(x.wind) for x in data]),
+             np.array([float(x.rain) for x in data]),
+             np.array([float(x.safe) for x in data]),
            ]
     ylims = [ (28,87),
               (-45,5),
@@ -120,6 +124,15 @@ def plot_weather(date=None):
     ##-------------------------------------------------------------------------
     for i,label in enumerate(labels):
         print(label)
+        if label in weather_limits.keys():
+            wsafe = np.where(data[i] < weather_limits[label][0])[0]
+            wwarn = np.where(np.array(data[i] >= weather_limits[label][0])\
+                             & np.array(data[i] < weather_limits[label][1]) )[0]
+            wunsafe = np.where(data[i] >= weather_limits[label][1])[0]
+            print(len(data[i]), len(wsafe), len(wwarn), len(wunsafe))
+            assert len(data[i]) - len(wsafe) - len(wwarn) - len(wunsafe) == 0
+
+
         for lr in range(2):
             t_axes = plt.axes(plot_positions[i][lr])
             if label != 'Safe':
@@ -128,9 +141,28 @@ def plot_weather(date=None):
                 for j in range(len(twilights)-1):
                     plt.axvspan(twilights[j][0], twilights[j+1][0], ymin=0, ymax=1,
                                 color='blue', alpha=twilights[j+1][2])
-                t_axes.plot_date(time, data[i], 'ko', label=label,
-                                 markersize=2, markeredgewidth=0,
-                                 drawstyle="default")
+                ## Plot data
+                if label in weather_limits.keys():
+                    t_axes.plot_date(time, data[i], 'ko', label=label,
+                                     markersize=2, markeredgewidth=0,
+                                     drawstyle="default")
+                    if len(wsafe) > 0:
+                        t_axes.plot_date(time[wsafe], data[i][wsafe], 'go',
+                                         markersize=2, markeredgewidth=0,
+                                         drawstyle="default")
+                    if len(wwarn) > 0:
+                        t_axes.plot_date(time[wwarn], data[i][wwarn], 'yo',
+                                         markersize=2, markeredgewidth=0,
+                                         drawstyle="default")
+                    if len(wunsafe) > 0:
+                        t_axes.plot_date(time[wunsafe], data[i][wunsafe], 'ro',
+                                         markersize=2, markeredgewidth=0,
+                                         drawstyle="default")
+
+                else:
+                    t_axes.plot_date(time, data[i], 'ko', label=label,
+                                     markersize=2, markeredgewidth=0,
+                                     drawstyle="default")
             else:
                 plt.fill_between(time, -1, data[i], where=np.array(data[i])>0, facecolor='green')
                 plt.fill_between(time, -1, data[i], where=np.array(data[i])<=0, facecolor='red')
