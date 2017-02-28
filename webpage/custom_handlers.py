@@ -26,7 +26,7 @@ import IQMon
 import datetime
 import mongoengine as me
 
-from VYSOS.schema import weather, currentweather
+from VYSOS.schema import currentweather, weather_limits
 
 class telstatus(me.Document):
     telescope = me.StringField(max_length=3, required=True, choices=['V5', 'V20'])
@@ -267,5 +267,6 @@ class Status(RequestHandler):
                     v20_nflats = get_nflats('V20', link_date_string),\
                     cctv=cctv,
                     currentweather=cw[0],
+                    weather_limits=weather_limits,
                     )
         tlog.app_log.info('  Done')
