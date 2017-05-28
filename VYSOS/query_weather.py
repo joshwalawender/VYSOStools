@@ -9,7 +9,7 @@ from VYSOS.schema import weather, currentweather
 ##-------------------------------------------------------------------------
 ## Query AAG Solo for Weather Data
 ##-------------------------------------------------------------------------
-def get_weather(logger):
+def get_weather(logger, robust=True):
     logger.info('Getting Weather status')
     import requests
     # http://aagsolo/cgi-bin/cgiLastData
@@ -21,60 +21,86 @@ def get_weather(logger):
     for line in lines:
         key, val = line.split('=')
         result[str(key)] = str(val)
+        logger.debug('  {} = {}'.format(key, val))
+    logger.info('  Done.')
 
-    weatherdoc = weather(date=datetime.datetime.strptime(result['dataGMTTime'], '%Y/%m/%d %H:%M:%S'))
-    weatherdoc.clouds = float(result['clouds'])
-    weatherdoc.temp = float(result['temp'])
-    weatherdoc.wind = float(result['wind'])
-    weatherdoc.gust = float(result['gust'])
-    weatherdoc.rain = int(result['rain'])
-    weatherdoc.light = int(result['light'])
-    weatherdoc.switch = int(result['switch'])
-    weatherdoc.safe = {'1': True, '0': False}[result['safe']]
+    logger.info('Connecting to mongoDB')
+    me.connect('vysos', host='192.168.1.101')
+
+    weatherdoc = weather(date=datetime.datetime.strptime(result['dataGMTTime'],
+                                                         '%Y/%m/%d %H:%M:%S'),
+                         clouds=float(result['clouds']),
+                         temp=float(result['temp']),
+                         wind=float(result['wind']),
+                         gust=float(result['gust']),
+                         rain=int(result['rain']),
+                         light=int(result['light']),
+                         switch=int(result['switch']),
+                         safe={'1': True, '0': False}[result['safe']],
+                        )
 
     threshold = 30
     age = (weatherdoc.querydate - weatherdoc.date).total_seconds()
+    logger.debug('Data age = {:.1f} seconds'.format(age))
     if age > threshold:
         logger.warning('Age of weather data ({:.1f}) is greater than {:.0f} seconds'.format(
                        age, threshold))
 
-    me.connect('vysos', host='192.168.1.101')
 
-    try:
-        logger.info('Saving new document')
-        weatherdoc.save()
-        logger.info("  Done")
-        logger.info("\n{}".format(weatherdoc))
-    except:
-        logger.error('Failed to add new document')
+    logger.info('Saving weather document')
+#     try:
+    weatherdoc.save()
+    logger.info("  Done")
+    logger.info("\n{}".format(weatherdoc))
+#     except:
+#         logger.error('Failed to add new document')
 
-    try:
-        logger.info('Saving current document')
-        current = currentweather.objects()
-        logger.info('  Found {:d} current docs'.format(current.count()))
-        if current.count() < 1:
-            logger.info('  Saving single document')
-            cw = currentweather()
-            cw.from_weather(weatherdoc)
-            cw.save()
-            logger.info("  Done")
-        else:
-            logger.info('  Updating existing document')
-            current.update_one(set__querydate = weatherdoc.querydate,
-                               set__date      = weatherdoc.date,
-                               set__clouds    = weatherdoc.clouds,
-                               set__temp      = weatherdoc.temp,
-                               set__wind      = weatherdoc.wind,
-                               set__gust      = weatherdoc.gust,
-                               set__rain      = weatherdoc.rain,
-                               set__light     = weatherdoc.light,
-                               set__switch    = weatherdoc.switch,
-                               set__safe      = weatherdoc.safe,
-                               )
-            logger.info("  Done")
-    except:
-        logger.warning('Failed to save document to currentweather')
 
+
+#     cw = currentweather(date=datetime.datetime.strptime(result['dataGMTTime'],
+#                                                          '%Y/%m/%d %H:%M:%S'),
+#                         clouds=float(result['clouds']),
+#                         temp=float(result['temp']),
+#                         wind=float(result['wind']),
+#                         gust=float(result['gust']),
+#                         rain=int(result['rain']),
+#                         light=int(result['light']),
+#                         switch=int(result['switch']),
+#                         safe={'1': True, '0': False}[result['safe']],
+#                         )
+#     logger.info('Saving current document')
+#     current = currentweather.objects()
+#     cw.drop_collection()
+#     cw.save()
+#     logger.info('  Found {:d} current docs'.format(current.count()))
+#     if current.count() == 0:
+#         logger.info('  Saving single document')
+#         try:
+#             cw.save()
+#             logger.info("  Done")
+#         except:
+#             logger.warning('Failed to save document to currentweather')
+#     elif current.count() == 1:
+#         old = currentweather.objects.get()
+#         old.delete()
+#         cw.save()
+#     else:
+#         logger.info('  Updating existing document')
+#         try:
+#             current.update_one(set__querydate = cw.querydate,
+#                                set__date      = cw.date,
+#                                set__clouds    = cw.clouds,
+#                                set__temp      = cw.temp,
+#                                set__wind      = cw.wind,
+#                                set__gust      = cw.gust,
+#                                set__rain      = cw.rain,
+#                                set__light     = cw.light,
+#                                set__switch    = cw.switch,
+#                                set__safe      = cw.safe,
+#                                )
+#             logger.info("  Done")
+#         except:
+#             logger.warning('Failed to update currentweather')
 
 
 
@@ -90,6 +116,9 @@ if __name__ == '__main__':
     parser.add_argument("-v", "--verbose",
         action="store_true", dest="verbose",
         default=False, help="Be verbose! (default = False)")
+    parser.add_argument("--notrobust",
+        action="store_true", dest="notrobust",
+        default=False, help="Use try except to catch errors.")
     ## add arguments
     args = parser.parse_args()
 
@@ -115,6 +144,6 @@ if __name__ == '__main__':
         logger.addHandler(LogConsoleHandler)
 
     while True:
-        get_weather(logger)
+        get_weather(logger, robust=not args.notrobust)
         logging.shutdown()
         sleep(20)
