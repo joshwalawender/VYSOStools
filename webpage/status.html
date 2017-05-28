@@ -42,9 +42,11 @@
         <th style="width: 300px;">Time</td>
         <th style="width: 200px; text-align: right;">Weather</td>
         <th style="width: 150px; text-align: left;">
-        {% if (now[1] - currentweather.date).total_seconds() < 60 %}
-            {% if currentweather.safe == True %} <font color="green">Safe</font>
-            {% elif currentweather.safe == False %} <font color="red">Unsafe</font>
+        {% if currentweather is None %}
+            <font color="red">None</font>
+        {% elif (now[1] - currentweather['date']).total_seconds() < 60 %}
+            {% if currentweather['safe'] == True %} <font color="green">Safe</font>
+            {% elif currentweather['safe'] == False %} <font color="red">Unsafe</font>
             {% else %} <font color="red">Unknown</font> {% end %}
         {% else %}
             <font color="red">Stale</font>
@@ -56,8 +58,10 @@
         <td style="text-align: left;">{{ now[0].strftime('%Y/%m/%d %H:%M:%S HST') }}</td>
         <td style="text-align: right;">Ambient Temperature:</td>
         <td style="text-align: left;">
-        {% if currentweather.temp %}
-        {{ '{:.1f} C, {:.1f} F'.format(float(currentweather.temp), float(currentweather.temp)*1.8+32.) }}
+        {% if currentweather is None %}
+            <font color="red"></font>
+        {% elif currentweather['temp'] %}
+        {{ '{:.1f} C, {:.1f} F'.format(float(currentweather['temp']), float(currentweather['temp'])*1.8+32.) }}
         {% end %}
         </td>
         <td style="text-align: right;">
@@ -75,17 +79,19 @@
         <td style="text-align: left;">{{ now[1].strftime('%Y/%m/%d %H:%M:%S UT') }}</td>
         <td style="text-align: right;">Cloudiness:</td>
         <td style="text-align: left;">
-        {% if currentweather.clouds %}
-            {% if currentweather.clouds < weather_limits['Cloudiness (C)'][0] %}
+        {% if currentweather is None %}
+            <font color="red"></font>
+        {% elif currentweather['clouds'] %}
+            {% if currentweather['clouds'] < weather_limits['Cloudiness (C)'][0] %}
                 <font color="green">Clear</font>
-            {% elif currentweather.clouds >= weather_limits['Cloudiness (C)'][0] and currentweather.clouds < weather_limits['Cloudiness (C)'][1] %}
+            {% elif currentweather['clouds'] >= weather_limits['Cloudiness (C)'][0] and currentweather['clouds'] < weather_limits['Cloudiness (C)'][1] %}
                 <font color="yellow">Cloudy</font>
-            {% elif currentweather.clouds >= weather_limits['Cloudiness (C)'][1] %}
+            {% elif currentweather['clouds'] >= weather_limits['Cloudiness (C)'][1] %}
                 <font color="red">Overcast</font>
             {% else %}
                 <font color="red">Unknown</font>
             {% end %}
-            {{ ' ({:.1f} C)'.format(currentweather.clouds) }}
+            {{ ' ({:.1f} C)'.format(currentweather['clouds']) }}
         {% end %}
         </td>
         <td style="text-align: right;">
@@ -103,17 +109,19 @@
         <td style="text-align: left;">{{ 'It is currently {} (Sun alt = {:.0f})'.format(sun['now'], sun['alt']) }}</td>
         <td style="text-align: right;">Wind Speed:</td>
         <td style="text-align: left;">
-        {% if currentweather.wind %}
-            {% if currentweather.wind < weather_limits['Wind (kph)'][0] %}
+        {% if currentweather is None %}
+            <font color="red"></font>
+        {% elif currentweather['wind'] %}
+            {% if currentweather['wind'] < weather_limits['Wind (kph)'][0] %}
                 <font color="green">Calm</font>
-            {% elif currentweather.wind >= weather_limits['Wind (kph)'][0] and currentweather.wind < weather_limits['Wind (kph)'][1] %}
+            {% elif currentweather['wind'] >= weather_limits['Wind (kph)'][0] and currentweather['wind'] < weather_limits['Wind (kph)'][1] %}
                 <font color="yellow">Windy</font>
-            {% elif currentweather.wind >= weather_limits['Wind (kph)'][1] %}
+            {% elif currentweather['wind'] >= weather_limits['Wind (kph)'][1] %}
                 <font color="red">Very Windy</font>
             {% else %}
                 <font color="red">Unknown</font>
             {% end %}
-            {{ '({:.1f} kph)'.format(currentweather.wind) }}
+            {{ '({:.1f} kph)'.format(currentweather['wind']) }}
         {% end %}
         </td>
         <td style="text-align: right;">
@@ -131,17 +139,19 @@
         <td style="text-align: left;">{{ 'A {:.0f}% illuminated moon is {}'.format(moon['phase'], moon['now']) }}</td>
         <td style="text-align: right;">Gusts:</td>
         <td style="text-align: left;">
-        {% if currentweather.gust %}
-            {% if currentweather.gust < weather_limits['Wind (kph)'][0] %}
+        {% if currentweather is None %}
+            <font color="red"></font>
+        {% elif currentweather['gust'] %}
+            {% if currentweather['gust'] < weather_limits['Wind (kph)'][0] %}
                 <font color="green">Calm</font>
-            {% elif currentweather.gust >= weather_limits['Wind (kph)'][0] and currentweather.gust < weather_limits['Wind (kph)'][1] %}
+            {% elif currentweather['gust'] >= weather_limits['Wind (kph)'][0] and currentweather['gust'] < weather_limits['Wind (kph)'][1] %}
                 <font color="yellow">Windy</font>
-            {% elif currentweather.gust >= weather_limits['Wind (kph)'][1] %}
+            {% elif currentweather['gust'] >= weather_limits['Wind (kph)'][1] %}
                 <font color="red">Very Windy</font>
             {% else %}
                 <font color="red">Unknown</font>
             {% end %}
-            {{ '({:.1f} kph)'.format(currentweather.gust) }}
+            {{ '({:.1f} kph)'.format(currentweather['gust']) }}
         {% end %}
         </td>
         <td style="text-align: right;"></td>
@@ -156,15 +166,17 @@
         </td>
         <td style="text-align: right;">Rain:</td>
         <td style="text-align: left;">
-        {% if currentweather.rain %}
-            {% if currentweather.rain > weather_limits['Rain'][0] %}
+        {% if currentweather is None %}
+            <font color="red"></font>
+        {% elif currentweather['rain'] %}
+            {% if currentweather['rain'] > weather_limits['Rain'][0] %}
                 <font color="green">Dry</font>
-            {% elif currentweather.rain <= weather_limits['Rain'][0] %}
+            {% elif currentweather['rain'] <= weather_limits['Rain'][0] %}
                 <font color="red">Wet</font>
             {% else %}
                 <font color="red">Unknown</font>
             {% end %}
-            {{ '({:d})'.format(currentweather.rain) }}
+            {{ '({:d})'.format(currentweather['rain']) }}
         {% end %}
 
         </td>
@@ -181,7 +193,9 @@
         <td style="text-align: right;"></td>
         <td style="text-align: left;">
         </td>
-        <td style="text-align: right;">Weather Data Age: {{ '{:.1f}s'.format((now[1] - currentweather.date).total_seconds()) }}</td>
+        {% if currentweather is not None %}
+            <td style="text-align: right;">Weather Data Age: {{ '{:.1f}s'.format((now[1] - currentweather['date']).total_seconds()) }}</td>
+        {% end %}
     </tr>
 </table>
 

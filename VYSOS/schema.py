@@ -19,8 +19,8 @@ class weatherbase(me.Document):
     safe = me.BooleanField()
 
     meta = {'allow_inheritance': True,
-            'abstract': True,
-            'collection': 'weather'}
+            'abstract': True,}
+#             'collection': 'weather'}
 
     def __str__(self):
         output = 'MongoEngine Document at: {}\n'.format(

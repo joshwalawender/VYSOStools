@@ -246,8 +246,21 @@ class Status(RequestHandler):
             tlog.app_log.info('{}'.format(v20coord.to_string('hmsdms', sep=':', precision=0).split()))
             v20status.RA, v20status.DEC = v20coord.to_string('hmsdms', sep=':', precision=0).split()
 
-        cw = currentweather.objects()
-        tlog.app_log.info('  Found {:d} current weather docs'.format(cw.count()))
+        client = MongoClient('192.168.1.101', 27017)
+        weather = client.vysos['weather']
+        if weather.count() > 0:
+            cw = weather.find(limit=1, sort=[('date', pymongo.DESCENDING)]).next()
+        else:
+            cw = None
+        
+
+#         cw = currentweather.objects()
+#         if cw.count() > 0:
+#             tlog.app_log.info('  Found {:d} current weather docs'.format(cw.count()))
+#             cwinfo = cw[0]
+#         else:
+#             tlog.app_log.info('  Failed to find current weather info')
+#             cwinfo = None
 
         cctv = False
         if input.lower() in ["cctv", "cctv.html"]:
@@ -266,7 +279,7 @@ class Status(RequestHandler):
                     v5_nflats = get_nflats('V5', link_date_string),\
                     v20_nflats = get_nflats('V20', link_date_string),\
                     cctv=cctv,
-                    currentweather=cw[0],
+                    currentweather=cw,
                     weather_limits=weather_limits,
                     )
         tlog.app_log.info('  Done')
