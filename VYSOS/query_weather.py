@@ -48,59 +48,59 @@ def get_weather(logger, robust=True):
 
 
     logger.info('Saving weather document')
-#     try:
-    weatherdoc.save()
-    logger.info("  Done")
-    logger.info("\n{}".format(weatherdoc))
-#     except:
-#         logger.error('Failed to add new document')
+    try:
+        weatherdoc.save()
+        logger.info("  Done")
+        logger.info("\n{}".format(weatherdoc))
+    except:
+        logger.error('Failed to add new document')
 
 
 
-#     cw = currentweather(date=datetime.datetime.strptime(result['dataGMTTime'],
-#                                                          '%Y/%m/%d %H:%M:%S'),
-#                         clouds=float(result['clouds']),
-#                         temp=float(result['temp']),
-#                         wind=float(result['wind']),
-#                         gust=float(result['gust']),
-#                         rain=int(result['rain']),
-#                         light=int(result['light']),
-#                         switch=int(result['switch']),
-#                         safe={'1': True, '0': False}[result['safe']],
-#                         )
-#     logger.info('Saving current document')
-#     current = currentweather.objects()
-#     cw.drop_collection()
-#     cw.save()
-#     logger.info('  Found {:d} current docs'.format(current.count()))
-#     if current.count() == 0:
-#         logger.info('  Saving single document')
-#         try:
-#             cw.save()
-#             logger.info("  Done")
-#         except:
-#             logger.warning('Failed to save document to currentweather')
-#     elif current.count() == 1:
-#         old = currentweather.objects.get()
-#         old.delete()
-#         cw.save()
-#     else:
-#         logger.info('  Updating existing document')
-#         try:
-#             current.update_one(set__querydate = cw.querydate,
-#                                set__date      = cw.date,
-#                                set__clouds    = cw.clouds,
-#                                set__temp      = cw.temp,
-#                                set__wind      = cw.wind,
-#                                set__gust      = cw.gust,
-#                                set__rain      = cw.rain,
-#                                set__light     = cw.light,
-#                                set__switch    = cw.switch,
-#                                set__safe      = cw.safe,
-#                                )
-#             logger.info("  Done")
-#         except:
-#             logger.warning('Failed to update currentweather')
+    cw = currentweather(date=datetime.datetime.strptime(result['dataGMTTime'],
+                                                         '%Y/%m/%d %H:%M:%S'),
+                        clouds=float(result['clouds']),
+                        temp=float(result['temp']),
+                        wind=float(result['wind']),
+                        gust=float(result['gust']),
+                        rain=int(result['rain']),
+                        light=int(result['light']),
+                        switch=int(result['switch']),
+                        safe={'1': True, '0': False}[result['safe']],
+                        )
+    logger.info('Saving current document')
+    current = currentweather.objects()
+    cw.drop_collection()
+    cw.save()
+    logger.info('  Found {:d} current docs'.format(current.count()))
+    if current.count() == 0:
+        logger.info('  Saving single document')
+        try:
+            cw.save()
+            logger.info("  Done")
+        except:
+            logger.warning('Failed to save document to currentweather')
+    elif current.count() == 1:
+        old = currentweather.objects.get()
+        old.delete()
+        cw.save()
+    else:
+        logger.info('  Updating existing document')
+        try:
+            current.update_one(set__querydate = cw.querydate,
+                               set__date      = cw.date,
+                               set__clouds    = cw.clouds,
+                               set__temp      = cw.temp,
+                               set__wind      = cw.wind,
+                               set__gust      = cw.gust,
+                               set__rain      = cw.rain,
+                               set__light     = cw.light,
+                               set__switch    = cw.switch,
+                               set__safe      = cw.safe,
+                               )
+            logger.info("  Done")
+        except:
+            logger.warning('Failed to update currentweather')
 
 
 
