@@ -20,6 +20,8 @@ from astropy.coordinates import EarthLocation
 from astroplan import Observer
 
 def moving_averagexy(x, y, window_size):
+    if len(x) == 0:
+        return x, y
     if window_size > len(y):
         window_size = len(y)
     if window_size % 2 == 0:
@@ -107,9 +109,12 @@ def plot_weather(date=None, verbose=False):
              np.array([float(x.rain) for x in data]),
              np.array([float(x.safe) for x in data]),
            ]
+
+    windlim_data = list(data[2]*1.1) # multiply by 1.1 for plot limit
+    windlim_data.append(65) # minimum limit on plot is 65
     ylims = [ (28,87),
               (-45,15),
-              (-2,max([65, 1.1*max(list(data[2]).append(20.))])),
+              (-2,max(windlim_data)),
               (3000,0),
               (-0.25, 1.1),
             ]
