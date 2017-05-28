@@ -108,8 +108,8 @@ def plot_weather(date=None, verbose=False):
              np.array([float(x.safe) for x in data]),
            ]
     ylims = [ (28,87),
-              (-45,5),
-              (-2,max([65, 1.1*max(data[2])])),
+              (-45,15),
+              (-2,max([65, 1.1*max(data[2], 20.)])),
               (3000,0),
               (-0.25, 1.1),
             ]
