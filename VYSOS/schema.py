@@ -1,7 +1,7 @@
 import datetime
 import mongoengine as me
 
-weather_limits = {'Cloudiness (C)': [-40, -20],
+weather_limits = {'Cloudiness (C)': [-35, -20],
                   'Wind (kph)': [20, 40],
                   'Rain': [2400, 2000],
                   }
