@@ -112,7 +112,7 @@ def plot_weather(date=None, verbose=False):
 
     windlim_data = list(data[2]*1.1) # multiply by 1.1 for plot limit
     windlim_data.append(65) # minimum limit on plot is 65
-    ylims = [ (28,87),
+    ylims = [ (25,95),
               (-45,15),
               (-2,max(windlim_data)),
               (3000,0),
