@@ -319,36 +319,47 @@ def get_status_and_log(telescope, logger):
     ##-------------------------------------------------------------------------
     ## Write to Mongo
     ##-------------------------------------------------------------------------
-    logger.info('Connecting to mongo db at 192.168.1.101')
-    try:
-        me.connect('vysos', host='192.168.1.101')
-
-        ## Edit old "current" entry to be not current
-        ncurrent = len(telstatus.objects(__raw__={'current': True, 'telescope': telescope}))
-        if ncurrent < 1:
-            logger.error('No exiting "current" document found!')
-        elif ncurrent == 1:
-            logger.info('Modifying old "current" document')
-            telstatus.objects(__raw__={'current': True, 'telescope': telescope}).update_one(set__current=False)
-            logger.info('  Done')
-        else:
-            logger.error('Multiple ({}) exiting "current" document found!'.format(ncurrent))
-            logger.info('Updating old "current" documents')
-            telstatus.objects(__raw__={'current': True, 'telescope': telescope}).update(set__current=False, multi=True)
-            logger.info('  Done')
-
-        ## Save new "current" document
+    done = False
+    while done is False:
         try:
-            logger.info('Saving new "current" document')
-            status.save()
-            logger.info("  Done")
-            logger.info("\n{}".format(status))
+            logger.info('Connecting to mongo db at 192.168.1.101')
+            me.connect('vysos', host='192.168.1.101')
         except:
-            logger.error('Failed to add new document')
+            logger.error('Failed to connect to mongo')
+            logger.error('Will try again in 10 seconds')
+            time.sleep(10)
+        else:
+            ## Edit old "current" entry to be not current
+            ncurrent = len(telstatus.objects(__raw__={'current': True, 'telescope': telescope}))
+            if ncurrent < 1:
+                logger.error('No exiting "current" document found!')
+            elif ncurrent == 1:
+                logger.info('Modifying old "current" document')
+                telstatus.objects(__raw__={'current': True, 'telescope': telescope}).update_one(set__current=False)
+                logger.info('  Done')
+            else:
+                logger.error('Multiple ({}) existing "current" documents found!'.format(ncurrent))
+                logger.info('Updating old "current" documents')
+                telstatus.objects(__raw__={'current': True, 'telescope': telescope}).update(set__current=False, multi=True)
+                logger.info('  Done')
 
-    except:
-        logger.error('Could not connect to mongo db')
-        raise Error('Failed to connect to mongo')
+            ## Save new "current" document
+            try:
+                logger.info('Saving new "current" document')
+                status.save()
+                logger.info("  Done")
+                logger.info("\n{}".format(status))
+                done = True
+            except:
+                logger.error('Failed to add new document')
+                logger.error('Will try again in 10 seconds')
+                time.sleep(10)
+
+        except:
+            logger.error('Could not connect to mongo db')
+            logger.error('Will try again in 10 seconds')
+            time.sleep(10)
+
 
 
 if __name__ == '__main__':
