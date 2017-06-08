@@ -355,12 +355,6 @@ def get_status_and_log(telescope, logger):
                 logger.error('Will try again in 10 seconds')
                 time.sleep(10)
 
-        except:
-            logger.error('Could not connect to mongo db')
-            logger.error('Will try again in 10 seconds')
-            time.sleep(10)
-
-
 
 if __name__ == '__main__':
 
