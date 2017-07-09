@@ -1,20 +1,23 @@
 import sys
 import logging
 import argparse
-import datetime
+from datetime import datetime as dt
 from time import sleep
-import mongoengine as me
+import pymongo
+import requests
 
-from VYSOS.schema import weather, currentweather
+# import mongoengine as me
+# from VYSOS.schema import weather, currentweather
 
 ##-------------------------------------------------------------------------
 ## Query AAG Solo for Weather Data
 ##-------------------------------------------------------------------------
 def get_weather(logger, robust=True):
     logger.info('Getting Weather status')
-    import requests
+    
     # http://aagsolo/cgi-bin/cgiLastData
     # http://aagsolo/cgi-bin/cgiHistData
+    querydate = dt.utcnow()
     address = 'http://192.168.1.105/cgi-bin/cgiLastData'
     r = requests.get(address)
     lines = r.text.splitlines()
@@ -25,41 +28,40 @@ def get_weather(logger, robust=True):
         logger.debug('  {} = {}'.format(key, val))
     logger.info('  Done.')
 
-    logger.info('Connecting to mongoDB')
-    me.connect('vysos', host='192.168.1.101')
-
-    weatherdoc = weather(date=datetime.datetime.strptime(result['dataGMTTime'],
-                                                         '%Y/%m/%d %H:%M:%S'),
-                         clouds=float(result['clouds']),
-                         temp=float(result['temp']),
-                         wind=float(result['wind']),
-                         gust=float(result['gust']),
-                         rain=int(result['rain']),
-                         light=int(result['light']),
-                         switch=int(result['switch']),
-                         safe={'1': True, '0': False}[result['safe']],
-                        )
+    weatherdoc = {"date": dt.strptime(result['dataGMTTime'], '%Y/%m/%d %H:%M:%S'),
+                  "querydate": querydate,
+                  "clouds": float(result['clouds']),
+                  "temp": float(result['temp']),
+                  "wind": float(result['wind']),
+                  "gust": float(result['gust']),
+                  "rain": int(result['rain']),
+                  "light": int(result['light']),
+                  "switch": int(result['switch']),
+                  "safe": {'1': True, '0': False}[result['safe']],
+                 }
 
     threshold = 30
-    age = (weatherdoc.querydate - weatherdoc.date).total_seconds()
+    age = (weatherdoc["querydate"] - weatherdoc["date"]).total_seconds()
     logger.debug('Data age = {:.1f} seconds'.format(age))
     if age > threshold:
         logger.warning('Age of weather data ({:.1f}) is greater than {:.0f} seconds'.format(
                        age, threshold))
 
-
     logger.info('Saving weather document')
+    logger.info('Connecting to mongoDB')
+    client = pymongo.MongoClient('192.168.1.101', 27017)
+    db = client.vysos
+    weather = db.weather
+
     try:
-        weatherdoc.save()
-        logger.info("  Done")
-        logger.info("\n{}".format(weatherdoc))
+        inserted_id = weather.insert_one(weatherdoc).inserted_id
+        logger.info("  Inserted document with id: {}".format(inserted_id))
     except:
         e = sys.exc_info()[0]
         logger.error('Failed to add new document')
         logger.error(e)
-        logger.error(e.expr)
-        logger.error(e.msg)
 
+    client.close()
 
 if __name__ == '__main__':
 
@@ -83,7 +85,7 @@ if __name__ == '__main__':
     ##-------------------------------------------------------------------------
     ## Create logger object
     ##-------------------------------------------------------------------------
-    now = datetime.datetime.utcnow()
+    now = dt.utcnow()
     DateString = now.strftime("%Y%m%dUT")
     TimeString = now.strftime("%H:%M:%S")
     logger = logging.getLogger('get_status_{}'.format(DateString))
