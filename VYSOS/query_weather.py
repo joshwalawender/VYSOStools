@@ -1,3 +1,4 @@
+import sys
 import logging
 import argparse
 import datetime
@@ -53,7 +54,11 @@ def get_weather(logger, robust=True):
         logger.info("  Done")
         logger.info("\n{}".format(weatherdoc))
     except:
+        e = sys.exc_info()[0]
         logger.error('Failed to add new document')
+        logger.error(e)
+        logger.error(e.expr)
+        logger.error(e.msg)
 
 
 if __name__ == '__main__':
