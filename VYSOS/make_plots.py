@@ -10,8 +10,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.dates import HourLocator, MinuteLocator, DateFormatter
 
-import mongoengine as me
-from VYSOS.schema import weather, weather_limits
+import pymongo
+from VYSOS.schema import weather_limits
 
 import astropy.units as u
 from astropy.table import Table, Column
@@ -87,12 +87,21 @@ def plot_weather(date=None, verbose=False):
         raise NotImplementedError
 
     start = end - tdelta(1,0)
-    me.connect('vysos', host='192.168.1.101')
-    data = weather.objects(__raw__={'date': {'$gt': start, '$lt': end}})
-    time = np.array([x.date for x in data])
+
+    client = pymongo.MongoClient('192.168.1.101', 27017)
+    db = client['vysos']
+    weather = client.vysos['weather']
+    data = [x for x in weather.find({'date': {'$gt': start, '$lt': end}},
+                                    sort=[('date', pymongo.DESCENDING)])]
+    time = np.array([x['date'] for x in data])
+
+
+#     me.connect('vysos', host='192.168.1.101')
+#     data = weather.objects(__raw__={'date': {'$gt': start, '$lt': end}})
+#     time = np.array([x.date for x in data])
 
     dpi=72
-    fig = plt.figure(figsize=(14,6), dpi=dpi)
+    fig = plt.figure(figsize=(20,10), dpi=dpi)
     night_plot_file_name = 'weather.png'
     destination_path = os.path.abspath('/var/www/')
     night_plot_file = os.path.join(destination_path, night_plot_file_name)
@@ -103,11 +112,11 @@ def plot_weather(date=None, verbose=False):
                        [ [0.060, 0.020, 0.600, 0.060], [0.670, 0.020, 0.320, 0.060] ],
                      ]
     labels = ['Outside Temp (F)', 'Cloudiness (C)', 'Wind (kph)', 'Rain', 'Safe']
-    data = [ np.array([(float(x.temp)*1.8+32.) for x in data]),
-             np.array([float(x.clouds) for x in data]),
-             np.array([float(x.wind) for x in data]),
-             np.array([float(x.rain) for x in data]),
-             np.array([float(x.safe) for x in data]),
+    data = [ np.array([(float(x['temp'])*1.8+32.) for x in data]),
+             np.array([float(x['clouds']) for x in data]),
+             np.array([float(x['wind']) for x in data]),
+             np.array([float(x['rain']) for x in data]),
+             np.array([float(x['safe']) for x in data]),
            ]
 
     windlim_data = list(data[2]*1.1) # multiply by 1.1 for plot limit

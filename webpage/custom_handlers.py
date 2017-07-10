@@ -12,7 +12,6 @@ import glob
 from time import sleep
 
 import pymongo
-from pymongo import MongoClient
 
 from tornado.web import RequestHandler, Application, url, StaticFileHandler
 import tornado.log as tlog
@@ -22,69 +21,24 @@ from astropy.coordinates import SkyCoord
 import ephem
 
 import IQMon
+from VYSOS.schema import weather_limits
 
 import datetime
-import mongoengine as me
 
-from VYSOS.schema import currentweather, weather_limits
 
-class telstatus(me.Document):
-    telescope = me.StringField(max_length=3, required=True, choices=['V5', 'V20'])
-    date = me.DateTimeField(default=datetime.datetime.utcnow(), required=True)
-    current = me.BooleanField(default=True, required=True)
-    ## ACP Status
-    connected = me.BooleanField()
-    park = me.BooleanField()
-    slewing = me.BooleanField()
-    tracking = me.BooleanField()
-    alt = me.DecimalField(min_value=-90, max_value=90, precision=4)
-    az = me.DecimalField(min_value=0, max_value=360, precision=4)
-    RA = me.DecimalField(min_value=0, max_value=360, precision=4)
-    DEC = me.DecimalField(min_value=-90, max_value=90, precision=4)
-    ACPerr = me.StringField(max_length=256)
-    ## FocusMax Status
-    focuser_temperature = me.DecimalField(min_value=-50, max_value=120, precision=1)
-    focuser_position = me.DecimalField(min_value=0, max_value=105000, precision=1)
-
-    ## RCOS TCC Status
-    fan_speed = me.DecimalField(min_value=0, max_value=100, precision=1)
-    truss_temperature  = me.DecimalField(min_value=-50, max_value=120, precision=1)
-    primary_temperature = me.DecimalField(min_value=-50, max_value=120, precision=1)
-    secondary_temperature = me.DecimalField(min_value=-50, max_value=120, precision=1)
-    ## CBW Status
-    dome_temperature = me.DecimalField(min_value=-50, max_value=120, precision=1)
-    fan_state = me.BooleanField()
-    fan_enable = me.BooleanField()
-
-    meta = {'collection': 'telstatus',
-            'indexes': ['telescope', 'current', 'date']}
-
-    def __str__(self):
-        output = 'MongoEngine Document at: {}\n'.format(self.date.strftime('%Y%m%d %H:%M:%S'))
-        if self.telescope: output += '  Telescope: {}\n'.format(self.telescope)
-        if self.current: output += '  Current: {}\n'.format(self.current)
-        if self.connected: output += '  connected: {}\n'.format(self.connected)
-        if self.park: output += '  park: {}\n'.format(self.park)
-        if self.slewing: output += '  slewing: {}\n'.format(self.slewing)
-        if self.tracking: output += '  tracking: {}\n'.format(self.tracking)
-        if self.alt: output += '  Altitude: {:.4f}\n'.format(self.alt)
-        if self.az: output += '  Azimuth: {:.4f}\n'.format(self.az)
-        if self.RA: output += '  RA: {:.4f}\n'.format(self.RA)
-        if self.DEC: output += '  DEC: {:.4f}\n'.format(self.DEC)
-        if self.ACPerr: output += '  ACPerr: {}\n'.format(self.ACPerr)
-        if self.focuser_temperature: output += '  focuser_temperature: {:.1f}\n'.format(self.focuser_temperature)
-        if self.focuser_position: output += '  focuser_position: {}\n'.format(self.focuser_position)
-        if self.truss_temperature: output += '  truss_temperature: {:.1f}\n'.format(self.truss_temperature)
-        if self.primary_temperature: output += '  primary_temperature: {:.1f}\n'.format(self.primary_temperature)
-        if self.secondary_temperature: output += '  secondary_temperature: {:.1f}\n'.format(self.secondary_temperature)
-        if self.fan_speed: output += '  fan_speed: {}\n'.format(self.fan_speed)
-        if self.dome_temperature: output += '  dome_temperature: {:.1f}\n'.format(self.dome_temperature)
-        if self.fan_state: output += '  fan_state: {}\n'.format(self.fan_state)
-        if self.fan_enable: output += '  fan_enable: {}\n'.format(self.fan_enable)
-        return output
-
-    def __repr__(self):
-        return self.__str__()
+##-------------------------------------------------------------------------
+## Get Telescope Status
+##-------------------------------------------------------------------------
+def get_status(telescope, db):
+    collection = db[f'{telescope}status']
+    two_min_ago = dt.utcnow() - tdelta(0, 2*60)
+    values = [x for x in
+              collection.find( {'date': {'$gt': two_min_ago}} ).sort('date')]
+    try:
+        current = status_values[-1]
+    except:
+        current = None
+    return current
 
 
 ##-------------------------------------------------------------------------
@@ -141,7 +95,8 @@ class Status(RequestHandler):
         nowut = dt.utcnow()
         now = nowut - tdelta(0,10*60*60)
 
-        client = MongoClient('192.168.1.101', 27017)
+        client = pymongo.MongoClient('192.168.1.101', 27017)
+        db = client['vysos']
 
         ##------------------------------------------------------------------------
         ## Use pyephem determine sunrise and sunset times
@@ -204,6 +159,36 @@ class Status(RequestHandler):
         tlog.app_log.info('  Disk use data determined')
 
         ##---------------------------------------------------------------------
+        ## Get Telescope Status
+        ##---------------------------------------------------------------------
+        telstatus = {}
+        for telescope in ['V20', 'V5']:
+            results = db[f'{telescope}status'].find(limit=1, sort=[('date', pymongo.DESCENDING)])
+            tlog.app_log.info(results.count())
+            if results.count() > 0:
+                telstatus[telescope] = results.next()
+                
+                if 'RA' in telstatus[telescope] and 'DEC' in telstatus[telescope]:
+                    coord = SkyCoord(telstatus[telescope]['RA'],
+                                     telstatus[telescope]['DEC'], unit=u.deg)
+                    telstatus[telescope]['RA'], telstatus[telescope]['DEC'] = coord.to_string('hmsdms', sep=':', precision=0).split()
+                tlog.app_log.info(telstatus[telescope])
+            else:
+                telstatus[telescope] = {'date': dt.utcnow()-tdelta(365),
+                                        'connected': False}
+        
+        
+        ##---------------------------------------------------------------------
+        ## Get Current Weather
+        ##---------------------------------------------------------------------
+        weather = client.vysos['weather']
+        if weather.count() > 0:
+            cw = weather.find(limit=1, sort=[('date', pymongo.DESCENDING)]).next()
+        else:
+            cw = None
+        
+        
+        ##---------------------------------------------------------------------
         ## Render
         ##---------------------------------------------------------------------
         if nowut.hour < 6 and sun['now'] == 'day' and (sun['set']-nowut).total_seconds() >= 60.*60.:
@@ -217,51 +202,6 @@ class Status(RequestHandler):
             files_string = "Last Night's Files"
 
         tlog.app_log.info('  Rendering Status')
-        me.connect('vysos', host='192.168.1.101')
-        
-        v5status = None
-        while not v5status:
-            try:
-                v5status = telstatus.objects(__raw__={'current': True, 'telescope': 'V5'})[0]
-            except:
-                tlog.app_log.info('Failed to get V5 status, retrying after 100ms')
-                sleep(0.100)
-        
-        v20status = None
-        while not v20status:
-            try:
-                v20status = telstatus.objects(__raw__={'current': True, 'telescope': 'V20'})[0]
-            except:
-                tlog.app_log.info('Failed to get V20 status, retrying after 100ms')
-                sleep(0.100)
-        
-        if v5status.RA and v5status.DEC:
-            v5coord = SkyCoord(v5status.RA, v5status.DEC, unit=u.deg)
-            tlog.app_log.info('{} {}'.format(v5status.RA, v5status.DEC))
-            tlog.app_log.info('{}'.format(v5coord.to_string('hmsdms', sep=':', precision=0).split()))
-            v5status.RA, v5status.DEC = v5coord.to_string('hmsdms', sep=':', precision=0).split()
-        if v20status.RA and v20status.DEC:
-            v20coord = SkyCoord(v20status.RA, v20status.DEC, unit=u.deg)
-            tlog.app_log.info('{} {}'.format(v20status.RA, v20status.DEC))
-            tlog.app_log.info('{}'.format(v20coord.to_string('hmsdms', sep=':', precision=0).split()))
-            v20status.RA, v20status.DEC = v20coord.to_string('hmsdms', sep=':', precision=0).split()
-
-        client = MongoClient('192.168.1.101', 27017)
-        weather = client.vysos['weather']
-        if weather.count() > 0:
-            cw = weather.find(limit=1, sort=[('date', pymongo.DESCENDING)]).next()
-        else:
-            cw = None
-        
-
-#         cw = currentweather.objects()
-#         if cw.count() > 0:
-#             tlog.app_log.info('  Found {:d} current weather docs'.format(cw.count()))
-#             cwinfo = cw[0]
-#         else:
-#             tlog.app_log.info('  Failed to find current weather info')
-#             cwinfo = None
-
         cctv = False
         if input.lower() in ["cctv", "cctv.html"]:
             cctv = True
@@ -271,8 +211,7 @@ class Status(RequestHandler):
                     link_date_string = link_date_string,
                     moon = moon,
                     sun = sun,
-                    v5status=v5status,
-                    v20status=v20status,
+                    telstatus=telstatus,
                     files_string = files_string,\
                     v5_nimages = get_nimages('V5', link_date_string),\
                     v20_nimages = get_nimages('V20', link_date_string),\
@@ -283,3 +222,7 @@ class Status(RequestHandler):
                     weather_limits=weather_limits,
                     )
         tlog.app_log.info('  Done')
+
+
+
+

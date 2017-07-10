@@ -200,9 +200,9 @@
 </table>
 
 <!-- ###################################### -->
-<!-- Weather Plot
+<!-- Weather Plot -->
 <!-- ###################################### -->
-<img src="static/weather.png">
+<a href="static/weather.png" ><img width=900px src="static/weather.png"></a>
 <br>
 
 <!-- ###################################### -->
@@ -219,10 +219,10 @@
     <tr>
         <td style="text-align: right;">ACP Connected:</td>
         <td style="text-align: left;">
-            {% if v5status.connected %}{{ v5status.connected }}{% end %}
+            {% if 'connected' in telstatus['V5'] %}{{ telstatus['V5']['connected'] }}{% end %}
         </td>
         <td style="text-align: left;">
-            {% if v20status.connected %}{{ v20status.connected }}{% end %}
+            {% if 'connected' in telstatus['V20'] %}{{ telstatus['V20']['connected'] }}{% end %}
         </td>
         <td rowspan=16 style="vertical-align: middle;">
             <table style="border:0px; border-style: none;">
@@ -243,19 +243,19 @@
     <tr>
         <td style="text-align: right;">Status:</td>
         <td style="text-align: left;">
-            {% if v5status.connected %}
-                {% if v5status.slewing %} <font color="orange">Slewing</font>
-                {% elif v5status.tracking %} <font color="green">Tracking</font>
-                {% elif v5status.park %} <font color="black">Parked</font>
+            {% if telstatus['V5']['connected'] %}
+                {% if telstatus['V5']['slewing'] %} <font color="orange">Slewing</font>
+                {% elif telstatus['V5']['tracking'] %} <font color="green">Tracking</font>
+                {% elif telstatus['V5']['park'] %} <font color="black">Parked</font>
                 {% else %} <font color="black">Stationary</font>
                 {% end %}
             {% end %}
         </td>
         <td style="text-align: left;">
-            {% if v20status.connected %}
-                {% if v20status.slewing %} <font color="orange">Slewing</font>
-                {% elif v20status.tracking %} <font color="green">Tracking</font>
-                {% elif v20status.park %} <font color="black">Parked</font>
+            {% if telstatus['V20']['connected'] %}
+                {% if telstatus['V20']['slewing'] %} <font color="orange">Slewing</font>
+                {% elif telstatus['V20']['tracking'] %} <font color="green">Tracking</font>
+                {% elif telstatus['V20']['park'] %} <font color="black">Parked</font>
                 {% else %} <font color="black">Stationary</font>
                 {% end %}
             {% end %}
@@ -264,46 +264,46 @@
     <tr>
         <td style="text-align: right;">Alt:</td>
         <td style="text-align: left;">
-            {% if v5status.alt %}{{ '{:.1f}'.format(v5status.alt) }}{% end %}
+            {% if 'alt' in telstatus['V5'] %}{{ '{:.1f}'.format(telstatus['V5']['alt']) }}{% end %}
         </td>
         <td style="text-align: left;">
-            {% if v20status.alt %}{{ '{:.1f}'.format(v20status.alt) }}{% end %}
+            {% if 'alt' in telstatus['V20'] %}{{ '{:.1f}'.format(telstatus['V20']['alt']) }}{% end %}
         </td>
     </tr>
     <tr>
         <td style="text-align: right;">Az:</td>
         <td style="text-align: left;">
-            {% if v5status.az %}{{ '{:.1f}'.format(v5status.az) }}{% end %}
+            {% if 'az' in telstatus['V5'] %}{{ '{:.1f}'.format(telstatus['V5']['az']) }}{% end %}
         </td>
         <td style="text-align: left;">
-            {% if v20status.az %}{{ '{:.1f}'.format(v20status.az) }}{% end %}
+            {% if 'az' in telstatus['V20'] %}{{ '{:.1f}'.format(telstatus['V20']['az']) }}{% end %}
         </td>
     </tr>
     <tr>
         <td style="text-align: right;">Target RA (Jnow):</td>
         <td style="text-align: left;">
-            {% if v5status.RA %}{{ '{}'.format(v5status.RA) }}{% end %}
+            {% if 'RA' in telstatus['V5'] %}{{ '{}'.format(telstatus['V5']['RA']) }}{% end %}
         </td>
         <td style="text-align: left;">
-            {% if v20status.RA %}{{ '{}'.format(v20status.RA) }}{% end %}
+            {% if 'RA' in telstatus['V20'] %}{{ '{}'.format(telstatus['V20']['RA']) }}{% end %}
         </td>
     </tr>
     <tr>
         <td style="text-align: right;">Target Dec (Jnow):</td>
         <td style="text-align: left;">
-            {% if v5status.DEC %}{{ '{}'.format(v5status.DEC) }}{% end %}
+            {% if 'DEC' in telstatus['V5'] %}{{ '{}'.format(telstatus['V5']['DEC']) }}{% end %}
         </td>
         <td style="text-align: left;">
-            {% if v20status.DEC %}{{ '{}'.format(v20status.DEC) }}{% end %}
+            {% if 'DEC' in telstatus['V20'] %}{{ '{}'.format(telstatus['V20']['DEC']) }}{% end %}
         </td>
     </tr>
     <tr>
         <td style="text-align: right;">ACP Data Age:</td>
         <td style="text-align: left;">
-            {{ '{:.1f} min'.format((now[1]-v5status.date).total_seconds()/60.) }}
+            {{ '{:.1f} min'.format((now[1]-telstatus['V5']['date']).total_seconds()/60.) }}
         </td>
         <td style="text-align: left;">
-            {{ '{:.1f} min'.format((now[1]-v20status.date).total_seconds()/60.) }}
+            {{ '{:.1f} min'.format((now[1]-telstatus['V20']['date']).total_seconds()/60.) }}
         </td>
     </tr>
     <tr>
