@@ -8,6 +8,7 @@ import logging
 
 import numpy as np
 import matplotlib.pyplot as plt
+plt.style.use('classic')
 from matplotlib.dates import HourLocator, MinuteLocator, DateFormatter
 
 import pymongo
