@@ -21,7 +21,7 @@ from astropy.coordinates import SkyCoord
 import ephem
 
 import IQMon
-from VYSOS.schema import weather_limits
+from VYSOS import weather_limits
 
 import datetime
 

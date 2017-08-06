@@ -12,7 +12,7 @@ plt.style.use('classic')
 from matplotlib.dates import HourLocator, MinuteLocator, DateFormatter
 
 import pymongo
-from VYSOS.schema import weather_limits
+from VYSOS import weather_limits
 
 import astropy.units as u
 from astropy.table import Table, Column
