@@ -1,13 +1,10 @@
-import datetime
+from datetime import datetime as dt
 import mongoengine as me
 
-weather_limits = {'Cloudiness (C)': [-35, -20],
-                  'Wind (kph)': [20, 40],
-                  'Rain': [2400, 2000],
-                  }
+from VYSOS import weather_limits
 
 class weatherbase(me.Document):
-    querydate = me.DateTimeField(default=datetime.datetime.utcnow(), required=True)
+    querydate = me.DateTimeField(default=dt.utcnow(), required=True)
     date = me.DateTimeField(required=True)
     clouds = me.DecimalField(precision=2)
     temp = me.DecimalField(precision=2)
@@ -62,7 +59,7 @@ class currentweather(weatherbase):
 
 class telstatus(me.Document):
     telescope = me.StringField(max_length=3, required=True, choices=['V5', 'V20'])
-    date = me.DateTimeField(default=datetime.datetime.utcnow(), required=True)
+    date = me.DateTimeField(default=dt.utcnow(), required=True)
     current = me.BooleanField(default=True, required=True)
     ## ACP Status
     connected = me.BooleanField()
