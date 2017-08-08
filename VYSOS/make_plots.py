@@ -210,6 +210,7 @@ def plot_weather(date=None, verbose=False):
                 if i == len(labels)-1:
                     t_axes.set_yticks([])
                     t_axes.xaxis.set_major_formatter(DateFormatter('%H:%M'))
+                    t_axes.xaxis.set_minor_formatter(DateFormatter('%H:%M'))
                 else:
                     plt.grid(which='major', color='k')
                     plt.grid(which='minor', color='k', alpha=0.8)
