@@ -1,3 +1,5 @@
+import os
+import re
 import dash
 from dash.dependencies import Input, Output, Event
 import dash_core_components as dcc
@@ -7,6 +9,8 @@ import pymongo
 from datetime import datetime as dt
 from datetime import timedelta as tdelta
 
+from astropy import units as u
+import ephem
 from VYSOS import weather_limits, styles
 
 ##-------------------------------------------------------------------------
@@ -22,6 +26,34 @@ app.layout = html.Div(
         )
     ])
 )
+
+
+##-------------------------------------------------------------------------
+## Check Free Space on Drive
+##-------------------------------------------------------------------------
+def free_space(path):
+    statvfs = os.statvfs(path)
+    size = statvfs.f_frsize * statvfs.f_blocks * u.byte
+    avail = statvfs.f_frsize * statvfs.f_bfree * u.byte
+
+    if re.search('\/Volumes\/DataCopy', path):
+        print('Correcting for 4.97 TB disk capacity')
+        capacity = (4.97*u.TB).to(u.byte)
+        correction = size - capacity
+        size -= correction
+        avail -= correction
+    elif re.search('\/Volumes\/MLOData', path):
+        print('Correcting for 16 TB disk capacity')
+        capacity = (16.89*u.TB).to(u.byte)
+        correction = size - capacity
+        size -= correction
+        avail -= correction
+        if capacity > 16*u.TB:
+            correction2 = (capacity - 16*u.TB).to(u.byte)
+            size -= correction2
+    used = (size - avail)/size
+
+    return (size.to(u.GB).value, avail.to(u.GB).value, used.to(u.percent).value)
 
 
 ##-------------------------------------------------------------------------
@@ -156,6 +188,54 @@ def retrieve_telstatus(telescope):
 
     return telstatus
 
+
+##------------------------------------------------------------------------
+## Use pyephem determine sunrise and sunset times
+##------------------------------------------------------------------------
+def update_astronomy():
+    nowut = dt.utcnow()
+    Observatory = ephem.Observer()
+    Observatory.lon = "-155:34:33.9"
+    Observatory.lat = "+19:32:09.66"
+    Observatory.elevation = 3400.0
+    Observatory.temp = 10.0
+    Observatory.pressure = 680.0
+    Observatory.horizon = '0.0'
+
+    Observatory.date = nowut
+    TheSun = ephem.Sun()
+    TheSun.compute(Observatory)
+    sun = {}
+    sun['alt'] = float(TheSun.alt) * 180. / ephem.pi
+    sun['set'] = Observatory.next_setting(TheSun).datetime()
+    sun['rise'] = Observatory.next_rising(TheSun).datetime()
+    if sun['alt'] <= -18:
+        sun['now'] = 'night'
+    elif sun['alt'] > -18 and sun['alt'] <= -12:
+        sun['now'] = 'astronomical twilight'
+    elif sun['alt'] > -12 and sun['alt'] <= -6:
+        sun['now'] = 'nautical twilight'
+    elif sun['alt'] > -6 and sun['alt'] <= 0:
+        sun['now'] = 'civil twilight'
+    elif sun['alt'] > 0:
+        sun['now'] = 'day'
+
+    TheMoon = ephem.Moon()
+    Observatory.date = nowut
+    TheMoon.compute(Observatory)
+    moon = {}
+    moon['phase'] = TheMoon.phase
+    moon['alt'] = TheMoon.alt * 180. / ephem.pi
+    moon['set'] = Observatory.next_setting(TheMoon).datetime()
+    moon['rise'] = Observatory.next_rising(TheMoon).datetime()
+    if moon['alt'] > 0:
+        moon['now'] = 'up'
+    else:
+        moon['now'] = 'down'
+
+    return sun, moon
+
+
 ##-------------------------------------------------------------------------
 ## Run this to update the info on the page
 ##-------------------------------------------------------------------------
@@ -180,6 +260,21 @@ def generate_weather_table():
         weather_status = html.Span('Unsafe', style={'color': 'red'})
 
     telstatus = retrieve_telstatus('V20')
+    sun, moon = update_astronomy()
+    sunstrings = [f"Next sunrise is at {sun['rise'].strftime('%Y/%m/%d %H:%M:%S UT')}",
+                  f"Next sunset is at {sun['set'].strftime('%Y/%m/%d %H:%M:%S UT')}"]
+    if sun['rise'] > sun['set']:
+        sunstrings.reverse()
+
+
+    paths = {'Drobo': os.path.join('/', 'Volumes', 'DataCopy'),\
+             'macOS': os.path.expanduser('~'),\
+             'DroboPro': os.path.join('/', 'Volumes', 'MLOData')}
+    disks = {}
+    for disk in paths.keys():
+        if os.path.exists(paths[disk]):
+            size_GB, avail_GB, pcnt_used = free_space(paths[disk])
+            disks[disk] = [size_GB, avail_GB, pcnt_used]
 
     tdcw300 = styles['tdc'].copy()
     tdcw300['width'] = '300px'
@@ -189,6 +284,13 @@ def generate_weather_table():
     tdlw150['width'] = '150px'
     tdcw250 = styles['tdc'].copy()
     tdcw250['width'] = '250px'
+
+    tdcw200 = styles['tdc'].copy()
+    tdcw200['width'] = '200px'
+    tdcw150 = styles['tdc'].copy()
+    tdcw150['width'] = '150px'
+    tdcw400 = styles['tdc'].copy()
+    tdcw400['width'] = '400px'
 
     weather_table = html.Table([
                     html.Tr([
@@ -201,6 +303,8 @@ def generate_weather_table():
                              html.Td(now.strftime('%Y/%m/%d %H:%M:%S HST'), style=styles['tdl']),
                              html.Td('Ambient Temperature', style=styles['tdr']),
                              html.Td(f"{weatherdata['temp']:.1f} C, {weatherdata['temp']*1.8+32.:.1f} F", style=styles['tdl']),
+                             html.Td([html.Span('MLOData', style={'font-family': 'Courier, monospace'}),
+                                      f": {disks['DroboPro'][1]:.0f}GB free ({disks['DroboPro'][2]:.0f}% full)"],  style=styles['tdr']),
                             ]),
                     html.Tr([
                              html.Td(nowut.strftime('%Y/%m/%d %H:%M:%S UT'), style=styles['tdl']),
@@ -208,32 +312,39 @@ def generate_weather_table():
                              html.Td([html.Span(condition['cloud'], style={'color': color['cloud']}),
                                       html.Span(' ({0:.1f} F)'.format(weatherdata['clouds']*1.8+32.), style=styles['p']),
                                      ], style=styles['tdl']),
+                             html.Td([html.Span('DataCopy', style={'font-family': 'Courier, monospace'}),
+                                      f": {disks['Drobo'][1]:.0f}GB free ({disks['Drobo'][2]:.0f}% full)"],  style=styles['tdr']),
                             ]),
                     html.Tr([
-                             html.Td(style=styles['tdl']),
+                             html.Td(f"It is currently {sun['now']} (Sun alt = {sun['alt']:.0f})", style=styles['tdl']),
                              html.Td('Wind Speed', style=styles['tdr']),
                              html.Td([html.Span(condition['wind'], style={'color': color['wind']}),
                                       html.Span(' ({0:.1f} kph)'.format(weatherdata['wind']), style=styles['p']),
                                      ], style=styles['tdl']),
+                             html.Td([html.Span('macOS', style={'font-family': 'Courier, monospace'}),
+                                      f": {disks['macOS'][1]:.0f}GB free ({disks['macOS'][2]:.0f}% full)"],  style=styles['tdr']),
                             ]),
                     html.Tr([
-                             html.Td(style=styles['tdl']),
+                             html.Td(f"A {moon['phase']:.0f}% illuminated moon is {moon['now']}", style=styles['tdl']),
                              html.Td('Gusts', style=styles['tdr']),
                              html.Td([html.Span(condition['gust'], style={'color': color['gust']}),
                                       html.Span(' ({0:.1f} kph)'.format(weatherdata['gust']), style=styles['p']),
                                      ], style=styles['tdl']),
+                             html.Td('',  style=styles['tdr']),
                             ]),
                     html.Tr([
-                             html.Td(style=styles['tdl']),
+                             html.Td(sunstrings[0], style=styles['tdl']),
                              html.Td('Rain', style=styles['tdr']),
                              html.Td([html.Span(condition['rain'], style={'color': color['rain']}),
                                       html.Span(' ({0:.0f})'.format(weatherdata['rain']), style=styles['p']),
                                      ], style=styles['tdl']),
+                             html.Td('',  style=styles['tdr']),
                             ]),
                     html.Tr([
-                             html.Td(style=styles['tdl']),
+                             html.Td(sunstrings[1], style=styles['tdl']),
                              html.Td('Weather Data Age', style=styles['tdr']),
                              html.Td('{:.1f}s'.format(weather_data_age), style=styles['tdl']),
+                             html.Td('',  style=styles['tdr']),
                             ]),
                     html.Tr([
                              html.Td(html.Img(src='http://127.0.0.1:80/static/weather.png', width=800), colSpan=4, style=styles['tdc']),
@@ -242,14 +353,16 @@ def generate_weather_table():
 
     telstatus_table = html.Table([
                       html.Tr([
-                               html.Td(html.Span('Status', style={'font-weight': 'bold'}), style=styles['tdc']),
-                               html.Td(html.Span('VYSOS-5', style={'font-weight': 'bold'}), style=styles['tdc']),
-                               html.Td(html.Span('VYSOS-20', style={'font-weight': 'bold'}), style=styles['tdc']),
+                               html.Td(html.Span('Status', style={'font-weight': 'bold'}), style=tdcw200),
+                               html.Td(html.Span('VYSOS-5', style={'font-weight': 'bold'}), style=tdcw150),
+                               html.Td(html.Span('VYSOS-20', style={'font-weight': 'bold'}), style=tdcw150),
+                               html.Td(html.Span('ATLAS All Sky Image', style={'font-weight': 'bold'}), style=tdcw400),
                               ]),
                       html.Tr([
                                html.Td('ACP Connected', style=styles['tdr']),
                                html.Td('{}'.format(telstatus['V5']['connected']), style=styles['tdl']),
                                html.Td('{}'.format(telstatus['V20']['connected']), style=styles['tdl']),
+                               html.Td(html.Img(src='http://www.fallingstar.com/weather/mlo/latest_bw400.jpg', width=400), rowSpan=8, style=styles['tdc']),
                               ]),
                       html.Tr([
                                html.Td('Status', style=styles['tdr']),
@@ -282,7 +395,9 @@ def generate_weather_table():
                                html.Td('{:.1f} min'.format(telstatus['V20']['age']), style=styles['tdl']),
                               ]),
                       html.Tr([
-                               html.Td(html.Img(src='http://www.fallingstar.com/weather/mlo/latest_bw400.jpg', width=400), colSpan=3, style=styles['tdc']),
+                               html.Td('', style=styles['tdr']),
+                               html.Td('', style=styles['tdl']),
+                               html.Td('', style=styles['tdl']),
                               ]),
                      ], style=styles['table'])
 
