@@ -6,7 +6,8 @@ from astropy.coordinates import SkyCoord
 from astropy import units as u
 
 
-def write_request(f, entry):
+def write_request(f, entry, telescope='V5'):
+    filter = {'V5': 'PSr', 'V20': 'PSi'}[telescope]
     if entry['period'] == 1:
         if entry['count'] > 3:
             project = 'Dwell on Targets'
@@ -21,7 +22,7 @@ def write_request(f, entry):
                  )
     f.write('   <Request bestefforts="false">\n')
     f.write('       <ID>{}</ID>\n'.format(entry['name']))
-    f.write('       <UserName>VYSOS-5</UserName>\n')
+    f.write(f'       <UserName>VYSOS-{telescope[1:]}</UserName>\n')
     f.write('       <Description>Observing Plan for {}</Description>\n'.format(entry['name']))
     f.write('       <Reason>Monitor={:d}</Reason>\n'.format(entry['period']))
     f.write('       <Project>{}</Project>\n'.format(project))
@@ -40,7 +41,7 @@ def write_request(f, entry):
     f.write('               <Declination>{:+.4f}</Declination>\n'.format(c.dec.degree))
     f.write('           </Coordinates>\n')
     f.write('           <Picture count="{:d}">\n'.format(entry['nexp']))
-    f.write('               <Name>PSr3</Name>\n')
+    f.write('               <Name>{}</Name>\n'.format(entry['filter']))
     f.write('               <ExposureTime>{:.1f}</ExposureTime>\n'.format(entry['exptime']))
     f.write('               <Filter>{}</Filter>\n'.format(entry['filter']))
     f.write('               <Dither>4</Dither>\n')
@@ -50,16 +51,19 @@ def write_request(f, entry):
     f.write('\n')
 
 
-if __name__ == '__main__':
-    tab = Table.read('V5_targets.txt', format='ascii')
-    rtml_file = 'V5_targets.rtml'
-    if os.path.exists(rtml_file): os.remove(rtml_file)
+def main(telescope='V5'):
+    assert telescope in ['V5', 'V20']
+    input_filename = f'{telescope}_targets.txt'
+    rtml_file = f'{telescope}_targets.rtml'
+    tab = Table.read(input_filename, format='ascii')
+    if os.path.exists(rtml_file):
+        os.remove(rtml_file)
     with open(rtml_file, 'w') as f:
         ## Header
         f.write('\n')
         f.write('<RTML>\n')
         f.write('   <Contact>\n')
-        f.write('       <User>VYSOS-5</User>\n')
+        f.write(f'       <User>VYSOS-{telescope[1:]}</User>\n')
         f.write('       <Email>vysostelescope@gmail.com</Email>\n')
         f.write('   </Contact>\n')
         f.write('\n')
@@ -68,6 +72,10 @@ if __name__ == '__main__':
         for entry in byperiod:
             moncount = np.where(byperiod.groups.keys['period'] == entry['period'])[0][0]
             entry['priority'] += 10*moncount
-            write_request(f, entry)
+            write_request(f, entry, telescope=telescope)
         f.write('</RTML>\n')
 
+
+
+if __name__ == '__main__':
+    main(telescope='V20')

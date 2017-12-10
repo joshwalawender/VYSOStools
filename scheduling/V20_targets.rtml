@@ -1,0 +1,5460 @@
+
+<RTML>
+   <Contact>
+       <User>VYSOS-20</User>
+       <Email>vysostelescope@gmail.com</Email>
+   </Contact>
+
+   <Request bestefforts="false">
+       <ID>V20_Blanco1</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_Blanco1</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>8</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_Blanco1</Name>
+           <Coordinates>
+               <RightAscension>+0.8333</RightAscension>
+               <Declination>-30.1333</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC654</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC654</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>9</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC654</Name>
+           <Coordinates>
+               <RightAscension>+26.6250</RightAscension>
+               <Declination>+61.2167</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_IC1795</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_IC1795</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_IC1795</Name>
+           <Coordinates>
+               <RightAscension>+36.6583</RightAscension>
+               <Declination>+62.1167</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_IC1805west</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_IC1805west</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_IC1805west</Name>
+           <Coordinates>
+               <RightAscension>+37.2083</RightAscension>
+               <Declination>+61.4333</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_IC1805center</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_IC1805center</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_IC1805center</Name>
+           <Coordinates>
+               <RightAscension>+38.2000</RightAscension>
+               <Declination>+61.5083</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_IC1805north</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_IC1805north</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_IC1805north</Name>
+           <Coordinates>
+               <RightAscension>+39.0333</RightAscension>
+               <Declination>+61.7750</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_IC1805east</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_IC1805east</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_IC1805east</Name>
+           <Coordinates>
+               <RightAscension>+39.1500</RightAscension>
+               <Declination>+61.2000</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_IC1848west</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_IC1848west</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>2</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_IC1848west</Name>
+           <Coordinates>
+               <RightAscension>+42.3500</RightAscension>
+               <Declination>+60.3583</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_IC1848south</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_IC1848south</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>2</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_IC1848south</Name>
+           <Coordinates>
+               <RightAscension>+42.8792</RightAscension>
+               <Declination>+60.1131</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_IC1848center</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_IC1848center</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>2</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_IC1848center</Name>
+           <Coordinates>
+               <RightAscension>+43.3500</RightAscension>
+               <Declination>+60.3583</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_IC1848east</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_IC1848east</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>2</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_IC1848east</Name>
+           <Coordinates>
+               <RightAscension>+43.9833</RightAscension>
+               <Declination>+60.6333</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_AFGL4029</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_AFGL4029</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>2</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_AFGL4029</Name>
+           <Coordinates>
+               <RightAscension>+44.9833</RightAscension>
+               <Declination>+60.6333</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC1333</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC1333</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC1333</Name>
+           <Coordinates>
+               <RightAscension>+52.2583</RightAscension>
+               <Declination>+31.3483</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_IC348</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_IC348</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_IC348</Name>
+           <Coordinates>
+               <RightAscension>+56.1417</RightAscension>
+               <Declination>+32.1633</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC1502</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC1502</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>5</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC1502</Name>
+           <Coordinates>
+               <RightAscension>+61.9583</RightAscension>
+               <Declination>+62.3317</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_TTauri</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_TTauri</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_TTauri</Name>
+           <Coordinates>
+               <RightAscension>+65.4958</RightAscension>
+               <Declination>+19.5350</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_FSTau</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_FSTau</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>2</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_FSTau</Name>
+           <Coordinates>
+               <RightAscension>+65.5083</RightAscension>
+               <Declination>+26.9583</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_DGTau</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_DGTau</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>3</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_DGTau</Name>
+           <Coordinates>
+               <RightAscension>+66.7708</RightAscension>
+               <Declination>+26.1044</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_L1551</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_L1551</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_L1551</Name>
+           <Coordinates>
+               <RightAscension>+67.9125</RightAscension>
+               <Declination>+18.2328</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_HPTau</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_HPTau</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_HPTau</Name>
+           <Coordinates>
+               <RightAscension>+68.9708</RightAscension>
+               <Declination>+22.9064</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_VYTau</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_VYTau</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>4</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_VYTau</Name>
+           <Coordinates>
+               <RightAscension>+69.8250</RightAscension>
+               <Declination>+22.7981</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_DQTau</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_DQTau</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_DQTau</Name>
+           <Coordinates>
+               <RightAscension>+71.7208</RightAscension>
+               <Declination>+17.0000</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_DRTau</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_DRTau</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>2</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_DRTau</Name>
+           <Coordinates>
+               <RightAscension>+71.7750</RightAscension>
+               <Declination>+16.9786</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_UXOri</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_UXOri</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>2</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_UXOri</Name>
+           <Coordinates>
+               <RightAscension>+76.1250</RightAscension>
+               <Declination>-3.7872</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_V582Aur</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_V582Aur</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>3</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_V582Aur</Name>
+           <Coordinates>
+               <RightAscension>+81.4667</RightAscension>
+               <Declination>+34.8750</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_ONC1</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_ONC1</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_ONC1</Name>
+           <Coordinates>
+               <RightAscension>+83.3254</RightAscension>
+               <Declination>-5.8814</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_ONC3</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_ONC3</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_ONC3</Name>
+           <Coordinates>
+               <RightAscension>+83.3254</RightAscension>
+               <Declination>-4.8981</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_ONC2</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_ONC2</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_ONC2</Name>
+           <Coordinates>
+               <RightAscension>+83.3254</RightAscension>
+               <Declination>-5.3897</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_ONC4</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_ONC4</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_ONC4</Name>
+           <Coordinates>
+               <RightAscension>+83.8187</RightAscension>
+               <Declination>-5.8814</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_ONC5</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_ONC5</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_ONC5</Name>
+           <Coordinates>
+               <RightAscension>+83.8187</RightAscension>
+               <Declination>-5.3897</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_ONC6</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_ONC6</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_ONC6</Name>
+           <Coordinates>
+               <RightAscension>+83.8187</RightAscension>
+               <Declination>-4.8981</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_L1641A</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_L1641A</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_L1641A</Name>
+           <Coordinates>
+               <RightAscension>+83.9167</RightAscension>
+               <Declination>-6.3731</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_L1641B</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_L1641B</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_L1641B</Name>
+           <Coordinates>
+               <RightAscension>+84.1042</RightAscension>
+               <Declination>-6.8647</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_ONC8</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_ONC8</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_ONC8</Name>
+           <Coordinates>
+               <RightAscension>+84.3121</RightAscension>
+               <Declination>-5.3897</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_ONC7</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_ONC7</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_ONC7</Name>
+           <Coordinates>
+               <RightAscension>+84.3121</RightAscension>
+               <Declination>-5.8814</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_ONC9</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_ONC9</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_ONC9</Name>
+           <Coordinates>
+               <RightAscension>+84.3121</RightAscension>
+               <Declination>-4.8981</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_L1641C</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_L1641C</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>3</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_L1641C</Name>
+           <Coordinates>
+               <RightAscension>+85.0000</RightAscension>
+               <Declination>-7.3564</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_L1641D</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_L1641D</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>4</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_L1641D</Name>
+           <Coordinates>
+               <RightAscension>+85.2083</RightAscension>
+               <Declination>-7.8481</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_L1641E</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_L1641E</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>5</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_L1641E</Name>
+           <Coordinates>
+               <RightAscension>+85.4208</RightAscension>
+               <Declination>-8.3000</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_FUOri</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_FUOri</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_FUOri</Name>
+           <Coordinates>
+               <RightAscension>+86.1875</RightAscension>
+               <Declination>+9.1833</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_L1630S</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_L1630S</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>6</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_L1630S</Name>
+           <Coordinates>
+               <RightAscension>+86.6458</RightAscension>
+               <Declination>-0.0500</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_L1630N</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_L1630N</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>8</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_L1630N</Name>
+           <Coordinates>
+               <RightAscension>+86.7708</RightAscension>
+               <Declination>+0.4500</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_L1622</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_L1622</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>2</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_L1622</Name>
+           <Coordinates>
+               <RightAscension>+88.6708</RightAscension>
+               <Declination>+1.8667</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC2170</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC2170</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC2170</Name>
+           <Coordinates>
+               <RightAscension>+91.9000</RightAscension>
+               <Declination>-6.2667</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC2182</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC2182</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>9</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC2182</Name>
+           <Coordinates>
+               <RightAscension>+92.2500</RightAscension>
+               <Declination>-6.5000</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_IRAS06068-0641</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_IRAS06068-0641</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>6</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_IRAS06068-0641</Name>
+           <Coordinates>
+               <RightAscension>+92.3292</RightAscension>
+               <Declination>-6.6986</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC2264C</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC2264C</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC2264C</Name>
+           <Coordinates>
+               <RightAscension>+100.2500</RightAscension>
+               <Declination>+10.0250</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC2264N</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC2264N</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC2264N</Name>
+           <Coordinates>
+               <RightAscension>+100.2500</RightAscension>
+               <Declination>+10.5167</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC2264S</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC2264S</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC2264S</Name>
+           <Coordinates>
+               <RightAscension>+100.2500</RightAscension>
+               <Declination>+9.5333</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_L1656_Thommes</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_L1656_Thommes</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>3</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_L1656_Thommes</Name>
+           <Coordinates>
+               <RightAscension>+104.2917</RightAscension>
+               <Declination>-8.3333</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_CanisMajor</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_CanisMajor</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_CanisMajor</Name>
+           <Coordinates>
+               <RightAscension>+105.9167</RightAscension>
+               <Declination>-11.4833</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_IC2177</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_IC2177</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>2</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_IC2177</Name>
+           <Coordinates>
+               <RightAscension>+106.1542</RightAscension>
+               <Declination>-10.4711</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_CanisMajorS</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_CanisMajorS</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>3</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_CanisMajorS</Name>
+           <Coordinates>
+               <RightAscension>+106.2500</RightAscension>
+               <Declination>-12.2500</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC2467</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC2467</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>7</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC2467</Name>
+           <Coordinates>
+               <RightAscension>+118.2083</RightAscension>
+               <Declination>-26.3667</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_TWA30</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_TWA30</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_TWA30</Name>
+           <Coordinates>
+               <RightAscension>+173.0750</RightAscension>
+               <Declination>-30.3311</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_L1688core</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_L1688core</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_L1688core</Name>
+           <Coordinates>
+               <RightAscension>+246.7500</RightAscension>
+               <Declination>-24.5000</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_B62</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_B62</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_B62</Name>
+           <Coordinates>
+               <RightAscension>+258.9792</RightAscension>
+               <Declination>-20.9342</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC6334</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC6334</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>5</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC6334</Name>
+           <Coordinates>
+               <RightAscension>+260.0083</RightAscension>
+               <Declination>-35.9333</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC6357</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC6357</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>6</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC6357</Name>
+           <Coordinates>
+               <RightAscension>+261.2000</RightAscension>
+               <Declination>-34.2500</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC6383</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC6383</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>7</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC6383</Name>
+           <Coordinates>
+               <RightAscension>+263.6750</RightAscension>
+               <Declination>-32.5814</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_Trumpler27</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_Trumpler27</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>4</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_Trumpler27</Name>
+           <Coordinates>
+               <RightAscension>+264.0833</RightAscension>
+               <Declination>-33.5083</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_IC4665</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_IC4665</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_IC4665</Name>
+           <Coordinates>
+               <RightAscension>+266.7000</RightAscension>
+               <Declination>+5.5500</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_M20</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_M20</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_M20</Name>
+           <Coordinates>
+               <RightAscension>+270.6125</RightAscension>
+               <Declination>-22.9667</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_M8west</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_M8west</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_M8west</Name>
+           <Coordinates>
+               <RightAscension>+270.7333</RightAscension>
+               <Declination>-24.3167</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC6531</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC6531</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>4</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC6531</Name>
+           <Coordinates>
+               <RightAscension>+271.0500</RightAscension>
+               <Declination>-22.4833</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_M8east</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_M8east</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_M8east</Name>
+           <Coordinates>
+               <RightAscension>+271.2583</RightAscension>
+               <Declination>-24.3167</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_IC1274</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_IC1274</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>2</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_IC1274</Name>
+           <Coordinates>
+               <RightAscension>+272.4500</RightAscension>
+               <Declination>-23.6167</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC6559</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC6559</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>5</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC6559</Name>
+           <Coordinates>
+               <RightAscension>+272.4833</RightAscension>
+               <Declination>-24.1000</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_M16</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_M16</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_M16</Name>
+           <Coordinates>
+               <RightAscension>+274.7083</RightAscension>
+               <Declination>-13.8083</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_CrA</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_CrA</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_CrA</Name>
+           <Coordinates>
+               <RightAscension>+285.5000</RightAscension>
+               <Declination>-37.0000</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC6823</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC6823</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>8</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC6823</Name>
+           <Coordinates>
+               <RightAscension>+295.8333</RightAscension>
+               <Declination>+23.3000</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC6871_Byurakan1_2</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC6871_Byurakan1_2</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>7</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC6871_Byurakan1_2</Name>
+           <Coordinates>
+               <RightAscension>+302.0000</RightAscension>
+               <Declination>+35.5000</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_IC4996</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_IC4996</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>4</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_IC4996</Name>
+           <Coordinates>
+               <RightAscension>+304.1250</RightAscension>
+               <Declination>+37.6333</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_BD+404124</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_BD+404124</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>3</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_BD+404124</Name>
+           <Coordinates>
+               <RightAscension>+305.1167</RightAscension>
+               <Declination>+41.3642</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC6910</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC6910</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>3</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC6910</Name>
+           <Coordinates>
+               <RightAscension>+305.7833</RightAscension>
+               <Declination>+40.7750</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC6913</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC6913</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>3</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC6913</Name>
+           <Coordinates>
+               <RightAscension>+305.9833</RightAscension>
+               <Declination>+38.5233</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC6914</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC6914</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>4</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC6914</Name>
+           <Coordinates>
+               <RightAscension>+306.1917</RightAscension>
+               <Declination>+42.3833</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_PVCep</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_PVCep</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>2</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_PVCep</Name>
+           <Coordinates>
+               <RightAscension>+311.4750</RightAscension>
+               <Declination>+67.9583</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NAP13</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NAP13</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NAP13</Name>
+           <Coordinates>
+               <RightAscension>+312.6162</RightAscension>
+               <Declination>+44.9667</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NAP9</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NAP9</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NAP9</Name>
+           <Coordinates>
+               <RightAscension>+312.7962</RightAscension>
+               <Declination>+44.4750</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NAP5</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NAP5</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NAP5</Name>
+           <Coordinates>
+               <RightAscension>+312.9750</RightAscension>
+               <Declination>+43.9833</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NAP1</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NAP1</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NAP1</Name>
+           <Coordinates>
+               <RightAscension>+313.1525</RightAscension>
+               <Declination>+43.4917</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NAP14</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NAP14</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NAP14</Name>
+           <Coordinates>
+               <RightAscension>+313.3117</RightAscension>
+               <Declination>+44.9667</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NAP10</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NAP10</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NAP10</Name>
+           <Coordinates>
+               <RightAscension>+313.4854</RightAscension>
+               <Declination>+44.4750</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NAP6</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NAP6</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NAP6</Name>
+           <Coordinates>
+               <RightAscension>+313.6583</RightAscension>
+               <Declination>+43.9833</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NAP2</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NAP2</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NAP2</Name>
+           <Coordinates>
+               <RightAscension>+313.8304</RightAscension>
+               <Declination>+43.4917</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NAP15</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NAP15</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NAP15</Name>
+           <Coordinates>
+               <RightAscension>+314.0071</RightAscension>
+               <Declination>+44.9667</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NAP11</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NAP11</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NAP11</Name>
+           <Coordinates>
+               <RightAscension>+314.1746</RightAscension>
+               <Declination>+44.4750</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NAP7</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NAP7</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NAP7</Name>
+           <Coordinates>
+               <RightAscension>+314.3417</RightAscension>
+               <Declination>+43.9833</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NAP3</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NAP3</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NAP3</Name>
+           <Coordinates>
+               <RightAscension>+314.5083</RightAscension>
+               <Declination>+43.4917</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NAP16</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NAP16</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NAP16</Name>
+           <Coordinates>
+               <RightAscension>+314.7025</RightAscension>
+               <Declination>+44.9667</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NAP12</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NAP12</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NAP12</Name>
+           <Coordinates>
+               <RightAscension>+314.8637</RightAscension>
+               <Declination>+44.4750</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_L1003</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_L1003</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>9</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_L1003</Name>
+           <Coordinates>
+               <RightAscension>+315.0000</RightAscension>
+               <Declination>+52.5000</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NAP8</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NAP8</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NAP8</Name>
+           <Coordinates>
+               <RightAscension>+315.0250</RightAscension>
+               <Declination>+43.9833</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NAP4</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NAP4</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NAP4</Name>
+           <Coordinates>
+               <RightAscension>+315.1862</RightAscension>
+               <Declination>+43.4917</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_L988</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_L988</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_L988</Name>
+           <Coordinates>
+               <RightAscension>+315.8333</RightAscension>
+               <Declination>+50.1000</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_IC1396A</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_IC1396A</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>2</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_IC1396A</Name>
+           <Coordinates>
+               <RightAscension>+324.0000</RightAscension>
+               <Declination>+57.4667</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_Trumpler37</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_Trumpler37</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>1</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_Trumpler37</Name>
+           <Coordinates>
+               <RightAscension>+324.9167</RightAscension>
+               <Declination>+57.4667</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_IC5146</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_IC5146</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>6</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_IC5146</Name>
+           <Coordinates>
+               <RightAscension>+328.3542</RightAscension>
+               <Declination>+47.2667</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_CepheusB</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_CepheusB</Description>
+       <Reason>Monitor=1</Reason>
+       <Project>Monitor Every 1 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>2</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_CepheusB</Name>
+           <Coordinates>
+               <RightAscension>+344.2500</RightAscension>
+               <Declination>+62.6250</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC869</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC869</Description>
+       <Reason>Monitor=2</Reason>
+       <Project>Monitor Every 2 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>16</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC869</Name>
+           <Coordinates>
+               <RightAscension>+34.7417</RightAscension>
+               <Declination>+57.1217</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC884</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC884</Description>
+       <Reason>Monitor=2</Reason>
+       <Project>Monitor Every 2 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>17</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC884</Name>
+           <Coordinates>
+               <RightAscension>+35.6333</RightAscension>
+               <Declination>+57.1442</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC957</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC957</Description>
+       <Reason>Monitor=2</Reason>
+       <Project>Monitor Every 2 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>19</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC957</Name>
+           <Coordinates>
+               <RightAscension>+38.3375</RightAscension>
+               <Declination>+57.5600</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_Haro6-10</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_Haro6-10</Description>
+       <Reason>Monitor=2</Reason>
+       <Project>Monitor Every 2 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>14</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_Haro6-10</Name>
+           <Coordinates>
+               <RightAscension>+67.3500</RightAscension>
+               <Declination>+24.5500</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC2129</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC2129</Description>
+       <Reason>Monitor=2</Reason>
+       <Project>Monitor Every 2 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>19</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC2129</Name>
+           <Coordinates>
+               <RightAscension>+90.2750</RightAscension>
+               <Declination>+23.3222</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC2313_V565Mon</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC2313_V565Mon</Description>
+       <Reason>Monitor=2</Reason>
+       <Project>Monitor Every 2 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>15</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC2313_V565Mon</Name>
+           <Coordinates>
+               <RightAscension>+104.5125</RightAscension>
+               <Declination>-7.9450</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_Serpens</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_Serpens</Description>
+       <Reason>Monitor=2</Reason>
+       <Project>Monitor Every 2 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>14</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_Serpens</Name>
+           <Coordinates>
+               <RightAscension>+277.5000</RightAscension>
+               <Declination>+1.2353</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_IC1396N</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_IC1396N</Description>
+       <Reason>Monitor=2</Reason>
+       <Project>Monitor Every 2 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>11</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_IC1396N</Name>
+           <Coordinates>
+               <RightAscension>+325.1750</RightAscension>
+               <Declination>+58.2694</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC7380</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC7380</Description>
+       <Reason>Monitor=2</Reason>
+       <Project>Monitor Every 2 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>12</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC7380</Name>
+           <Coordinates>
+               <RightAscension>+341.8750</RightAscension>
+               <Declination>+58.0750</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC7538</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC7538</Description>
+       <Reason>Monitor=2</Reason>
+       <Project>Monitor Every 2 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>13</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC7538</Name>
+           <Coordinates>
+               <RightAscension>+348.4417</RightAscension>
+               <Declination>+61.5333</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_25Ori</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_25Ori</Description>
+       <Reason>Monitor=3</Reason>
+       <Project>Monitor Every 3 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>25</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_25Ori</Name>
+           <Coordinates>
+               <RightAscension>+81.2292</RightAscension>
+               <Declination>+1.8000</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC1960</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC1960</Description>
+       <Reason>Monitor=3</Reason>
+       <Project>Monitor Every 3 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>24</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC1960</Name>
+           <Coordinates>
+               <RightAscension>+84.0750</RightAscension>
+               <Declination>+34.1417</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_SigmaOri</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_SigmaOri</Description>
+       <Reason>Monitor=3</Reason>
+       <Project>Monitor Every 3 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>26</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_SigmaOri</Name>
+           <Coordinates>
+               <RightAscension>+84.6875</RightAscension>
+               <Declination>-2.6000</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC2175</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC2175</Description>
+       <Reason>Monitor=3</Reason>
+       <Project>Monitor Every 3 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>27</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC2175</Name>
+           <Coordinates>
+               <RightAscension>+92.4792</RightAscension>
+               <Declination>+20.4917</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_RosetteNW</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_RosetteNW</Description>
+       <Reason>Monitor=3</Reason>
+       <Project>Monitor Every 3 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>21</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_RosetteNW</Name>
+           <Coordinates>
+               <RightAscension>+97.8333</RightAscension>
+               <Declination>+5.0500</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_RosetteSE</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_RosetteSE</Description>
+       <Reason>Monitor=3</Reason>
+       <Project>Monitor Every 3 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>22</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_RosetteSE</Name>
+           <Coordinates>
+               <RightAscension>+98.1667</RightAscension>
+               <Declination>+4.8333</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC7129</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC7129</Description>
+       <Reason>Monitor=3</Reason>
+       <Project>Monitor Every 3 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>23</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC7129</Name>
+           <Coordinates>
+               <RightAscension>+325.7500</RightAscension>
+               <Declination>+66.1083</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_Stock18</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_Stock18</Description>
+       <Reason>Monitor=4</Reason>
+       <Project>Monitor Every 4 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>39</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_Stock18</Name>
+           <Coordinates>
+               <RightAscension>+0.3958</RightAscension>
+               <Declination>+64.6233</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_Berkeley59_NGC7822</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_Berkeley59_NGC7822</Description>
+       <Reason>Monitor=4</Reason>
+       <Project>Monitor Every 4 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>33</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_Berkeley59_NGC7822</Name>
+           <Coordinates>
+               <RightAscension>+0.5583</RightAscension>
+               <Declination>+67.4167</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_V633Cas</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_V633Cas</Description>
+       <Reason>Monitor=4</Reason>
+       <Project>Monitor Every 4 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>34</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_V633Cas</Name>
+           <Coordinates>
+               <RightAscension>+2.8333</RightAscension>
+               <Declination>+58.8167</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_TMR1_IC2087</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_TMR1_IC2087</Description>
+       <Reason>Monitor=4</Reason>
+       <Project>Monitor Every 4 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>34</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_TMR1_IC2087</Name>
+           <Coordinates>
+               <RightAscension>+69.9000</RightAscension>
+               <Declination>+25.8167</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC2353</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC2353</Description>
+       <Reason>Monitor=4</Reason>
+       <Project>Monitor Every 4 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>35</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC2353</Name>
+           <Coordinates>
+               <RightAscension>+108.6250</RightAscension>
+               <Declination>-10.2667</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC2362</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC2362</Description>
+       <Reason>Monitor=4</Reason>
+       <Project>Monitor Every 4 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>31</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC2362</Name>
+           <Coordinates>
+               <RightAscension>+109.6750</RightAscension>
+               <Declination>-24.9500</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC2367</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC2367</Description>
+       <Reason>Monitor=4</Reason>
+       <Project>Monitor Every 4 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>35</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC2367</Name>
+           <Coordinates>
+               <RightAscension>+110.0250</RightAscension>
+               <Declination>-21.8667</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC2414</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC2414</Description>
+       <Reason>Monitor=4</Reason>
+       <Project>Monitor Every 4 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>36</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC2414</Name>
+           <Coordinates>
+               <RightAscension>+113.3042</RightAscension>
+               <Declination>-15.4539</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC2448</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC2448</Description>
+       <Reason>Monitor=4</Reason>
+       <Project>Monitor Every 4 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>37</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC2448</Name>
+           <Coordinates>
+               <RightAscension>+116.1500</RightAscension>
+               <Declination>-24.6833</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_B59</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_B59</Description>
+       <Reason>Monitor=4</Reason>
+       <Project>Monitor Every 4 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>38</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_B59</Name>
+           <Coordinates>
+               <RightAscension>+257.8000</RightAscension>
+               <Declination>-27.4000</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC7128</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC7128</Description>
+       <Reason>Monitor=4</Reason>
+       <Project>Monitor Every 4 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>32</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC7128</Name>
+           <Coordinates>
+               <RightAscension>+326.0000</RightAscension>
+               <Declination>+53.7167</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_CamOB3</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_CamOB3</Description>
+       <Reason>Monitor=5</Reason>
+       <Project>Monitor Every 5 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>48</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_CamOB3</Name>
+           <Coordinates>
+               <RightAscension>+59.8292</RightAscension>
+               <Declination>+57.1981</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_J1604</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_J1604</Description>
+       <Reason>Monitor=5</Reason>
+       <Project>Monitor Every 5 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>41</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_J1604</Name>
+           <Coordinates>
+               <RightAscension>+241.0917</RightAscension>
+               <Declination>-21.5078</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_W40</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_W40</Description>
+       <Reason>Monitor=5</Reason>
+       <Project>Monitor Every 5 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>47</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_W40</Name>
+           <Coordinates>
+               <RightAscension>+277.8667</RightAscension>
+               <Declination>-2.0894</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_IRAS20050+2720</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_IRAS20050+2720</Description>
+       <Reason>Monitor=5</Reason>
+       <Project>Monitor Every 5 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>46</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_IRAS20050+2720</Name>
+           <Coordinates>
+               <RightAscension>+301.7792</RightAscension>
+               <Declination>+27.4814</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_Berkeley87</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_Berkeley87</Description>
+       <Reason>Monitor=5</Reason>
+       <Project>Monitor Every 5 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>44</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_Berkeley87</Name>
+           <Coordinates>
+               <RightAscension>+305.4292</RightAscension>
+               <Declination>+37.3706</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC7023</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC7023</Description>
+       <Reason>Monitor=5</Reason>
+       <Project>Monitor Every 5 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>43</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC7023</Name>
+           <Coordinates>
+               <RightAscension>+315.4042</RightAscension>
+               <Declination>+68.1667</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC7235</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC7235</Description>
+       <Reason>Monitor=5</Reason>
+       <Project>Monitor Every 5 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>45</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC7235</Name>
+           <Coordinates>
+               <RightAscension>+333.1000</RightAscension>
+               <Declination>+57.2667</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_LkHa233</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_LkHa233</Description>
+       <Reason>Monitor=5</Reason>
+       <Project>Monitor Every 5 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>42</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_LkHa233</Name>
+           <Coordinates>
+               <RightAscension>+338.6667</RightAscension>
+               <Declination>+40.6678</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_L1616</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_L1616</Description>
+       <Reason>Monitor=6</Reason>
+       <Project>Monitor Every 6 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>51</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_L1616</Name>
+           <Coordinates>
+               <RightAscension>+76.8542</RightAscension>
+               <Declination>-3.3333</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_Stock8</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_Stock8</Description>
+       <Reason>Monitor=6</Reason>
+       <Project>Monitor Every 6 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>52</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_Stock8</Name>
+           <Coordinates>
+               <RightAscension>+82.0417</RightAscension>
+               <Declination>+34.4500</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC1931</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC1931</Description>
+       <Reason>Monitor=6</Reason>
+       <Project>Monitor Every 6 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>55</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC1931</Name>
+           <Coordinates>
+               <RightAscension>+82.8542</RightAscension>
+               <Declination>+34.2500</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_OS98-27comglob</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_OS98-27comglob</Description>
+       <Reason>Monitor=6</Reason>
+       <Project>Monitor Every 6 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>56</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_OS98-27comglob</Name>
+           <Coordinates>
+               <RightAscension>+83.3542</RightAscension>
+               <Declination>-0.6375</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC7160</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC7160</Description>
+       <Reason>Monitor=6</Reason>
+       <Project>Monitor Every 6 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>54</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC7160</Name>
+           <Coordinates>
+               <RightAscension>+328.4000</RightAscension>
+               <Declination>+62.6000</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_L1251</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_L1251</Description>
+       <Reason>Monitor=6</Reason>
+       <Project>Monitor Every 6 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>53</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_L1251</Name>
+           <Coordinates>
+               <RightAscension>+339.3750</RightAscension>
+               <Declination>+75.2167</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_L1340S</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_L1340S</Description>
+       <Reason>Monitor=7</Reason>
+       <Project>Monitor Every 7 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>61</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_L1340S</Name>
+           <Coordinates>
+               <RightAscension>+37.4250</RightAscension>
+               <Declination>+72.4750</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_L1340N</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_L1340N</Description>
+       <Reason>Monitor=7</Reason>
+       <Project>Monitor Every 7 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>61</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_L1340N</Name>
+           <Coordinates>
+               <RightAscension>+37.4250</RightAscension>
+               <Declination>+72.9583</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_L1448</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_L1448</Description>
+       <Reason>Monitor=7</Reason>
+       <Project>Monitor Every 7 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>67</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_L1448</Name>
+           <Coordinates>
+               <RightAscension>+51.2917</RightAscension>
+               <Declination>+30.7728</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_L1451-1455</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_L1451-1455</Description>
+       <Reason>Monitor=7</Reason>
+       <Project>Monitor Every 7 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>65</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_L1451-1455</Name>
+           <Coordinates>
+               <RightAscension>+51.8542</RightAscension>
+               <Declination>+30.2039</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_L1495</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_L1495</Description>
+       <Reason>Monitor=7</Reason>
+       <Project>Monitor Every 7 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>66</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_L1495</Name>
+           <Coordinates>
+               <RightAscension>+63.4583</RightAscension>
+               <Declination>+28.2500</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_HVTau</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_HVTau</Description>
+       <Reason>Monitor=7</Reason>
+       <Project>Monitor Every 7 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>61</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_HVTau</Name>
+           <Coordinates>
+               <RightAscension>+69.6458</RightAscension>
+               <Declination>+26.1775</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC1624</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC1624</Description>
+       <Reason>Monitor=7</Reason>
+       <Project>Monitor Every 7 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>68</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC1624</Name>
+           <Coordinates>
+               <RightAscension>+70.1542</RightAscension>
+               <Declination>+50.4625</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_LkHa332</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_LkHa332</Description>
+       <Reason>Monitor=7</Reason>
+       <Project>Monitor Every 7 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>63</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_LkHa332</Name>
+           <Coordinates>
+               <RightAscension>+70.5333</RightAscension>
+               <Declination>+25.3867</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_IC2118</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_IC2118</Description>
+       <Reason>Monitor=7</Reason>
+       <Project>Monitor Every 7 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>64</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_IC2118</Name>
+           <Coordinates>
+               <RightAscension>+76.7917</RightAscension>
+               <Declination>-6.3000</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_RWAur</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_RWAur</Description>
+       <Reason>Monitor=7</Reason>
+       <Project>Monitor Every 7 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>64</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_RWAur</Name>
+           <Coordinates>
+               <RightAscension>+76.9542</RightAscension>
+               <Declination>+30.4014</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_LambdaOriCenter</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_LambdaOriCenter</Description>
+       <Reason>Monitor=7</Reason>
+       <Project>Monitor Every 7 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>65</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_LambdaOriCenter</Name>
+           <Coordinates>
+               <RightAscension>+84.1250</RightAscension>
+               <Declination>+9.7333</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_OS98-41comglob</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_OS98-41comglob</Description>
+       <Reason>Monitor=7</Reason>
+       <Project>Monitor Every 7 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>68</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_OS98-41comglob</Name>
+           <Coordinates>
+               <RightAscension>+84.6083</RightAscension>
+               <Declination>-5.2356</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC2169</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC2169</Description>
+       <Reason>Monitor=7</Reason>
+       <Project>Monitor Every 7 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>62</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC2169</Name>
+           <Coordinates>
+               <RightAscension>+92.1333</RightAscension>
+               <Declination>+13.9658</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC2183</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC2183</Description>
+       <Reason>Monitor=7</Reason>
+       <Project>Monitor Every 7 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>63</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC2183</Name>
+           <Coordinates>
+               <RightAscension>+92.7500</RightAscension>
+               <Declination>-6.2269</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_Collinder359</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_Collinder359</Description>
+       <Reason>Monitor=7</Reason>
+       <Project>Monitor Every 7 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>67</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_Collinder359</Name>
+           <Coordinates>
+               <RightAscension>+270.1583</RightAscension>
+               <Declination>+2.9317</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_L291</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_L291</Description>
+       <Reason>Monitor=7</Reason>
+       <Project>Monitor Every 7 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>66</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_L291</Name>
+           <Coordinates>
+               <RightAscension>+274.2083</RightAscension>
+               <Declination>-19.9500</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC6604</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC6604</Description>
+       <Reason>Monitor=7</Reason>
+       <Project>Monitor Every 7 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>62</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC6604</Name>
+           <Coordinates>
+               <RightAscension>+274.5583</RightAscension>
+               <Declination>-11.8167</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_Ruprecht141</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_Ruprecht141</Description>
+       <Reason>Monitor=7</Reason>
+       <Project>Monitor Every 7 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>69</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_Ruprecht141</Name>
+           <Coordinates>
+               <RightAscension>+277.8250</RightAscension>
+               <Declination>-12.3167</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_S140</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_S140</Description>
+       <Reason>Monitor=7</Reason>
+       <Project>Monitor Every 7 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>63</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_S140</Name>
+           <Coordinates>
+               <RightAscension>+334.7500</RightAscension>
+               <Declination>+63.3333</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_V347Aur</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_V347Aur</Description>
+       <Reason>Monitor=8</Reason>
+       <Project>Monitor Every 8 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>71</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_V347Aur</Name>
+           <Coordinates>
+               <RightAscension>+74.2375</RightAscension>
+               <Declination>+51.5142</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_OS98-35comglob</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_OS98-35comglob</Description>
+       <Reason>Monitor=8</Reason>
+       <Project>Monitor Every 8 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>73</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_OS98-35comglob</Name>
+           <Coordinates>
+               <RightAscension>+84.1292</RightAscension>
+               <Declination>-0.3125</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_L43</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_L43</Description>
+       <Reason>Monitor=8</Reason>
+       <Project>Monitor Every 8 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>72</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_L43</Name>
+           <Coordinates>
+               <RightAscension>+248.6208</RightAscension>
+               <Declination>-15.7864</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_L889</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_L889</Description>
+       <Reason>Monitor=8</Reason>
+       <Project>Monitor Every 8 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>74</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_L889</Name>
+           <Coordinates>
+               <RightAscension>+306.6875</RightAscension>
+               <Declination>+40.1000</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_IC410_NGC1893</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_IC410_NGC1893</Description>
+       <Reason>Monitor=9</Reason>
+       <Project>Monitor Every 9 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>83</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_IC410_NGC1893</Name>
+           <Coordinates>
+               <RightAscension>+80.6750</RightAscension>
+               <Declination>+33.4167</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC2024</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC2024</Description>
+       <Reason>Monitor=9</Reason>
+       <Project>Monitor Every 9 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>81</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC2024</Name>
+           <Coordinates>
+               <RightAscension>+85.4333</RightAscension>
+               <Declination>-1.9167</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_L1228</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_L1228</Description>
+       <Reason>Monitor=9</Reason>
+       <Project>Monitor Every 9 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>82</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_L1228</Name>
+           <Coordinates>
+               <RightAscension>+314.3750</RightAscension>
+               <Declination>+77.6167</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_S284</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_S284</Description>
+       <Reason>Monitor=10</Reason>
+       <Project>Monitor Every 10 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>93</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_S284</Name>
+           <Coordinates>
+               <RightAscension>+101.2500</RightAscension>
+               <Declination>+0.2967</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_M17</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_M17</Description>
+       <Reason>Monitor=10</Reason>
+       <Project>Monitor Every 10 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>95</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_M17</Name>
+           <Coordinates>
+               <RightAscension>+275.2083</RightAscension>
+               <Declination>-16.1833</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC7419</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC7419</Description>
+       <Reason>Monitor=10</Reason>
+       <Project>Monitor Every 10 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>92</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC7419</Name>
+           <Coordinates>
+               <RightAscension>+343.5750</RightAscension>
+               <Declination>+60.8333</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_Collinder121</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_Collinder121</Description>
+       <Reason>Monitor=11</Reason>
+       <Project>Monitor Every 11 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>103</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_Collinder121</Name>
+           <Coordinates>
+               <RightAscension>+103.6750</RightAscension>
+               <Declination>-24.3000</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_Ruprecht53</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_Ruprecht53</Description>
+       <Reason>Monitor=11</Reason>
+       <Project>Monitor Every 11 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>102</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_Ruprecht53</Name>
+           <Coordinates>
+               <RightAscension>+122.7000</RightAscension>
+               <Declination>-27.0000</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_King12</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_King12</Description>
+       <Reason>Monitor=11</Reason>
+       <Project>Monitor Every 11 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>101</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_King12</Name>
+           <Coordinates>
+               <RightAscension>+359.6000</RightAscension>
+               <Declination>+61.2167</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC2023_Horsehead</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC2023_Horsehead</Description>
+       <Reason>Monitor=12</Reason>
+       <Project>Monitor Every 12 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>111</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC2023_Horsehead</Name>
+           <Coordinates>
+               <RightAscension>+85.3500</RightAscension>
+               <Declination>-2.3767</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_S301</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_S301</Description>
+       <Reason>Monitor=12</Reason>
+       <Project>Monitor Every 12 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>112</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_S301</Name>
+           <Coordinates>
+               <RightAscension>+107.4750</RightAscension>
+               <Declination>-18.5058</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_King21</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_King21</Description>
+       <Reason>Monitor=12</Reason>
+       <Project>Monitor Every 12 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>112</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_King21</Name>
+           <Coordinates>
+               <RightAscension>+357.4750</RightAscension>
+               <Declination>+62.7167</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_ScoOB4comglob</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_ScoOB4comglob</Description>
+       <Reason>Monitor=12</Reason>
+       <Project>Monitor Every 12 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>111</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_ScoOB4comglob</Name>
+           <Coordinates>
+               <RightAscension>+259.7292</RightAscension>
+               <Declination>-32.1667</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_L1273</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_L1273</Description>
+       <Reason>Monitor=14</Reason>
+       <Project>Monitor Every 14 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>124</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_L1273</Name>
+           <Coordinates>
+               <RightAscension>+0.9958</RightAscension>
+               <Declination>+68.5781</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_RNO1BC</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_RNO1BC</Description>
+       <Reason>Monitor=14</Reason>
+       <Project>Monitor Every 14 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>121</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_RNO1BC</Name>
+           <Coordinates>
+               <RightAscension>+9.1917</RightAscension>
+               <Declination>+63.4819</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_NGC281</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_NGC281</Description>
+       <Reason>Monitor=14</Reason>
+       <Project>Monitor Every 14 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>122</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_NGC281</Name>
+           <Coordinates>
+               <RightAscension>+13.2083</RightAscension>
+               <Declination>+56.5833</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_LkHa326</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_LkHa326</Description>
+       <Reason>Monitor=14</Reason>
+       <Project>Monitor Every 14 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>123</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_LkHa326</Name>
+           <Coordinates>
+               <RightAscension>+52.6792</RightAscension>
+               <Declination>+30.5444</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_Barnard3</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_Barnard3</Description>
+       <Reason>Monitor=14</Reason>
+       <Project>Monitor Every 14 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>125</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_Barnard3</Name>
+           <Coordinates>
+               <RightAscension>+55.1250</RightAscension>
+               <Declination>+31.9500</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_L1642</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_L1642</Description>
+       <Reason>Monitor=14</Reason>
+       <Project>Monitor Every 14 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>126</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_L1642</Name>
+           <Coordinates>
+               <RightAscension>+68.7083</RightAscension>
+               <Declination>-14.2167</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_CygOB2</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_CygOB2</Description>
+       <Reason>Monitor=14</Reason>
+       <Project>Monitor Every 14 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>127</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_CygOB2</Name>
+           <Coordinates>
+               <RightAscension>+308.2958</RightAscension>
+               <Declination>+41.3333</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_Markarian50</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_Markarian50</Description>
+       <Reason>Monitor=14</Reason>
+       <Project>Monitor Every 14 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>123</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_Markarian50</Name>
+           <Coordinates>
+               <RightAscension>+348.8125</RightAscension>
+               <Declination>+60.4417</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_Berkeley86</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_Berkeley86</Description>
+       <Reason>Monitor=14</Reason>
+       <Project>Monitor Every 14 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>121</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_Berkeley86</Name>
+           <Coordinates>
+               <RightAscension>+305.0500</RightAscension>
+               <Declination>+38.6900</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+   <Request bestefforts="false">
+       <ID>V20_Haffner15</ID>
+       <UserName>VYSOS-20</UserName>
+       <Description>Observing Plan for V20_Haffner15</Description>
+       <Reason>Monitor=14</Reason>
+       <Project>Monitor Every 14 Days</Project>
+       <Schedule>
+           <Horizon>30.0</Horizon>
+           <Moon>
+               <Distance>30.0</Distance>
+               <Width>6.0</Width>
+           </Moon>
+           <Priority>122</Priority>
+       </Schedule>
+       <Target count="3" interval="0" tolerance="0">
+           <Name>V20_Haffner15</Name>
+           <Coordinates>
+               <RightAscension>+116.3750</RightAscension>
+               <Declination>-32.8417</Declination>
+           </Coordinates>
+           <Picture count="3">
+               <Name>PSr</Name>
+               <ExposureTime>100.0</ExposureTime>
+               <Filter>PSr</Filter>
+               <Dither>4</Dither>
+           </Picture>
+       </Target>
+   </Request>
+
+</RTML>
