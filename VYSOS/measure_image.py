@@ -41,7 +41,14 @@ def measure_image(file,\
         pass
     image_info.compressed = (os.path.splitext(image_info.filename)[1] == '.fz')
 
-    im = SIDRE.ScienceImage(file, verbose=False)
+    logfilename = os.path.basename(file).replace(".fts", ".log")
+    finddate = re.search('(\d{8})at(\d{6})', logfilename)
+    if finddate is not None:
+        imageUTdate = f"{finddate.group(1)}UT"
+    if not os.path.exists(os.path.join('/Users/vysosuser/V20Data/AnalysisLogs', imageUTdate)):
+        os.mkdir(os.path.join('/Users/vysosuser/V20Data/AnalysisLogs', imageUTdate))
+    logfile = os.path.join('/Users/vysosuser/V20Data/AnalysisLogs', imageUTdate, logfilename)
+    im = SIDRE.ScienceImage(file, logfile=logfile, verbose=False)
     # Exposure Time
     try:
         image_info.exptime = float(im.ccd.header.get('EXPTIME'))
@@ -58,15 +65,18 @@ def measure_image(file,\
         image_info.filter = 'PSr'
     else:
         try:
-            image_info.filter = float(im.ccd.header.get('EXPTIME'))
+            image_info.filter = im.ccd.header.get('FILTER')
         except:
             pass
 
     print(image_info)
 
-    if not SIDRE.utils.get_master(im.date, type='Bias'):
-        SIDRE.calibration.make_master_bias(im.date)
-    im.bias_correct()
+    try:
+        if not SIDRE.utils.get_master(im.date, type='Bias'):
+            SIDRE.calibration.make_master_bias(im.date)
+        im.bias_correct()
+    except:
+        pass
     im.gain_correct()
     im.create_deviation()
     im.make_source_mask()
@@ -114,16 +124,16 @@ def measure_image(file,\
 
     if not nographics:
         jpegfilename='test_PS.jpg'
-        im.render_jpeg(jpegfilename=jpegfilename, overplot_catalog=vprc,
-                       overplot_assoc=True, overplot_pointing=True)
+        im.render_jpeg(jpegfilename=jpegfilename,
+                       overplot_assoc=False, overplot_pointing=True)
         # image_info.full_field_jpeg = open(jpegfilename, 'rb')
     
     if record:
-        logger.info('Connecting to mongo db at 192.168.1.101')
+        im.log.info('Connecting to mongo db at 192.168.1.101')
         try:
             me.connect('vysos', host='192.168.1.101')
         except:
-            logger.error('Could not connect to mongo db')
+            im.log.error('Could not connect to mongo db')
             raise Error('Failed to connect to mongo')
         else:
             image_info.save()
