@@ -131,7 +131,6 @@ def measure_image(file,\
 #         im.calculate_zero_point(plot='ZP_PanSTARRS.png')
 
 
-
     image_info.analyzed=True
     image_info.SIDREversion=SIDRE.version.version
 
@@ -157,23 +156,24 @@ def measure_image(file,\
                 im.log.debug('Removing old image info entry for this file')
                 entry.delete()
             # Save JPEG to MongoDB
-            if not nographics:
-                if fulljpeg is not None:
-                    with open(fulljpeg, 'rb') as imageData:
-                        image_bytes = imageData.read()
-                        with tempfile.TemporaryFile() as f:
-                            f.write(bytearray(image_bytes))
-                            f.flush()
-                            f.seek(0)
-                            image_info.full_field_jpeg.put(f)
-                if cropjpeg is not None:
-                    with open(cropjpeg, 'rb') as imageData:
-                        image_bytes = imageData.read()
-                        with tempfile.TemporaryFile() as f:
-                            f.write(bytearray(image_bytes))
-                            f.flush()
-                            f.seek(0)
-                            image_info.cropped_jpeg.put(f)
+#             if not nographics:
+#                 if fulljpeg is not None:
+#                     with open(fulljpeg, 'rb') as imageData:
+#                         image_bytes = imageData.read()
+#                         with tempfile.TemporaryFile() as f:
+#                             f.write(bytearray(image_bytes))
+#                             f.flush()
+#                             f.seek(0)
+#                             image_info.full_field_jpeg.put(f)
+#                 if cropjpeg is not None:
+#                     with open(cropjpeg, 'rb') as imageData:
+#                         image_bytes = imageData.read()
+#                         with tempfile.TemporaryFile() as f:
+#                             f.write(bytearray(image_bytes))
+#                             f.flush()
+#                             f.seek(0)
+#                             image_info.cropped_jpeg.put(f)
+
             # Save new entry for this image file
             im.log.debug('Adding image info to mongo database')
             image_info.save()
@@ -189,7 +189,7 @@ def main():
     ##-------------------------------------------------------------------------
     ## Parse Command Line Arguments
     ##-------------------------------------------------------------------------
-    parser = ArgumentParser(description="Script to analyze a simgle FITS image")
+    parser = ArgumentParser(description="Script to analyze a single FITS image")
     ## add flags
     parser.add_argument("-v", "--verbose",
         action="store_true", dest="verbose",
