@@ -7,6 +7,8 @@ from datetime import timedelta as tdelta
 import logging
 
 import numpy as np
+import matplotlib as mpl
+mpl.use('Agg')
 import matplotlib.pyplot as plt
 plt.style.use('classic')
 from matplotlib.dates import HourLocator, MinuteLocator, DateFormatter
