@@ -12,6 +12,9 @@ import re
 from datetime import datetime as dt
 import tempfile
 
+import matplotlib as mpl
+mpl.use('Agg')
+
 import mongoengine as me
 
 import numpy as np
@@ -55,6 +58,7 @@ def measure_image(file,\
     logfile = os.path.join('/Users/vysosuser/V20Data/AnalysisLogs', imageUTdate, logfilename)
 
     im = SIDRE.ScienceImage(file, logfile=logfile, verbose=verbose)
+    im.get_header_pointing()
 
     # Exposure Time
     try:
@@ -75,6 +79,17 @@ def measure_image(file,\
             image_info.filter = im.ccd.header.get('FILTER')
         except:
             pass
+
+    # Moon
+    try:
+        image_info.moon_alt = ((im.moon.transform_to(im.altazframe).alt).to(u.degree)).value
+        if im.wcs_pointing is not None:
+            image_info.moon_separation = (im.moon.separation(im.wcs_pointing).to(u.degree)).value
+        else:
+            image_info.moon_separation = (im.moon.separation(im.header_pointing).to(u.degree)).value
+    except:
+        pass
+
 
     try:
         if not SIDRE.utils.get_master(im.date, type='Bias'):
@@ -207,7 +222,7 @@ def main():
     args = parser.parse_args()
 
     measure_image(args.filename,
-                  nographics=args.nographics,
+                  nographics=True, #args.nographics,
                   record=not args.printonly,
                   verbose=args.verbose)
 

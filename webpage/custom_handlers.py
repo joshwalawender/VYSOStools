@@ -23,8 +23,6 @@ import ephem
 import IQMon
 from VYSOS import weather_limits
 
-import datetime
-
 
 ##-------------------------------------------------------------------------
 ## Get Telescope Status

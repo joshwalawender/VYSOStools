@@ -49,16 +49,13 @@
         <th style="width:70px">Pointing Error (arcmin)</th>
         <th style="width:50px">Zero Point (mag)</th>
         <th style="width:50px">N Stars</th>
-        <th style="width:50px">Process Time (sec)</th>
     </tr>
 
-    {% for image in image_list %}
+    {% for i,image in enumerate(image_list) %}
     <tr>
         <td style='text-align:left;'>
-            {% if 'exposure_start' in image.keys() %}
-                {{ image['exposure start'].strftime('%Y%m%dUT %H:%M:%S') }}
-            {% elif 'date' in image.keys() and 'time' in image.keys() %}
-                {{ '{} {}'.format(image['date'], image['time']) }}
+            {% if 'date' in image.keys() %}
+                {{ image['date'].strftime('%Y%m%dUT %H:%M:%S') }}
             {% end %}
         </td>
         <td style='text-align:left;'>
@@ -102,36 +99,36 @@
             {% end %}<br>
         </td>
         <td style='text-align:right;'>
-            {% if 'moon separation' in image.keys() %}
-                {% if 'moon alt' in image.keys() %}
-                    {% if image['moon alt'] < 0 %}
+            {% if 'moon_separation' in image.keys() %}
+                {% if 'moon_alt' in image.keys() %}
+                    {% if image['moon_alt'] < 0 %}
                         down
                     {% else %}
-                        {{ '{:.1f}'.format(image['moon separation']) }}
+                        {{ '{:.1f}'.format(image['moon_separation']) }}
                     {% end %}
                 {% end %}
             {% end %}
         </td>
         <td style='text-align:right;'>
-            {% if 'moon illumination' in image.keys() %}
-                {{ '{:.0f} %'.format(image['moon illumination']) }}
+            {% if 'moon_illumination' in image.keys() %}
+                {{ '{:.0f} %'.format(image['moon_illumination']) }}
             {% end %}<br>
         </td>
 
-        {% if 'FWHM pix' in image.keys() %}
-            {% if image['flags']['FWHM'] %}
+        {% if 'FWHM_pix' in image.keys() %}
+            {% if flags[i]['FWHM'] %}
                 <td style={{ 'text-align:right;background-color:#FF5C33;' }}>
             {% else %}
                 <td style={{ 'text-align:right;background-color:#70DB70;' }}>
             {% end %}
-            {{ '{:.2f}'.format(image['FWHM pix']*FWHM_multiplier) }}
+            {{ '{:.2f}'.format(image['FWHM_pix']*FWHM_multiplier) }}
         {% else %}
         <td>
         {% end %}
         </td>
 
         {% if 'ellipticity' in image.keys() %}
-            {% if image['flags']['ellipticity'] %}
+            {% if flags[i]['ellipticity'] %}
                 <td style={{ 'text-align:right;background-color:#FF5C33;' }}>
             {% else %}
                 <td style={{ 'text-align:right;background-color:#70DB70;' }}>
@@ -142,20 +139,20 @@
         {% end %}
         </td>
 
-        {% if 'pointing error arcmin' in image.keys() %}
-            {% if image['flags']['pointing error'] %}
+        {% if 'perr_arcmin' in image.keys() %}
+            {% if flags[i]['pointing error'] %}
                 <td style={{ 'text-align:right;background-color:#FF5C33;' }}>
             {% else %}
                 <td style={{ 'text-align:right;background-color:#70DB70;' }}>
             {% end %}
-            {{ '{:.2f}'.format(image['pointing error arcmin']) }}
+            {{ '{:.2f}'.format(image['perr_arcmin']) }}
         {% else %}
         <td>
         {% end %}
         </td>
 
         {% if 'zero point' in image.keys() %}
-            {% if image['flags']['zero point'] %}
+            {% if flags[i]['zero point'] %}
                 <td style={{ 'text-align:right;background-color:#FF5C33;' }}>
             {% else %}
                 <td style={{ 'text-align:right;background-color:#70DB70;' }}>
@@ -172,11 +169,6 @@
             {% end %}<br>
         </td>
 
-        <td style='text-align:right;'>
-            {% if 'IQMon processing time' in image.keys() %}
-                {{ '{:.0f} s'.format(image['IQMon processing time']) }}
-            {% end %}<br>
-        </td>
     </tr>
     {% end %}
 

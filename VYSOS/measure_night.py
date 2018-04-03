@@ -1,29 +1,18 @@
 #!/usr/bin/env python
 # encoding: utf-8
-"""
-untitled.py
-
-Created by Josh Walawender on 2012-10-29.
-Copyright (c) 2012 . All rights reserved.
-"""
 
 import sys
 import os
-import subprocess
 import re
 import fnmatch
 import numpy
-import time
+from datetime import datetime as dt
 import glob
 from argparse import ArgumentParser
 import astropy.io.fits as fits
 
 import IQMon
-import measure_image
-
-help_message = '''
-The help message goes here.
-'''
+from measure_image import measure_image
 
 
 def main(argv=None):
@@ -50,108 +39,32 @@ def main(argv=None):
     ##-------------------------------------------------------------------------
     ## Set date to tonight if not specified
     ##-------------------------------------------------------------------------
-    now = time.gmtime()
-    DateString = time.strftime("%Y%m%dUT", now)
-    if not args.date:
-        args.date = DateString
+    now = dt.utcnow()
+    if args.date is None:
+        args.date = now.strftime("%Y%m%dUT")
     
     ## Set Path to Data for this night
-    if re.match("V5", args.telescope):
-        paths = [os.path.join("/Volumes", "Data_V5", "Images", args.date),\
-                 os.path.join("/Volumes", "Drobo", "V5", "Images", args.date),\
-                 os.path.join(os.path.expanduser("~"), "VYSOS-5", "Images", args.date),\
-                 os.path.join('/', 'Volumes', 'DroboPro1', 'VYSOS5_Data', "Images", args.date),\
-                ]
-        zp = True
-    elif re.match("V20", args.telescope):
-        paths = [os.path.join("/Volumes", "Data_V20", "Images", args.date),\
-                 os.path.join("/Volumes", "Drobo", "V20", "Images", args.date),\
-                 os.path.join(os.path.expanduser("~"), "VYSOS-20", "Images", args.date),\
-                 os.path.join('/', 'Volumes', 'DroboPro1', 'VYSOS20_Data', "Images", args.date),\
-                ]
-        zp = True
-    else:
-        print("Telescope {0} does not match 'V5' or 'V20'".format(args.telescope))
-        sys.exit(1)
+    paths = [
+             os.path.join(os.path.expanduser("~"), f"{args.telescope}Data", "Images", args.date),
+             os.path.join('/', 'Volumes', 'MLOData', args.telescope, 'Images', args.date[:4], args.date),
+             os.path.join('/', 'Volumes', 'DataCopy', args.telescope, 'Images', args.date[:4], args.date),
+            ]
 
-    ImagesDirectory = None
-    for location in paths:
-        if os.path.exists(location):
-            print('Found data folder at: {}'.format(location))
-            ImagesDirectory = location
-    if not ImagesDirectory:
+
+    for path in paths:
+        if os.path.exists(path):
+            print('Found data folder at: {}'.format(path))
+            location = path
+    if location is None:
         print('Could not find data path for {}'.format(args.telescope))
-        sys.exit(1)
-
-    print("Analyzing data for night of "+args.date)
-    print("Found data at: {}".format(ImagesDirectory))
-    
-    if os.path.exists(ImagesDirectory):
-        print "  Found "+ImagesDirectory
-        ##
-        ## Loop Through All Images in Images Directory
-        ##
-#        Files = os.listdir(ImagesDirectory)
-        Files = glob.glob(os.path.join(ImagesDirectory, '*.fts'))
-        print "Found %d files in images directory" % len(Files)
-        if len(Files) >= 1:
-            ## Parse filename for date and time
-            MatchFilename = re.compile("(.*)\-([0-9]{8})at([0-9]{6})\.fts")
-            MatchEmpty = re.compile(".*\-Empty\-.*\.fts")
-            Properties = []
-            for File in Files:
-                IsMatch = MatchFilename.match(File)
-                IsEmpty = MatchEmpty.match(File)
-                if IsMatch and not IsEmpty:
-                    target = IsMatch.group(1)
-                    FNdate = IsMatch.group(2)
-                    FNtime = IsMatch.group(3)
-                    Properties.append([FNtime, File])
-                elif not IsEmpty:
-                    with fits.open(File) as hdulist:
-                        header = hdulist[0].header
-                        ## Get Observation Date and Time from header
-                        ## (assumes YYYY-MM-DDTHH:MM:SS format)
-                        IsDateTime = re.search('(\d{4}\-\d{2}\-\d{2})T(\d{2}):(\d{2}):(\d{2})', header["DATE-OBS"])
-                        if IsDateTime:
-                            Hdate = IsDateTime.group(1)
-                            Htime = '{}{}{}'.format(IsDateTime.group(2), IsDateTime.group(3), IsDateTime.group(4))
-                            Properties.append([Htime, File])
-                else:
-                    print "  File Rejected: %s" % File
-        
-            print('Analyzing images:')
-            for entry in sorted(Properties):
-                print('  {:6s} {:s}'.format(entry[0], entry[1]))
-            SortedImageFiles   = numpy.array([row[1] for row in sorted(Properties)])
-        
-            print "%d out of %d files meet selection criteria." % (len(SortedImageFiles), len(Files))
-            for Image in SortedImageFiles:
-                if fnmatch.fnmatch(Image, "*.fts"):
-                    now = time.gmtime()
-                    TimeString = time.strftime("%Y/%m/%d %H:%M:%S UT -", now)
-                    DateString = time.strftime("%Y%m%dUT", now)
-
-                    clobber_summary = False
-                    if args.clobber and Image == SortedImageFiles[0]:
-                        clobber_summary = True
-                    try:
-                        measure_image.MeasureImage(os.path.join(ImagesDirectory, Image),\
-                                     telescope=args.telescope,\
-                                     clobber_logs=True,\
-                                     zero_point=zp, analyze_image=True)
-                    except:
-                        print('WARNING:  MeasureImage failed on {}'.format(Image))
-                        measure_image.MeasureImage(os.path.join(ImagesDirectory, Image),\
-                                     telescope=args.telescope,\
-                                     clobber_logs=False,\
-                                     zero_point=zp, analyze_image=False)
-
-        else:
-            print("No image files found in {}".format(ImagesDirectory))
     else:
-        if not os.path.exists(ImagesDirectory):
-            print "Could not find images directory: "+ImagesDirectory
+        print("Analyzing data for night of "+args.date)
+        print("Found data at: {}".format(location))
+    
+        files = glob.glob(os.path.join(location, '*.fts'))
+        print(f"Found {len(files):d} files in images directory")
+        for file in files:
+            measure_image(file, nographics=True)
 
 
 if __name__ == "__main__":

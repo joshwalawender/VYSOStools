@@ -25,12 +25,49 @@ from astropy import units as u
 from astropy.coordinates import SkyCoord
 import ephem
 
-from IQMon.telescope import Telescope
+# from IQMon.telescope import Telescope
 
 class MyStaticFileHandler(StaticFileHandler):
     def set_extra_headers(self, path):
         # Disable cache
         self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+
+
+class Telescope(object):
+    def __init__(self, name):
+        self.name = name
+        self.mongo_address = '192.168.1.101'
+        self.mongo_port = 27017
+        self.mongo_db = 'vysos'
+        self.mongo_collection = 'images'
+        self.units_for_FWHM = u.pix
+        self.get_pixel_scale()
+        self.get_limits()
+    
+    def get_pixel_scale(self):
+        if self.name == 'V20':
+            self.units_for_FWHM = u.arcsec
+            self.pixel_scale = 206.265*9/4300 * u.arcsec/u.pix
+        elif self.name == 'V5':
+            self.units_for_FWHM = u.pix
+            self.pixel_scale = 206.265*9/735 * u.arcsec/u.pix
+        else:
+            self.units_for_FWHM = u.pix
+            self.pixel_scale = None
+    
+    def get_limits(self):
+        if self.name == 'V20':
+            self.FWHM_limit_pix = 7
+            self.ellipticity_limit = 1.3
+            self.pointing_error_limit = 3
+        elif self.name == 'V5':
+            self.FWHM_limit_pix = 2.5
+            self.ellipticity_limit = 1.3
+            self.pointing_error_limit = 6
+        else:
+            self.FWHM_limit_pix = None
+            self.ellipticity_limit = None
+            self.pointing_error_limit = None
 
 
 ##-----------------------------------------------------------------------------
@@ -41,9 +78,9 @@ class ListOfImages(RequestHandler):
         tlog.app_log.info('Get request for ListOfImages recieved')
 
         ## Create Telescope Object
-        tlog.app_log.info('  Creating telescope object')
-        config_file = os.path.join(os.path.expanduser('~'), '.{}.yaml'.format(telescope))
-        tel = Telescope(config_file)
+#         tlog.app_log.info('  Creating telescope object')
+#         config_file = os.path.join(os.path.expanduser('~'), '.{}.yaml'.format(telescope))
+        tel = Telescope(telescope)
         telescopename = tel.name
         tlog.app_log.info('  Done.')
 
@@ -60,8 +97,11 @@ class ListOfImages(RequestHandler):
         ## If subject is formatted like a date, then get images from a date
         ##---------------------------------------------------------------------
         if re.match('\d{8}UT', subject):
+            start = dt.strptime(subject, '%Y%m%dUT')
+            end = start + tdelta(1)
             image_list = [entry for entry in\
-                          collection.find({"date": subject}).sort(\
+                          collection.find( {"date": {"$gt": start, "$lt": end} } ).sort(\
+#                           collection.find({"date": subject}).sort(\
                           [('time', pymongo.ASCENDING)])]
             tlog.app_log.info('  Got list of {} images for night.'.format(len(image_list)))
         ##---------------------------------------------------------------------
@@ -104,6 +144,14 @@ class ListOfImages(RequestHandler):
             FWHM_multiplier = 1.0
 
         if len(image_list) > 0:
+            tlog.app_log.info('  Determining Flags')
+            flags = []
+            for image in image_list:
+                flags.append({'FWHM': image['FWHM_pix'] > tel.FWHM_limit_pix,
+                              'ellipticity': image['ellipticity'] > tel.ellipticity_limit,
+                              'pointing error': image['perr_arcmin'] > tel.pointing_error_limit,
+                              'zero point': False,
+                             })
             tlog.app_log.info('  Rendering ListOfImages')
             self.render("image_list.html", title="{} Results".format(telescopename),\
                         telescope = telescope,\
@@ -112,6 +160,7 @@ class ListOfImages(RequestHandler):
                         image_list = image_list,\
                         FWHM_units = tel.units_for_FWHM.to_string(),\
                         FWHM_multiplier = FWHM_multiplier,\
+                        flags=flags,\
                        )
             tlog.app_log.info('  Done.')
 
@@ -125,24 +174,24 @@ class ListOfNights(RequestHandler):
         telescope = telescope.strip('/')
 
         ## Create Telescope Object
-        config_file = os.path.join(os.path.expanduser('~'), '.{}.yaml'.format(telescope))
-        tel = Telescope(config_file)
+#         config_file = os.path.join(os.path.expanduser('~'), '.{}.yaml'.format(telescope))
+        tel = Telescope(telescope)
         telescopename = tel.name
 
         client = MongoClient(tel.mongo_address, tel.mongo_port)
         db = client[tel.mongo_db]
         collection = db[tel.mongo_collection]
 
-        first_date_string = sorted(collection.distinct("date"), reverse=False)[0]
-        first_date = dt.strptime('{} 00:00:00'.format(first_date_string), '%Y%m%dUT %H:%M:%S')
-        oneday = tdelta(1, 0)
+#         first_date_string = sorted(collection.distinct("date"), reverse=False)[0]
+#         first_date = dt.strptime('{} 00:00:00'.format(first_date_string), '%Y%m%dUT %H:%M:%S')
+        first_date = sorted(collection.distinct("date"), reverse=False)[0]
         
         tlog.app_log.info('  Building date_list')
         date_list = []
-        thisdate = dt.utcnow()
-        while thisdate >= first_date:
-            date_list.append(thisdate.strftime('%Y%m%dUT'))
-            thisdate -= oneday
+        while first_date <= dt.utcnow():
+            date_list.append(first_date.strftime('%Y%m%dUT'))
+            first_date += tdelta(1, 0)
+        date_list.append(first_date.strftime('%Y%m%dUT'))
         tlog.app_log.info('  Done')
 
         night_plot_path = os.path.abspath('/var/www/nights/')
@@ -156,7 +205,11 @@ class ListOfNights(RequestHandler):
             if os.path.exists(os.path.join(night_plot_path, night_graph_file)):
                 night_info['night graph'] = night_graph_file
 
-            night_info['n images'] = collection.find( {"date":date_string} ).count()
+#             night_info['n images'] = collection.find( {"date":date_string} ).count()
+            
+            start = dt.strptime(date_string, '%Y%m%dUT')
+            end = start + tdelta(1)
+            night_info['n images'] = collection.find( {"date": {"$gt": start, "$lt": end} } ).count()
             
             nights.append(night_info)
         tlog.app_log.info('  Done')
