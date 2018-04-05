@@ -132,7 +132,7 @@ class Image(me.Document):
     alt = me.DecimalField(min_value=0, max_value=90, precision=2)
     az = me.DecimalField(min_value=0, max_value=360, precision=2)
     airmass = me.DecimalField(min_value=1, precision=3)
-    moon_alt = me.DecimalField(min_value=0, max_value=90, precision=1)
+    moon_alt = me.DecimalField(min_value=-90, max_value=90, precision=1)
     moon_illumination = me.DecimalField(min_value=0, max_value=100, precision=1)
     moon_separation = me.DecimalField(min_value=0, max_value=180, precision=1)
     # Analysis Results
