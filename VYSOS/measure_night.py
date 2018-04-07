@@ -50,7 +50,7 @@ def main(argv=None):
              os.path.join('/', 'Volumes', 'DataCopy', args.telescope, 'Images', args.date[:4], args.date),
             ]
 
-
+    location = None
     for path in paths:
         if os.path.exists(path):
             print('Found data folder at: {}'.format(path))
@@ -62,6 +62,7 @@ def main(argv=None):
         print("Found data at: {}".format(location))
     
         files = glob.glob(os.path.join(location, '*.fts'))
+        files.extend(glob.glob(os.path.join(location, '*.fts.fz')))
         print(f"Found {len(files):d} files in images directory")
         for file in files:
             measure_image(file, nographics=True)
