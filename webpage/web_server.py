@@ -101,8 +101,7 @@ class ListOfImages(RequestHandler):
             end = start + tdelta(1)
             image_list = [entry for entry in\
                           collection.find( {"date": {"$gt": start, "$lt": end} } ).sort(\
-#                           collection.find({"date": subject}).sort(\
-                          [('time', pymongo.ASCENDING)])]
+                          [('date', pymongo.ASCENDING)])]
             tlog.app_log.info('  Got list of {} images for night.'.format(len(image_list)))
         ##---------------------------------------------------------------------
         ## If subject matches a target name, then get images for that target
@@ -114,8 +113,7 @@ class ListOfImages(RequestHandler):
                 tlog.app_log.info('    Getting list of image list for {} from mongo'.format(subject))
                 image_list = [entry for entry in\
                               collection.find({"target name":subject}).sort(\
-                              [('date', pymongo.DESCENDING),\
-                              ('time', pymongo.DESCENDING)])]
+                              [('date', pymongo.DESCENDING)])]
                 tlog.app_log.info('  Got list of {} images for target.'.format(len(image_list)))
         ##---------------------------------------------------------------------
         ## If subject is not a date or target, then render a list of targets
