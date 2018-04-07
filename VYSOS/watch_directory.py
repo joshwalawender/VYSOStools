@@ -17,12 +17,48 @@ import pymongo
 from pymongo import MongoClient
 import logging
 
-import measure_image
-import IQMon
-from IQMon.image import Image
-from IQMon.telescope import Telescope
+from astropy import units as u
 
-def main():  
+from measure_image import measure_image
+
+class Telescope(object):
+    def __init__(self, name):
+        self.name = name
+        self.mongo_address = '192.168.1.101'
+        self.mongo_port = 27017
+        self.mongo_db = 'vysos'
+        self.mongo_collection = 'images'
+        self.units_for_FWHM = u.pix
+        self.get_pixel_scale()
+        self.get_limits()
+    
+    def get_pixel_scale(self):
+        if self.name == 'V20':
+            self.units_for_FWHM = u.arcsec
+            self.pixel_scale = 206.265*9/4300 * u.arcsec/u.pix
+        elif self.name == 'V5':
+            self.units_for_FWHM = u.pix
+            self.pixel_scale = 206.265*9/735 * u.arcsec/u.pix
+        else:
+            self.units_for_FWHM = u.pix
+            self.pixel_scale = None
+    
+    def get_limits(self):
+        if self.name == 'V20':
+            self.FWHM_limit_pix = 7
+            self.ellipticity_limit = 1.3
+            self.pointing_error_limit = 3
+        elif self.name == 'V5':
+            self.FWHM_limit_pix = 2.5
+            self.ellipticity_limit = 1.3
+            self.pointing_error_limit = 6
+        else:
+            self.FWHM_limit_pix = None
+            self.ellipticity_limit = None
+            self.pointing_error_limit = None
+
+
+def main():
     ##-------------------------------------------------------------------------
     ## Parse Command Line Arguments
     ##-------------------------------------------------------------------------
@@ -65,9 +101,7 @@ def main():
     ##-------------------------------------------------------------------------
     ## Telescope Configuration
     ##-------------------------------------------------------------------------
-    config_file = os.path.join(os.path.expanduser('~'), '.{}.yaml'.format(telescope))
-    tel = Telescope(config_file)
-
+    tel = Telescope(telescope)
     client = MongoClient(tel.mongo_address, tel.mongo_port)
     db = client[tel.mongo_db]
     images = db[tel.mongo_collection]
@@ -82,7 +116,8 @@ def main():
         ## Set date to tonight
         now = dt.utcnow()
         date_string = now.strftime("%Y%m%dUT")
-        DataPath = os.path.join("/Volumes", "Data_{}".format(telescope), "Images", date_string)
+        DataPath = os.path.join(os.path.expanduser("~"), f"{args.telescope}Data", "Images", date_string)
+        
         logger.info('Examining directory {}'.format(DataPath))
         ## Look for files
         if os.path.exists(DataPath):
@@ -105,25 +140,10 @@ def main():
         for filetime in sorted(images_to_analyze.keys()):
             file = images_to_analyze[filetime]
             try:
-                measure_image.MeasureImage(os.path.join(DataPath, file),\
-                                           clobber_logs=True,\
-                                           zero_point=True,\
-                                           analyze_image=True)
+                measure_image(os.path.join(DataPath, file), nographics=True)
             except:
-                logger.warning('  MeasureImage failed on {}.  Trying without zero point.'.format(file))
+                logger.warning('  MeasureImage failed on {}.'.format(file))
                 logger.error(sys.exc_info())
-                try:
-                    measure_image.MeasureImage(os.path.join(DataPath, file),\
-                                               clobber_logs=False,\
-                                               zero_point=False,\
-                                               analyze_image=True)
-                except:
-                    logger.warning('  MeasureImage failed on {}.  Trying without image analysis.'.format(file))
-                    logger.error(sys.exc_info())
-                    measure_image.MeasureImage(os.path.join(DataPath, file),\
-                                               clobber_logs=False,\
-                                               zero_point=False,\
-                                               analyze_image=False)
 
         time.sleep(30)
 
