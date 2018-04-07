@@ -57,7 +57,7 @@ class Telescope(object):
     
     def get_limits(self):
         if self.name == 'V20':
-            self.FWHM_limit_pix = 7
+            self.FWHM_limit_pix = 3.5/self.pixel_scale
             self.ellipticity_limit = 1.3
             self.pointing_error_limit = 3
         elif self.name == 'V5':
@@ -146,12 +146,24 @@ class ListOfImages(RequestHandler):
         if len(image_list) > 0:
             tlog.app_log.info('  Determining Flags')
             flags = []
-            for image in image_list:
-                flags.append({'FWHM': image['FWHM_pix'] > tel.FWHM_limit_pix,
-                              'ellipticity': image['ellipticity'] > tel.ellipticity_limit,
-                              'pointing error': image['perr_arcmin'] > tel.pointing_error_limit,
+            for i,image in enumerate(image_list):
+                flags.append({'FWHM': False,
+                              'ellipticity': False,
+                              'pointing error': False,
                               'zero point': False,
                              })
+                try:
+                    flags[i]['FWHM'] = image['FWHM_pix'] > tel.FWHM_limit_pix
+                except:
+                    pass
+                try:
+                    flags[i]['ellipticity'] = image['ellipticity'] > tel.ellipticity_limit
+                except:
+                    pass
+                try:
+                    flags[i]['pointing error'] = image['perr_arcmin'] > tel.pointing_error_limit
+                except:
+                    pass
             tlog.app_log.info('  Rendering ListOfImages')
             self.render("image_list.html", title="{} Results".format(telescopename),\
                         telescope = telescope,\
@@ -211,7 +223,8 @@ class ListOfNights(RequestHandler):
             end = start + tdelta(1)
             night_info['n images'] = collection.find( {"date": {"$gt": start, "$lt": end} } ).count()
             
-            nights.append(night_info)
+            if night_info['n images'] > 0:
+                nights.append(night_info)
         tlog.app_log.info('  Done')
 
         tlog.app_log.info('  Rendering ListOfNights')

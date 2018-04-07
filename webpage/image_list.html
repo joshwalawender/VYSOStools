@@ -116,7 +116,7 @@
         </td>
 
         {% if 'FWHM_pix' in image.keys() %}
-            {% if flags[i]['FWHM'] %}
+            {% if flags[i]['FWHM'] is True %}
                 <td style={{ 'text-align:right;background-color:#FF5C33;' }}>
             {% else %}
                 <td style={{ 'text-align:right;background-color:#70DB70;' }}>
@@ -128,7 +128,7 @@
         </td>
 
         {% if 'ellipticity' in image.keys() %}
-            {% if flags[i]['ellipticity'] %}
+            {% if flags[i]['ellipticity'] is True %}
                 <td style={{ 'text-align:right;background-color:#FF5C33;' }}>
             {% else %}
                 <td style={{ 'text-align:right;background-color:#70DB70;' }}>
@@ -140,7 +140,7 @@
         </td>
 
         {% if 'perr_arcmin' in image.keys() %}
-            {% if flags[i]['pointing error'] %}
+            {% if flags[i]['pointing error'] is True %}
                 <td style={{ 'text-align:right;background-color:#FF5C33;' }}>
             {% else %}
                 <td style={{ 'text-align:right;background-color:#70DB70;' }}>
@@ -152,7 +152,7 @@
         </td>
 
         {% if 'zero point' in image.keys() %}
-            {% if flags[i]['zero point'] %}
+            {% if flags[i]['zero point'] is True %}
                 <td style={{ 'text-align:right;background-color:#FF5C33;' }}>
             {% else %}
                 <td style={{ 'text-align:right;background-color:#70DB70;' }}>
