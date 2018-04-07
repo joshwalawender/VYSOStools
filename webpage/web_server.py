@@ -57,7 +57,7 @@ class Telescope(object):
     
     def get_limits(self):
         if self.name == 'V20':
-            self.FWHM_limit_pix = 3.5/self.pixel_scale
+            self.FWHM_limit_pix = (3.5*u.arcsec/self.pixel_scale).decompose()
             self.ellipticity_limit = 1.3
             self.pointing_error_limit = 3
         elif self.name == 'V5':
@@ -153,7 +153,7 @@ class ListOfImages(RequestHandler):
                               'zero point': False,
                              })
                 try:
-                    flags[i]['FWHM'] = image['FWHM_pix'] > tel.FWHM_limit_pix
+                    flags[i]['FWHM'] = image['FWHM_pix'] > tel.FWHM_limit_pix.value
                 except:
                     pass
                 try:
