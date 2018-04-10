@@ -160,31 +160,32 @@ class Status(RequestHandler):
         ## Get Telescope Status
         ##---------------------------------------------------------------------
         telstatus = {}
+        tlog.app_log.info(f"Getting telescope status records from mongo")
         for telescope in ['V20', 'V5']:
-            results = db[f'{telescope}status'].find(limit=1, sort=[('date', pymongo.DESCENDING)])
-            tlog.app_log.info(results.count())
-            if results.count() > 0:
-                telstatus[telescope] = results.next()
-                
+            try:
+                telstatus[telescope] = (db[f'{telescope}status'].find(limit=1, sort=[('date', pymongo.DESCENDING)])).next()
                 if 'RA' in telstatus[telescope] and 'DEC' in telstatus[telescope]:
                     coord = SkyCoord(telstatus[telescope]['RA'],
                                      telstatus[telescope]['DEC'], unit=u.deg)
                     telstatus[telescope]['RA'], telstatus[telescope]['DEC'] = coord.to_string('hmsdms', sep=':', precision=0).split()
-                tlog.app_log.info(telstatus[telescope])
-            else:
+                tlog.app_log.info(f"  Got telescope status record for {telescope}")
+            except StopIteration:
                 telstatus[telescope] = {'date': dt.utcnow()-tdelta(365),
                                         'connected': False}
+                tlog.app_log.info(f"  No telescope status records for {telescope}.")
+                tlog.app_log.info(f"  Filling in blank data for {telescope}.")
         
         
         ##---------------------------------------------------------------------
         ## Get Current Weather
         ##---------------------------------------------------------------------
+        tlog.app_log.info(f"Getting weather records from mongo")
         weather = client.vysos['weather']
         if weather.count() > 0:
             cw = weather.find(limit=1, sort=[('date', pymongo.DESCENDING)]).next()
         else:
             cw = None
-        
+        tlog.app_log.info(f"  Done")
         
         ##---------------------------------------------------------------------
         ## Render
