@@ -71,6 +71,39 @@ class Telescope(object):
 
 
 ##-----------------------------------------------------------------------------
+## Handler for image detail page
+##-----------------------------------------------------------------------------
+class ImageDetailPage(RequestHandler):
+    def get(self, telescope, night, imagefile):
+        tlog.app_log.info('Get request for ImageDetailPage recieved')
+        tlog.app_log.info(f'  telescope = {telescope}')
+        tlog.app_log.info(f'  night     = {night}')
+        tlog.app_log.info(f'  imagefile = {imagefile}')
+
+        assert re.match('\d{8}UT', night) is not None
+
+        tel = Telescope(telescope)
+
+        tlog.app_log.info('  Linking to mongo')
+        client = MongoClient(tel.mongo_address, tel.mongo_port)
+        tlog.app_log.info('  Connected to client.')
+        db = client[tel.mongo_db]
+        collection = db[tel.mongo_collection]
+        tlog.app_log.info('  Retrieved collection.')
+        
+        image_list = [entry for entry in\
+                      collection.find( {"filename": imagefile } )]
+        tlog.app_log.info(f'  Found {len(image_list)} images with filename {imagefile}.')
+
+        tlog.app_log.info('  Rendering ImageDetailPage')
+        self.render("image_detail.html", imagefile=imagefile,
+                    image_info=image_list[0])
+
+
+
+
+
+##-----------------------------------------------------------------------------
 ## Handler for list of images
 ##-----------------------------------------------------------------------------
 class ListOfImages(RequestHandler):
@@ -263,13 +296,14 @@ def main():
     list_of_handlers = [
                         url(r"/(V\w+/?$)", ListOfNights),
                         url(r"/(V\w+)/(\w+)", ListOfImages),
+                        url(r"/(V\w+)/(\d{8}UT)/(.+)", ImageDetailPage),
                         (r"/static/(.*)", MyStaticFileHandler, {"path": "/var/www"}),
                        ]
 
     if args.status:
         tlog.app_log.info('Importing status handler')
         from custom_handlers import Status
-        list_of_handlers.append(url(r"/([sS]?.*/?$)", Status))
+        list_of_handlers.append(url(r"/()", Status))
 
 
 #         try:
