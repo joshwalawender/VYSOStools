@@ -15,8 +15,6 @@ import tempfile
 import matplotlib as mpl
 mpl.use('Agg')
 
-import mongoengine as me
-
 import numpy as np
 from astropy import units as u
 from astropy import coordinates as c
@@ -25,7 +23,8 @@ from astropy.table import Table, Column, vstack
 
 import SIDRE
 
-from VYSOS.schema import Image as ImageDoc
+import pymongo
+
 
 
 ##-------------------------------------------------------------------------
@@ -39,14 +38,16 @@ def measure_image(file,\
     tick = dt.utcnow()
     file = os.path.abspath(os.path.expanduser(file))
 
+    image_info = {'filename': os.path.basename(file),
+                 }
+
     ## Try to determine which telescope
-    image_info = ImageDoc(filename=os.path.basename(file))
     try:
-        image_info.telescope = re.match('(V[25]0?)_.+', image_info.filename).group(1)
+        image_info['telescope'] = re.match('(V[25]0?)_.+', image_info['filename']).group(1)
     except:
         pass
     ## Is the image compressed?
-    image_info.compressed = (os.path.splitext(image_info.filename)[1] == '.fz')
+    image_info['compressed'] = (os.path.splitext(image_info['filename'])[1] == '.fz')
 
     ## Set up logfile name and location
     logfilename = os.path.basename(file).replace(".fts", ".log")
@@ -62,31 +63,31 @@ def measure_image(file,\
 
     # Exposure Time
     try:
-        image_info.exptime = float(im.ccd.header.get('EXPTIME'))
+        image_info['exptime'] = float(im.ccd.header.get('EXPTIME'))
     except:
         pass
     # Exposure Start Time
     try:
-        image_info.date = dt.strptime(im.ccd.header.get('DATE-OBS'), 
+        image_info['date'] = dt.strptime(im.ccd.header.get('DATE-OBS'), 
                                             '%Y-%m-%dT%H:%M:%S')
     except:
         pass
     # Filter
-    if image_info.telescope == 'V5':
-        image_info.filter = 'PSr'
+    if image_info['telescope'] == 'V5':
+        image_info['filter'] = 'PSr'
     else:
         try:
-            image_info.filter = im.ccd.header.get('FILTER')
+            image_info['filter'] = im.ccd.header.get('FILTER')
         except:
             pass
 
     # Moon
     try:
-        image_info.moon_alt = ((im.moon.transform_to(im.altazframe).alt).to(u.degree)).value
+        image_info['moon_alt'] = ((im.moon.transform_to(im.altazframe).alt).to(u.degree)).value
         if im.wcs_pointing is not None:
-            image_info.moon_separation = (im.moon.separation(im.wcs_pointing).to(u.degree)).value
+            image_info['moon_separation'] = (im.moon.separation(im.wcs_pointing).to(u.degree)).value
         else:
-            image_info.moon_separation = (im.moon.separation(im.header_pointing).to(u.degree)).value
+            image_info['moon_separation'] = (im.moon.separation(im.header_pointing).to(u.degree)).value
     except:
         pass
 
@@ -104,14 +105,14 @@ def measure_image(file,\
     im.solve_astrometry(downsample=2, SIPorder=4)
     perr = im.calculate_pointing_error()
     try:
-        image_info.perr_arcmin=perr.to(u.arcmin).value
-        image_info.header_RA=im.header_pointing.ra.deg
-        image_info.header_DEC=im.header_pointing.dec.deg
-        image_info.RA=im.wcs_pointing.ra.deg
-        image_info.DEC=im.wcs_pointing.dec.deg
-        image_info.alt = im.header_altaz.alt.deg
-        image_info.az = im.header_altaz.az.deg
-        image_info.airmass = 1./np.cos( (90.-im.header_altaz.alt.deg)*np.pi/180. )
+        image_info['perr_arcmin']=perr.to(u.arcmin).value
+        image_info['header_RA']=im.header_pointing.ra.deg
+        image_info['header_DEC']=im.header_pointing.dec.deg
+        image_info['RA']=im.wcs_pointing.ra.deg
+        image_info['DEC']=im.wcs_pointing.dec.deg
+        image_info['alt'] = im.header_altaz.alt.deg
+        image_info['az'] = im.header_altaz.az.deg
+        image_info['airmass'] = 1./np.cos( (90.-im.header_altaz.alt.deg)*np.pi/180. )
     except:
         pass
 
@@ -119,8 +120,8 @@ def measure_image(file,\
     ## Determine Typical FWHM
     im.extract()
     im.determine_FWHM()
-    image_info.FWHM_pix = im.FWHM_pix
-    image_info.ellipticity = im.ellipticity
+    image_info['FWHM_pix'] = im.FWHM_pix
+    image_info['ellipticity'] = im.ellipticity
 
 
     ## Load (local) photometric reference catalog
@@ -146,8 +147,8 @@ def measure_image(file,\
 #         im.calculate_zero_point(plot='ZP_PanSTARRS.png')
 
 
-    image_info.analyzed=True
-    image_info.SIDREversion=SIDRE.version.version
+    image_info['analyzed']=True
+    image_info['SIDREversion']=SIDRE.version.version
 
     if nographics is True:
         fulljpeg = None
@@ -161,18 +162,20 @@ def measure_image(file,\
     if record:
         im.log.info('Connecting to mongo db at 192.168.1.101')
         try:
-            me.connect('vysos', host='192.168.1.101')
+            client = pymongo.MongoClient('192.168.1.101', 27017)
+            db = client.vysos
+            images = db['images']
         except:
             im.log.error('Could not connect to mongo db')
-            raise Error('Failed to connect to mongo')
+            raise Exception('Failed to connect to mongo')
         else:
             # Remove old entries for this image file
-            for entry in ImageDoc.objects(filename=os.path.basename(file)):
-                im.log.debug('Removing old image info entry for this file')
-                entry.delete()
+            deletion = images.delete_many( {'filename': os.path.basename(file)} )
+            im.log.info(f'  Deleted {deletion.deleted_count} previous entries for {os.path.basename(file)}')
             # Save JPEG to MongoDB
-#             if not nographics:
+#             if nographics is False:
 #                 if fulljpeg is not None:
+#                     im.log.info('  Saving full frame JPEG')
 #                     with open(fulljpeg, 'rb') as imageData:
 #                         image_bytes = imageData.read()
 #                         with tempfile.TemporaryFile() as f:
@@ -181,6 +184,7 @@ def measure_image(file,\
 #                             f.seek(0)
 #                             image_info.full_field_jpeg.put(f)
 #                 if cropjpeg is not None:
+#                     im.log.info('  Saving crop frame JPEG')
 #                     with open(cropjpeg, 'rb') as imageData:
 #                         image_bytes = imageData.read()
 #                         with tempfile.TemporaryFile() as f:
@@ -191,7 +195,18 @@ def measure_image(file,\
 
             # Save new entry for this image file
             im.log.debug('Adding image info to mongo database')
-            image_info.save()
+            ## Save document
+            try:
+                inserted_id = images.insert_one(image_info).inserted_id
+                im.log.info("  Inserted document id: {}".format(inserted_id))
+            except:
+                e = sys.exc_info()[0]
+                im.log.error('Failed to add new document')
+                im.log.error(e)
+            client.close()
+
+
+
     else:
         print(image_info)
 
@@ -222,7 +237,7 @@ def main():
     args = parser.parse_args()
 
     measure_image(args.filename,
-                  nographics=True, #args.nographics,
+                  nographics=args.nographics,
                   record=not args.printonly,
                   verbose=args.verbose)
 
