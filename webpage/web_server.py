@@ -256,6 +256,7 @@ class ListOfNights(RequestHandler):
             
             if night_info['n images'] > 0:
                 nights.append(night_info)
+        nights.reverse() # reverse sort to put recent dates at top of page
         tlog.app_log.info('  Done')
 
         tlog.app_log.info('  Rendering ListOfNights')
