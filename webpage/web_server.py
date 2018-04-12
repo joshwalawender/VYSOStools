@@ -25,49 +25,12 @@ from astropy import units as u
 from astropy.coordinates import SkyCoord
 import ephem
 
-# from IQMon.telescope import Telescope
+from VYSOS import Telescope
 
 class MyStaticFileHandler(StaticFileHandler):
     def set_extra_headers(self, path):
         # Disable cache
         self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
-
-
-class Telescope(object):
-    def __init__(self, name):
-        self.name = name
-        self.mongo_address = '192.168.1.101'
-        self.mongo_port = 27017
-        self.mongo_db = 'vysos'
-        self.mongo_collection = 'images'
-        self.units_for_FWHM = u.pix
-        self.get_pixel_scale()
-        self.get_limits()
-    
-    def get_pixel_scale(self):
-        if self.name == 'V20':
-            self.units_for_FWHM = u.arcsec
-            self.pixel_scale = 206.265*9/4300 * u.arcsec/u.pix
-        elif self.name == 'V5':
-            self.units_for_FWHM = u.pix
-            self.pixel_scale = 206.265*9/735 * u.arcsec/u.pix
-        else:
-            self.units_for_FWHM = u.pix
-            self.pixel_scale = None
-    
-    def get_limits(self):
-        if self.name == 'V20':
-            self.FWHM_limit_pix = (3.5*u.arcsec/self.pixel_scale).decompose()
-            self.ellipticity_limit = 1.3
-            self.pointing_error_limit = 3
-        elif self.name == 'V5':
-            self.FWHM_limit_pix = 2.5
-            self.ellipticity_limit = 1.3
-            self.pointing_error_limit = 6
-        else:
-            self.FWHM_limit_pix = None
-            self.ellipticity_limit = None
-            self.pointing_error_limit = None
 
 
 ##-----------------------------------------------------------------------------
