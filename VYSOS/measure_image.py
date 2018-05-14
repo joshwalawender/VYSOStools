@@ -213,6 +213,7 @@ def measure_image(file,\
     tock = dt.utcnow()
     elapsed = (tock-tick).total_seconds()
     im.log.info(f'Processing time = {elapsed:.1f} s')
+    im.__del__()
 
 
 def main():
