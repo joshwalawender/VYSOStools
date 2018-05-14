@@ -1,41 +1,70 @@
 import sys
 import os
 from argparse import ArgumentParser
-import re
-import string
 import time
 from datetime import datetime as dt
 from datetime import timedelta as tdelta
 import logging
-import math
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.dates import HourLocator, MinuteLocator, DateFormatter
+plt.style.use('classic')
 import pymongo
-from pymongo import MongoClient
 
 import ephem
 from astropy.io import ascii
 import astropy.units as u
-from astropy import table
-import IQMon
-from IQMon.telescope import Telescope
+from astropy.table import Table, Column, Row
+
+from VYSOS import Telescope, weather_limits
+
+
+def query_mongo(db, collection, query):
+    if collection == 'weather':
+        names=('date', 'temp', 'clouds')
+        dtype=(dt, np.float, np.float)
+    elif collection == 'V20status':
+        names=('date', 'focuser_temperature', 'primary_temperature',
+                          'secondary_temperature', 'truss_temperature')
+        dtype=(dt, np.float, np.float, np.float, np.float)
+    elif collection == 'images':
+        names=('date')
+        dtype=(dt)
+
+    result = Table(names=names, dtype=dtype)
+    for entry in db[collection].find(query):
+        insert = {}
+        for name in names:
+            if name in entry.keys():
+                insert[name] = entry[name]
+        result.add_row(insert)
+    return result
 
 
 def make_plots(date_string, telescope, logger, recent=False):
-    logger.info("#### Making Nightly Plots for "+telescope+" on the Night of "+date_string+" ####")
+    logger.info(f"Making Nightly Plots for {telescope} on {date_string}")
     telname = {'V20':'VYSOS-20', 'V5':'VYSOS-5'}
-    y = date_string[0:4]
-    m = date_string[4:6]
-    d = date_string[6:8]
-    date_string_yesterday = (dt.strptime(date_string, '%Y%m%dUT') - tdelta(1,0)).strftime('%Y%m%dUT')
-    
+
+    hours = HourLocator(byhour=range(24), interval=1)
+    mins = MinuteLocator(range(0,60,15))
+    if recent is False:
+        start = dt.strptime(date_string, '%Y%m%dUT')
+        end = start + tdelta(1)
+        night_plot_file_name = '{}_{}.png'.format(date_string, telescope)
+        hours_fmt = DateFormatter('%H')
+    else:
+        end = dt.utcnow()
+        start = end - tdelta(0,7200)
+        night_plot_file_name = 'recent_{}.png'.format(telescope)
+        hours_fmt = DateFormatter('%H:%M')
+
+
     ##------------------------------------------------------------------------
     ## Set up pathnames and filenames
     ##------------------------------------------------------------------------
-    config_file = os.path.expanduser('~/.VYSOS{}.yaml'.format(telescope[1:]))
-    tel = Telescope(config_file)
+    tel = Telescope(telescope)
     destination_path = os.path.abspath('/var/www/nights/')
+    night_plot_file = os.path.join(destination_path, night_plot_file_name)
 
     ##------------------------------------------------------------------------
     ## Use pyephem determine sunrise and sunset times
@@ -46,7 +75,7 @@ def make_plots(date_string, telescope, logger, recent=False):
     Observatory.elevation = 3400.0
     Observatory.temp = 10.0
     Observatory.pressure = 680.0
-    Observatory.date = '{}/{}/{} 10:00:00'.format(y, m, d)
+    Observatory.date = start.strftime('%Y/%m/%d 10:00:00')
 
     Observatory.horizon = '0.0'
     sunset  = Observatory.previous_setting(ephem.Sun()).datetime()
@@ -61,205 +90,223 @@ def make_plots(date_string, telescope, logger, recent=False):
     evening_astronomical_twilight = Observatory.previous_setting(ephem.Sun(), use_center=True).datetime()
     morning_astronomical_twilight = Observatory.next_rising(ephem.Sun(), use_center=True).datetime()
 
+    if recent is False:
+        plot_start = sunset - tdelta(0, 1800)
+        plot_end = sunrise + tdelta(0, 1800)
+    else:
+        plot_start = start
+        plot_end = end
+
+
     ##------------------------------------------------------------------------
-    ## Get status and IQMon results
+    ## Get weather, telescope status, and image data from database
     ##------------------------------------------------------------------------
-    client = MongoClient(tel.mongo_address, tel.mongo_port)
+    client = pymongo.MongoClient(tel.mongo_address, tel.mongo_port)
     db = client[tel.mongo_db]
-    images = db[tel.mongo_collection]
-    status = db['{}.status'.format(telescope)]
+    
+#     logger.info(f"Querying database for images")
+#     images = query_mongo(db, 'images', {'date': {'$gt':start, '$lt':end}, 'telescope':telescope } )
+#     logger.info(f"  Found {len(images)} image entries")
+    
+    logger.info(f"Querying database for V20status")
+    status = query_mongo(db, 'V20status', {'date': {'$gt':start, '$lt':end} } )
+    logger.info(f"  Found {len(status)} status entries")
+    
+    logger.info(f"Querying database for weather")
+    weather = query_mongo(db, 'weather', {'date': {'$gt':start, '$lt':end} } )
+    logger.info(f"  Found {len(weather)} weather entries")
+
 
     ##------------------------------------------------------------------------
     ## Make Nightly Sumamry Plot (show only night time)
     ##------------------------------------------------------------------------
-    now = dt.utcnow()
-    now_string = now.strftime("%Y%m%dUT")
+    time_ticks_values = np.arange(sunset.hour,sunrise.hour+1)
+    
+    if telescope == "V20":
+        if recent:
+            plot_positions = [ ( [0.000, 0.485, 0.460, 0.515], None                         ),
+                               ( None                        , None                         ),
+                               ( None                        , None                         ),
+                               ( [0.540, 0.845, 0.460, 0.155], None                         ),
+                               ( [0.540, 0.665, 0.460, 0.155], None                         ),
+                               ( [0.540, 0.485, 0.460, 0.155], None                         ) ]
+        else:
+            plot_positions = [ ( [0.000, 0.760, 0.465, 0.240], [0.535, 0.760, 0.465, 0.240] ),
+                               ( None                        , [0.535, 0.495, 0.465, 0.240] ),
+                               ( None                        , [0.535, 0.245, 0.465, 0.240] ),
+                               ( [0.000, 0.495, 0.465, 0.240], [0.535, 0.000, 0.465, 0.235] ),
+                               ( [0.000, 0.245, 0.465, 0.240], None                         ),
+                               ( [0.000, 0.000, 0.465, 0.235], None                         ) ]
+#         if recent:
+#             plot_positions = [ ( [0.000, 0.600, 0.460, 0.400], None                         ),
+#                                ( None                        , None                         ),
+#                                ( [0.000, 0.485, 0.460, 0.085], None                         ),
+#                                ( [0.540, 0.845, 0.460, 0.155], None                         ),
+#                                ( [0.540, 0.665, 0.460, 0.155], None                         ),
+#                                ( [0.540, 0.485, 0.460, 0.155], None                         ) ]
+#         else:
+#             plot_positions = [ ( [0.000, 0.760, 0.465, 0.240], [0.535, 0.760, 0.465, 0.240] ),
+#                                ( [0.000, 0.580, 0.465, 0.155], [0.535, 0.495, 0.465, 0.240] ),
+#                                ( [0.000, 0.495, 0.465, 0.075], [0.535, 0.245, 0.465, 0.240] ),
+#                                ( [0.000, 0.330, 0.465, 0.155], [0.535, 0.000, 0.465, 0.235] ),
+#                                ( [0.000, 0.165, 0.465, 0.155], None                         ),
+#                                ( [0.000, 0.000, 0.465, 0.155], None                         ) ]
+    if telescope == "V5":
+        if recent:
+            plot_positions = [ ( [0.000, 0.485, 0.460, 0.515], None                         ),
+                               ( None                        , None                         ),
+                               ( None                        , None                         ),
+                               ( [0.540, 0.845, 0.460, 0.155], None                         ),
+                               ( [0.540, 0.665, 0.460, 0.155], None                         ),
+                               ( [0.540, 0.485, 0.460, 0.155], None                         ) ]
+        else:
+            plot_positions = [ ( [0.000, 0.760, 0.465, 0.240], [0.535, 0.760, 0.465, 0.240] ),
+                               ( None                        , [0.535, 0.495, 0.465, 0.240] ),
+                               ( None                        , [0.535, 0.245, 0.465, 0.240] ),
+                               ( [0.000, 0.495, 0.465, 0.240], [0.535, 0.000, 0.465, 0.235] ),
+                               ( [0.000, 0.245, 0.465, 0.240], None                         ),
+                               ( [0.000, 0.000, 0.465, 0.235], None                         ) ]
+
+
+    logger.info("Writing Output File: {}".format(night_plot_file_name))
     if recent:
-        night_plot_file_name = 'recent_{}.png'.format(telescope)
-        plot_start = now-tdelta(0,7200)
-        plot_end = now+tdelta(0,300)
-        hours = HourLocator(byhour=range(24), interval=1)
-        mins = MinuteLocator(range(0,60,15))
-        hours_fmt = DateFormatter('%H:%M')
+        dpi=72
+        Figure = plt.figure(figsize=(12,8), dpi=dpi)
     else:
-        night_plot_file_name = '{}_{}.png'.format(date_string, telescope)
-        plot_start = sunset-tdelta(0,5400)
-        plot_end = sunrise+tdelta(0,600)
-        hours = HourLocator(byhour=range(24), interval=1)
-        hours_fmt = DateFormatter('%H')
+        dpi=100
+        Figure = plt.figure(figsize=(13,9.5), dpi=dpi)
 
-    night_plot_file = os.path.join(destination_path, night_plot_file_name)
+    ##------------------------------------------------------------------------
+    ## Temperatures
+    ##------------------------------------------------------------------------
+    t_axes = plt.axes(plot_positions[0][0])
+    if recent:
+        plt.title("Recent Weather for {}".format(telescope))
+    else:
+        plt.title("Weather for {} on the Night of {}".format(telescope, date_string))
+    logger.info('Adding temperature plot')
 
+    logger.debug('  Adding ambient temp to plot')
+    t_axes.plot_date(weather['date'], weather['temp']*9/5+32, 'ko',
+                     markersize=2, markeredgewidth=0, drawstyle="default",
+                     label="Outside Temp")
 
-    if (date_string != now_string) or (now > plot_start):
-        time_ticks_values = np.arange(sunset.hour,sunrise.hour+1)
-        
-        if telescope == "V20":
-            if recent:
-                plot_positions = [ ( [0.000, 0.600, 0.460, 0.400], None                         ),
-                                   ( None                        , None                         ),
-                                   ( [0.000, 0.485, 0.460, 0.085], None                         ),
-                                   ( [0.540, 0.845, 0.460, 0.155], None                         ),
-                                   ( [0.540, 0.665, 0.460, 0.155], None                         ),
-                                   ( [0.540, 0.485, 0.460, 0.155], None                         ) ]
-            else:
-                plot_positions = [ ( [0.000, 0.760, 0.465, 0.240], [0.535, 0.760, 0.465, 0.240] ),
-                                   ( [0.000, 0.580, 0.465, 0.155], [0.535, 0.495, 0.465, 0.240] ),
-                                   ( [0.000, 0.495, 0.465, 0.075], [0.535, 0.245, 0.465, 0.240] ),
-                                   ( [0.000, 0.330, 0.465, 0.155], [0.535, 0.000, 0.465, 0.235] ),
-                                   ( [0.000, 0.165, 0.465, 0.155], None                         ),
-                                   ( [0.000, 0.000, 0.465, 0.155], None                         ) ]
-        if telescope == "V5":
-            if recent:
-                plot_positions = [ ( [0.000, 0.485, 0.460, 0.515], None                         ),
-                                   ( None                        , None                         ),
-                                   ( None                        , None                         ),
-                                   ( [0.540, 0.845, 0.460, 0.155], None                         ),
-                                   ( [0.540, 0.665, 0.460, 0.155], None                         ),
-                                   ( [0.540, 0.485, 0.460, 0.155], None                         ) ]
-            else:
-                plot_positions = [ ( [0.000, 0.760, 0.465, 0.240], [0.535, 0.760, 0.465, 0.240] ),
-                                   ( None                        , [0.535, 0.495, 0.465, 0.240] ),
-                                   ( None                        , [0.535, 0.245, 0.465, 0.240] ),
-                                   ( [0.000, 0.495, 0.465, 0.240], [0.535, 0.000, 0.465, 0.235] ),
-                                   ( [0.000, 0.245, 0.465, 0.240], None                         ),
-                                   ( [0.000, 0.000, 0.465, 0.235], None                         ) ]
+    logger.debug('  Adding focuser temp to plot')
+    t_axes.plot_date(status['date'], status['focuser_temperature']*9/5+32, 'ro',
+                     markersize=2, markeredgewidth=0,
+                     label="Focuser Temp")
+
+    logger.debug('  Adding primary temp to plot')
+    t_axes.plot_date(status['date'], status['primary_temperature']*9/5+32, 'bo',
+                     markersize=2, markeredgewidth=0,
+                     label="Primary Temp")
+
+    logger.debug('  Adding secondary temp to plot')
+    t_axes.plot_date(status['date'], status['secondary_temperature']*9/5+32, 'go',
+                     markersize=2, markeredgewidth=0,
+                     label="Secondary Temp")
+
+    logger.debug('  Adding truss temp to plot')
+    t_axes.plot_date(status['date'], status['truss_temperature']*9/5+32, 'ko',
+                     alpha=0.5,
+                     markersize=2, markeredgewidth=0,
+                     label="Truss Temp")
 
 
-        logger.info("Writing Output File: {}".format(night_plot_file_name))
-        if recent:
-            dpi=72
-            Figure = plt.figure(figsize=(12,8), dpi=dpi)
-        else:
-            dpi=100
-            Figure = plt.figure(figsize=(13,9.5), dpi=dpi)
+    t_axes.xaxis.set_major_locator(hours)
+    if recent: t_axes.xaxis.set_minor_locator(mins)
+    t_axes.xaxis.set_major_formatter(hours_fmt)
 
-        ##------------------------------------------------------------------------
-        ## Temperatures
-        ##------------------------------------------------------------------------
-        t_axes = plt.axes(plot_positions[0][0])
-        if recent:
-            plt.title("Recent Weather for {}".format(telescope))
-        else:
-            plt.title("Weather for {} on the Night of {}".format(telescope, date_string))
-        logger.info('Adding temperature plot')
+    ## Overplot Twilights
+    plt.axvspan(sunset, evening_civil_twilight, ymin=0, ymax=1, color='blue', alpha=0.1)
+    plt.axvspan(evening_civil_twilight, evening_nautical_twilight, ymin=0, ymax=1, color='blue', alpha=0.2)
+    plt.axvspan(evening_nautical_twilight, evening_astronomical_twilight, ymin=0, ymax=1, color='blue', alpha=0.3)
+    plt.axvspan(evening_astronomical_twilight, morning_astronomical_twilight, ymin=0, ymax=1, color='blue', alpha=0.5)
+    plt.axvspan(morning_astronomical_twilight, morning_nautical_twilight, ymin=0, ymax=1, color='blue', alpha=0.3)
+    plt.axvspan(morning_nautical_twilight, morning_civil_twilight, ymin=0, ymax=1, color='blue', alpha=0.2)
+    plt.axvspan(morning_civil_twilight, sunrise, ymin=0, ymax=1, color='blue', alpha=0.1)
 
-        ##------------------------------------------------------------------------
-        ## Boltwood Temperature
-        status_list = [entry for entry in\
-                       status.find({'$or':[ {'UT date':date_string_yesterday},\
-                                            {'UT date':date_string}],\
-                                    'boltwood time':{'$exists':True},\
-                                    'boltwood date':{'$exists':True},\
-                                    'boltwood ambient temp':{'$exists':True},\
-                                   }) ]
-        logger.debug("  Found {} lines for boltwood temperature".format(len(status_list)))
-        if len(status_list) > 1:
-            time = [dt.strptime('{} {}'.format(entry['boltwood date'],\
-                                               entry['boltwood time'][:-3]),\
-                                               '%Y-%m-%d %H:%M:%S') + \
-                    + tdelta(0, 10*60*60)\
-                    for entry in status_list]
-            ambient_temp = [x['boltwood ambient temp'] for x in status_list]
-            logger.debug('  Adding Boltwood ambient temp to plot')
-            t_axes.plot_date(time, ambient_temp, 'ko', \
-                             markersize=2, markeredgewidth=0, drawstyle="default", \
-                             label="Outside Temp")
+    plt.legend(loc='best', prop={'size':10})
+    plt.ylabel("Temperature (F)")
+    plt.xlim(plot_start, plot_end)
+    plt.ylim(28,87)
+    plt.grid(which='major', color='k')
+    if recent:
+        plt.grid(which='minor', color='k', alpha=0.8)
+        plt.xlabel("UT Time")
 
-        ##------------------------------------------------------------------------
-        ## RCOS Temperature
-        status_list = [entry for entry in\
-                       status.find({'$or':[ {'UT date':date_string_yesterday},\
-                                            {'UT date':date_string}],\
-                                    'UT time':{'$exists':True},\
-                                    'RCOS temperature (primary)':{'$exists':True},\
-                                    'RCOS temperature (truss)':{'$exists':True},\
-                                   }) ]
-        logger.debug("  Found {} lines for RCOS temperatures".format(len(status_list)))
-        if len(status_list) > 1:
-            time = [dt.strptime('{} {}'.format(entry['UT date'],\
-                                               entry['UT time']),\
-                                               '%Y%m%dUT %H:%M:%S')
-                    for entry in status_list]
-            primary_temp = [x['RCOS temperature (primary)'] for x in status_list]
-            truss_temp = [x['RCOS temperature (truss)'] for x in status_list]
-            logger.debug('  Adding priamry mirror temp to plot')
-            t_axes.plot_date(time, primary_temp, 'ro', \
-                             markersize=2, markeredgewidth=0, drawstyle="default", \
-                             label="Mirror Temp")
-            logger.debug('  Adding truss temp to plot')
-            t_axes.plot_date(time, truss_temp, 'go', \
-                             markersize=2, markeredgewidth=0, drawstyle="default", \
-                             label="Truss Temp")
+    ## Overplot Moon Up Time
+    TheMoon = ephem.Moon()
+    moon_alts = []
+    moon_phases = []
+    moon_time_list = []
+    moon_time = plot_start
+    while moon_time <= plot_end:
+        Observatory.date = moon_time
+        TheMoon.compute(Observatory)
+        moon_time_list.append(moon_time)
+        moon_alts.append(TheMoon.alt * 180. / ephem.pi)
+        moon_phases.append(TheMoon.phase)
+        moon_time += tdelta(0, 60*5)
+    moon_phase = max(moon_phases)
+    moon_fill = moon_phase/100.*0.5+0.05
 
-        ##------------------------------------------------------------------------
-        ## FocusMax Temperature
-#         status_list = [entry for entry in\
-#                        status.find({'$or':[ {'UT date':date_string_yesterday},\
-#                                             {'UT date':date_string}],\
-#                                     'UT time':{'$exists':True},\
-#                                     'FocusMax temperature (tube)':{'$exists':True},\
-#                                    }) ]
-#         logger.debug("  Found {} lines for FocusMax temperatures".format(len(status_list)))
-#         if len(status_list) > 1:
-#             time = [dt.strptime('{} {}'.format(entry['UT date'],\
-#                                                entry['UT time']),\
-#                                                '%Y%m%dUT %H:%M:%S')
-#                     for entry in status_list]
-#             FM_temp = [x['FocusMax temperature (tube)'] for x in status_list]
-#             logger.debug('  Adding FocusMax tube temp to plot')
-#             t_axes.plot_date(time, FM_temp, 'ro', \
-#                              markersize=2, markeredgewidth=0, drawstyle="default", \
-#                              label="Tube Temp")
+    m_axes = t_axes.twinx()
+    m_axes.set_ylabel('Moon Alt (%.0f%% full)' % moon_phase, color='y')
+    m_axes.plot_date(moon_time_list, moon_alts, 'y-')
+    m_axes.xaxis.set_major_locator(hours)
+    m_axes.xaxis.set_major_formatter(hours_fmt)
+    plt.ylim(0,100)
+    plt.yticks([10,30,50,70,90], color='y')
+    plt.xlim(plot_start, plot_end)
+    plt.fill_between(moon_time_list, 0, moon_alts, where=np.array(moon_alts)>0, color='yellow', alpha=moon_fill)        
+    plt.ylabel('')
 
-        t_axes.xaxis.set_major_locator(hours)
-        if recent: t_axes.xaxis.set_minor_locator(mins)
-        t_axes.xaxis.set_major_formatter(hours_fmt)
 
-        ## Overplot Twilights
-        plt.axvspan(sunset, evening_civil_twilight, ymin=0, ymax=1, color='blue', alpha=0.1)
-        plt.axvspan(evening_civil_twilight, evening_nautical_twilight, ymin=0, ymax=1, color='blue', alpha=0.2)
-        plt.axvspan(evening_nautical_twilight, evening_astronomical_twilight, ymin=0, ymax=1, color='blue', alpha=0.3)
-        plt.axvspan(evening_astronomical_twilight, morning_astronomical_twilight, ymin=0, ymax=1, color='blue', alpha=0.5)
-        plt.axvspan(morning_astronomical_twilight, morning_nautical_twilight, ymin=0, ymax=1, color='blue', alpha=0.3)
-        plt.axvspan(morning_nautical_twilight, morning_civil_twilight, ymin=0, ymax=1, color='blue', alpha=0.2)
-        plt.axvspan(morning_civil_twilight, sunrise, ymin=0, ymax=1, color='blue', alpha=0.1)
 
-        plt.legend(loc='best', prop={'size':10})
-        plt.ylabel("Temperature (F)")
-        plt.xlim(plot_start, plot_end)
-        plt.ylim(28,87)
-        plt.grid(which='major', color='k')
-        if recent:
-            plt.grid(which='minor', color='k', alpha=0.8)
-            plt.xlabel("UT Time")
+    ##------------------------------------------------------------------------
+    ## Cloudiness
+    ##------------------------------------------------------------------------
+    logger.info('Adding cloudiness plot')
+    c_axes = plt.axes(plot_positions[3][0])
+    if recent: plt.title('(plot generated at {})'.format(now.strftime("%Y%m%d %H:%M:%S UT")))
 
-        ## Overplot Moon Up Time
-        TheMoon = ephem.Moon()
-        moon_alts = []
-        moon_phases = []
-        moon_time_list = []
-        moon_time = plot_start
-        while moon_time <= plot_end:
-            Observatory.date = moon_time
-            TheMoon.compute(Observatory)
-            moon_time_list.append(moon_time)
-            moon_alts.append(TheMoon.alt * 180. / ephem.pi)
-            moon_phases.append(TheMoon.phase)
-            moon_time += tdelta(0, 60*5)
-        moon_phase = max(moon_phases)
-        moon_fill = moon_phase/100.*0.5+0.05
+    logger.debug('  Adding sky temp to plot')
+    print(weather['clouds']*9/5+32)
+    t_axes.plot_date(weather['date'], weather['clouds']*9/5+32, 'bo',
+                     markersize=2, markeredgewidth=0,
+                     label="Sky Temp")
+#     plt.fill_between(weather['date'], -140, weather['clouds'],
+#                      where=weather['clouds']<weather_limits['Cloudiness (C)'][0],
+#                      color='green', alpha=0.5)
+#     plt.fill_between(weather['date'], -140, weather['clouds'],
+#                      where=weather['clouds']<weather_limits['Cloudiness (C)'][1],
+#                      color='yellow', alpha=0.8)
+#     plt.fill_between(weather['date'], -140, weather['clouds'],
+#                      where=weather['clouds']>weather_limits['Cloudiness (C)'][1],
+#                      color='red', alpha=0.8)
 
-        m_axes = t_axes.twinx()
-        m_axes.set_ylabel('Moon Alt (%.0f%% full)' % moon_phase, color='y')
-        m_axes.plot_date(moon_time_list, moon_alts, 'y-')
-        m_axes.xaxis.set_major_locator(hours)
-        m_axes.xaxis.set_major_formatter(hours_fmt)
-        plt.ylim(0,100)
-        plt.yticks([10,30,50,70,90], color='y')
-        plt.xlim(plot_start, plot_end)
-        plt.fill_between(moon_time_list, 0, moon_alts, where=np.array(moon_alts)>0, color='yellow', alpha=moon_fill)        
-        plt.ylabel('')
+
+    c_axes.xaxis.set_major_locator(hours)
+    if recent: c_axes.xaxis.set_minor_locator(mins)
+    c_axes.xaxis.set_major_formatter(hours_fmt)
+    c_axes.xaxis.set_ticklabels([])
+    plt.ylabel("Cloudiness (F)")
+    plt.xlim(plot_start, plot_end)
+    if telescope == 'V5':
+        plt.ylim(-130,10)
+    elif telescope == 'V20':
+        plt.ylim(-130,10)
+    plt.grid(which='major', color='k')
+    if recent: plt.grid(which='minor', color='k', alpha=0.8)
+
+
+
+    if False:
+
+
+
+
 
         ##------------------------------------------------------------------------
         ## Temperature Differences (V20 Only)
@@ -367,54 +414,6 @@ def make_plots(date_string, telescope, logger, recent=False):
                 plt.xlabel("UT Time")
 
 
-        ##------------------------------------------------------------------------
-        ## Cloudiness
-        ##------------------------------------------------------------------------
-        logger.info('Adding cloudiness plot')
-        c_axes = plt.axes(plot_positions[3][0])
-        if recent: plt.title('(plot generated at {})'.format(now.strftime("%Y%m%d %H:%M:%S UT")))
-
-        status_list = [entry for entry in\
-                       status.find({'$or':[ {'UT date':date_string_yesterday},\
-                                            {'UT date':date_string}],\
-                                    'boltwood time':{'$exists':True},\
-                                    'boltwood date':{'$exists':True},\
-                                    'boltwood sky temp':{'$exists':True},\
-                                    'boltwood cloud condition':{'$exists':True},\
-                                   }) \
-                       if not 'current' in entry.keys()\
-                       or not entry['current']]
-        logger.debug("  Found {} lines for boltwood sky temperature".format(len(status_list)))
-        if len(status_list) > 1:
-            time = [dt.strptime('{} {}'.format(entry['boltwood date'],\
-                                               entry['boltwood time'][:-3]),\
-                                               '%Y-%m-%d %H:%M:%S') + \
-                    + tdelta(0, 10*60*60)\
-                    for entry in status_list]
-            sky_temp = [x['boltwood sky temp'] for x in status_list]
-            cloud_condition = [x['boltwood cloud condition'] for x in status_list]
-            logger.debug('  Adding Boltwood sky temp to plot')
-            c_axes.plot_date(time, sky_temp, 'bo', \
-                             markersize=2, markeredgewidth=0, drawstyle="default", \
-                             label="Sky Temp")
-            plt.fill_between(time, -140, sky_temp, where=np.array(cloud_condition)==1,\
-                             color='green', alpha=0.5)
-            plt.fill_between(time, -140, sky_temp, where=np.array(cloud_condition)==2,\
-                             color='yellow', alpha=0.8)
-            plt.fill_between(time, -140, sky_temp, where=np.array(cloud_condition)==3,\
-                             color='red', alpha=0.8)
-        c_axes.xaxis.set_major_locator(hours)
-        if recent: c_axes.xaxis.set_minor_locator(mins)
-        c_axes.xaxis.set_major_formatter(hours_fmt)
-        c_axes.xaxis.set_ticklabels([])
-        plt.ylabel("Cloudiness (F)")
-        plt.xlim(plot_start, plot_end)
-        if telescope == 'V5':
-            plt.ylim(-130,10)
-        elif telescope == 'V20':
-            plt.ylim(-130,10)
-        plt.grid(which='major', color='k')
-        if recent: plt.grid(which='minor', color='k', alpha=0.8)
 
 
         ##------------------------------------------------------------------------
@@ -682,9 +681,14 @@ def make_plots(date_string, telescope, logger, recent=False):
             p_axes.xaxis.set_major_formatter(hours_fmt)
 
 
-        logger.info('Saving figure: {}'.format(night_plot_file))
-        plt.savefig(night_plot_file, dpi=dpi, bbox_inches='tight', pad_inches=0.10)
-        logger.info('Done.')
+
+
+
+
+
+    logger.info('Saving figure: {}'.format(night_plot_file))
+    plt.savefig(night_plot_file, dpi=dpi, bbox_inches='tight', pad_inches=0.10)
+    logger.info('Done.')
 
 
 
@@ -712,7 +716,8 @@ def main():
     args = parser.parse_args()
 
     recent = False
-    if not args.date:
+    if args.date is None:
+        print('Setting recent True')
         args.date = dt.utcnow().strftime("%Y%m%dUT")
         recent = True
 
@@ -740,28 +745,28 @@ def main():
 #     LogFileHandler.setFormatter(LogFormat)
 #     logger.addHandler(LogFileHandler)
 
-    if args.loop:
-        while True:
-            ## Set date to tonight
-            now = dt.utcnow()
-            date_string = now.strftime("%Y%m%dUT")
-            make_plots(date_string, 'V5', logger)
-            make_plots(date_string, 'V5', logger, recent=True)
-            make_plots(date_string, 'V20', logger)
-            make_plots(date_string, 'V20', logger, recent=True)
-            time.sleep(120)
-    else:
-        if args.telescope:
-            make_plots(args.date, args.telescope, logger)
-            if recent:
-                make_plots(args.date, args.telescope, logger, recent=True)
-        else:
-            make_plots(args.date, 'V5', logger)
-            if recent:
-                make_plots(args.date, 'V5', logger, recent=True)
-            make_plots(args.date, 'V20', logger)
-            if recent:
-                make_plots(args.date, 'V20', logger, recent=True)
+    make_plots(args.date, args.telescope, logger, recent=recent)
+
+#     if args.loop is True:
+#         while True:
+#             ## Set date to tonight
+#             now = dt.utcnow()
+#             date_string = now.strftime("%Y%m%dUT")
+#             make_plots(date_string, 'V5', logger)
+#             make_plots(date_string, 'V5', logger, recent=True)
+#             make_plots(date_string, 'V20', logger)
+#             make_plots(date_string, 'V20', logger, recent=True)
+#             time.sleep(120)
+#     else:
+#         if args.telescope:
+#             make_plots(args.date, args.telescope, logger, recent=recent)
+#         else:
+#             make_plots(args.date, 'V5', logger)
+#             if recent:
+#                 make_plots(args.date, 'V5', logger, recent=True)
+#             make_plots(args.date, 'V20', logger)
+#             if recent:
+#                 make_plots(args.date, 'V20', logger, recent=True)
 
 
 if __name__ == '__main__':
