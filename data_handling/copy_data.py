@@ -5,8 +5,7 @@ from __future__ import division, print_function
 ## Import General Tools
 import sys
 import os
-from os.path import exists
-from os.path import join
+from os.path import join, exists, expanduser
 import argparse
 import logging
 import datetime
@@ -49,55 +48,81 @@ def copy_data(date, telescope, verbose=False):
     ##-------------------------------------------------------------------------
     ## Copy Data from Source to Destination and make second copy
     ##-------------------------------------------------------------------------
-    source_path = join('/', 'Volumes', 'Data_{}'.format(telescope))
-    dest_path = join('/', 'Volumes', 'Drobo', telescope)
-    copy_path = join('/', 'Volumes', 'WD500B', telescope)
+    source_path = join(expanduser('~vysosuser'), f"{telescope}Data")
+
+    dest_path = join('/', 'Volumes', 'MLOData', telescope)
+    assert exists(join(dest_path, 'Images'))
+    assert exists(join(dest_path, 'Logs'))
+    if not exists(join(dest_path, 'Images', date[0:4])):
+        logger.info(f"Making directory: {join(dest_path, 'Images', date[0:4])}")
+        os.mkdir(join(dest_path, 'Images', date[0:4]))
+    if not exists(join(dest_path, 'Logs', date[0:4])):
+        logger.info(f"Making directory: {join(dest_path, 'Logs', date[0:4])}")
+        os.mkdir(join(dest_path, 'Logs', date[0:4]))
+    dest_path_images = join(dest_path, 'Images', date[0:4], date)
+    dest_path_logs = join(dest_path, 'Logs', date[0:4], date)
+
+    copy_path = join('/', 'Volumes', 'DataCopy', telescope)
+    assert exists(join(copy_path, 'Images'))
+    assert exists(join(copy_path, 'Logs'))
+    if not exists(join(copy_path, 'Images', date[0:4])):
+        logger.info(f"Making directory: {join(copy_path, 'Images', date[0:4])}")
+        os.mkdir(join(copy_path, 'Images', date[0:4]))
+    if not exists(join(copy_path, 'Logs', date[0:4])):
+        logger.info(f"Making directory: {join(copy_path, 'Logs', date[0:4])}")
+        os.mkdir(join(copy_path, 'Logs', date[0:4]))
+    copy_path_images = join(copy_path, 'Images', date[0:4], date)
+    copy_path_logs = join(copy_path, 'Logs', date[0:4], date)
 
     ## Check that date directory has been made on Destination
-    if exists(dest_path):
-        if not exists(join(dest_path, 'Images', date)):
-            logger.info('Making directory: {}'.format(join(dest_path, 'Images', date)))
-            os.mkdir(join(dest_path, 'Images', date))
-        if not exists(join(dest_path, 'Logs', date)):
-            logger.info('Making directory: {}'.format(join(dest_path, 'Logs', date)))
-            os.mkdir(join(dest_path, 'Logs', date))
+    if not exists(dest_path_images):
+        logger.info(f"Making directory: {dest_path_images}")
+        os.mkdir(dest_path_images)
+    if not exists(dest_path_logs):
+        logger.info(f"Making directory: {dest_path_logs}")
+        os.mkdir(dest_path_logs)
 
     ## Check that date directory has been made on copy
-    if exists(copy_path):
-        if not exists(join(copy_path, 'Images', date)):
-            logger.info('Making directory: {}'.format(join(copy_path, 'Images', date)))
-            os.mkdir(join(copy_path, 'Images', date))
-        if not exists(join(copy_path, 'Logs', date)):
-            logger.info('Making directory: {}'.format(join(copy_path, 'Logs', date)))
-            os.mkdir(join(copy_path, 'Logs', date))
+    if not exists(copy_path_images):
+        logger.info(f"Making directory: {copy_path_images}")
+        os.mkdir(copy_path_images)
+    if not exists(copy_path_logs):
+        logger.info(f"Making directory: {copy_path_logs}")
+        os.mkdir(copy_path_logs)
 
     ## Make list of files to analyze
     files = glob.glob(join(source_path, 'Images', date, '*.*'))
     if exists(join(source_path, 'Images', date, 'Calibration')):
         files.extend(glob.glob(join(source_path, 'Images', date, 'Calibration', '*.*')))
-        if not exists(join(dest_path, 'Images', date, 'Calibration')):
-            os.mkdir(join(dest_path, 'Images', date, 'Calibration'))
-        if not exists(join(copy_path, 'Images', date, 'Calibration')):
-            os.mkdir(join(copy_path, 'Images', date, 'Calibration'))
+        if not exists(join(dest_path_images, 'Calibration')):
+            os.mkdir(join(dest_path_images, 'Calibration'))
+        if not exists(join(copy_path_images, 'Calibration')):
+            os.mkdir(join(copy_path_images, 'Calibration'))
     if exists(join(source_path, 'Images', date, 'AutoFlat')):
         files.extend(glob.glob(join(source_path, 'Images', date, 'AutoFlat', '*.*')))
-        if not exists(join(dest_path, 'Images', date, 'AutoFlat')):
-            os.mkdir(join(dest_path, 'Images', date, 'AutoFlat'))
-        if not exists(join(copy_path, 'Images', date, 'AutoFlat')):
-            os.mkdir(join(copy_path, 'Images', date, 'AutoFlat'))
+        if not exists(join(dest_path_images, 'AutoFlat')):
+            os.mkdir(join(dest_path_images, 'AutoFlat'))
+        if not exists(join(copy_path_images, 'AutoFlat')):
+            os.mkdir(join(copy_path_images, 'AutoFlat'))
     files.extend(glob.glob(join(source_path, 'Logs', date, '*.*')))
     logger.info('Found {} files to analyze'.format(len(files)))
 
     # Loop over all files
     for i,file in enumerate(files):
         filename = os.path.split(file)[1]
+        fileext = os.path.splitext(filename)[1]
         logger.info('Checking file {}/{}: {}'.format(i+1, len(files), filename))
-        dest_file = file.replace(source_path, dest_path)
-        copy_file = file.replace(source_path, copy_path)
 
-        if os.path.splitext(file)[1] in ['.fits', '.fts']:
+        if fileext in ['.fts', '.fz', '.fits']:
+            dest_file = join(dest_path_images, filename)
+            copy_file = join(copy_path_images, filename)
+            logger.debug(f"Destination file: {dest_file}")
+            logger.debug(f"Copy file: {copy_file}")
+
             dest_fz = '{}.fz'.format(dest_file)
             copy_fz = '{}.fz'.format(copy_file)
+            logger.debug(f"Destination fz file: {dest_fz}")
+            logger.debug(f"Copy fz file: {copy_fz}")
 
             to_dest = False
             if exists(dest_path):
@@ -151,11 +176,14 @@ def copy_data(date, telescope, verbose=False):
                     logger.info('  All CHECKSUM verifications passed.')
 
         ## No checksum verification for non-FITS files
-        else:
-            if not exists(dest_file) and exists(dest_path):
+        elif fileext in ['.txt', '.log']:
+            dest_file = join(dest_path_logs, filename)
+            copy_file = join(copy_path_logs, filename)
+
+            if not exists(dest_file):
                 logger.info('Copying {} to drobo'.format(file))
                 shutil.copy2(file, dest_file)
-            if not exists(copy_file) and exists(copy_path):
+            if not exists(copy_file):
                 logger.info('Copying {} to external'.format(file))
                 shutil.copy2(file, dest_file)
             if args.delete and exists(copy_path) and exists(dest_path):
@@ -224,14 +252,16 @@ if __name__ == '__main__':
         help="The date to copy.")
     args = parser.parse_args()
 
-    if args.date:
+    if args.date is not None:
         if re.match('\d{8}UT', args.date):
             date = args.date
         elif args.date == 'yesterday':
             today = datetime.datetime.utcnow()
             oneday = datetime.timedelta(1, 0)
             date = (today - oneday).strftime('%Y%m%dUT')
+        else:
+            print(f'Could not parse "{args.date}"')
     else:
         date = datetime.datetime.utcnow().strftime('%Y%m%dUT')
 
-    main(date, args.telescope, verbose=args.verbose)
+    copy_data(date, args.telescope, verbose=args.verbose)
