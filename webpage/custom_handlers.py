@@ -42,18 +42,20 @@ def get_status(telescope, db):
 ##-------------------------------------------------------------------------
 ## Check for Images
 ##-------------------------------------------------------------------------
-def get_nimages(telescope, date):
-    path = os.path.join('/Volumes/Data_{}/Images/{}'.format(telescope, date))
+def get_image_list(telescope, date):
+#     path = os.path.join('/Volumes/Data_{}/Images/{}'.format(telescope, date))
+    path = os.path.join('/', 'Users', 'vysosuser', f'{telescope}Data', 'Images', f'{date}')
     image_list = glob.glob(os.path.join(path, '{}*fts'.format(telescope)))
-    return len(image_list)
+    return image_list
 
 ##-------------------------------------------------------------------------
 ## Check for Flats
 ##-------------------------------------------------------------------------
-def get_nflats(telescope, date):
-    path = os.path.join('/Volumes/Data_{}/Images/{}/AutoFlat'.format(telescope, date))
+def get_flat_list(telescope, date):
+#     path = os.path.join('/Volumes/Data_{}/Images/{}/AutoFlat'.format(telescope, date))
+    path = os.path.join('/', 'Users', 'vysosuser', f'{telescope}Data', 'Images', f'{date}', 'AutoFlat')
     image_list = glob.glob(os.path.join(path, 'AutoFlat*fts'))
-    return len(image_list)
+    return image_list
 
 
 ##-------------------------------------------------------------------------
@@ -212,10 +214,10 @@ class Status(RequestHandler):
                     sun = sun,
                     telstatus=telstatus,
                     files_string = files_string,\
-                    v5_nimages = get_nimages('V5', link_date_string),\
-                    v20_nimages = get_nimages('V20', link_date_string),\
-                    v5_nflats = get_nflats('V5', link_date_string),\
-                    v20_nflats = get_nflats('V20', link_date_string),\
+                    v5_images = get_image_list('V5', link_date_string),\
+                    v20_images = get_image_list('V20', link_date_string),\
+                    v5_flats = get_flat_list('V5', link_date_string),\
+                    v20_flats = get_flat_list('V20', link_date_string),\
                     cctv=cctv,
                     currentweather=cw,
                     weather_limits=weather_limits,
