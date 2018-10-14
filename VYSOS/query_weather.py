@@ -1,4 +1,5 @@
 import sys
+import os
 import logging
 import argparse
 from datetime import datetime as dt
@@ -27,8 +28,6 @@ def get_weather(logger, robust=True):
     pan001_data = [x for x in pan001_weather.find({'date': {'$gt': start, '$lt': end}},
                                     sort=[('date', pymongo.DESCENDING)])]
     latest = pan001_data[0]
-
-    print(latest)
 
     weatherdoc = {"date": latest['date'],
                   "querydate": now,
@@ -65,6 +64,45 @@ def get_weather(logger, robust=True):
         logger.error(e)
 
     client.close()
+
+    # Example sld
+    # 2017-02-25 17:27:31.00 C K    3.8    8.8    8.8    1.0  -1  100.0  25 2 2 00000 042791.72744 0 1 3 1 1 1
+    # From Boltwood manual:
+    # Date       Time        T V   SkyT   AmbT   SenT   Wind Hum  DewPt Hea R W Since  Now() Day's c w r d C A
+    # 2005-06-03 02:07:23.34 C K  -28.5   18.7   22.5   45.3  75   10.3   3 0 0 00004 038506.08846 1 2 1 0 0 0
+    # NowDays = date/time given as the VB6 Now() function result (in days) when Clarity II last wrote this file
+    tref1 = dt.strptime('2005-06-03 02:07:23.34', '%Y-%m-%d %H:%M:%S.%f')
+    dtref1 = 038506.08846
+    to1 = tref1 - tdelta(days=dtref1)
+    tref2 = dt.strptime('2017-02-25 17:27:31.00', '%Y-%m-%d %H:%M:%S.%f')
+    dtref2 = 042791.72744
+    to2 = tref2 - tdelta(days=dtref2)
+    to = to2
+
+    sld_file = os.path.expanduser('~/V20Data/aag_sld.dat')
+    logger.info(f'Writing Single Line Data File to {sld_file}')
+    local_time_str = dt.strftime(weatherdoc['date']-tdelta(0,10*3600), '%Y-%m-%d %H:%M:%S.00')
+    SkyT = weatherdoc['clouds']
+    AmbT = weatherdoc['temp']
+    SenT = weatherdoc['temp'] # using ambient
+    Wind = weatherdoc['wind']
+    Hum = -1
+    DewPt = 100.0
+    Hea = 25
+    R = {'Dry':0, 'Wet':1, 'Rain':1, 'Unknown':1}[latest['data']['rain_condition']]
+    W = {'Dry':0, 'Wet':1, 'Rain':1, 'Unknown':1}[latest['data']['rain_condition']]
+    Since = 00000
+    NowDays = (weatherdoc['date']-tdelta(0,10*3600)-to).total_seconds()/3600/24
+    c = {'Unknown':0, 'Very Cloudy':3, 'Cloudy':2, 'Clear':1}[latest['data']['sky_condition']]
+    w = {'Unknown':0, 'Very Windy':3, 'Windy':2, 'Calm':1}[latest['data']['wind_condition']]
+    r = {'Unknown':0, 'Rain':3, 'Wet':2, 'Dry':1}[latest['data']['rain_condition']]
+    d = 1
+    C = {True:0 , False:1}[latest['data']['safe']]
+    A = C
+    sld = f"{local_time_str:22s} C K {SkyT:6.1f} {AmbT:6.1f} {SenT:6.1f} {Wind:6.1f} {Hum:3.0f} {DewPt:6.1f} {Hea:3d} {R:1d} {W:1d} {Since:05d} {NowDays:012.5f} {c:1d} {w:1d} {r:1d} {d:1d} {C:1d} {A:1d}"
+    print("Date       Time        T V   SkyT   AmbT   SenT   Wind Hum  DewPt Hea R W Since  Now() Day's c w r d C A")
+    print(sld)
+    sys.exit(0)
 
 if __name__ == '__main__':
 
