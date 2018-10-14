@@ -100,9 +100,14 @@ def get_weather(logger, robust=True):
     C = {True:0 , False:1}[latest['data']['safe']]
     A = C
     sld = f"{local_time_str:22s} C K {SkyT:6.1f} {AmbT:6.1f} {SenT:6.1f} {Wind:6.1f} {Hum:3.0f} {DewPt:6.1f} {Hea:3d} {R:1d} {W:1d} {Since:05d} {NowDays:012.5f} {c:1d} {w:1d} {r:1d} {d:1d} {C:1d} {A:1d}"
-    print("Date       Time        T V   SkyT   AmbT   SenT   Wind Hum  DewPt Hea R W Since  Now() Day's c w r d C A")
-    print(sld)
-    sys.exit(0)
+    logger.info("  Date       Time        T V   SkyT   AmbT   SenT   Wind Hum  DewPt Hea R W Since  Now() Day's c w r d C A")
+    logger.info(f"  {sld}")
+    if os.path.exists(sld_file):
+        os.remove(sld_file)
+    with open(sld_file, 'x') as sldFO:
+        sldFO.write(f"{sld}\n")
+    logger.info(f'  Done')
+
 
 if __name__ == '__main__':
 
