@@ -28,70 +28,43 @@ def get_weather(logger, robust=True):
                                     sort=[('date', pymongo.DESCENDING)])]
     latest = pan001_data[0]
 
+    print(latest)
+
     weatherdoc = {"date": latest['date'],
                   "querydate": now,
-                  "clouds": float(latest['sky_temp_C']),
-                  "temp": float(latest['ambient_temp_C']),
-                  "wind": float(latest['wind_speed_KPH']),
-                  "gust": float(latest['wind_speed_KPH']),
-                  "rain": int(latest['rain_frequency']),
+                  "clouds": float(latest['data']['sky_temp_C']),
+                  "temp": float(latest['data']['ambient_temp_C']),
+                  "wind": float(latest['data']['wind_speed_KPH']),
+                  "gust": float(latest['data']['wind_speed_KPH']),
+                  "rain": int(latest['data']['rain_frequency']),
                   "light": 0,
-                  "switch": {'1': True, '0': False}[latest['safe']],
-                  "safe": {'1': True, '0': False}[latest['safe']],
+                  "switch": latest['data']['safe'],
+                  "safe": latest['data']['safe'],
                  }
 
-#     http://aagsolo/cgi-bin/cgiLastData
-#     http://aagsolo/cgi-bin/cgiHistData
-#     querydate = dt.utcnow()
-#     address = 'http://192.168.1.105/cgi-bin/cgiLastData'
-# 
-#     try:
-#         r = requests.get(address)
-#     except:
-#         logger.error('Failed to connect to AAG Solo')
-#     else:
-#         lines = r.text.splitlines()
-#         result = {}
-#         for line in lines:
-#             key, val = line.split('=')
-#             result[str(key)] = str(val)
-#             logger.debug('  {} = {}'.format(key, val))
-#         logger.info('  Done.')
-# 
-#         weatherdoc = {"date": dt.strptime(result['dataGMTTime'], '%Y/%m/%d %H:%M:%S'),
-#                       "querydate": querydate,
-#                       "clouds": float(result['clouds']),
-#                       "temp": float(result['temp']),
-#                       "wind": float(result['wind']),
-#                       "gust": float(result['gust']),
-#                       "rain": int(result['rain']),
-#                       "light": int(result['light']),
-#                       "switch": int(result['switch']),
-#                       "safe": {'1': True, '0': False}[result['safe']],
-#                      }
 
-        threshold = 30
-        age = (weatherdoc["querydate"] - weatherdoc["date"]).total_seconds()
-        logger.debug('Data age = {:.1f} seconds'.format(age))
-        if age > threshold:
-            logger.warning('Age of weather data ({:.1f}) is greater than {:.0f} seconds'.format(
-                           age, threshold))
+    threshold = 30
+    age = (weatherdoc["querydate"] - weatherdoc["date"]).total_seconds()
+    logger.debug('Data age = {:.1f} seconds'.format(age))
+    if age > threshold:
+        logger.warning('Age of weather data ({:.1f}) is greater than {:.0f} seconds'.format(
+                       age, threshold))
 
-        logger.info('Saving weather document')
-        logger.info('Connecting to mongoDB')
-        client = pymongo.MongoClient('192.168.1.101', 27017)
-        db = client.vysos
-        weather = db.weather
+    logger.info('Saving weather document')
+    logger.info('Connecting to mongoDB')
+    client = pymongo.MongoClient('192.168.1.101', 27017)
+    db = client.vysos
+    weather = db.weather
 
-        try:
-            inserted_id = weather.insert_one(weatherdoc).inserted_id
-            logger.info("  Inserted document with id: {}".format(inserted_id))
-        except:
-            e = sys.exc_info()[0]
-            logger.error('Failed to add new document')
-            logger.error(e)
+    try:
+        inserted_id = weather.insert_one(weatherdoc).inserted_id
+        logger.info("  Inserted document with id: {}".format(inserted_id))
+    except:
+        e = sys.exc_info()[0]
+        logger.error('Failed to add new document')
+        logger.error(e)
 
-        client.close()
+    client.close()
 
 if __name__ == '__main__':
 
