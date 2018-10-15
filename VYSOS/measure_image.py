@@ -61,25 +61,18 @@ def measure_image(file,\
     im = SIDRE.ScienceImage(file, logfile=logfile, verbose=verbose)
     im.get_header_pointing()
 
+    # Target Name
+    image_info['target name'] = im.ccd.header.get('OBJECT', '')
     # Exposure Time
-    try:
-        image_info['exptime'] = float(im.ccd.header.get('EXPTIME'))
-    except:
-        pass
+    image_info['exptime'] = float(im.ccd.header.get('EXPTIME', '-1'))
     # Exposure Start Time
-    try:
-        image_info['date'] = dt.strptime(im.ccd.header.get('DATE-OBS'), 
+    image_info['date'] = dt.strptime(im.ccd.header.get('DATE-OBS', 'unknown'), 
                                             '%Y-%m-%dT%H:%M:%S')
-    except:
-        pass
     # Filter
     if image_info['telescope'] == 'V5':
         image_info['filter'] = 'PSr'
     else:
-        try:
-            image_info['filter'] = im.ccd.header.get('FILTER')
-        except:
-            pass
+        image_info['filter'] = im.ccd.header.get('FILTER', 'unknown')
 
     # Moon
     try:
