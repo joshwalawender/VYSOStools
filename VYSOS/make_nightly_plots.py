@@ -269,7 +269,9 @@ def make_plots(date_string, telescope, logger, recent=False):
     ##------------------------------------------------------------------------
     logger.info('Adding cloudiness plot')
     c_axes = plt.axes(plot_positions[3][0])
-    if recent: plt.title('(plot generated at {})'.format(now.strftime("%Y%m%d %H:%M:%S UT")))
+    if recent:
+        now = dt.utcnow()
+        plt.title(f'(plot generated at {now.strftime("%Y%m%d %H:%M:%S UT")})')
 
     logger.debug('  Adding sky temp to plot')
     print(weather['clouds']*9/5+32)
