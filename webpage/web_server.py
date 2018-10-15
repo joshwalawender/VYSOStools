@@ -95,8 +95,10 @@ class ListOfImages(RequestHandler):
         if re.match('\d{8}UT', subject):
             start = dt.strptime(subject, '%Y%m%dUT')
             end = start + tdelta(1)
+            querydict = {"date": {"$gt": start, "$lt": end},
+                         "telescope": tel.name}
             image_list = [entry for entry in\
-                          collection.find( {"date": {"$gt": start, "$lt": end} } ).sort(\
+                          collection.find(querydict).sort(\
                           [('date', pymongo.ASCENDING)])]
             tlog.app_log.info('  Got list of {} images for night.'.format(len(image_list)))
         ##---------------------------------------------------------------------
@@ -215,7 +217,9 @@ class ListOfNights(RequestHandler):
             
             start = dt.strptime(date_string, '%Y%m%dUT')
             end = start + tdelta(1)
-            night_info['n images'] = collection.find( {"date": {"$gt": start, "$lt": end} } ).count()
+            querydict = {"date": {"$gt": start, "$lt": end},
+                         "telescope": tel.name}
+            night_info['n images'] = collection.find(querydict).count()
             
             if night_info['n images'] > 0:
                 nights.append(night_info)
