@@ -127,6 +127,7 @@ class ListOfImages(RequestHandler):
                     self.write('<p style="text-align:center;">Could not find {} in target list:</p>'.format(subject))
                 self.write('<table style="border:1px solid black;">')
                 self.write('<tr><th>Target</th><th>n Images</th>')
+                tlog.app_log.info(f"Listing all targets")
                 for target in target_name_list:
                     target_images = [entry for entry in collection.find( { "target name": target } ) ]
                     self.write('<tr><td><a href="{0}">{0}</a></td><td>{1:d}</td></tr>'.format(target, len(target_images)))
