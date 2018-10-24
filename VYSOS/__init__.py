@@ -1,6 +1,6 @@
 from astropy import units as u
 
-weather_limits = {'Cloudiness (C)': [-35, -20],
+weather_limits = {'Cloudiness (C)': [-30, -20],
                   'Wind (kph)': [20, 40],
                   'Rain': [2400, 2000],
                   }
