@@ -55,7 +55,7 @@ def main(telescope='V5'):
     assert telescope in ['V5', 'V20']
     input_filename = f'{telescope}_targets.txt'
     rtml_file = f'{telescope}_targets.rtml'
-    tab = Table.read(input_filename, format='ascii')
+    tab = Table.read(input_filename, format='ascii.csv')
     if os.path.exists(rtml_file):
         os.remove(rtml_file)
     with open(rtml_file, 'w') as f:
