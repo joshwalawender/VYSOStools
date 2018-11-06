@@ -19,7 +19,7 @@
            </Moon>
            <Priority>8</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_Blanco1</Name>
            <Coordinates>
                <RightAscension>+0.8333</RightAscension>
@@ -48,7 +48,7 @@
            </Moon>
            <Priority>9</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC654</Name>
            <Coordinates>
                <RightAscension>+26.6250</RightAscension>
@@ -77,7 +77,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_IC1795</Name>
            <Coordinates>
                <RightAscension>+36.6583</RightAscension>
@@ -106,7 +106,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_IC1805west</Name>
            <Coordinates>
                <RightAscension>+37.2083</RightAscension>
@@ -135,7 +135,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_IC1805center</Name>
            <Coordinates>
                <RightAscension>+38.2000</RightAscension>
@@ -164,7 +164,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_IC1805north</Name>
            <Coordinates>
                <RightAscension>+39.0333</RightAscension>
@@ -193,7 +193,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_IC1805east</Name>
            <Coordinates>
                <RightAscension>+39.1500</RightAscension>
@@ -222,7 +222,7 @@
            </Moon>
            <Priority>2</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_IC1848west</Name>
            <Coordinates>
                <RightAscension>+42.3500</RightAscension>
@@ -251,7 +251,7 @@
            </Moon>
            <Priority>2</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_IC1848south</Name>
            <Coordinates>
                <RightAscension>+42.8792</RightAscension>
@@ -280,7 +280,7 @@
            </Moon>
            <Priority>2</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_IC1848center</Name>
            <Coordinates>
                <RightAscension>+43.3500</RightAscension>
@@ -309,7 +309,7 @@
            </Moon>
            <Priority>2</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_IC1848east</Name>
            <Coordinates>
                <RightAscension>+43.9833</RightAscension>
@@ -338,7 +338,7 @@
            </Moon>
            <Priority>2</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_AFGL4029</Name>
            <Coordinates>
                <RightAscension>+44.9833</RightAscension>
@@ -367,7 +367,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC1333</Name>
            <Coordinates>
                <RightAscension>+52.2583</RightAscension>
@@ -396,7 +396,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_IC348</Name>
            <Coordinates>
                <RightAscension>+56.1417</RightAscension>
@@ -425,7 +425,7 @@
            </Moon>
            <Priority>5</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC1502</Name>
            <Coordinates>
                <RightAscension>+61.9583</RightAscension>
@@ -454,7 +454,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_TTauri</Name>
            <Coordinates>
                <RightAscension>+65.4958</RightAscension>
@@ -483,7 +483,7 @@
            </Moon>
            <Priority>2</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_FSTau</Name>
            <Coordinates>
                <RightAscension>+65.5083</RightAscension>
@@ -512,7 +512,7 @@
            </Moon>
            <Priority>3</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_DGTau</Name>
            <Coordinates>
                <RightAscension>+66.7708</RightAscension>
@@ -541,7 +541,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_L1551</Name>
            <Coordinates>
                <RightAscension>+67.9125</RightAscension>
@@ -570,7 +570,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_HPTau</Name>
            <Coordinates>
                <RightAscension>+68.9708</RightAscension>
@@ -599,7 +599,7 @@
            </Moon>
            <Priority>4</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_VYTau</Name>
            <Coordinates>
                <RightAscension>+69.8250</RightAscension>
@@ -628,7 +628,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_DQTau</Name>
            <Coordinates>
                <RightAscension>+71.7208</RightAscension>
@@ -657,7 +657,7 @@
            </Moon>
            <Priority>2</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_DRTau</Name>
            <Coordinates>
                <RightAscension>+71.7750</RightAscension>
@@ -686,7 +686,7 @@
            </Moon>
            <Priority>2</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_UXOri</Name>
            <Coordinates>
                <RightAscension>+76.1250</RightAscension>
@@ -715,7 +715,7 @@
            </Moon>
            <Priority>3</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_V582Aur</Name>
            <Coordinates>
                <RightAscension>+81.4667</RightAscension>
@@ -744,7 +744,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_ONC1</Name>
            <Coordinates>
                <RightAscension>+83.3254</RightAscension>
@@ -773,7 +773,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_ONC3</Name>
            <Coordinates>
                <RightAscension>+83.3254</RightAscension>
@@ -802,7 +802,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_ONC2</Name>
            <Coordinates>
                <RightAscension>+83.3254</RightAscension>
@@ -831,7 +831,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_ONC4</Name>
            <Coordinates>
                <RightAscension>+83.8187</RightAscension>
@@ -860,7 +860,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_ONC5</Name>
            <Coordinates>
                <RightAscension>+83.8187</RightAscension>
@@ -889,7 +889,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_ONC6</Name>
            <Coordinates>
                <RightAscension>+83.8187</RightAscension>
@@ -918,7 +918,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_L1641A</Name>
            <Coordinates>
                <RightAscension>+83.9167</RightAscension>
@@ -947,7 +947,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_L1641B</Name>
            <Coordinates>
                <RightAscension>+84.1042</RightAscension>
@@ -976,7 +976,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_ONC8</Name>
            <Coordinates>
                <RightAscension>+84.3121</RightAscension>
@@ -1005,7 +1005,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_ONC7</Name>
            <Coordinates>
                <RightAscension>+84.3121</RightAscension>
@@ -1034,7 +1034,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_ONC9</Name>
            <Coordinates>
                <RightAscension>+84.3121</RightAscension>
@@ -1063,7 +1063,7 @@
            </Moon>
            <Priority>3</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_L1641C</Name>
            <Coordinates>
                <RightAscension>+85.0000</RightAscension>
@@ -1092,7 +1092,7 @@
            </Moon>
            <Priority>4</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_L1641D</Name>
            <Coordinates>
                <RightAscension>+85.2083</RightAscension>
@@ -1121,7 +1121,7 @@
            </Moon>
            <Priority>5</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_L1641E</Name>
            <Coordinates>
                <RightAscension>+85.4208</RightAscension>
@@ -1150,7 +1150,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_FUOri</Name>
            <Coordinates>
                <RightAscension>+86.1875</RightAscension>
@@ -1179,7 +1179,7 @@
            </Moon>
            <Priority>6</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_L1630S</Name>
            <Coordinates>
                <RightAscension>+86.6458</RightAscension>
@@ -1208,7 +1208,7 @@
            </Moon>
            <Priority>8</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_L1630N</Name>
            <Coordinates>
                <RightAscension>+86.7708</RightAscension>
@@ -1237,7 +1237,7 @@
            </Moon>
            <Priority>2</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_L1622</Name>
            <Coordinates>
                <RightAscension>+88.6708</RightAscension>
@@ -1266,7 +1266,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC2170</Name>
            <Coordinates>
                <RightAscension>+91.9000</RightAscension>
@@ -1295,7 +1295,7 @@
            </Moon>
            <Priority>9</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC2182</Name>
            <Coordinates>
                <RightAscension>+92.2500</RightAscension>
@@ -1324,7 +1324,7 @@
            </Moon>
            <Priority>6</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_IRAS06068-0641</Name>
            <Coordinates>
                <RightAscension>+92.3292</RightAscension>
@@ -1353,7 +1353,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC2264C</Name>
            <Coordinates>
                <RightAscension>+100.2500</RightAscension>
@@ -1382,7 +1382,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC2264N</Name>
            <Coordinates>
                <RightAscension>+100.2500</RightAscension>
@@ -1411,7 +1411,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC2264S</Name>
            <Coordinates>
                <RightAscension>+100.2500</RightAscension>
@@ -1440,7 +1440,7 @@
            </Moon>
            <Priority>3</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_L1656_Thommes</Name>
            <Coordinates>
                <RightAscension>+104.2917</RightAscension>
@@ -1469,7 +1469,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_CanisMajor</Name>
            <Coordinates>
                <RightAscension>+105.9167</RightAscension>
@@ -1498,7 +1498,7 @@
            </Moon>
            <Priority>2</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_IC2177</Name>
            <Coordinates>
                <RightAscension>+106.1542</RightAscension>
@@ -1527,7 +1527,7 @@
            </Moon>
            <Priority>3</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_CanisMajorS</Name>
            <Coordinates>
                <RightAscension>+106.2500</RightAscension>
@@ -1556,7 +1556,7 @@
            </Moon>
            <Priority>7</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC2467</Name>
            <Coordinates>
                <RightAscension>+118.2083</RightAscension>
@@ -1585,7 +1585,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_TWA30</Name>
            <Coordinates>
                <RightAscension>+173.0750</RightAscension>
@@ -1614,7 +1614,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_L1688core</Name>
            <Coordinates>
                <RightAscension>+246.7500</RightAscension>
@@ -1643,7 +1643,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_B62</Name>
            <Coordinates>
                <RightAscension>+258.9792</RightAscension>
@@ -1672,7 +1672,7 @@
            </Moon>
            <Priority>5</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC6334</Name>
            <Coordinates>
                <RightAscension>+260.0083</RightAscension>
@@ -1701,7 +1701,7 @@
            </Moon>
            <Priority>6</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC6357</Name>
            <Coordinates>
                <RightAscension>+261.2000</RightAscension>
@@ -1730,7 +1730,7 @@
            </Moon>
            <Priority>7</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC6383</Name>
            <Coordinates>
                <RightAscension>+263.6750</RightAscension>
@@ -1759,7 +1759,7 @@
            </Moon>
            <Priority>4</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_Trumpler27</Name>
            <Coordinates>
                <RightAscension>+264.0833</RightAscension>
@@ -1788,7 +1788,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_IC4665</Name>
            <Coordinates>
                <RightAscension>+266.7000</RightAscension>
@@ -1817,7 +1817,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_M20</Name>
            <Coordinates>
                <RightAscension>+270.6125</RightAscension>
@@ -1846,7 +1846,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_M8west</Name>
            <Coordinates>
                <RightAscension>+270.7333</RightAscension>
@@ -1875,7 +1875,7 @@
            </Moon>
            <Priority>4</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC6531</Name>
            <Coordinates>
                <RightAscension>+271.0500</RightAscension>
@@ -1904,7 +1904,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_M8east</Name>
            <Coordinates>
                <RightAscension>+271.2583</RightAscension>
@@ -1933,7 +1933,7 @@
            </Moon>
            <Priority>2</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_IC1274</Name>
            <Coordinates>
                <RightAscension>+272.4500</RightAscension>
@@ -1962,7 +1962,7 @@
            </Moon>
            <Priority>5</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC6559</Name>
            <Coordinates>
                <RightAscension>+272.4833</RightAscension>
@@ -1991,7 +1991,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_M16</Name>
            <Coordinates>
                <RightAscension>+274.7083</RightAscension>
@@ -2020,7 +2020,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_CrA</Name>
            <Coordinates>
                <RightAscension>+285.5000</RightAscension>
@@ -2049,7 +2049,7 @@
            </Moon>
            <Priority>8</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC6823</Name>
            <Coordinates>
                <RightAscension>+295.8333</RightAscension>
@@ -2078,7 +2078,7 @@
            </Moon>
            <Priority>7</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC6871_Byurakan1_2</Name>
            <Coordinates>
                <RightAscension>+302.0000</RightAscension>
@@ -2107,7 +2107,7 @@
            </Moon>
            <Priority>4</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_IC4996</Name>
            <Coordinates>
                <RightAscension>+304.1250</RightAscension>
@@ -2136,7 +2136,7 @@
            </Moon>
            <Priority>3</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_BD+404124</Name>
            <Coordinates>
                <RightAscension>+305.1167</RightAscension>
@@ -2165,7 +2165,7 @@
            </Moon>
            <Priority>3</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC6910</Name>
            <Coordinates>
                <RightAscension>+305.7833</RightAscension>
@@ -2194,7 +2194,7 @@
            </Moon>
            <Priority>3</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC6913</Name>
            <Coordinates>
                <RightAscension>+305.9833</RightAscension>
@@ -2223,7 +2223,7 @@
            </Moon>
            <Priority>4</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC6914</Name>
            <Coordinates>
                <RightAscension>+306.1917</RightAscension>
@@ -2252,7 +2252,7 @@
            </Moon>
            <Priority>2</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_PVCep</Name>
            <Coordinates>
                <RightAscension>+311.4750</RightAscension>
@@ -2281,7 +2281,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NAP13</Name>
            <Coordinates>
                <RightAscension>+312.6162</RightAscension>
@@ -2310,7 +2310,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NAP9</Name>
            <Coordinates>
                <RightAscension>+312.7962</RightAscension>
@@ -2339,7 +2339,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NAP5</Name>
            <Coordinates>
                <RightAscension>+312.9750</RightAscension>
@@ -2368,7 +2368,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NAP1</Name>
            <Coordinates>
                <RightAscension>+313.1525</RightAscension>
@@ -2397,7 +2397,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NAP14</Name>
            <Coordinates>
                <RightAscension>+313.3117</RightAscension>
@@ -2426,7 +2426,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NAP10</Name>
            <Coordinates>
                <RightAscension>+313.4854</RightAscension>
@@ -2455,7 +2455,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NAP6</Name>
            <Coordinates>
                <RightAscension>+313.6583</RightAscension>
@@ -2484,7 +2484,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NAP2</Name>
            <Coordinates>
                <RightAscension>+313.8304</RightAscension>
@@ -2513,7 +2513,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NAP15</Name>
            <Coordinates>
                <RightAscension>+314.0071</RightAscension>
@@ -2542,7 +2542,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NAP11</Name>
            <Coordinates>
                <RightAscension>+314.1746</RightAscension>
@@ -2571,7 +2571,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NAP7</Name>
            <Coordinates>
                <RightAscension>+314.3417</RightAscension>
@@ -2600,7 +2600,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NAP3</Name>
            <Coordinates>
                <RightAscension>+314.5083</RightAscension>
@@ -2629,7 +2629,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NAP16</Name>
            <Coordinates>
                <RightAscension>+314.7025</RightAscension>
@@ -2658,7 +2658,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NAP12</Name>
            <Coordinates>
                <RightAscension>+314.8637</RightAscension>
@@ -2687,7 +2687,7 @@
            </Moon>
            <Priority>9</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_L1003</Name>
            <Coordinates>
                <RightAscension>+315.0000</RightAscension>
@@ -2716,7 +2716,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NAP8</Name>
            <Coordinates>
                <RightAscension>+315.0250</RightAscension>
@@ -2745,7 +2745,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NAP4</Name>
            <Coordinates>
                <RightAscension>+315.1862</RightAscension>
@@ -2774,7 +2774,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_L988</Name>
            <Coordinates>
                <RightAscension>+315.8333</RightAscension>
@@ -2803,7 +2803,7 @@
            </Moon>
            <Priority>2</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_IC1396A</Name>
            <Coordinates>
                <RightAscension>+324.0000</RightAscension>
@@ -2832,7 +2832,7 @@
            </Moon>
            <Priority>1</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_Trumpler37</Name>
            <Coordinates>
                <RightAscension>+324.9167</RightAscension>
@@ -2861,7 +2861,7 @@
            </Moon>
            <Priority>6</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_IC5146</Name>
            <Coordinates>
                <RightAscension>+328.3542</RightAscension>
@@ -2890,7 +2890,7 @@
            </Moon>
            <Priority>2</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_CepheusB</Name>
            <Coordinates>
                <RightAscension>+344.2500</RightAscension>
@@ -2919,7 +2919,7 @@
            </Moon>
            <Priority>16</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC869</Name>
            <Coordinates>
                <RightAscension>+34.7417</RightAscension>
@@ -2948,7 +2948,7 @@
            </Moon>
            <Priority>17</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC884</Name>
            <Coordinates>
                <RightAscension>+35.6333</RightAscension>
@@ -2977,7 +2977,7 @@
            </Moon>
            <Priority>19</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC957</Name>
            <Coordinates>
                <RightAscension>+38.3375</RightAscension>
@@ -3006,7 +3006,7 @@
            </Moon>
            <Priority>14</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_Haro6-10</Name>
            <Coordinates>
                <RightAscension>+67.3500</RightAscension>
@@ -3035,7 +3035,7 @@
            </Moon>
            <Priority>19</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC2129</Name>
            <Coordinates>
                <RightAscension>+90.2750</RightAscension>
@@ -3064,7 +3064,7 @@
            </Moon>
            <Priority>15</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC2313_V565Mon</Name>
            <Coordinates>
                <RightAscension>+104.5125</RightAscension>
@@ -3093,7 +3093,7 @@
            </Moon>
            <Priority>14</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_Serpens</Name>
            <Coordinates>
                <RightAscension>+277.5000</RightAscension>
@@ -3122,7 +3122,7 @@
            </Moon>
            <Priority>11</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_IC1396N</Name>
            <Coordinates>
                <RightAscension>+325.1750</RightAscension>
@@ -3151,7 +3151,7 @@
            </Moon>
            <Priority>12</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC7380</Name>
            <Coordinates>
                <RightAscension>+341.8750</RightAscension>
@@ -3180,7 +3180,7 @@
            </Moon>
            <Priority>13</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC7538</Name>
            <Coordinates>
                <RightAscension>+348.4417</RightAscension>
@@ -3209,7 +3209,7 @@
            </Moon>
            <Priority>25</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_25Ori</Name>
            <Coordinates>
                <RightAscension>+81.2292</RightAscension>
@@ -3238,7 +3238,7 @@
            </Moon>
            <Priority>24</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC1960</Name>
            <Coordinates>
                <RightAscension>+84.0750</RightAscension>
@@ -3267,7 +3267,7 @@
            </Moon>
            <Priority>26</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_SigmaOri</Name>
            <Coordinates>
                <RightAscension>+84.6875</RightAscension>
@@ -3296,7 +3296,7 @@
            </Moon>
            <Priority>27</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC2175</Name>
            <Coordinates>
                <RightAscension>+92.4792</RightAscension>
@@ -3325,7 +3325,7 @@
            </Moon>
            <Priority>21</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_RosetteNW</Name>
            <Coordinates>
                <RightAscension>+97.8333</RightAscension>
@@ -3354,7 +3354,7 @@
            </Moon>
            <Priority>22</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_RosetteSE</Name>
            <Coordinates>
                <RightAscension>+98.1667</RightAscension>
@@ -3383,7 +3383,7 @@
            </Moon>
            <Priority>23</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC7129</Name>
            <Coordinates>
                <RightAscension>+325.7500</RightAscension>
@@ -3412,7 +3412,7 @@
            </Moon>
            <Priority>39</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_Stock18</Name>
            <Coordinates>
                <RightAscension>+0.3958</RightAscension>
@@ -3441,7 +3441,7 @@
            </Moon>
            <Priority>33</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_Berkeley59_NGC7822</Name>
            <Coordinates>
                <RightAscension>+0.5583</RightAscension>
@@ -3470,7 +3470,7 @@
            </Moon>
            <Priority>34</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_V633Cas</Name>
            <Coordinates>
                <RightAscension>+2.8333</RightAscension>
@@ -3499,7 +3499,7 @@
            </Moon>
            <Priority>34</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_TMR1_IC2087</Name>
            <Coordinates>
                <RightAscension>+69.9000</RightAscension>
@@ -3528,7 +3528,7 @@
            </Moon>
            <Priority>35</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC2353</Name>
            <Coordinates>
                <RightAscension>+108.6250</RightAscension>
@@ -3557,7 +3557,7 @@
            </Moon>
            <Priority>31</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC2362</Name>
            <Coordinates>
                <RightAscension>+109.6750</RightAscension>
@@ -3586,7 +3586,7 @@
            </Moon>
            <Priority>35</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC2367</Name>
            <Coordinates>
                <RightAscension>+110.0250</RightAscension>
@@ -3615,7 +3615,7 @@
            </Moon>
            <Priority>36</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC2414</Name>
            <Coordinates>
                <RightAscension>+113.3042</RightAscension>
@@ -3644,7 +3644,7 @@
            </Moon>
            <Priority>37</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC2448</Name>
            <Coordinates>
                <RightAscension>+116.1500</RightAscension>
@@ -3673,7 +3673,7 @@
            </Moon>
            <Priority>38</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_B59</Name>
            <Coordinates>
                <RightAscension>+257.8000</RightAscension>
@@ -3702,7 +3702,7 @@
            </Moon>
            <Priority>32</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC7128</Name>
            <Coordinates>
                <RightAscension>+326.0000</RightAscension>
@@ -3731,7 +3731,7 @@
            </Moon>
            <Priority>48</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_CamOB3</Name>
            <Coordinates>
                <RightAscension>+59.8292</RightAscension>
@@ -3760,7 +3760,7 @@
            </Moon>
            <Priority>41</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_J1604</Name>
            <Coordinates>
                <RightAscension>+241.0917</RightAscension>
@@ -3789,7 +3789,7 @@
            </Moon>
            <Priority>47</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_W40</Name>
            <Coordinates>
                <RightAscension>+277.8667</RightAscension>
@@ -3818,7 +3818,7 @@
            </Moon>
            <Priority>46</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_IRAS20050+2720</Name>
            <Coordinates>
                <RightAscension>+301.7792</RightAscension>
@@ -3847,7 +3847,7 @@
            </Moon>
            <Priority>44</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_Berkeley87</Name>
            <Coordinates>
                <RightAscension>+305.4292</RightAscension>
@@ -3876,7 +3876,7 @@
            </Moon>
            <Priority>43</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC7023</Name>
            <Coordinates>
                <RightAscension>+315.4042</RightAscension>
@@ -3905,7 +3905,7 @@
            </Moon>
            <Priority>45</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC7235</Name>
            <Coordinates>
                <RightAscension>+333.1000</RightAscension>
@@ -3934,7 +3934,7 @@
            </Moon>
            <Priority>42</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_LkHa233</Name>
            <Coordinates>
                <RightAscension>+338.6667</RightAscension>
@@ -3963,7 +3963,7 @@
            </Moon>
            <Priority>51</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_L1616</Name>
            <Coordinates>
                <RightAscension>+76.8542</RightAscension>
@@ -3992,7 +3992,7 @@
            </Moon>
            <Priority>52</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_Stock8</Name>
            <Coordinates>
                <RightAscension>+82.0417</RightAscension>
@@ -4021,7 +4021,7 @@
            </Moon>
            <Priority>55</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC1931</Name>
            <Coordinates>
                <RightAscension>+82.8542</RightAscension>
@@ -4050,7 +4050,7 @@
            </Moon>
            <Priority>56</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_OS98-27comglob</Name>
            <Coordinates>
                <RightAscension>+83.3542</RightAscension>
@@ -4079,7 +4079,7 @@
            </Moon>
            <Priority>54</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC7160</Name>
            <Coordinates>
                <RightAscension>+328.4000</RightAscension>
@@ -4108,7 +4108,7 @@
            </Moon>
            <Priority>53</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_L1251</Name>
            <Coordinates>
                <RightAscension>+339.3750</RightAscension>
@@ -4137,7 +4137,7 @@
            </Moon>
            <Priority>61</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_L1340S</Name>
            <Coordinates>
                <RightAscension>+37.4250</RightAscension>
@@ -4166,7 +4166,7 @@
            </Moon>
            <Priority>61</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_L1340N</Name>
            <Coordinates>
                <RightAscension>+37.4250</RightAscension>
@@ -4195,7 +4195,7 @@
            </Moon>
            <Priority>67</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_L1448</Name>
            <Coordinates>
                <RightAscension>+51.2917</RightAscension>
@@ -4224,7 +4224,7 @@
            </Moon>
            <Priority>65</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_L1451-1455</Name>
            <Coordinates>
                <RightAscension>+51.8542</RightAscension>
@@ -4253,7 +4253,7 @@
            </Moon>
            <Priority>66</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_L1495</Name>
            <Coordinates>
                <RightAscension>+63.4583</RightAscension>
@@ -4282,7 +4282,7 @@
            </Moon>
            <Priority>61</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_HVTau</Name>
            <Coordinates>
                <RightAscension>+69.6458</RightAscension>
@@ -4311,7 +4311,7 @@
            </Moon>
            <Priority>68</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC1624</Name>
            <Coordinates>
                <RightAscension>+70.1542</RightAscension>
@@ -4340,7 +4340,7 @@
            </Moon>
            <Priority>63</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_LkHa332</Name>
            <Coordinates>
                <RightAscension>+70.5333</RightAscension>
@@ -4369,7 +4369,7 @@
            </Moon>
            <Priority>64</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_IC2118</Name>
            <Coordinates>
                <RightAscension>+76.7917</RightAscension>
@@ -4398,7 +4398,7 @@
            </Moon>
            <Priority>64</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_RWAur</Name>
            <Coordinates>
                <RightAscension>+76.9542</RightAscension>
@@ -4427,7 +4427,7 @@
            </Moon>
            <Priority>65</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_LambdaOriCenter</Name>
            <Coordinates>
                <RightAscension>+84.1250</RightAscension>
@@ -4456,7 +4456,7 @@
            </Moon>
            <Priority>68</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_OS98-41comglob</Name>
            <Coordinates>
                <RightAscension>+84.6083</RightAscension>
@@ -4485,7 +4485,7 @@
            </Moon>
            <Priority>62</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC2169</Name>
            <Coordinates>
                <RightAscension>+92.1333</RightAscension>
@@ -4514,7 +4514,7 @@
            </Moon>
            <Priority>63</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC2183</Name>
            <Coordinates>
                <RightAscension>+92.7500</RightAscension>
@@ -4543,7 +4543,7 @@
            </Moon>
            <Priority>67</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_Collinder359</Name>
            <Coordinates>
                <RightAscension>+270.1583</RightAscension>
@@ -4572,7 +4572,7 @@
            </Moon>
            <Priority>66</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_L291</Name>
            <Coordinates>
                <RightAscension>+274.2083</RightAscension>
@@ -4601,7 +4601,7 @@
            </Moon>
            <Priority>62</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC6604</Name>
            <Coordinates>
                <RightAscension>+274.5583</RightAscension>
@@ -4630,7 +4630,7 @@
            </Moon>
            <Priority>69</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_Ruprecht141</Name>
            <Coordinates>
                <RightAscension>+277.8250</RightAscension>
@@ -4659,7 +4659,7 @@
            </Moon>
            <Priority>63</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_S140</Name>
            <Coordinates>
                <RightAscension>+334.7500</RightAscension>
@@ -4688,7 +4688,7 @@
            </Moon>
            <Priority>71</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_V347Aur</Name>
            <Coordinates>
                <RightAscension>+74.2375</RightAscension>
@@ -4717,7 +4717,7 @@
            </Moon>
            <Priority>73</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_OS98-35comglob</Name>
            <Coordinates>
                <RightAscension>+84.1292</RightAscension>
@@ -4746,7 +4746,7 @@
            </Moon>
            <Priority>72</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_L43</Name>
            <Coordinates>
                <RightAscension>+248.6208</RightAscension>
@@ -4775,7 +4775,7 @@
            </Moon>
            <Priority>74</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_L889</Name>
            <Coordinates>
                <RightAscension>+306.6875</RightAscension>
@@ -4804,7 +4804,7 @@
            </Moon>
            <Priority>83</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_IC410_NGC1893</Name>
            <Coordinates>
                <RightAscension>+80.6750</RightAscension>
@@ -4833,7 +4833,7 @@
            </Moon>
            <Priority>81</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC2024</Name>
            <Coordinates>
                <RightAscension>+85.4333</RightAscension>
@@ -4862,7 +4862,7 @@
            </Moon>
            <Priority>82</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_L1228</Name>
            <Coordinates>
                <RightAscension>+314.3750</RightAscension>
@@ -4891,7 +4891,7 @@
            </Moon>
            <Priority>93</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_S284</Name>
            <Coordinates>
                <RightAscension>+101.2500</RightAscension>
@@ -4920,7 +4920,7 @@
            </Moon>
            <Priority>95</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_M17</Name>
            <Coordinates>
                <RightAscension>+275.2083</RightAscension>
@@ -4949,7 +4949,7 @@
            </Moon>
            <Priority>92</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC7419</Name>
            <Coordinates>
                <RightAscension>+343.5750</RightAscension>
@@ -4978,7 +4978,7 @@
            </Moon>
            <Priority>103</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_Collinder121</Name>
            <Coordinates>
                <RightAscension>+103.6750</RightAscension>
@@ -5007,7 +5007,7 @@
            </Moon>
            <Priority>102</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_Ruprecht53</Name>
            <Coordinates>
                <RightAscension>+122.7000</RightAscension>
@@ -5036,7 +5036,7 @@
            </Moon>
            <Priority>101</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_King12</Name>
            <Coordinates>
                <RightAscension>+359.6000</RightAscension>
@@ -5065,7 +5065,7 @@
            </Moon>
            <Priority>111</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC2023_Horsehead</Name>
            <Coordinates>
                <RightAscension>+85.3500</RightAscension>
@@ -5094,7 +5094,7 @@
            </Moon>
            <Priority>112</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_S301</Name>
            <Coordinates>
                <RightAscension>+107.4750</RightAscension>
@@ -5123,7 +5123,7 @@
            </Moon>
            <Priority>112</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_King21</Name>
            <Coordinates>
                <RightAscension>+357.4750</RightAscension>
@@ -5152,7 +5152,7 @@
            </Moon>
            <Priority>111</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_ScoOB4comglob</Name>
            <Coordinates>
                <RightAscension>+259.7292</RightAscension>
@@ -5181,7 +5181,7 @@
            </Moon>
            <Priority>124</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_L1273</Name>
            <Coordinates>
                <RightAscension>+0.9958</RightAscension>
@@ -5210,7 +5210,7 @@
            </Moon>
            <Priority>121</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_RNO1BC</Name>
            <Coordinates>
                <RightAscension>+9.1917</RightAscension>
@@ -5239,7 +5239,7 @@
            </Moon>
            <Priority>122</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_NGC281</Name>
            <Coordinates>
                <RightAscension>+13.2083</RightAscension>
@@ -5268,7 +5268,7 @@
            </Moon>
            <Priority>123</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_LkHa326</Name>
            <Coordinates>
                <RightAscension>+52.6792</RightAscension>
@@ -5297,7 +5297,7 @@
            </Moon>
            <Priority>125</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_Barnard3</Name>
            <Coordinates>
                <RightAscension>+55.1250</RightAscension>
@@ -5326,7 +5326,7 @@
            </Moon>
            <Priority>126</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_L1642</Name>
            <Coordinates>
                <RightAscension>+68.7083</RightAscension>
@@ -5355,7 +5355,7 @@
            </Moon>
            <Priority>127</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_CygOB2</Name>
            <Coordinates>
                <RightAscension>+308.2958</RightAscension>
@@ -5384,7 +5384,7 @@
            </Moon>
            <Priority>123</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_Markarian50</Name>
            <Coordinates>
                <RightAscension>+348.8125</RightAscension>
@@ -5413,7 +5413,7 @@
            </Moon>
            <Priority>121</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_Berkeley86</Name>
            <Coordinates>
                <RightAscension>+305.0500</RightAscension>
@@ -5442,7 +5442,7 @@
            </Moon>
            <Priority>122</Priority>
        </Schedule>
-       <Target count="3" interval="0" tolerance="0">
+       <Target count="1" interval="0" tolerance="0">
            <Name>V20_Haffner15</Name>
            <Coordinates>
                <RightAscension>+116.3750</RightAscension>
