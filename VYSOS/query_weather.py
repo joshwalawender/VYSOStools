@@ -45,12 +45,18 @@ def get_weather(logger, robust=True):
                       "safe": {'1': True, '0': False}[result['safe']],
                      }
 
-        threshold = 30
+        threshold = 60
         age = (weatherdoc["querydate"] - weatherdoc["date"]).total_seconds()
         logger.debug('Data age = {:.1f} seconds'.format(age))
         if age > threshold:
-            logger.warning('Age of weather data ({:.1f}) is greater than {:.0f} seconds'.format(
-                           age, threshold))
+            logger.warning(f'Weather data age ({age:.0f}) > {threshold:.0f} s')
+            now_str = querydate.strftime('%Y%m%dUT %H:%M:%S')
+            today_str = querydate.strftime('%Y%m%dUT')
+            alert_file = f"~/Dropbox/VYSOSAlerts/WeatherData_{today_str}.txt"
+            with open(os.path.expanduser(alert_file), 'a') as FO:
+                FO.write(f"At {now_str} weather data is {age:.0f} s old\n")
+#             with open(os.path.expanduser(alert_file), 'r') as FO:
+#                 lines = FO.read().split('\n')
 
         logger.info('Saving weather document')
         logger.info('Connecting to mongoDB')
