@@ -129,7 +129,7 @@ def copy_data(date, telescope, verbose=False):
                 if not exists(dest_file) and not exists(dest_fz):
                     to_dest=True
                 elif exists(dest_file) and not exists(dest_fz):
-                    logger.info('  Compressing existing file on drobo')
+                    logger.info('  Compressing existing file on MLOData')
                     subprocess.call(['fpack', dest_file])
                     if exists(dest_fz):
                         os.remove(dest_file)
@@ -139,7 +139,7 @@ def copy_data(date, telescope, verbose=False):
                 if not exists(copy_file) and not exists(copy_fz):
                     to_ext=True
                 elif exists(copy_file) and not exists(copy_fz):
-                    logger.info('  Compressing existing file on ext')
+                    logger.info('  Compressing existing file on DataCopy')
                     subprocess.call(['fpack', copy_file])
                     if exists(copy_fz):
                         os.remove(copy_file)
@@ -148,13 +148,13 @@ def copy_data(date, telescope, verbose=False):
                 with fits.open(file, checksum=True) as hdul:
                     hdul[0].add_checksum()
                     if to_dest:
-                        logger.info('  File does not exist on drobo.  Writing compressed file.')
+                        logger.info('  File does not exist on MLOData.  Writing compressed file.')
                         hdul.writeto(dest_file, checksum=True)
                         subprocess.call(['fpack', dest_file])
                         if exists(dest_fz):
                             os.remove(dest_file)
                     if to_ext:
-                        logger.info('  File does not exist on copy.  Writing compressed file.')
+                        logger.info('  File does not exist on DataCopy.  Writing compressed file.')
                         hdul.writeto(copy_file, checksum=True)
                         subprocess.call(['fpack', copy_file])
                         if exists(copy_fz):
@@ -181,10 +181,10 @@ def copy_data(date, telescope, verbose=False):
             copy_file = join(copy_path_logs, filename)
 
             if not exists(dest_file):
-                logger.info('Copying {} to drobo'.format(file))
+                logger.info('Copying {} to MLOData'.format(file))
                 shutil.copy2(file, dest_file)
             if not exists(copy_file):
-                logger.info('Copying {} to external'.format(file))
+                logger.info('Copying {} to DataCopy'.format(file))
                 shutil.copy2(file, dest_file)
             if args.delete and exists(copy_path) and exists(dest_path):
                 logger.info('Deleting {}'.format(file))
