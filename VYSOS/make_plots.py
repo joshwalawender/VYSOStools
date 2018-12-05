@@ -162,30 +162,30 @@ def plot_weather(date=None, verbose=False):
                 ## Plot data
                 if label in weather_limits.keys():
                     t_axes.plot_date(time, data[i], 'ko', label=label,
-                                     markersize=2, markeredgewidth=0,
+                                     markersize=(lr+1)*2, markeredgewidth=0,
                                      drawstyle="default")
                     if len(wsafe) > 0:
                         t_axes.plot_date(time[wsafe], data[i][wsafe], 'go',
-                                         markersize=2, markeredgewidth=0,
+                                         markersize=(lr+1)*2, markeredgewidth=0,
                                          drawstyle="default")
                     if len(wwarn) > 0:
                         t_axes.plot_date(time[wwarn], data[i][wwarn], 'yo',
-                                         markersize=2, markeredgewidth=0,
+                                         markersize=(lr+1)*2, markeredgewidth=0,
                                          drawstyle="default")
                     if len(wunsafe) > 0:
                         t_axes.plot_date(time[wunsafe], data[i][wunsafe], 'ro',
-                                         markersize=2, markeredgewidth=0,
+                                         markersize=(lr+1)*2, markeredgewidth=0,
                                          drawstyle="default")
 
                 else:
                     t_axes.plot_date(time, data[i], 'ko', label=label,
-                                     markersize=2, markeredgewidth=0,
+                                     markersize=4, markeredgewidth=0,
                                      drawstyle="default")
             else:
                 plt.fill_between(time, -1, data[i], where=np.array(data[i])>0, facecolor='green')
                 plt.fill_between(time, -1, data[i], where=np.array(data[i])<=0, facecolor='red')
             if label == 'Wind (kph)':
-                matime, wind_mavg = moving_averagexy(time, data[i], 9)
+                matime, wind_mavg = moving_averagexy(time, data[i], 5)
                 t_axes.plot_date(matime, wind_mavg, 'k-')
             if lr==0:
                 if i==0:
