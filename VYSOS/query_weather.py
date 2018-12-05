@@ -117,4 +117,4 @@ if __name__ == '__main__':
     while True:
         get_weather(logger, robust=not args.notrobust)
         logging.shutdown()
-        sleep(20)
+        sleep(60)
