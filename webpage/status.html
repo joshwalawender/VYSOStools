@@ -44,7 +44,7 @@
         <th style="width: 150px; text-align: left;">
         {% if currentweather is None %}
             <font color="red">None</font>
-        {% elif (now[1] - currentweather['date']).total_seconds() < 60 %}
+        {% elif (now[1] - currentweather['date']).total_seconds() < 120 %}
             {% if currentweather['safe'] == True %} <font color="green">Safe</font>
             {% elif currentweather['safe'] == False %} <font color="red">Unsafe</font>
             {% else %} <font color="red">Unknown</font> {% end %}
