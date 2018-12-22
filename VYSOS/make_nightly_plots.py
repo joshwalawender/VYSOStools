@@ -170,6 +170,8 @@ def make_plots(date_string, telescope, l):
                      markersize=2, markeredgewidth=0,
                      label="Truss Temp")
 
+    plt.xlim(plot_start, plot_end)
+    plt.ylim(28,87)
     t.xaxis.set_major_locator(hours)
     t.xaxis.set_major_formatter(hours_fmt)
 
@@ -191,8 +193,6 @@ def make_plots(date_string, telescope, l):
 
     plt.legend(loc='best', prop={'size':10})
     plt.ylabel("Temperature (F)")
-    plt.xlim(plot_start, plot_end)
-    plt.ylim(28,87)
     plt.grid(which='major', color='k')
 
     ##------------------------------------------------------------------------
@@ -225,11 +225,11 @@ def make_plots(date_string, telescope, l):
                          markersize=2, markeredgewidth=0,
                          label="Truss")
         d.plot_date(status['date'], [0]*len(status), 'k-')
+        plt.xlim(plot_start, plot_end)
+        plt.ylim(-7,17)
         d.xaxis.set_major_locator(hours)
         d.xaxis.set_major_formatter(hours_fmt)
         d.xaxis.set_ticklabels([])
-        plt.xlim(plot_start, plot_end)
-        plt.ylim(-7,17)
         plt.ylabel("Difference (F)")
         plt.grid(which='major', color='k')
 #         plt.legend(loc='best', prop={'size':10})
@@ -243,11 +243,11 @@ def make_plots(date_string, telescope, l):
         f = plt.axes(plot_positions[2][0])
         f.plot_date(status['date'], status['fan_speed'], 'b-', \
                              label="Mirror Fans")
+        plt.xlim(plot_start, plot_end)
+        plt.ylim(-10,110)
         f.xaxis.set_major_locator(hours)
         f.xaxis.set_major_formatter(hours_fmt)
         f.xaxis.set_ticklabels([])
-        plt.xlim(plot_start, plot_end)
-        plt.ylim(-10,110)
         plt.yticks(np.linspace(0,100,3,endpoint=True))
         plt.ylabel('Fan (%)')
         plt.grid(which='major', color='k')
@@ -263,12 +263,12 @@ def make_plots(date_string, telescope, l):
     f.plot_date(images['date'], fwhm, 'ko',
                      markersize=3, markeredgewidth=0,
                      label="FWHM")
+    plt.xlim(plot_start, plot_end)
+    plt.ylim(0,10)
     f.xaxis.set_major_locator(hours)
     f.xaxis.set_major_formatter(hours_fmt)
     f.xaxis.set_ticklabels([])
     plt.ylabel(f"FWHM (arcsec)")
-    plt.xlim(plot_start, plot_end)
-    plt.ylim(0,10)
     plt.grid(which='major', color='k')
 
     ##------------------------------------------------------------------------
@@ -279,11 +279,11 @@ def make_plots(date_string, telescope, l):
     e.plot_date(images['date'], images['ellipticity'], 'ko',
                      markersize=3, markeredgewidth=0,
                      label="ellipticity")
+    plt.xlim(plot_start, plot_end)
+    plt.ylim(0.95,1.75)
     e.xaxis.set_major_locator(hours)
     e.xaxis.set_major_formatter(hours_fmt)
     plt.ylabel(f"ellipticity")
-    plt.xlim(plot_start, plot_end)
-    plt.ylim(0.95,1.75)
     plt.grid(which='major', color='k')
 
     ##------------------------------------------------------------------------
@@ -305,6 +305,8 @@ def make_plots(date_string, telescope, l):
 #     plt.fill_between(weather['date'], -140, weather['clouds'],
 #                      where=weather['clouds']>weather_limits['Cloudiness (C)'][1],
 #                      color='red', alpha=0.8)
+    plt.xlim(plot_start, plot_end)
+    plt.ylim(-130,10)
     c.xaxis.set_major_locator(hours)
     c.xaxis.set_major_formatter(hours_fmt)
 
@@ -325,8 +327,6 @@ def make_plots(date_string, telescope, l):
                 ymin=0, ymax=1, color='blue', alpha=0.1)
 
     plt.ylabel("Cloudiness (F)")
-    plt.xlim(plot_start, plot_end)
-    plt.ylim(-130,10)
     plt.grid(which='major', color='k')
 
     ## Overplot Moon Up Time
@@ -378,12 +378,12 @@ def make_plots(date_string, telescope, l):
 #     plt.fill_between(weather['date'], -140, weather['clouds'],
 #                      where=weather['clouds']>weather_limits['Cloudiness (C)'][1],
 #                      color='red', alpha=0.8)
+    plt.xlim(plot_start, plot_end)
+    plt.ylim(-100,3000)
     r.xaxis.set_major_locator(hours)
     r.xaxis.set_major_formatter(hours_fmt)
     r.xaxis.set_ticklabels([])
     plt.ylabel("Rain")
-    plt.xlim(plot_start, plot_end)
-    plt.ylim(-100,3000)
     plt.grid(which='major', color='k')
 
     ##------------------------------------------------------------------------
@@ -404,12 +404,12 @@ def make_plots(date_string, telescope, l):
 #     plt.fill_between(weather['date'], -140, weather['clouds'],
 #                      where=weather['clouds']>weather_limits['Cloudiness (C)'][1],
 #                      color='red', alpha=0.8)
+    plt.xlim(plot_start, plot_end)
+    plt.ylim(-5,150)
     w.xaxis.set_major_locator(hours)
     w.xaxis.set_major_formatter(hours_fmt)
     w.xaxis.set_ticklabels([])
     plt.ylabel("Wind (kph)")
-    plt.xlim(plot_start, plot_end)
-    plt.ylim(-5,150)
     plt.grid(which='major', color='k')
 
 
