@@ -293,20 +293,26 @@ def make_plots(date_string, telescope, l):
     c = plt.axes(plot_positions[0][1])
     plt.title(f"Cloudiness")
     l.debug('  Adding sky temp to plot')
-    c.plot_date(weather['date'], weather['clouds']*9/5+32, 'k-',
-                     markersize=2, markeredgewidth=0,
-                     label="Sky Temp")
-#     plt.fill_between(weather['date'], -140, weather['clouds'],
-#                      where=weather['clouds']<weather_limits['Cloudiness (C)'][0],
-#                      color='green', alpha=0.5)
-#     plt.fill_between(weather['date'], -140, weather['clouds'],
-#                      where=weather['clouds']<weather_limits['Cloudiness (C)'][1],
-#                      color='yellow', alpha=0.8)
-#     plt.fill_between(weather['date'], -140, weather['clouds'],
-#                      where=weather['clouds']>weather_limits['Cloudiness (C)'][1],
-#                      color='red', alpha=0.8)
+
+    wsafe = np.where(weather['clouds'] < weather_limits['Cloudiness (C)'][0])[0]
+    wwarn = np.where(np.array(weather['clouds'] >= weather_limits['Cloudiness (C)'][0])\
+                     & np.array(weather['clouds'] < weather_limits['Cloudiness (C)'][1]) )[0]
+    wunsafe = np.where(weather['clouds'] >= weather_limits['Cloudiness (C)'][1])[0]
+    if len(wsafe) > 0:
+        c.plot_date(weather['date'][wsafe], weather['clouds'][wsafe], 'go',
+                         markersize=2, markeredgewidth=0,
+                         drawstyle="default")
+    if len(wwarn) > 0:
+        c.plot_date(weather['date'][wwarn], weather['clouds'][wwarn], 'yo',
+                         markersize=2, markeredgewidth=0,
+                         drawstyle="default")
+    if len(wunsafe) > 0:
+        c.plot_date(weather['date'][wunsafe], weather['clouds'][wunsafe], 'ro',
+                         markersize=2, markeredgewidth=0,
+                         drawstyle="default")
+
     plt.xlim(plot_start, plot_end)
-    plt.ylim(-130,10)
+    plt.ylim(-55,15)
     c.xaxis.set_major_locator(hours)
     c.xaxis.set_major_formatter(hours_fmt)
 
@@ -326,7 +332,7 @@ def make_plots(date_string, telescope, l):
     plt.axvspan(morning_civil_twilight, sunrise,
                 ymin=0, ymax=1, color='blue', alpha=0.1)
 
-    plt.ylabel("Cloudiness (F)")
+    plt.ylabel("Cloudiness (C)")
     plt.grid(which='major', color='k')
 
     ## Overplot Moon Up Time
@@ -366,18 +372,24 @@ def make_plots(date_string, telescope, l):
     ##------------------------------------------------------------------------
     l.info('Adding rain plot')
     r = plt.axes(plot_positions[1][1])
-    r.plot_date(weather['date'], weather['rain'], 'k-',
-                     markersize=2, markeredgewidth=0,
-                     label="Rain")
-#     plt.fill_between(weather['date'], -140, weather['clouds'],
-#                      where=weather['clouds']<weather_limits['Cloudiness (C)'][0],
-#                      color='green', alpha=0.5)
-#     plt.fill_between(weather['date'], -140, weather['clouds'],
-#                      where=weather['clouds']<weather_limits['Cloudiness (C)'][1],
-#                      color='yellow', alpha=0.8)
-#     plt.fill_between(weather['date'], -140, weather['clouds'],
-#                      where=weather['clouds']>weather_limits['Cloudiness (C)'][1],
-#                      color='red', alpha=0.8)
+
+    wsafe = np.where(weather['rain'] > weather_limits['Rain'][0])[0]
+    wwarn = np.where(np.array(weather['rain'] <= weather_limits['Rain'][0])\
+                     & np.array(weather['rain'] > weather_limits['Rain'][1]) )[0]
+    wunsafe = np.where(weather['rain'] <= weather_limits['Rain'][1])[0]
+    if len(wsafe) > 0:
+        r.plot_date(weather['date'][wsafe], weather['rain'][wsafe], 'go',
+                         markersize=2, markeredgewidth=0,
+                         drawstyle="default")
+    if len(wwarn) > 0:
+        r.plot_date(weather['date'][wwarn], weather['rain'][wwarn], 'yo',
+                         markersize=2, markeredgewidth=0,
+                         drawstyle="default")
+    if len(wunsafe) > 0:
+        r.plot_date(weather['date'][wunsafe], weather['rain'][wunsafe], 'ro',
+                         markersize=2, markeredgewidth=0,
+                         drawstyle="default")
+
     plt.xlim(plot_start, plot_end)
     plt.ylim(-100,3000)
     r.xaxis.set_major_locator(hours)
@@ -392,27 +404,32 @@ def make_plots(date_string, telescope, l):
     l.info('Adding wind speed plot')
     w = plt.axes(plot_positions[2][1])
 
-    w.plot_date(weather['date'], weather['wind'], 'k-',
-                     markersize=2, markeredgewidth=0,
-                     label="Wind")
-#     plt.fill_between(weather['date'], -140, weather['clouds'],
-#                      where=weather['clouds']<weather_limits['Cloudiness (C)'][0],
-#                      color='green', alpha=0.5)
-#     plt.fill_between(weather['date'], -140, weather['clouds'],
-#                      where=weather['clouds']<weather_limits['Cloudiness (C)'][1],
-#                      color='yellow', alpha=0.8)
-#     plt.fill_between(weather['date'], -140, weather['clouds'],
-#                      where=weather['clouds']>weather_limits['Cloudiness (C)'][1],
-#                      color='red', alpha=0.8)
+    wsafe = np.where(weather['wind'] < weather_limits['Wind (kph)'][0])[0]
+    wwarn = np.where(np.array(weather['wind'] >= weather_limits['Wind (kph)'][0])\
+                     & np.array(weather['wind'] < weather_limits['Wind (kph)'][1]) )[0]
+    wunsafe = np.where(weather['wind'] >= weather_limits['Wind (kph)'][1])[0]
+    if len(wsafe) > 0:
+        w.plot_date(weather['date'][wsafe], weather['wind'][wsafe], 'go',
+                         markersize=2, markeredgewidth=0,
+                         drawstyle="default")
+    if len(wwarn) > 0:
+        w.plot_date(weather['date'][wwarn], weather['wind'][wwarn], 'yo',
+                         markersize=2, markeredgewidth=0,
+                         drawstyle="default")
+    if len(wunsafe) > 0:
+        w.plot_date(weather['date'][wunsafe], weather['wind'][wunsafe], 'ro',
+                         markersize=2, markeredgewidth=0,
+                         drawstyle="default")
+    windlim_data = list(weather['wind']*1.1)
+    windlim_data.append(65) # minimum limit on plot is 65
+
     plt.xlim(plot_start, plot_end)
-    plt.ylim(-5,150)
+    plt.ylim(-2,max(windlim_data))
     w.xaxis.set_major_locator(hours)
     w.xaxis.set_major_formatter(hours_fmt)
-    w.xaxis.set_ticklabels([])
+#     w.xaxis.set_ticklabels([])
     plt.ylabel("Wind (kph)")
     plt.grid(which='major', color='k')
-
-
 
     l.info('Saving figure: {}'.format(night_plot_file))
     plt.savefig(night_plot_file, dpi=dpi, bbox_inches='tight', pad_inches=0.10)
