@@ -119,6 +119,8 @@ def make_plots(date_string, telescope, l):
     weather = query_mongo(db, 'weather', {'date': {'$gt':start, '$lt':end} } )
     l.info(f"  Found {len(weather)} weather entries")
 
+    if len(images) == 0 and len(status) == 0:
+        return
 
     ##------------------------------------------------------------------------
     ## Make Nightly Sumamry Plot (show only night time)
@@ -150,12 +152,12 @@ def make_plots(date_string, telescope, l):
                      label="Outside Temp")
 
     l.debug('  Adding focuser temp to plot')
-    t.plot_date(status['date'], status['focuser_temperature']*9/5+32, 'r-',
+    t.plot_date(status['date'], status['focuser_temperature']*9/5+32, 'y-',
                      markersize=2, markeredgewidth=0,
                      label="Focuser Temp")
 
     l.debug('  Adding primary temp to plot')
-    t.plot_date(status['date'], status['primary_temperature']*9/5+32, 'b-',
+    t.plot_date(status['date'], status['primary_temperature']*9/5+32, 'r-',
                      markersize=2, markeredgewidth=0,
                      label="Primary Temp")
 
@@ -209,7 +211,7 @@ def make_plots(date_string, telescope, l):
         xs = [(x-status['date'][0]).total_seconds() for x in status['date']]
 
         pdiff = status['primary_temperature'] - outside(xs)
-        d.plot_date(status['date'], 9/5*pdiff, 'b-',
+        d.plot_date(status['date'], 9/5*pdiff, 'r-',
                          markersize=2, markeredgewidth=0,
                          label="Primary")
         sdiff = status['secondary_temperature'] - outside(xs)
@@ -217,7 +219,7 @@ def make_plots(date_string, telescope, l):
                          markersize=2, markeredgewidth=0,
                          label="Secondary")
         fdiff = status['focuser_temperature'] - outside(xs)
-        d.plot_date(status['date'], 9/5*fdiff, 'r-',
+        d.plot_date(status['date'], 9/5*fdiff, 'y-',
                          markersize=2, markeredgewidth=0,
                          label="Focuser")
         tdiff = status['truss_temperature'] - outside(xs)
@@ -436,6 +438,25 @@ def make_plots(date_string, telescope, l):
     l.info('Done.')
 
 
+def loop_over_nights():
+    date = dt(2018, 1, 1, 1, 0, 0, 0)
+    end = dt(2018, 12, 31, 2, 0, 0, 0)
+
+    ##-------------------------------------------------------------------------
+    ## Create Logger Object
+    ##-------------------------------------------------------------------------
+    l = logging.getLogger('make_nightly_plots')
+    l.setLevel(logging.DEBUG)
+    ## Set up console output
+    LogConsoleHandler = logging.StreamHandler()
+    LogConsoleHandler.setLevel(logging.INFO)
+    LogFormat = logging.Formatter('%(asctime)23s %(levelname)8s: %(message)s')
+    LogConsoleHandler.setFormatter(LogFormat)
+    l.addHandler(LogConsoleHandler)
+
+    while date < end:
+        make_plots(date.strftime('%Y%m%dUT'), 'V20', l)
+        date += tdelta(1,0)
 
 
 def main():
