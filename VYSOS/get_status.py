@@ -196,6 +196,9 @@ def control_by_web(status, logger):
     status['dome_temperature'] = temp1
     status['fan_state'] = r1state
     status['fan_enable'] = r2state
+    logger.info(f'  Dome Temperature = {.1f}')
+    logger.info(f'  Fan State = {r1state}')
+    logger.info(f'  Fan Enable = {r2state}')
 
     return status
 
