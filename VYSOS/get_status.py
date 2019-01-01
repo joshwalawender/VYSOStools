@@ -216,10 +216,6 @@ def get_status_and_log(telescope, logger):
     status = get_focuser_info(status, logger)
     if telescope == 'V20':
         status = get_RCOS_info(status, logger)
-        try:
-            status = control_by_web(status, logger)
-        except:
-            pass
 
     ##-------------------------------------------------------------------------
     ## Write to Mongo
