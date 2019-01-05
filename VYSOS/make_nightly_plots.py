@@ -468,7 +468,10 @@ def main():
     ## add flags
     parser.add_argument("-v", "--verbose",
         action="store_true", dest="verbose",
-        default=False, help="Be verbose! (default = False)")
+        default=False, help="Be verbose! (logs >= DEBUG)")
+    parser.add_argument("-q", "--quiet",
+        action="store_true", dest="quiet",
+        default=False, help="Be quiet! (No logs < WARNING))")
     parser.add_argument("-l", "--loop",
         action="store_true", dest="loop",
         default=False, help="Make plots in continuous loop")
@@ -493,6 +496,8 @@ def main():
     LogConsoleHandler = logging.StreamHandler()
     if args.verbose:
         LogConsoleHandler.setLevel(logging.DEBUG)
+    elif args.quiet:
+        LogConsoleHandler.setLevel(logging.WARNING)
     else:
         LogConsoleHandler.setLevel(logging.INFO)
     LogFormat = logging.Formatter('%(asctime)23s %(levelname)8s: %(message)s')
