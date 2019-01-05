@@ -48,15 +48,23 @@ def get_image_list(telescope, date, flats=False, cals=False):
     disk_array_path = os.path.join('/', 'Volumes', 'MLOData', f'{telescope}',\
                                    'Images', f'{date[0:4]}', f'{date}')
     if flats is True:
+        descriptor = 'flats '
+        path = os.path.join(path, 'AutoFlat')
+        disk_array_path = os.path.join(disk_array_path, 'AutoFlat')
         filename_pattern = f'AutoFlat*fts*'
     elif cals is True:
-        filename_pattern = f'Cal*fts*'
+        descriptor = 'cals '
+        path = os.path.join(path, 'Calibration')
+        disk_array_path = os.path.join(disk_array_path, 'Calibration')
+        filename_pattern = f'[BD][ia][ar][sk]*fts*'
     else:
+        descriptor = ''
         filename_pattern = f'{telescope}*fts*'
 
     image_list = glob.glob(os.path.join(path, filename_pattern))
     image_list.extend(glob.glob(os.path.join(disk_array_path, filename_pattern)))
-
+    tlog.app_log.info(f"Got {descriptor}image list for {telescope} {date}")
+#     tlog.app_log.info(f"{image_list}")
     return image_list
 
 
@@ -216,6 +224,8 @@ class Status(RequestHandler):
                     v20_images = get_image_list('V20', link_date_string),\
                     v5_flats = get_image_list('V5', link_date_string, flats=True),\
                     v20_flats = get_image_list('V20', link_date_string, flats=True),\
+                    v5_cals = get_image_list('V5', link_date_string, cals=True),\
+                    v20_cals = get_image_list('V20', link_date_string, cals=True),\
                     cctv=cctv,
                     currentweather=cw,
                     weather_limits=weather_limits,
