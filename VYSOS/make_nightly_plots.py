@@ -98,7 +98,7 @@ def make_plots(date_string, telescope, l):
     morning_astronomical_twilight = Observatory.next_rising(ephem.Sun(),
                                     use_center=True).datetime()
 
-    plot_start = sunset - tdelta(0, 1800)
+    plot_start = sunset - tdelta(0, 1.5*60*60)
     plot_end = sunrise + tdelta(0, 1800)
 
     ##------------------------------------------------------------------------
