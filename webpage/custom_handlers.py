@@ -42,19 +42,21 @@ def get_status(telescope, db):
 ##-------------------------------------------------------------------------
 ## Check for Images
 ##-------------------------------------------------------------------------
-def get_image_list(telescope, date):
-#     path = os.path.join('/Volumes/Data_{}/Images/{}'.format(telescope, date))
-    path = os.path.join('/', 'Users', 'vysosuser', f'{telescope}Data', 'Images', f'{date}')
-    image_list = glob.glob(os.path.join(path, '{}*fts'.format(telescope)))
-    return image_list
+def get_image_list(telescope, date, flats=False, cals=False):
+    path = os.path.join('/', 'Users', 'vysosuser', f'{telescope}Data',\
+                        'Images', f'{date}')
+    disk_array_path = os.path.join('/', 'Volumes', 'MLOData', f'{telescope}',\
+                                   'Images', f'{date[0:4]}', f'{date}')
+    if flats is True:
+        filename_pattern = f'AutoFlat*fts*'
+    elif cals is True:
+        filename_pattern = f'Cal*fts*'
+    else:
+        filename_pattern = f'{telescope}*fts*'
 
-##-------------------------------------------------------------------------
-## Check for Flats
-##-------------------------------------------------------------------------
-def get_flat_list(telescope, date):
-#     path = os.path.join('/Volumes/Data_{}/Images/{}/AutoFlat'.format(telescope, date))
-    path = os.path.join('/', 'Users', 'vysosuser', f'{telescope}Data', 'Images', f'{date}', 'AutoFlat')
-    image_list = glob.glob(os.path.join(path, 'AutoFlat*fts'))
+    image_list = glob.glob(os.path.join(path, filename_pattern))
+    image_list.extend(glob.glob(os.path.join(disk_array_path, filename_pattern)))
+
     return image_list
 
 
@@ -192,14 +194,10 @@ class Status(RequestHandler):
         ##---------------------------------------------------------------------
         ## Render
         ##---------------------------------------------------------------------
-        if nowut.hour < 6 and sun['now'] == 'day' and (sun['set']-nowut).total_seconds() >= 60.*60.:
+        link_date_string = nowut.strftime('%Y%m%dUT')
+        files_string = "Tonight's Files"
+        if nowut.hour < 3:
             link_date_string = (nowut - tdelta(1,0)).strftime('%Y%m%dUT')
-            files_string = "Last Night's Files"
-        elif sun['now'] != 'day':
-            link_date_string = nowut.strftime('%Y%m%dUT')
-            files_string = "Tonight's Files"
-        else:
-            link_date_string = nowut.strftime('%Y%m%dUT')
             files_string = "Last Night's Files"
 
         tlog.app_log.info('  Rendering Status')
@@ -216,8 +214,8 @@ class Status(RequestHandler):
                     files_string = files_string,\
                     v5_images = get_image_list('V5', link_date_string),\
                     v20_images = get_image_list('V20', link_date_string),\
-                    v5_flats = get_flat_list('V5', link_date_string),\
-                    v20_flats = get_flat_list('V20', link_date_string),\
+                    v5_flats = get_image_list('V5', link_date_string, flats=True),\
+                    v20_flats = get_image_list('V20', link_date_string, flats=True),\
                     cctv=cctv,
                     currentweather=cw,
                     weather_limits=weather_limits,
