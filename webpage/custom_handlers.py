@@ -56,7 +56,7 @@ def get_image_list(telescope, date, flats=False, cals=False):
         descriptor = 'cals '
         path = os.path.join(path, 'Calibration')
         disk_array_path = os.path.join(disk_array_path, 'Calibration')
-        filename_pattern = f'[BD][ia][ar][sk]*fts*'
+        filename_pattern = '*fts*'
     else:
         descriptor = ''
         filename_pattern = f'{telescope}*fts*'
