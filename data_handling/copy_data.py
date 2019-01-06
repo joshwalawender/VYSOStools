@@ -100,13 +100,13 @@ def copy_data(date, tel, verbose=False, run=True):
                                     hdul[0].add_checksum()
                                     hdul.writeto(dest_file, checksum=True)
                         if exists(dest_file) and not exists(dest_fz):
-                            logger.info(f'    Compressing file: {dest_file}')
+                            logger.debug(f'    Compressing file: {dest_file}')
                             if run:
                                 subprocess.call(['fpack', dest_file])
                                 if exists(dest_fz):
                                     os.remove(dest_file)
                         if exists(dest_fz):
-                            logger.info(f'    File {os.path.split(dest_fz)[1]} exists on {dest_path}')
+                            logger.debug(f'    File {os.path.split(dest_fz)[1]} exists on {dest_path}')
                             if run:
                                 failcheck = bool(subprocess.call(['fitscheck', dest_fz]))
                                 if failcheck is True:
