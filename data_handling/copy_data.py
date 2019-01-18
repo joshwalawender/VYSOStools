@@ -83,7 +83,12 @@ def copy_data(date, tel, verbose=False, run=True):
                     dest_file = join(destination, file)
                     logger.info(f"  Checking Destination: {destination}")
                     if not os.path.exists(destination):
-                        if run: os.mkdir(destination)
+                        try:
+                            if run: os.mkdir(destination)
+                        except:
+                            if run:
+                                os.mkdir(os.path.split(destination)[0])
+                                os.mkdir(destination)
                     if run: assert os.path.exists(destination)
                     fileext = os.path.splitext(file)[1]
                     
