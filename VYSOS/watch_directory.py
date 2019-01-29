@@ -106,6 +106,8 @@ def main():
             file = images_to_analyze[filetime]
             try:
                 measure_image(os.path.join(DataPath, file), nographics=True)
+            except OSError:
+                raise
             except:
                 logger.warning('  MeasureImage failed on {}.'.format(file))
                 logger.error(sys.exc_info())
