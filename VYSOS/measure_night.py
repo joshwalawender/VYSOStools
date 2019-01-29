@@ -45,7 +45,10 @@ def measure_night(date=None, telescope=None):
         files.extend(glob.glob(os.path.join(location, '*.fts.fz')))
         print(f"Found {len(files):d} files in images directory")
         for file in files:
-            measure_image(file, nographics=True)
+            try:
+                measure_image(file, nographics=True)
+            except:
+                print(f"Measure image failed on {file}")
 
 
 if __name__ == "__main__":
