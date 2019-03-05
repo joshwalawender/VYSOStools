@@ -56,8 +56,7 @@ def copy_data(date, tel, verbose=False, run=True):
         files = []
         source_path = join(expanduser('~vysosuser'), f"{tel}Data", subdir, date)
         logger.info(f"Checking for files in {source_path}")
-        dest_paths = [join('/', 'Volumes', 'MLOData', tel, subdir, date[0:4], date),
-                      join('/', 'Volumes', 'DataCopy', tel, subdir, date[0:4], date)]
+        dest_paths = [join('/', 'Volumes', 'VYSOSData', tel, subdir, date[0:4], date)]
 
         nfiles = 0
         ndirs = 0
