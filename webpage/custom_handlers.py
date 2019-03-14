@@ -76,15 +76,9 @@ def free_space(path):
     size = statvfs.f_frsize * statvfs.f_blocks * u.byte
     avail = statvfs.f_frsize * statvfs.f_bfree * u.byte
 
-    if re.search('\/Volumes\/DataCopy', path):
-        print('Correcting for 4.97 TB disk capacity')
-        capacity = (4.97*u.TB).to(u.byte)
-        correction = size - capacity
-        size -= correction
-        avail -= correction
-    elif re.search('\/Volumes\/MLOData', path):
+    if re.search('\/Volumes\/VYSOSData', path):
         print('Correcting for 16 TB disk capacity')
-        capacity = (16.89*u.TB).to(u.byte)
+        capacity = (11.79*u.TB).to(u.byte)
         correction = size - capacity
         size -= correction
         avail -= correction
@@ -155,9 +149,8 @@ class Status(RequestHandler):
         ##---------------------------------------------------------------------
         ## Get disk use info
         ##---------------------------------------------------------------------
-        paths = {'Drobo': os.path.join('/', 'Volumes', 'DataCopy'),\
+        paths = {'Drobo': os.path.join('/', 'Volumes', 'VYSOSData'),\
                  'macOS': os.path.expanduser('~'),\
-                 'DroboPro': os.path.join('/', 'Volumes', 'MLOData'),\
                 }
 
         disks = {}

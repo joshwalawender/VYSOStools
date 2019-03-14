@@ -65,13 +65,13 @@
         {% end %}
         </td>
         <td style="text-align: right;">
-        {% if 'DroboPro' in disks.keys() %}
-            {% if disks['DroboPro'][1] < 20 %}
+        {% if 'Drobo' in disks.keys() %}
+            {% if disks['Drobo'][1] < 300 %}
                 <font color="red"> 
             {% else %}
                 <font color="black"> 
             {% end %}
-            <font style="font-family: Courier, monospace">MLOData</font>: {{ '{:.0f}GB free ({:.0f}% full)'.format(disks['DroboPro'][1], disks['DroboPro'][2]) }}</font>
+            <font style="font-family: Courier, monospace">Drobo</font>: {{ '{:.0f}GB free ({:.0f}% full)'.format(disks['Drobo'][1], disks['Drobo'][2]) }}
         {% end %}
         </td>
     </tr>
@@ -95,13 +95,13 @@
         {% end %}
         </td>
         <td style="text-align: right;">
-        {% if 'Drobo' in disks.keys() %}
-            {% if disks['Drobo'][1] < 300 %}
+        {% if 'macOS' in disks.keys() %}
+            {% if disks['macOS'][1] < 40 %}
                 <font color="red"> 
             {% else %}
                 <font color="black"> 
             {% end %}
-            <font style="font-family: Courier, monospace">DataCopy</font>: {{ '{:.0f}GB free ({:.0f}% full)'.format(disks['Drobo'][1], disks['Drobo'][2]) }}
+            <font style="font-family: Courier, monospace">macOS</font>: {{ '{:.0f}GB free ({:.0f}% full)'.format(disks['macOS'][1], disks['macOS'][2]) }}</font>
         {% end %}
         </td>
     </tr>
@@ -125,14 +125,6 @@
         {% end %}
         </td>
         <td style="text-align: right;">
-        {% if 'macOS' in disks.keys() %}
-            {% if disks['macOS'][1] < 40 %}
-                <font color="red"> 
-            {% else %}
-                <font color="black"> 
-            {% end %}
-            <font style="font-family: Courier, monospace">macOS</font>: {{ '{:.0f}GB free ({:.0f}% full)'.format(disks['macOS'][1], disks['macOS'][2]) }}</font>
-        {% end %}
         </td>
     </tr>
     <tr>
