@@ -182,7 +182,9 @@
             {{ 'Next sunset is at {}'.format(sun['set'].strftime('%Y/%m/%d %H:%M:%S UT')) }}
         {% end %} 
         </td>
-        <td style="text-align: right;"></td>
+        <td style="text-align: right;">
+        <a href="https://www.esrl.noaa.gov/gmd/obop/mlo/met.html">MLO Weather Data</a>
+        </td>
         <td style="text-align: left;">
         </td>
         {% if currentweather is not None %}
@@ -353,17 +355,8 @@
     </tr>
 </table>
 
-<!-- ###################################### -->
-<!-- Live Images -->
-<!-- ###################################### -->
-{% if cctv %}
-    <h3>Live Images</h3>
-    <object data=https://166.122.71.162:8080/html/live.htm width="1100" height="850">
-    <embed   src=https://166.122.71.162:8080/html/live.htm width="1100" height="850"> </embed>
-    Error: Embedded data could not be displayed. </object>
-{% else %}
-    <a href="http://166.122.71.162/CCTV">Show CCTV</a>
-{% end %}
+<!-- <iframe src="https://www.esrl.noaa.gov/gmd/obop/mlo/met.html" width="1080" height="600"></iframe> -->
+
 </center>
 </body>
 </html>
