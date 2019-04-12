@@ -209,7 +209,8 @@ def control_by_web(status, logger):
 ## Query ASCOM Alpaca Server for Dome Info
 ##-------------------------------------------------------------------------
 def get_dome_info(status, logger, number=0):
-    commands = ['connected', 'atpark', 'athome', 'azimuth', 'slaved', 'slewing']
+    commands = ['connected', 'shutterstatus', 'atpark', 'athome', 'azimuth',
+                'slaved', 'slewing']
 
     logger.info(f'Getting Dome Status')
     for command in commands:
