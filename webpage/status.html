@@ -211,12 +211,14 @@
         <th style="width: 400px;">ATLAS All Sky Image</td>
     </tr>
     <tr>
-        <td style="text-align: right;">ACP Connected:</td>
+        <td style="text-align: right;">Dome Status:</td>
         <td style="text-align: left;">
-            {% if 'connected' in telstatus['V5'] %}{{ telstatus['V5']['connected'] }}{% end %}
+            {% if 'dome_shutterstatus' in telstatus['V5'] %}{{ telstatus['V5']['dome_shutterstatus'] }}{% end %}
         </td>
         <td style="text-align: left;">
-            {% if 'connected' in telstatus['V20'] %}{{ telstatus['V20']['connected'] }}{% end %}
+            {% if 'dome_shutterstatus' in telstatus['V20'] %}
+                {{ {1: 'Closed', 0: 'Open'}[telstatus['V20']['dome_shutterstatus']] }}
+            {% end %}
         </td>
         <td rowspan=16 style="vertical-align: middle;">
             <table style="border:0px; border-style: none;">
@@ -232,6 +234,15 @@
                     <td style="border:0px; border-style: none; vertical-align: middle;">W</td>
                 </tr>
             </table>
+        </td>
+    </tr>
+    <tr>
+        <td style="text-align: right;">ACP Connected:</td>
+        <td style="text-align: left;">
+            {% if 'connected' in telstatus['V5'] %}{{ telstatus['V5']['connected'] }}{% end %}
+        </td>
+        <td style="text-align: left;">
+            {% if 'connected' in telstatus['V20'] %}{{ telstatus['V20']['connected'] }}{% end %}
         </td>
     </tr>
     <tr>
