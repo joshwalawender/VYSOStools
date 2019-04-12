@@ -206,20 +206,30 @@
 <table>
     <tr>
         <th style="width: 200px;">Status</td>
-        <th style="width: 150px;">VYSOS-5</td>
         <th style="width: 150px;">VYSOS-20</td>
+        <th style="width: 150px;">VYSOS-5</td>
         <th style="width: 400px;">ATLAS All Sky Image</td>
     </tr>
     <tr>
         <td style="text-align: right;">Dome Status:</td>
         <td style="text-align: left;">
-            {% if 'dome_shutterstatus' in telstatus['V5'] %}{{ telstatus['V5']['dome_shutterstatus'] }}{% end %}
-        </td>
-        <td style="text-align: left;">
             {% if 'dome_shutterstatus' in telstatus['V20'] %}
-                {{ {1: 'Closed', 0: 'Open'}[telstatus['V20']['dome_shutterstatus']] }}
+                {% if telstatus['V20']['dome_shutterstatus'] == 0 %}
+                    <font color="green">Open</font>
+                {% elif telstatus['V20']['dome_shutterstatus'] == 1 %}
+                    <font color="black">Closed</font>
+                {% elif telstatus['V20']['dome_shutterstatus'] == 2 %}
+                    <font color="orange">Opening</font>
+                {% elif telstatus['V20']['dome_shutterstatus'] == 3 %}
+                    <font color="orange">Closing</font>
+                {% elif telstatus['V20']['dome_shutterstatus'] == 4 %}
+                    <font color="black">Error</font>
+                {% else %}
+                    <font color="black">{{ telstatus['V20']['dome_shutterstatus'] }}</font>
+                {% end %}
             {% end %}
         </td>
+        <td style="text-align: left;"></td>
         <td rowspan=16 style="vertical-align: middle;">
             <table style="border:0px; border-style: none;">
                 <tr style="border:0px; border-style: none;">
@@ -239,23 +249,12 @@
     <tr>
         <td style="text-align: right;">ACP Connected:</td>
         <td style="text-align: left;">
-            {% if 'connected' in telstatus['V5'] %}{{ telstatus['V5']['connected'] }}{% end %}
-        </td>
-        <td style="text-align: left;">
             {% if 'connected' in telstatus['V20'] %}{{ telstatus['V20']['connected'] }}{% end %}
         </td>
+        <td style="text-align: left;"></td>
     </tr>
     <tr>
         <td style="text-align: right;">Status:</td>
-        <td style="text-align: left;">
-            {% if telstatus['V5']['connected'] %}
-                {% if telstatus['V5']['slewing'] %} <font color="orange">Slewing</font>
-                {% elif telstatus['V5']['tracking'] %} <font color="green">Tracking</font>
-                {% elif telstatus['V5']['park'] %} <font color="black">Parked</font>
-                {% else %} <font color="black">Stationary</font>
-                {% end %}
-            {% end %}
-        </td>
         <td style="text-align: left;">
             {% if telstatus['V20']['connected'] %}
                 {% if telstatus['V20']['slewing'] %} <font color="orange">Slewing</font>
@@ -265,101 +264,85 @@
                 {% end %}
             {% end %}
         </td>
+        <td style="text-align: left;"> </td>
     </tr>
     <tr>
         <td style="text-align: right;">Alt:</td>
         <td style="text-align: left;">
-            {% if 'alt' in telstatus['V5'] %}{{ '{:.1f}'.format(telstatus['V5']['alt']) }}{% end %}
-        </td>
-        <td style="text-align: left;">
             {% if 'alt' in telstatus['V20'] %}{{ '{:.1f}'.format(telstatus['V20']['alt']) }}{% end %}
         </td>
+        <td style="text-align: left;"></td>
     </tr>
     <tr>
         <td style="text-align: right;">Az:</td>
         <td style="text-align: left;">
-            {% if 'az' in telstatus['V5'] %}{{ '{:.1f}'.format(telstatus['V5']['az']) }}{% end %}
-        </td>
-        <td style="text-align: left;">
             {% if 'az' in telstatus['V20'] %}{{ '{:.1f}'.format(telstatus['V20']['az']) }}{% end %}
         </td>
+        <td style="text-align: left;"></td>
     </tr>
     <tr>
         <td style="text-align: right;">Target RA (Jnow):</td>
         <td style="text-align: left;">
-            {% if 'RA' in telstatus['V5'] %}{{ '{}'.format(telstatus['V5']['RA']) }}{% end %}
-        </td>
-        <td style="text-align: left;">
             {% if 'RA' in telstatus['V20'] %}{{ '{}'.format(telstatus['V20']['RA']) }}{% end %}
         </td>
+        <td style="text-align: left;"></td>
     </tr>
     <tr>
         <td style="text-align: right;">Target Dec (Jnow):</td>
         <td style="text-align: left;">
-            {% if 'DEC' in telstatus['V5'] %}{{ '{}'.format(telstatus['V5']['DEC']) }}{% end %}
-        </td>
-        <td style="text-align: left;">
             {% if 'DEC' in telstatus['V20'] %}{{ '{}'.format(telstatus['V20']['DEC']) }}{% end %}
         </td>
+        <td style="text-align: left;"></td>
     </tr>
     <tr>
         <td style="text-align: right;">ACP Data Age:</td>
         <td style="text-align: left;">
-            {{ '{:.1f} min'.format((now[1]-telstatus['V5']['date']).total_seconds()/60.) }}
-        </td>
-        <td style="text-align: left;">
             {{ '{:.1f} min'.format((now[1]-telstatus['V20']['date']).total_seconds()/60.) }}
         </td>
+        <td style="text-align: left;"></td>
     </tr>
     <tr>
         <td colspan=3> </td>
     </tr>
     <tr>
         <th style="text-align: center;">{{ files_string }}</td>
-        <th>VYSOS-5</td>
         <th>VYSOS-20</td>
+        <th>VYSOS-5</td>
     </tr>
     <tr>
         <td style="text-align: right;">N Images:</td>
-        <td style="text-align: left;">{{ '{:d}'.format(len(v5_images)) }}</td>
         <td style="text-align: left;">{{ '{:d}'.format(len(v20_images)) }}</td>
+        <td style="text-align: left;"></td>
     </tr>
     <tr>
         <td style="text-align: right;">N Flats/Cals:</td>
-        <td style="text-align: left;">{{ '{:d}/{:d}'.format(len(v5_flats), len(v5_cals)) }}</td>
         <td style="text-align: left;">{{ '{:d}/{:d}'.format(len(v20_flats), len(v20_cals)) }}</td>
+        <td style="text-align: left;"></td>
     </tr>
     <tr>
         <td style="text-align: right;">Image List:</td>
         <td style="text-align: left;">
-            <a href="{{ '/V5/{}'.format(link_date_string) }}">{{ link_date_string }}</a>
-        </td>
-        <td style="text-align: left;">
             <a href="{{ '/V20/{}'.format(link_date_string) }}">{{ link_date_string }}</a>
         </td>
+        <td style="text-align: left;"></td>
     </tr>
     <tr>
         <td style="text-align: right;">Night Summary:</td>
         <td style="text-align: left;">
-<!-- 
-            <a href="{{ '/static/nights/{}_V5.png'.format(link_date_string) }}">
-            {{ '{}_V5.png'.format(link_date_string) }}</a>
- -->
-        </td>
-        <td style="text-align: left;">
             <a href="{{ '/static/nights/{}_V20.png'.format(link_date_string) }}">
             {{ '{}_V20.png'.format(link_date_string) }}</a>
         </td>
+        <td style="text-align: left;"></td>
     </tr>
     <tr>
         <td style="text-align: right;">List of Nights:</td>
-        <td style="text-align: left;"><a href="V5/">VYSOS-5 Nights</a></td>
         <td style="text-align: left;"><a href="V20/">VYSOS-20 Nights</a></td>
+        <td style="text-align: left;"></td>
     </tr>
     <tr>
         <td style="text-align: right;">List of Targets:</td>
-        <td style="text-align: left;"><a href="V5/targets">VYSOS-5 Targets</a></td>
         <td style="text-align: left;"><a href="V20/targets">VYSOS-20 Targets</a></td>
+        <td style="text-align: left;"></td>
     </tr>
     <tr>
         <td colspan=3> </td>
