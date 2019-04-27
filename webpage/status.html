@@ -217,13 +217,13 @@
                 {% if telstatus['V20']['dome_shutterstatus'] == 0 %}
                     <font color="green">Open</font>
                 {% elif telstatus['V20']['dome_shutterstatus'] == 1 %}
-                    <font color="black">Closed</font>
+                    <font color="red">Closed</font>
                 {% elif telstatus['V20']['dome_shutterstatus'] == 2 %}
                     <font color="orange">Opening</font>
                 {% elif telstatus['V20']['dome_shutterstatus'] == 3 %}
                     <font color="orange">Closing</font>
                 {% elif telstatus['V20']['dome_shutterstatus'] == 4 %}
-                    <font color="black">Error</font>
+                    <font color="red">Error</font>
                 {% else %}
                     <font color="black">{{ telstatus['V20']['dome_shutterstatus'] }}</font>
                 {% end %}
