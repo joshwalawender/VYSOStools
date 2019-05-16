@@ -7,7 +7,6 @@ from astropy import units as u
 
 
 def write_request(f, entry, telescope='V5'):
-    filter = {'V5': 'PSr', 'V20': 'PSi'}[telescope]
     if entry['comment'] == 'Filler':
         project = 'Filler Project'
         bestefforts = 'true'
