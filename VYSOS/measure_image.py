@@ -74,6 +74,13 @@ def measure_image(file,\
             image_info['filter'] = 'PSr'
         else:
             image_info['filter'] = im.ccd.header.get('FILTER', 'unknown')
+        # Alt and Az
+        try:
+            image_info['az'] = float(im.ccd.header.get('AZIMUTH'))
+            image_info['alt'] = float(im.ccd.header.get('ALTITUDE'))
+            image_info['airmass'] = float(im.ccd.header.get('AIRMASS'))
+        except:
+            pass
 
         # Moon
         try:
