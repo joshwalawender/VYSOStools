@@ -45,7 +45,7 @@ def get_status(telescope, db):
 def get_image_list(telescope, date, flats=False, cals=False):
     path = os.path.join('/', 'Users', 'vysosuser', f'{telescope}Data',\
                         'Images', f'{date}')
-    disk_array_path = os.path.join('/', 'Volumes', 'MLOData', f'{telescope}',\
+    disk_array_path = os.path.join('/', 'Volumes', 'VYSOSData', f'{telescope}',\
                                    'Images', f'{date[0:4]}', f'{date}')
     if flats is True:
         descriptor = 'flats '
