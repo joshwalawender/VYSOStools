@@ -18,6 +18,7 @@ from pymongo import MongoClient
 import logging
 
 from astropy import units as u
+from astropy.io import fits
 
 from VYSOS import Telescope
 from measure_image import measure_image
@@ -75,7 +76,8 @@ def main():
     ## Operation Loop
     ##-------------------------------------------------------------------------
     Operate = True
-    MatchFilename = re.compile("(.*)\-([0-9]{8})at([0-9]{6})\.fts")
+#     MatchFilename = re.compile("(.*)\-([0-9]{8})at([0-9]{6})\.fts")
+    MatchFilename = re.compile("(.*)\.fts")
     MatchEmpty = re.compile(".*\-Empty\-.*\.fts")
     while Operate:
         ## Set date to tonight
@@ -99,7 +101,10 @@ def main():
                 analyzed = [x for x in images.find( {"filename" : file} )]
                 if (len(analyzed) == 0):
                     target = IsMatch.group(1)
-                    filetime = IsMatch.group(3)
+#                     filetime = IsMatch.group(3)
+                    hdr = fits.getheader(os.path.join(DataPath, file))
+                    DATEOBS = hdr.get('DATEOBS', '')
+                    filetime = DATEOBS.replace('-', '').replace(':', '').replace('T', 'at')
                     images_to_analyze[filetime] = file
         logger.debug('  Found {} files to analyze'.format(len(images_to_analyze)))
         for filetime in sorted(images_to_analyze.keys()):
