@@ -19,8 +19,10 @@ from VYSOS import weather_limits
 import astropy.units as u
 from astropy.table import Table, Column
 from astropy.time import Time
-from astropy.coordinates import EarthLocation
-from astroplan import Observer
+from astropy import coordinates as c
+
+from scipy.signal import argrelmin
+
 
 def moving_averagexy(x, y, window_size):
     if len(x) == 0:
@@ -37,13 +39,52 @@ def moving_averagexy(x, y, window_size):
     return xma, yma
 
 
-def get_twilights(start, end):
+def get_twilights(start, end, nsample=256):
     """ Determine sunrise and sunset times """
-    location = EarthLocation(
+    location = c.EarthLocation(
         lat=+19.53602,
         lon=-155.57608,
         height=3400,
     )
+#     delta = (end-start).total_seconds()
+#     time_grid = Time(start) + np.linspace(0, delta, nsample)*u.second
+#     sun = c.get_sun(time_grid[:, None])
+#     altaz_frame = c.AltAz(location=location[None], 
+#                               obstime=time_grid[:,None])
+#     sun_altaz = sun.transform_to(altaz_frame)
+# 
+#     min_idx = np.array([argrelmin(a**2, axis=0, mode='wrap')[0] 
+#                         for a in sun_altaz.alt.degree.T])
+# 
+#     # Now, figure out which of the two sun altitude minima is sunset
+#     # by computing the derivative of altitude w.r.t. time:
+#     sunset_idx = []
+#     good_i = []
+#     for i, idx in enumerate(min_idx):
+#         alt = sun_altaz.alt.degree
+#         try:
+#             sunset_idx.append(idx[np.array([alt[min(j+1, len(alt)-1), i] - alt[max(j-1, 0), i] 
+#                                             for j in idx]) < 0][0])
+#             good_i.append(i)
+#         except IndexError:
+#             continue
+#     
+#     sunset_idx = np.array(sunset_idx)
+#     good_i = np.array(good_i)
+#     
+#     # Convert the UTC sunset time estimates to local times. Here we 
+#     # assume that the time sampling is dense enough that the time of 
+#     # min(alt**2) is close enough to the actual sunset:
+#     sun_time = sun_altaz.obstime.datetime
+#     sunsets = np.array([utc.localize(sun_time[j,i]).astimezone(tzs[i])
+#                         for i, j in zip(good_i, sunset_idx)])
+#     
+#     print(good_i, sunsets)
+
+
+
+
+    from astroplan import Observer
     obs = Observer(location=location, name='VYSOS',
                    timezone='US/Hawaii')
 
@@ -98,11 +139,6 @@ def plot_weather(date=None, verbose=False):
                                     sort=[('date', pymongo.DESCENDING)])]
     time = np.array([x['date'] for x in data])
 
-
-#     me.connect('vysos', host='192.168.1.101')
-#     data = weather.objects(__raw__={'date': {'$gt': start, '$lt': end}})
-#     time = np.array([x.date for x in data])
-
     dpi=72
     fig = plt.figure(figsize=(20,10), dpi=dpi)
     night_plot_file_name = 'weather.png'
@@ -155,10 +191,15 @@ def plot_weather(date=None, verbose=False):
             t_axes = plt.axes(plot_positions[i][lr])
             if label != 'Safe':
                 ## Overplot Twilights
-                twilights = get_twilights(start, end)
-                for j in range(len(twilights)-1):
-                    plt.axvspan(twilights[j][0], twilights[j+1][0], ymin=0, ymax=1,
-                                color='blue', alpha=twilights[j+1][2])
+                try:
+                    twilights = get_twilights(start, end)
+                    for j in range(len(twilights)-1):
+                        plt.axvspan(twilights[j][0], twilights[j+1][0], ymin=0, ymax=1,
+                                    color='blue', alpha=twilights[j+1][2])
+                except ValueError as e:
+                    pass
+#                     print('Failed to get twilight info:')
+#                     print(e)
                 ## Plot data
                 if label in weather_limits.keys():
                     t_axes.plot_date(time, data[i], 'ko', label=label,
