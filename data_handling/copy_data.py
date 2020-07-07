@@ -137,6 +137,13 @@ def copy_data(date, tel, verbose=False, run=True):
                     if run: os.rmdir(path)
                 else:
                     logger.warning(f'Files still remain in {path}')
+        if args.delete:
+            if run:
+                try:
+                    os.rmdir(source_path)
+                    logger.info('Final rmdir {}'.format(source_path))
+                except FileNotFoundError:
+                    pass
 
 
 if __name__ == '__main__':
