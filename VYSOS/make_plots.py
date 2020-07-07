@@ -23,6 +23,10 @@ from astropy import coordinates as c
 
 from scipy.signal import argrelmin
 
+import warnings
+from astropy.utils.exceptions import AstropyDeprecationWarning
+warnings.filterwarnings('ignore', category=AstropyDeprecationWarning, append=True)
+
 
 def moving_averagexy(x, y, window_size):
     if len(x) == 0:
