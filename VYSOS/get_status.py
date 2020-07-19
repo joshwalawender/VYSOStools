@@ -37,20 +37,20 @@ def get_telescope_info(status, logger):
         logger.debug('  ACP Connected = {}'.format(status['connected']))
         if status['connected']:
             status['park'] = ACP.AtPark
-            logger.info('  ACP At Park = {}'.format(status['park']))
+            logger.debug('  ACP At Park = {}'.format(status['park']))
             status['slewing'] = ACP.Slewing
-            logger.info('  ACP Slewing = {}'.format(status['slewing']))
+            logger.debug('  ACP Slewing = {}'.format(status['slewing']))
             status['tracking'] = ACP.Tracking
-            logger.info('  ACP Tracking = {}'.format(status['tracking']))
+            logger.debug('  ACP Tracking = {}'.format(status['tracking']))
             status['alt'] = float(ACP.Altitude)
-            logger.info('  ACP Alt = {:.2f}'.format(status['alt']))
+            logger.debug('  ACP Alt = {:.2f}'.format(status['alt']))
             status['az'] = float(ACP.Azimuth)
-            logger.info('  ACP Az = {:.2f}'.format(status['az']))
+            logger.debug('  ACP Az = {:.2f}'.format(status['az']))
             try:
                 status['RA'] = ACP.TargetRightAscension * 15.0
                 status['DEC'] = ACP.TargetDeclination
-                logger.info('  ACP target RA = {:.4f}'.format(status['RA']))
-                logger.info('  ACP target Dec = {:.4f}'.format(status['DEC']))
+                logger.debug('  ACP target RA = {:.4f}'.format(status['RA']))
+                logger.debug('  ACP target Dec = {:.4f}'.format(status['DEC']))
             except:
                 logger.info('  Could not get target info')
     except pywintypes.com_error as err:
@@ -95,11 +95,11 @@ def get_focuser_info(status, logger):
         median_temp = np.median(FocusMax_Temps)
         if (median_temp > -10) and (median_temp < 150):
             status['focuser_temperature'] = median_temp
-            logger.info('  FocusMax temperature = {:.1f} {}'.format(status['focuser_temperature'], 'C'))
+            logger.debug('  FocusMax temperature = {:.1f} {}'.format(status['focuser_temperature'], 'C'))
     ## Get Position
     try:
         status['focuser_position'] = int(FocusMax.Position)
-        logger.info('  FocusMax position = {:d}'.format(status['focuser_position']))
+        logger.debug('  FocusMax position = {:d}'.format(status['focuser_position']))
     except:
         pass
 
@@ -158,19 +158,19 @@ def get_RCOS_info(status, logger):
         time.sleep(1)
     if len(RCOS_Truss_Temps) >= 3:
         status['truss_temperature'] = (float(np.median(RCOS_Truss_Temps)) - 32.)/1.8
-        logger.info('  RCOS temperature (truss) = {:.1f} {}'.format(
+        logger.debug('  RCOS temperature (truss) = {:.1f} {}'.format(
                     status['truss_temperature'], 'C'))
     if len(RCOS_Primary_Temps) >= 3:
         status['primary_temperature'] = (float(np.median(RCOS_Primary_Temps)) - 32.)/1.8
-        logger.info('  RCOS temperature (primary) = {:.1f} {}'.format(
+        logger.debug('  RCOS temperature (primary) = {:.1f} {}'.format(
                     status['primary_temperature'], 'C'))
     if len(RCOS_Secondary_Temps) >= 3:
         status['secondary_temperature'] = (float(np.median(RCOS_Secondary_Temps)) - 32.)/1.8
-        logger.info('  RCOS temperature (secondary) = {:.1f} {}'.format(
+        logger.debug('  RCOS temperature (secondary) = {:.1f} {}'.format(
                     status['secondary_temperature'], 'C'))
     if len(RCOS_Fan_Speeds) >= 3:
         status['fan_speed'] = float(np.median(RCOS_Fan_Speeds))
-        logger.info('  RCOS fan speed = {:.0f} %'.format(status['fan_speed']))
+        logger.debug('  RCOS fan speed = {:.0f} %'.format(status['fan_speed']))
 
     return status
 
@@ -198,9 +198,9 @@ def control_by_web(status, logger):
     status['dome_temperature'] = temp1
     status['fan_state'] = r1state
     status['fan_enable'] = r2state
-    logger.info(f'  Dome Temperature = {temp1:.1f}')
-    logger.info(f'  Fan State = {r1state}')
-    logger.info(f'  Fan Enable = {r2state}')
+    logger.debug(f'  Dome Temperature = {temp1:.1f}')
+    logger.debug(f'  Fan State = {r1state}')
+    logger.debug(f'  Fan Enable = {r2state}')
 
     return status
 
@@ -221,7 +221,7 @@ def get_dome_info(status, logger, number=0):
             value = j['Value']
         except:
             pass
-        logger.info(f'  {command} = {value}')
+        logger.debug(f'  {command} = {value}')
         if command == 'azimuth':
             status[f"dome_{command}"] = float(value)
         else:
