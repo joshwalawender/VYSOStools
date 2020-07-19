@@ -1,7 +1,5 @@
 #!/usr/env/python
 
-from __future__ import division, print_function
-
 ## Import General Tools
 import sys
 import os
@@ -14,12 +12,41 @@ import numpy as np
 import pymongo
 import requests
 import json
+from pathlib import Path
 
 import win32com.client
 import pywintypes
 
 # import mongoengine as me
 # from VYSOS.schema import telstatus
+
+
+##-------------------------------------------------------------------------
+## Get AAGSolo Network Share aag_sld.dat file
+##-------------------------------------------------------------------------
+def get_AAGSolo(status, logger):
+    p = Path('//AAGSOLO/AAGSolo/aag_sld.dat')
+
+    try:
+        with open(p, 'r') as FO:
+            line = FO.read()
+    except:
+        logger.warning(f'Unable to read: {p}')
+        return
+
+    logger.debug(line.strip('\n'))
+    contents = line.strip('\n').split()
+    now = datetime.datetime.now()
+    aagtime = datetime.datetime.strptime(f'{contents[0]} {contents[1]}',
+                                          '%Y-%m-%d %H:%M:%S.00')
+    logger.debug(f"Now: {now.strftime('%Y-%m-%d %H:%M:%S')}")
+    logger.debug(f"AAG: {aagtime.strftime('%Y-%m-%d %H:%M:%S')}")
+    age = (now - aagtime).total_seconds()
+    if age < 30:
+        logger.info(f"AAG File Age: {age:.0f} s")
+    else:
+        logger.warning(f"AAG File Age: {age:.0f} s")
+
 
 ##-------------------------------------------------------------------------
 ## Query ASCOM ACPHub for Telescope Position and State
@@ -234,10 +261,12 @@ def get_status_and_log(telescope, logger):
     ##-------------------------------------------------------------------------
     ## Get Status Info
     ##-------------------------------------------------------------------------
+    logger.info('')
     logger.info('#### Starting Status Queries ####')
     status = {'telescope': telescope,
               'date':datetime.datetime.utcnow()
              }
+    get_AAGSolo(status, logger)
     status = get_telescope_info(status, logger)
     status = get_focuser_info(status, logger)
     if telescope == 'V20':
