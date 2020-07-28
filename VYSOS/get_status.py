@@ -247,12 +247,13 @@ def get_dome_info(status, logger, number=0):
             j = json.loads(r.text)
             value = j['Value']
         except:
-            pass
-        logger.debug(f'  {command} = {value}')
-        if command == 'azimuth':
-            status[f"dome_{command}"] = float(value)
+            logger.debug(f'  Failed to get dome status: {command}')
         else:
-            status[f"dome_{command}"] = value
+            logger.debug(f'  {command} = {value}')
+            if command == 'azimuth':
+                status[f"dome_{command}"] = float(value)
+            else:
+                status[f"dome_{command}"] = value
     return status
 
 
