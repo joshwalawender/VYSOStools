@@ -111,7 +111,12 @@
         </td>
         <td style='text-align:right;'>
             {% if 'moon_illumination' in image.keys() %}
-                {{ '{:.0f} %'.format(image['moon_illumination']) }}
+                {% if 'moon_alt' in image.keys() %}
+                    {% if image['moon_alt'] < 0 %}
+                        down
+                    {% else %}
+                        {{ '{:.0f} %'.format(image['moon_illumination']) }}
+                    {% end %}
             {% end %}<br>
         </td>
 
