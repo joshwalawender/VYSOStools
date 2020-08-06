@@ -44,11 +44,11 @@
         <th style="width:50px">Airmass</th>
         <th style="width:50px">Moon Sep (deg)</th>
         <th style="width:50px">Moon Illum. (%)</th>
+        <th style="width:50px">N Stars</th>
         <th style="width:60px">FWHM ({{ FWHM_units }})</th>
         <th style="width:50px">Ellip.</th>
         <th style="width:70px">Pointing Error (arcmin)</th>
         <th style="width:50px">Zero Point (mag)</th>
-        <th style="width:50px">N Stars</th>
     </tr>
 
     {% for i,image in enumerate(image_list) %}
@@ -121,6 +121,19 @@
             {% end %}<br>
         </td>
 
+        {% if 'n_stars' in image.keys() %}
+            {% if flags[i]['n_stars'] is True %}
+                <td style={{ 'text-align:right;background-color:#FF5C33;' }}>
+            {% else %}
+                <td style={{ 'text-align:right;background-color:#70DB70;' }}>
+            {% end %}
+            {{ '{:d}'.format(image['n_stars']) }}
+        {% else %}
+        <td>
+        {% end %}
+        </td>
+
+
         {% if 'FWHM_pix' in image.keys() %}
             {% if flags[i]['FWHM'] is True %}
                 <td style={{ 'text-align:right;background-color:#FF5C33;' }}>
@@ -168,13 +181,6 @@
         <td>
         {% end %}
         </td>
-
-        <td style='text-align:right;'>
-            {% if 'n_stars' in image.keys() %}
-                {{ '{:d}'.format(image['n_stars']) }}
-            {% end %}<br>
-        </td>
-
     </tr>
     {% end %}
 

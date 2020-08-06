@@ -150,11 +150,15 @@ class ListOfImages(RequestHandler):
                               'zero point': False,
                              })
                 try:
-                    flags[i]['FWHM'] = image['FWHM_pix'] > tel.FWHM_limit_pix.value
+                    flags[i]['n_stars'] = (image['n_stars'] < 10)
                 except:
                     pass
                 try:
-                    flags[i]['ellipticity'] = image['ellipticity'] > tel.ellipticity_limit
+                    flags[i]['FWHM'] = (image['FWHM_pix'] > tel.FWHM_limit_pix.value) or flags[i]['n_stars']
+                except:
+                    pass
+                try:
+                    flags[i]['ellipticity'] = (image['ellipticity'] > tel.ellipticity_limit) or flags[i]['n_stars']
                 except:
                     pass
                 try:
