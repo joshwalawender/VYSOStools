@@ -99,7 +99,7 @@ class Status(RequestHandler):
         nowut = dt.utcnow()
         now = nowut - tdelta(0,10*60*60)
 
-        client = pymongo.MongoClient('192.168.1.101', 27017)
+        client = pymongo.MongoClient('localhost', 27017)
         db = client['vysos']
 
         ##------------------------------------------------------------------------

@@ -54,7 +54,7 @@ class Telescope(object):
     '''
     def __init__(self, name):
         self.name = name
-        self.mongo_address = '192.168.1.101'
+        self.mongo_address = 'localhost'
         self.mongo_port = 27017
         self.mongo_db = 'vysos'
         self.mongo_collection = 'images'

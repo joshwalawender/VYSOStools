@@ -136,7 +136,7 @@ def plot_weather(date=None, verbose=False):
 
     start = end - tdelta(1,0)
 
-    client = pymongo.MongoClient('192.168.1.101', 27017)
+    client = pymongo.MongoClient('localhost', 27017)
     db = client['vysos']
     weather = client.vysos['weather']
     data = [x for x in weather.find({'date': {'$gt': start, '$lt': end}},

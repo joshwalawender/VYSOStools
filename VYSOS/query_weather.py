@@ -61,7 +61,7 @@ def get_weather(logger, robust=True):
 
         logger.info('Saving weather document')
         logger.info('Connecting to mongoDB')
-        client = pymongo.MongoClient('192.168.1.101', 27017)
+        client = pymongo.MongoClient('localhost', 27017)
         db = client.vysos
         weather = db.weather
 
