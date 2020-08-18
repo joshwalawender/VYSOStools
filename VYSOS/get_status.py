@@ -315,9 +315,9 @@ if __name__ == '__main__':
         default=False, help="Be verbose! (default = False)")
     ## add arguments
     parser.add_argument("-t",
-        type=str, dest="telescope", default='',
-        choices=['V5', 'V20', ''], required=False,
-        help="The telescope system we are querying.  Will query weather if not specified.")
+        type=str, dest="telescope", default='V20',
+        choices=['V5', 'V20'], required=False,
+        help="The telescope system we are querying.")
     args = parser.parse_args()
 
     telescope = args.telescope
