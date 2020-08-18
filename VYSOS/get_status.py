@@ -247,7 +247,7 @@ def get_dome_info(status, logger, number=0):
             j = json.loads(r.text)
             value = j['Value']
         except:
-            logger.debug(f'  Failed to get dome status: {command}')
+            logger.warning(f'  Failed to get dome status: {command}')
         else:
             logger.debug(f'  {command} = {value}')
             if command == 'azimuth':
@@ -342,7 +342,7 @@ if __name__ == '__main__':
         LogConsoleHandler.setFormatter(LogFormat)
         logger.addHandler(LogConsoleHandler)
 
-
+    logger.info(f'Getting status values for {telescope}')
     run = True
     while run:
         get_status_and_log(telescope, logger)
