@@ -82,8 +82,8 @@ def get_telescope_info(status, logger):
                 logger.info('  Could not get target info')
     except pywintypes.com_error as err:
         logger.warning('COM error:')
-        logger.warning('  {}'.format(err.message))
-        status['ACPerr'] = '{}'.format(err.message)
+        logger.warning('  {}'.format(err))
+        status['ACPerr'] = '{}'.format(err)
     except:
         status['connected'] = False
         logger.warning('Queries to ACP object failed')
