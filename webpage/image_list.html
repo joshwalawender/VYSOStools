@@ -43,14 +43,15 @@
         <th style="width:420px">Image File Name</th>
         <th style="width:50px">Alt (deg)</th>
         <th style="width:50px">Az (deg)</th>
+        <th style="width:70px">Pointing Error (arcmin)</th>
         <th style="width:50px">Airmass</th>
+        <th style="width:50px">Zero Point</th>
         <th style="width:50px">Moon Sep (deg)</th>
         <th style="width:50px">Moon Illum. (%)</th>
+        <th style="width:50px">Sky Bkg.</th>
         <th style="width:50px">N Stars</th>
         <th style="width:60px">FWHM ({{ FWHM_units }})</th>
         <th style="width:50px">Ellip.</th>
-        <th style="width:70px">Pointing Error (arcmin)</th>
-        <th style="width:50px">Zero Point</th>
     </tr>
 
     {% for i,image in enumerate(image_list) %}
@@ -85,21 +86,53 @@
                  (<a href="/static/logs/{{ telescope }}/{{ image['logfile'] }}">log</a>)
             {% end %}
         </td>
+
         <td style='text-align:right;'>
             {% if 'alt' in image.keys() %}
                 {{ '{:.1f}'.format(image['alt']) }}
             {% end %}<br>
         </td>
+
         <td style='text-align:right;'>
             {% if 'az' in image.keys() %}
                 {{ '{:.1f}'.format(image['az']) }}
             {% end %}<br>
         </td>
+
+        {% if 'perr_arcmin' in image.keys() %}
+            {% if flags[i]['perr_arcmin'] is True %}
+                <td style={{ 'text-align:right;background-color:#FF5C33;' }}>
+            {% elif flags[i]['perr_arcmin'] is False %}
+                <td style={{ 'text-align:right;background-color:#70DB70;' }}>
+            {% else %}
+                <td>
+            {% end %}
+            {{ '{:.2f}'.format(image['perr_arcmin']) }}
+        {% else %}
+        <td>
+        {% end %}
+        </td>
+
         <td style='text-align:right;'>
             {% if 'airmass' in image.keys() %}
                 {{ '{:.2f}'.format(image['airmass']) }}
             {% end %}<br>
         </td>
+
+        {% if 'zero point' in image.keys() %}
+            {% if flags[i]['zero point'] is True %}
+                <td style={{ 'text-align:right;background-color:#FF5C33;' }}>
+            {% elif flags[i]['zero point'] is False %}
+                <td style={{ 'text-align:right;background-color:#70DB70;' }}>
+            {% else %}
+                <td>
+            {% end %}
+            {{ '{:.3f}'.format(image['zero point']) }}
+        {% else %}
+        <td>
+        {% end %}
+        </td>
+
         <td style='text-align:right;'>
             {% if 'moon_separation' in image.keys() %}
                 {% if 'moon_alt' in image.keys() %}
@@ -111,6 +144,7 @@
                 {% end %}
             {% end %}
         </td>
+
         <td style='text-align:right;'>
             {% if 'moon_illumination' in image.keys() %}
                 {% if 'moon_alt' in image.keys() %}
@@ -123,11 +157,19 @@
             {% end %}<br>
         </td>
 
+        <td style='text-align:right;'>
+            {% if 'sky background' in image.keys() %}
+                {{ '{:.0f}'.format(image['sky background']) }}
+            {% end %}<br>
+        </td>
+
         {% if 'n_stars' in image.keys() %}
             {% if flags[i]['n_stars'] is True %}
                 <td style={{ 'text-align:right;background-color:#FF5C33;' }}>
-            {% else %}
+            {% elif flags[i]['n_stars'] is False %}
                 <td style={{ 'text-align:right;background-color:#70DB70;' }}>
+            {% else %}
+                <td>
             {% end %}
             {{ '{:d}'.format(image['n_stars']) }}
         {% else %}
@@ -139,8 +181,10 @@
         {% if 'FWHM_pix' in image.keys() %}
             {% if flags[i]['FWHM'] is True %}
                 <td style={{ 'text-align:right;background-color:#FF5C33;' }}>
-            {% else %}
+            {% elif flags[i]['FWHM'] is False %}
                 <td style={{ 'text-align:right;background-color:#70DB70;' }}>
+            {% else %}
+                <td>
             {% end %}
             {{ '{:.2f}'.format(image['FWHM_pix']*FWHM_multiplier) }}
         {% else %}
@@ -151,8 +195,10 @@
         {% if 'ellipticity' in image.keys() %}
             {% if flags[i]['ellipticity'] is True %}
                 <td style={{ 'text-align:right;background-color:#FF5C33;' }}>
-            {% else %}
+            {% elif flags[i]['ellipticity'] is False %}
                 <td style={{ 'text-align:right;background-color:#70DB70;' }}>
+            {% else %}
+                <td>
             {% end %}
             {{ '{:.2f}'.format(image['ellipticity']) }}
         {% else %}
@@ -160,29 +206,6 @@
         {% end %}
         </td>
 
-        {% if 'perr_arcmin' in image.keys() %}
-            {% if flags[i]['pointing error'] is True %}
-                <td style={{ 'text-align:right;background-color:#FF5C33;' }}>
-            {% else %}
-                <td style={{ 'text-align:right;background-color:#70DB70;' }}>
-            {% end %}
-            {{ '{:.2f}'.format(image['perr_arcmin']) }}
-        {% else %}
-        <td>
-        {% end %}
-        </td>
-
-        {% if 'zero point' in image.keys() %}
-            {% if flags[i]['zero point'] is True %}
-                <td style={{ 'text-align:right;background-color:#FF5C33;' }}>
-            {% else %}
-                <td style={{ 'text-align:right;background-color:#70DB70;' }}>
-            {% end %}
-            {{ '{:.3f}'.format(image['zero point']) }}
-        {% else %}
-        <td>
-        {% end %}
-        </td>
     </tr>
     {% end %}
 

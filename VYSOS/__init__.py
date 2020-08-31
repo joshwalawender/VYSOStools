@@ -75,15 +75,18 @@ class Telescope(object):
     
     def get_limits(self):
         if self.name == 'V20':
-            self.FWHM_limit_pix = (3.5*u.arcsec/self.pixel_scale).decompose()
+            self.FWHM_limit_pix = (4.0*u.arcsec/self.pixel_scale).decompose()
             self.ellipticity_limit = 1.3
             self.pointing_error_limit = 3
+            self.throughput_limit = 0.08
         elif self.name == 'V5':
             self.FWHM_limit_pix = 2.5
             self.ellipticity_limit = 1.3
             self.pointing_error_limit = 6
+            self.throughput_limit = 0.30
         else:
             self.FWHM_limit_pix = None
             self.ellipticity_limit = None
             self.pointing_error_limit = None
+            self.throughput_limit = None
 

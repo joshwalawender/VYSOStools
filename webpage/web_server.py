@@ -144,27 +144,15 @@ class ListOfImages(RequestHandler):
             tlog.app_log.info('  Determining Flags')
             flags = []
             for i,image in enumerate(image_list):
-                flags.append({'FWHM': False,
-                              'ellipticity': False,
-                              'pointing error': False,
-                              'zero point': False,
-                             })
-                try:
-                    flags[i]['n_stars'] = (image['n_stars'] < 10)
-                except:
-                    pass
-                try:
-                    flags[i]['FWHM'] = (image['FWHM_pix'] > tel.FWHM_limit_pix.value) or flags[i]['n_stars']
-                except:
-                    pass
-                try:
-                    flags[i]['ellipticity'] = (image['ellipticity'] > tel.ellipticity_limit) or flags[i]['n_stars']
-                except:
-                    pass
-                try:
-                    flags[i]['pointing error'] = image['perr_arcmin'] > tel.pointing_error_limit
-                except:
-                    pass
+                f = {'FWHM': (image['FWHM_pix'] > tel.FWHM_limit_pix.value) if 'FWHM_pix' in image.keys() else True,
+#                      'ellipticity': (image['ellipticity'] > tel.ellipticity_limit) if 'ellipticity' in image.keys() else True,
+                     'ellipticity': None,
+                     'n_stars': (image['n_stars'] < 10) if 'n_stars' in image.keys() else True,
+                     'perr_arcmin': (image['perr_arcmin'] > tel.pointing_error_limit) if 'perr_arcmin' in image.keys() else True,
+                     'zero point': (image['zero point'] < tel.throughput_limit) if 'zero point' in image.keys() else True,
+                     }
+                flags.append(f)
+
             tlog.app_log.info('  Rendering ListOfImages')
             self.render("image_list.html", title="{} Results".format(telescopename),\
                         telescope = telescope,\
