@@ -33,8 +33,8 @@ def query_mongo(db, collection, query):
                np.float, np.float, np.float, np.float)
     elif collection == 'images':
         names=('date', 'telescope', 'moon_separation', 'perr_arcmin',
-               'airmass', 'FWHM_pix', 'ellipticity')
-        dtype=(dt, np.str, np.float, np.float, np.float, np.float, np.float)
+               'airmass', 'FWHM_pix', 'ellipticity', 'zero point')
+        dtype=(dt, np.str, np.float, np.float, np.float, np.float, np.float, np.float)
 
     result = Table(names=names, dtype=dtype)
     for entry in db[collection].find(query):
@@ -129,8 +129,8 @@ def make_plots(date_string, telescope, l):
     
     if telescope == "V20":
         plot_positions = [ ( [0.000, 0.755, 0.465, 0.245], [0.535, 0.760, 0.465, 0.240] ),
-                           ( [0.000, 0.550, 0.465, 0.180], [0.535, 0.495, 0.465, 0.240] ),
-                           ( [0.000, 0.490, 0.465, 0.050], [0.535, 0.245, 0.465, 0.240] ),
+                           ( [0.000, 0.550, 0.465, 0.180], [0.535, 0.535, 0.465, 0.200] ),
+                           ( [0.000, 0.490, 0.465, 0.050], [0.535, 0.285, 0.465, 0.240] ),
                            ( [0.000, 0.210, 0.465, 0.250], [0.535, 0.000, 0.465, 0.235] ),
                            ( [0.000, 0.000, 0.465, 0.200], None                         ) ]
 
@@ -287,6 +287,7 @@ def make_plots(date_string, telescope, l):
     e.xaxis.set_major_formatter(hours_fmt)
     plt.ylabel(f"ellipticity")
     plt.grid(which='major', color='k')
+    plt.xlabel(f"UT Time")
 
     ##------------------------------------------------------------------------
     ## Cloudiness
@@ -432,7 +433,26 @@ def make_plots(date_string, telescope, l):
 #     w.xaxis.set_ticklabels([])
     plt.ylabel("Wind (kph)")
     plt.grid(which='major', color='k')
+    plt.xlabel(f"UT Time")
 
+    ##------------------------------------------------------------------------
+    ## Extinction vs. Airmass
+    ##------------------------------------------------------------------------
+    l.info('Adding throughput vs. airmass plot')
+    zp = plt.axes(plot_positions[3][1])
+#     plt.title(f"Throughput for {telescope} on the Night of {date_string}")
+    zp.plot(images['airmass'], images['zero point'], 'ko',
+            markersize=3, markeredgewidth=0,
+            label="Throughput")
+    plt.xlim(1, 2.25)
+    plt.xlabel(f"Airmass")
+    plt.ylabel(f"Throughput")
+    plt.grid(color='k')
+
+
+    ##------------------------------------------------------------------------
+    ## Save Figure
+    ##------------------------------------------------------------------------
     l.info('Saving figure: {}'.format(night_plot_file))
     plt.savefig(night_plot_file, dpi=dpi, bbox_inches='tight', pad_inches=0.10)
     l.info('Done.')
