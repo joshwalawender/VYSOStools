@@ -50,7 +50,7 @@
         <th style="width:60px">FWHM ({{ FWHM_units }})</th>
         <th style="width:50px">Ellip.</th>
         <th style="width:70px">Pointing Error (arcmin)</th>
-        <th style="width:50px">Zero Point (mag)</th>
+        <th style="width:50px">Zero Point</th>
     </tr>
 
     {% for i,image in enumerate(image_list) %}
@@ -178,7 +178,7 @@
             {% else %}
                 <td style={{ 'text-align:right;background-color:#70DB70;' }}>
             {% end %}
-            {{ '{:.2f}'.format(image['zero point']) }}
+            {{ '{:.3f}'.format(image['zero point']) }}
         {% else %}
         <td>
         {% end %}
