@@ -441,7 +441,9 @@ def make_plots(date_string, telescope, l):
     l.info('Adding throughput vs. airmass plot')
     zp = plt.axes(plot_positions[3][1])
 #     plt.title(f"Throughput for {telescope} on the Night of {date_string}")
-    zp.plot(images['airmass'], images['zero point'], 'ko',
+    airmass = [x['airmass'] for x in images if x['zero point'] > 0]
+    zero_point = [x['zero point'] for x in images if x['zero point'] > 0]
+    zp.plot(airmass, zero_point, 'ko',
             markersize=3, markeredgewidth=0,
             label="Throughput")
     plt.xlim(1, 2.25)
