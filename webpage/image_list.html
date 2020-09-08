@@ -35,7 +35,11 @@
 
 <h2>Image List for {{ subject }} for {{ telescopename }}</h2>
 
-<center><p>Found {{ len(image_list) }} images in database</p></center>
+<center><p>Found {{ len(image_list) }} images in database
+({{ len([x for x in image_list if x['filename'][:8]=='AutoFlat']) }} flats, 
+{{ len([x for x in image_list if x['filename'][:11]=='Calibration']) }} cals,
+{{ len(image_list)-len([x for x in image_list if x['filename'][:8]=='AutoFlat'])-len([x for x in image_list if x['filename'][:11]=='Calibration'])}} science images)
+</p></center>
 
 <table>
     <tr>
