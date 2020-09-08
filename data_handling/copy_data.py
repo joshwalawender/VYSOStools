@@ -84,10 +84,18 @@ def copy_data(date, tel, verbose=False, run=True):
                     logger.info(f"  Checking Destination: {destination}")
                     if not os.path.exists(destination):
                         try:
+                            logger.info(f'mkdir {destination}')
                             if run: os.mkdir(destination)
+                        except PermissionError as e:
+                            logger.error(e)
+                            raise
+                        except FileExistsError as e:
+                            logger.warning(e)
                         except:
                             if run:
+                                logger.info(f'mkdir {os.path.split(destination)[0]}')
                                 os.mkdir(os.path.split(destination)[0])
+                                logger.info(f'mkdir {destination}')
                                 os.mkdir(destination)
                     if run: assert os.path.exists(destination)
                     fileext = os.path.splitext(file)[1]
