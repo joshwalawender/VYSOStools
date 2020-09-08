@@ -149,7 +149,8 @@ class ListOfImages(RequestHandler):
                      'ellipticity': None,
                      'n_stars': (image['n_stars'] < 10) if 'n_stars' in image.keys() else True,
                      'perr_arcmin': (image['perr_arcmin'] > tel.pointing_error_limit) if 'perr_arcmin' in image.keys() else True,
-                     'zero point': (image['zero point'] < tel.throughput_limit) if 'zero point' in image.keys() else True,
+#                      'zero point': (image['zero point'] < tel.throughput_limit) if 'zero point' in image.keys() else True,
+                     'throughput': (image['zero point'] < tel.throughput_limit) if 'zero point' in image.keys() else True,
                      }
                 flags.append(f)
 

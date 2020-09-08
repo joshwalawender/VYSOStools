@@ -49,7 +49,7 @@
         <th style="width:50px">Az (deg)</th>
         <th style="width:70px">Pointing Error (arcmin)</th>
         <th style="width:50px">Airmass</th>
-        <th style="width:50px">Zero Point</th>
+        <th style="width:50px">Throughput</th>
         <th style="width:50px">Moon Sep (deg)</th>
         <th style="width:50px">Moon Illum. (%)</th>
         <th style="width:50px">Sky Bkg.</th>
@@ -123,15 +123,15 @@
             {% end %}<br>
         </td>
 
-        {% if 'zero point' in image.keys() %}
-            {% if flags[i]['zero point'] is True %}
+        {% if 'throughput' in image.keys() %}
+            {% if flags[i]['throughput'] is True %}
                 <td style={{ 'text-align:right;background-color:#FF5C33;' }}>
-            {% elif flags[i]['zero point'] is False %}
+            {% elif flags[i]['throughput'] is False %}
                 <td style={{ 'text-align:right;background-color:#70DB70;' }}>
             {% else %}
                 <td>
             {% end %}
-            {{ '{:.3f}'.format(image['zero point']) }}
+            {{ '{:.3f}'.format(image['throughput']) }}
         {% else %}
         <td>
         {% end %}
