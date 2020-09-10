@@ -33,7 +33,7 @@ def query_mongo(db, collection, query):
                np.float, np.float, np.float, np.float)
     elif collection == 'images':
         names=('date', 'telescope', 'moon_separation', 'perr_arcmin',
-               'airmass', 'FWHM_pix', 'ellipticity', 'zero point')
+               'airmass', 'FWHM_pix', 'ellipticity', 'throughput')
         dtype=(dt, np.str, np.float, np.float, np.float, np.float, np.float, np.float)
 
     result = Table(names=names, dtype=dtype)
@@ -441,12 +441,13 @@ def make_plots(date_string, telescope, l):
     l.info('Adding throughput vs. airmass plot')
     zp = plt.axes(plot_positions[3][1])
 #     plt.title(f"Throughput for {telescope} on the Night of {date_string}")
-    airmass = [x['airmass'] for x in images if x['zero point'] > 0]
-    zero_point = [x['zero point'] for x in images if x['zero point'] > 0]
+    airmass = [x['airmass'] for x in images if x['throughput'] > 0]
+    zero_point = [x['throughput'] for x in images if x['throughput'] > 0]
     zp.plot(airmass, zero_point, 'ko',
             markersize=3, markeredgewidth=0,
             label="Throughput")
     plt.xlim(1, 2.25)
+    plt.ylim(0,0.15)
     plt.xlabel(f"Airmass")
     plt.ylabel(f"Throughput")
     plt.grid(color='k')
