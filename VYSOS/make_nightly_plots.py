@@ -33,8 +33,9 @@ def query_mongo(db, collection, query):
                np.float, np.float, np.float, np.float)
     elif collection == 'images':
         names=('date', 'telescope', 'moon_separation', 'perr_arcmin',
-               'airmass', 'FWHM_pix', 'ellipticity', 'throughput')
-        dtype=(dt, np.str, np.float, np.float, np.float, np.float, np.float, np.float)
+               'airmass', 'FWHM_pix', 'ellipticity', 'throughput', 'filter')
+        dtype=(dt, 'a3', np.float, np.float, np.float, np.float, np.float,
+               np.float, 'a3')
 
     result = Table(names=names, dtype=dtype)
     for entry in db[collection].find(query):
@@ -129,9 +130,9 @@ def make_plots(date_string, telescope, l):
     
     if telescope == "V20":
         plot_positions = [ ( [0.000, 0.755, 0.465, 0.245], [0.535, 0.760, 0.465, 0.240] ),
-                           ( [0.000, 0.550, 0.465, 0.180], [0.535, 0.535, 0.465, 0.200] ),
-                           ( [0.000, 0.490, 0.465, 0.050], [0.535, 0.285, 0.465, 0.240] ),
-                           ( [0.000, 0.210, 0.465, 0.250], [0.535, 0.000, 0.465, 0.235] ),
+                           ( [0.000, 0.550, 0.465, 0.180], [0.535, 0.570, 0.465, 0.160] ),
+                           ( [0.000, 0.490, 0.465, 0.050], [0.535, 0.315, 0.465, 0.240] ),
+                           ( [0.000, 0.210, 0.465, 0.250], [0.535, 0.000, 0.465, 0.265] ),
                            ( [0.000, 0.000, 0.465, 0.200], None                         ) ]
 
 
@@ -366,10 +367,6 @@ def make_plots(date_string, telescope, l):
                      color='yellow', alpha=moon_fill)        
     plt.ylabel('')
 
-
-
-
-
     ##------------------------------------------------------------------------
     ## Humidity, Wetness, Rain
     ##------------------------------------------------------------------------
@@ -440,18 +437,30 @@ def make_plots(date_string, telescope, l):
     ##------------------------------------------------------------------------
     l.info('Adding throughput vs. airmass plot')
     zp = plt.axes(plot_positions[3][1])
-#     plt.title(f"Throughput for {telescope} on the Night of {date_string}")
-    airmass = [x['airmass'] for x in images if x['throughput'] > 0]
-    zero_point = [x['throughput'] for x in images if x['throughput'] > 0]
+
+    images_i = images[(images['filter'] == 'PSi') & (images['throughput'] > 0)]
+    l.info(f'  Found {len(images_i)} i-band images')
+    airmass = [x['airmass'] for x in images_i if x['throughput'] > 0]
+    zero_point = [x['throughput'] for x in images_i if x['throughput'] > 0]
     zp.plot(airmass, zero_point, 'ko',
             markersize=3, markeredgewidth=0,
-            label="Throughput")
-    plt.xlim(1, 2.25)
-    plt.ylim(0,0.15)
+            label="i-band Throughput")
+
+    images_r = images[(images['filter'] == 'PSr') & (images['throughput'] > 0)]
+    l.info(f'  Found {len(images_r)} r-band images')
+    airmass = [x['airmass'] for x in images_r if x['throughput'] > 0]
+    zero_point = [x['throughput'] for x in images_r if x['throughput'] > 0]
+    if len(airmass) > 1:
+        zp.plot(airmass, zero_point, 'ro',
+                markersize=3, markeredgewidth=0,
+                label="r-band Throughput")
+
+    plt.xlim(0.95, 2.05)
+    plt.ylim(0,0.22)
     plt.xlabel(f"Airmass")
     plt.ylabel(f"Throughput")
+    plt.legend(loc='best')
     plt.grid(color='k')
-
 
     ##------------------------------------------------------------------------
     ## Save Figure
