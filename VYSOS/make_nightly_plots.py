@@ -16,8 +16,51 @@ from astropy.io import ascii
 import astropy.units as u
 from astropy.table import Table, Column, Row
 from astropy.modeling import models, fitting
+from astropy import stats
 
 from VYSOS import Telescope, weather_limits
+
+
+##-----------------------------------------------------------------------------
+## Function: sigma_clipping_line_fit
+##-----------------------------------------------------------------------------
+def sigma_clipping_line_fit(xdata, ydata, nsigma=3, maxiter=7, maxcleanfrac=0.3,
+                            intercept_fixed=False, intercept0=0, slope0=1,
+                            log=None):
+        if log: log.debug('  Running sigma_clipping_line_fit')
+        npoints = len(xdata)
+        if log: log.debug(f'  npoints = {npoints}')
+        fit = fitting.LinearLSQFitter()
+        line_init = models.Linear1D(slope=slope0, intercept=intercept0)
+        line_init.intercept.fixed = intercept_fixed
+        fitted_line = fit(line_init, xdata, ydata)
+        deltas = ydata - fitted_line(xdata)
+        mean, median, std = stats.sigma_clipped_stats(deltas)
+        cleaned = np.array(abs(deltas) < nsigma*std)
+#         if log: log.debug(cleaned)
+        if log: log.debug(f'  fitted slope = {fitted_line.slope.value:3g}')
+        if log: log.debug(f'  std = {std:4g}')
+        if log: log.debug(f'  n_cleaned = {np.sum(cleaned)}')
+        for iteration in range(1, maxiter+1):
+            last_std = std
+            new_fit = fit(line_init, xdata[cleaned], ydata[cleaned])
+            deltas = ydata - new_fit(xdata)
+            mean, median, std = stats.sigma_clipped_stats(deltas)
+            cleaned = cleaned | np.array(abs(deltas) < nsigma*std)
+            if np.sum(~cleaned)/npoints > maxcleanfrac:
+                if log: log.debug(f'  Exceeded maxcleanfrac of {maxcleanfrac}')
+                return fitted_line
+            if std > last_std:
+                if log: log.debug(f'  StdDev increased')
+                return fitted_line
+            else:
+                fitted_line = new_fit
+#             if log: log.debug(cleaned)
+            if log: log.debug(f'  {iteration} fitted slope = {fitted_line.slope.value:3g}')
+            if log: log.debug(f'  {iteration} std = {std:4g}')
+            if log: log.debug(f'  {iteration} n_cleaned = {np.sum(cleaned)}')
+
+        return fitted_line
 
 
 def query_mongo(db, collection, query):
@@ -446,18 +489,16 @@ def make_plots(date_string, telescope, l, fit_airmass=False):
     zp.plot(airmass, zero_point, 'ko',
             markersize=3, markeredgewidth=0,
             label="i-band Throughput")
-    if fit_airmass is True:
+    if fit_airmass is True and (max(airmass)-min(airmass)) > 0.5:
         l.info('  Fitting airmass term')
-        line0 = models.Linear1D(slope=-0.01, intercept=0.11)
-        fit = fitting.LinearLSQFitter()
-        fitted_line = fit(line0, airmass, zero_point)
+        fitted_line = sigma_clipping_line_fit(np.array(airmass),
+                                              np.array(zero_point), log=l)
         mag_per_airmass = 2.512*np.log10(fitted_line(1)/fitted_line(0))
         zp.plot(airmass, fitted_line(airmass), 'k-', alpha=0.2,
-                label=f"Airmass Term: {mag_per_airmass:.3f} mag")
-        l.info(f'  Airmass Term = {fitted_line.slope.value:.3f} throughput per airmass')
-        l.info(f'  Airmass Term = {mag_per_airmass:.3f} mag per airmass')
-        l.info(f'  Throughput at airmass = 0 is {fitted_line(0):.3f}')
-        l.info(f'  Throughput at airmass = 1 is {fitted_line(1):.3f}')
+                label=f"i-band Airmass Term: {mag_per_airmass:.3f} mag")
+        l.info(f'  i-band Airmass Term = {mag_per_airmass:.3f} mag per airmass')
+        l.info(f'  i-band Throughput at airmass = 0 is {fitted_line(0):.3f}')
+        l.info(f'  i-band Throughput at airmass = 1 is {fitted_line(1):.3f}')
 
     images_r = images[(images['filter'] == 'PSr') & (images['throughput'] > 0)]
     l.info(f'  Found {len(images_r)} r-band images')
@@ -467,9 +508,20 @@ def make_plots(date_string, telescope, l, fit_airmass=False):
         zp.plot(airmass, zero_point, 'ro',
                 markersize=3, markeredgewidth=0,
                 label="r-band Throughput")
+    if fit_airmass is True and (max(airmass)-min(airmass)) > 0.5:
+        l.info('  Fitting airmass term')
+        fitted_line = sigma_clipping_line_fit(np.array(airmass),
+                                              np.array(zero_point), log=l)
+        mag_per_airmass = 2.512*np.log10(fitted_line(1)/fitted_line(0))
+        zp.plot(airmass, fitted_line(airmass), 'k-', alpha=0.2,
+                label=f"r-band Airmass Term: {mag_per_airmass:.3f} mag")
+        l.info(f'  r-band Airmass Term = {mag_per_airmass:.3f} mag per airmass')
+        l.info(f'  r-band Throughput at airmass = 0 is {fitted_line(0):.3f}')
+        l.info(f'  r-band Throughput at airmass = 1 is {fitted_line(1):.3f}')
 
     plt.xlim(0.95, 2.05)
-    plt.ylim(0,0.22)
+    ymax = 1.1*max(images[images['throughput'] > 0]['throughput'])
+    plt.ylim(0,ymax)
     plt.xlabel(f"Airmass")
     plt.ylabel(f"Throughput")
     plt.legend(loc='best', fontsize=10)
