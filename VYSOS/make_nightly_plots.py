@@ -15,6 +15,7 @@ import ephem
 from astropy.io import ascii
 import astropy.units as u
 from astropy.table import Table, Column, Row
+from astropy.modeling import models, fitting
 
 from VYSOS import Telescope, weather_limits
 
@@ -47,7 +48,7 @@ def query_mongo(db, collection, query):
     return result
 
 
-def make_plots(date_string, telescope, l):
+def make_plots(date_string, telescope, l, fit_airmass=False):
     l.info(f"Making Nightly Plots for {telescope} on {date_string}")
     telname = {'V20':'VYSOS-20', 'V5':'VYSOS-5'}
 
@@ -445,6 +446,18 @@ def make_plots(date_string, telescope, l):
     zp.plot(airmass, zero_point, 'ko',
             markersize=3, markeredgewidth=0,
             label="i-band Throughput")
+    if fit_airmass is True:
+        l.info('  Fitting airmass term')
+        line0 = models.Linear1D(slope=-0.01, intercept=0.11)
+        fit = fitting.LinearLSQFitter()
+        fitted_line = fit(line0, airmass, zero_point)
+        mag_per_airmass = 2.512*np.log10(fitted_line(1)/fitted_line(0))
+        zp.plot(airmass, fitted_line(airmass), 'k-', alpha=0.2,
+                label=f"Airmass Term: {mag_per_airmass:.3f} mag")
+        l.info(f'  Airmass Term = {fitted_line.slope.value:.3f} throughput per airmass')
+        l.info(f'  Airmass Term = {mag_per_airmass:.3f} mag per airmass')
+        l.info(f'  Throughput at airmass = 0 is {fitted_line(0):.3f}')
+        l.info(f'  Throughput at airmass = 1 is {fitted_line(1):.3f}')
 
     images_r = images[(images['filter'] == 'PSr') & (images['throughput'] > 0)]
     l.info(f'  Found {len(images_r)} r-band images')
@@ -459,7 +472,7 @@ def make_plots(date_string, telescope, l):
     plt.ylim(0,0.22)
     plt.xlabel(f"Airmass")
     plt.ylabel(f"Throughput")
-    plt.legend(loc='best')
+    plt.legend(loc='best', fontsize=10)
     plt.grid(color='k')
 
     ##------------------------------------------------------------------------
@@ -507,6 +520,9 @@ def main():
     parser.add_argument("-l", "--loop",
         action="store_true", dest="loop",
         default=False, help="Make plots in continuous loop")
+    parser.add_argument("-a", "--airmass",
+        action="store_true", dest="airmass",
+        default=False, help="Fit airmass term")
     ## add arguments
     parser.add_argument("-t", dest="telescope",
         required=False, type=str,
@@ -545,7 +561,7 @@ def main():
 #     LogFileHandler.setFormatter(LogFormat)
 #     l.addHandler(LogFileHandler)
 
-    make_plots(args.date, args.telescope, l)
+    make_plots(args.date, args.telescope, l, fit_airmass=args.airmass)
 
 #     if args.loop is True:
 #         while True:
