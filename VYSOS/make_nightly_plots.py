@@ -483,41 +483,42 @@ def make_plots(date_string, telescope, l, fit_airmass=False):
     zp = plt.axes(plot_positions[3][1])
 
     images_i = images[(images['filter'] == 'PSi') & (images['throughput'] > 0)]
-    l.info(f'  Found {len(images_i)} i-band images')
-    airmass = [x['airmass'] for x in images_i if x['throughput'] > 0]
-    zero_point = [x['throughput'] for x in images_i if x['throughput'] > 0]
-    zp.plot(airmass, zero_point, 'ko',
-            markersize=3, markeredgewidth=0,
-            label="i-band Throughput")
-    if fit_airmass is True and (max(airmass)-min(airmass)) > 0.5:
-        l.info('  Fitting airmass term')
-        fitted_line = sigma_clipping_line_fit(np.array(airmass),
-                                              np.array(zero_point), log=l)
-        mag_per_airmass = 2.512*np.log10(fitted_line(1)/fitted_line(0))
-        zp.plot(airmass, fitted_line(airmass), 'k-', alpha=0.2,
-                label=f"i-band Airmass Term: {mag_per_airmass:.3f} mag")
-        l.info(f'  i-band Airmass Term = {mag_per_airmass:.3f} mag per airmass')
-        l.info(f'  i-band Throughput at airmass = 0 is {fitted_line(0):.3f}')
-        l.info(f'  i-band Throughput at airmass = 1 is {fitted_line(1):.3f}')
+    if len(images_i) > 1:
+        l.info(f'  Found {len(images_i)} i-band images')
+        airmass = [x['airmass'] for x in images_i if x['throughput'] > 0]
+        zero_point = [x['throughput'] for x in images_i if x['throughput'] > 0]
+        zp.plot(airmass, zero_point, 'ko',
+                markersize=3, markeredgewidth=0,
+                label="i-band Throughput")
+        if fit_airmass is True and (max(airmass)-min(airmass)) > 0.5:
+            l.info('  Fitting airmass term')
+            fitted_line = sigma_clipping_line_fit(np.array(airmass),
+                                                  np.array(zero_point), log=l)
+            mag_per_airmass = 2.512*np.log10(fitted_line(1)/fitted_line(0))
+            zp.plot(airmass, fitted_line(airmass), 'k-', alpha=0.2,
+                    label=f"i-band Airmass Term: {mag_per_airmass:.3f} mag")
+            l.info(f'  i-band Airmass Term = {mag_per_airmass:.3f} mag per airmass')
+            l.info(f'  i-band Throughput at airmass = 0 is {fitted_line(0):.3f}')
+            l.info(f'  i-band Throughput at airmass = 1 is {fitted_line(1):.3f}')
 
     images_r = images[(images['filter'] == 'PSr') & (images['throughput'] > 0)]
-    l.info(f'  Found {len(images_r)} r-band images')
-    airmass = [x['airmass'] for x in images_r if x['throughput'] > 0]
-    zero_point = [x['throughput'] for x in images_r if x['throughput'] > 0]
-    if len(airmass) > 1:
+    if len(images_r) > 1:
+        l.info(f'  Found {len(images_r)} r-band images')
+        airmass = [x['airmass'] for x in images_r if x['throughput'] > 0]
+        zero_point = [x['throughput'] for x in images_r if x['throughput'] > 0]
         zp.plot(airmass, zero_point, 'ro',
                 markersize=3, markeredgewidth=0,
                 label="r-band Throughput")
-    if fit_airmass is True and (max(airmass)-min(airmass)) > 0.5:
-        l.info('  Fitting airmass term')
-        fitted_line = sigma_clipping_line_fit(np.array(airmass),
-                                              np.array(zero_point), log=l)
-        mag_per_airmass = 2.512*np.log10(fitted_line(1)/fitted_line(0))
-        zp.plot(airmass, fitted_line(airmass), 'k-', alpha=0.2,
-                label=f"r-band Airmass Term: {mag_per_airmass:.3f} mag")
-        l.info(f'  r-band Airmass Term = {mag_per_airmass:.3f} mag per airmass')
-        l.info(f'  r-band Throughput at airmass = 0 is {fitted_line(0):.3f}')
-        l.info(f'  r-band Throughput at airmass = 1 is {fitted_line(1):.3f}')
+        if fit_airmass is True and (max(airmass)-min(airmass)) > 0.5:
+            l.info('  Fitting airmass term')
+            fitted_line = sigma_clipping_line_fit(np.array(airmass),
+                                                  np.array(zero_point), log=l)
+            mag_per_airmass = 2.512*np.log10(fitted_line(1)/fitted_line(0))
+            zp.plot(airmass, fitted_line(airmass), 'k-', alpha=0.2,
+                    label=f"r-band Airmass Term: {mag_per_airmass:.3f} mag")
+            l.info(f'  r-band Airmass Term = {mag_per_airmass:.3f} mag per airmass')
+            l.info(f'  r-band Throughput at airmass = 0 is {fitted_line(0):.3f}')
+            l.info(f'  r-band Throughput at airmass = 1 is {fitted_line(1):.3f}')
 
     plt.xlim(0.95, 2.05)
     ymax = 1.1*max(images[images['throughput'] > 0]['throughput'])
