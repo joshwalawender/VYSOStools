@@ -521,7 +521,10 @@ def make_plots(date_string, telescope, l, fit_airmass=False):
             l.info(f'  r-band Throughput at airmass = 1 is {fitted_line(1):.3f}')
 
     plt.xlim(0.95, 2.05)
-    ymax = 1.1*max(images[images['throughput'] > 0]['throughput'])
+    try:
+        ymax = 1.1*max(images[images['throughput'] > 0]['throughput'])
+    except:
+        ymax = 0.13
     plt.ylim(0,ymax)
     plt.xlabel(f"Airmass")
     plt.ylabel(f"Throughput")
