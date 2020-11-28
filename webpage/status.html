@@ -223,7 +223,7 @@
                 {% elif telstatus['V20']['dome_shutterstatus'] == 3 %}
                     <font color="orange">Closing</font>
                 {% elif telstatus['V20']['dome_shutterstatus'] == 4 %}
-                    <font color="red">Error</font>
+                    <font color="red">{{ telstatus['V20']['shutter_str'] }}</font>
                 {% else %}
                     <font color="black">{{ telstatus['V20']['dome_shutterstatus'] }}</font>
                 {% end %}
