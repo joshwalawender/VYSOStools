@@ -1,8 +1,7 @@
 #!/usr/env/python
 
-from __future__ import division, print_function
-
 ## Import General Tools
+from pathlib import Path
 import sys
 import os
 from os.path import join, exists, expanduser
@@ -85,7 +84,10 @@ def copy_data(date, tel, verbose=False, run=True):
                     if not os.path.exists(destination):
                         try:
                             logger.info(f'mkdir {destination}')
-                            if run: os.mkdir(destination)
+#                             if run: os.mkdir(destination)
+                            if run:
+                                p = Path(destination)
+                                p.mkdir(parents=True, exist_ok=True)
                         except PermissionError as e:
                             logger.error(e)
                             raise

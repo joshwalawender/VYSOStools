@@ -12,12 +12,12 @@ def write_request(f, entry, telescope='V5'):
         bestefforts = 'true'
     elif entry['period'] == 1:
         bestefforts = 'false'
-        if entry['count'] > 3:
+        if entry['count'] > 1:
             project = 'Dwell on Targets'
         else:
             project = 'Monitor Every {:d} Days'.format(entry['period'])
     else:
-        bestefforts = 'false'
+        bestefforts = 'false' if entry['count'] <= 1 else 'true'
         project = 'Monitor Every {:d} Days'.format(entry['period'])
     c = SkyCoord('{} {}'.format(entry['ra'], entry['dec']),
                  unit=(u.hourangle, u.deg),
@@ -38,19 +38,24 @@ def write_request(f, entry, telescope='V5'):
     f.write('           </Moon>\n')
     f.write('           <Priority>{:d}</Priority>\n'.format(entry['priority']))
     f.write('       </Schedule>\n')
-    f.write('       <Target count="{:d}" interval="0" tolerance="0">\n'.format(entry['count']))
-    f.write('           <Name>{}</Name>\n'.format(entry['name']))
-    f.write('           <Coordinates>\n')
-    f.write('               <RightAscension>{:+.4f}</RightAscension>\n'.format(c.ra.degree))
-    f.write('               <Declination>{:+.4f}</Declination>\n'.format(c.dec.degree))
-    f.write('           </Coordinates>\n')
-    f.write('           <Picture count="{:d}">\n'.format(entry['nexp']))
-    f.write('               <Name>{}</Name>\n'.format(entry['filter']))
-    f.write('               <ExposureTime>{:.1f}</ExposureTime>\n'.format(entry['exptime']))
-    f.write('               <Filter>{}</Filter>\n'.format(entry['filter']))
-    f.write('               <Dither>4</Dither>\n')
-    f.write('           </Picture>\n')
-    f.write('       </Target>\n')
+
+    for niter in range(int(np.floor(entry['count'] / 3)+1)):
+        count_now = min( [3, entry['count'] - niter*3]
+        if count_now > 0:
+            f.write('       <Target count="{:d}" interval="0" tolerance="0">\n'.format(count_now))
+            f.write('           <Name>{}</Name>\n'.format(entry['name']))
+            f.write('           <Coordinates>\n')
+            f.write('               <RightAscension>{:+.4f}</RightAscension>\n'.format(c.ra.degree))
+            f.write('               <Declination>{:+.4f}</Declination>\n'.format(c.dec.degree))
+            f.write('           </Coordinates>\n')
+            f.write('           <Picture count="{:d}">\n'.format(entry['nexp']))
+            f.write('               <Name>{}</Name>\n'.format(entry['filter']))
+            f.write('               <ExposureTime>{:.1f}</ExposureTime>\n'.format(entry['exptime']))
+            f.write('               <Filter>{}</Filter>\n'.format(entry['filter']))
+            f.write('               <Dither>4</Dither>\n')
+            f.write('           </Picture>\n')
+            f.write('       </Target>\n')
+
     f.write('   </Request>\n')
     f.write('\n')
 

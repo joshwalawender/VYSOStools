@@ -175,18 +175,21 @@ class Status(RequestHandler):
                     telstatus[telescope]['RA'], telstatus[telescope]['DEC'] = coord.to_string('hmsdms', sep=':', precision=0).split()
                 tlog.app_log.info(f"  Got telescope status record for {telescope}")
 
-                shutter_status_code = telstatus[telescope]['dome_shutterstatus']
-                last_non_error_status_code = (db[f'{telescope}status'].find({'dome_shutterstatus': {'$ne': 4}}, sort=[('date', pymongo.DESCENDING)])).next()['dome_shutterstatus']
-                shutter_status_values = {0: 'Open', 1: 'Closed', 2: 'Opening',
-                                         3: 'Closing', 4: 'Unknown'}
-                shutter_status_str = shutter_status_values[shutter_status_code]
-                last_non_error_status_str = shutter_status_values[last_non_error_status_code]
-                tlog.app_log.info(f"  Shutter Status: {shutter_status_str} ({shutter_status_code})")
-                tlog.app_log.info(f"  Was Status: {last_non_error_status_str} ({last_non_error_status_code})")
-                shutter_last = {0: '', 1: '', 2: '', 3: '',
-                                4: f' (was {last_non_error_status_str})'}
-                telstatus[telescope]['shutter_str'] = f'{shutter_status_str}{shutter_last[shutter_status_code]}'
-                tlog.app_log.info(f"  Shutter string: {telstatus[telescope]['shutter_str']}")
+                if 'dome_shutterstatus' in telstatus[telescope].keys():
+                    shutter_status_code = telstatus[telescope]['dome_shutterstatus']
+                    last_non_error_status_code = (db[f'{telescope}status'].find({'dome_shutterstatus': {'$ne': 4}}, sort=[('date', pymongo.DESCENDING)])).next()['dome_shutterstatus']
+                    shutter_status_values = {0: 'Open', 1: 'Closed', 2: 'Opening',
+                                             3: 'Closing', 4: 'Unknown'}
+                    shutter_status_str = shutter_status_values[shutter_status_code]
+                    last_non_error_status_str = shutter_status_values[last_non_error_status_code]
+                    tlog.app_log.info(f"  Shutter Status: {shutter_status_str} ({shutter_status_code})")
+                    tlog.app_log.info(f"  Was Status: {last_non_error_status_str} ({last_non_error_status_code})")
+                    shutter_last = {0: '', 1: '', 2: '', 3: '',
+                                    4: f' (was {last_non_error_status_str})'}
+                    telstatus[telescope]['shutter_str'] = f'{shutter_status_str}{shutter_last[shutter_status_code]}'
+                    tlog.app_log.info(f"  Shutter string: {telstatus[telescope]['shutter_str']}")
+                else:
+                    telstatus[telescope]['shutter_str'] = f'unknown'
             except StopIteration:
                 telstatus[telescope] = {'date': dt.utcnow()-tdelta(365),
                                         'connected': False}
