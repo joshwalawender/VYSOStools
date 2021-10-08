@@ -177,7 +177,10 @@ class Status(RequestHandler):
 
                 if 'dome_shutterstatus' in telstatus[telescope].keys():
                     shutter_status_code = telstatus[telescope]['dome_shutterstatus']
-                    last_non_error_status_code = (db[f'{telescope}status'].find({'dome_shutterstatus': {'$ne': 4}}, sort=[('date', pymongo.DESCENDING)])).next()['dome_shutterstatus']
+                    # Determine last non-error code and report that
+                    last_non_error_status = (db[f'{telescope}status'].find({'dome_shutterstatus': {'$ne': 4}}, sort=[('date', pymongo.DESCENDING)])).next()
+                    last_non_error_status_code = last_non_error_status['dome_shutterstatus']
+                    last_non_error_time = last_non_error_status['date'].strftime('%Y-%m-%d %H:%M')
                     shutter_status_values = {0: 'Open', 1: 'Closed', 2: 'Opening',
                                              3: 'Closing', 4: 'Unknown'}
                     shutter_status_str = shutter_status_values[shutter_status_code]
@@ -188,6 +191,23 @@ class Status(RequestHandler):
                                     4: f' (was {last_non_error_status_str})'}
                     telstatus[telescope]['shutter_str'] = f'{shutter_status_str}{shutter_last[shutter_status_code]}'
                     tlog.app_log.info(f"  {telescope} Shutter string: {telstatus[telescope]['shutter_str']}")
+                    # Look for transitions in this UT date
+                    this_ut_day = nowut - tdelta(hours=nowut.hour, minutes=nowut.minute, seconds=nowut.second) 
+                    entries_for_this_ut_day = (db[f'{telescope}status'].find({'date': {'$gt': this_ut_day}}, sort=[('date', pymongo.ASCENDING)]))
+                    last_shutterstatus = 'unknown'
+                    for entry in entries_for_this_ut_day:
+                        if 'dome_shutterstatus' in entry.keys():
+                            shutterstatus_code = entry['dome_shutterstatus']
+                            shutterstatus = shutter_status_values[shutterstatus_code]
+                            shutterstatus_time = entry['date'].strftime('%Y-%m-%d %H:%M UT')
+                            if shutterstatus != last_shutterstatus:
+                                if last_shutterstatus != 'unknown':
+                                    tlog.app_log.info(f"  {telescope} Shutter transition to {shutterstatus} at {shutterstatus_time}")
+                                    telstatus[telescope]['shutter_str'] += f'\n{shutterstatus} at {shutterstatus_time}'
+                                last_shutterstatus = shutterstatus
+                    tlog.app_log.info(f"  {telescope} Shutter string: {telstatus[telescope]['shutter_str']}")
+
+
                 else:
                     telstatus[telescope]['shutter_str'] = f'unknown'
             except StopIteration:

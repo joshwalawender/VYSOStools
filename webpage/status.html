@@ -263,6 +263,19 @@
         </td>
     </tr>
     <tr>
+        <td style="text-align: right;">Dome History:<br>(this UT date)</td>
+        <td style="text-align: left;">
+        </td>
+        <td style="text-align: left;">
+            {% if 'shutter_str' in telstatus['V5'] %}
+                {% for line in telstatus['V5']['shutter_str'].split('\n')[1:] %}
+                    {{ line }}<br>
+                {% end %}
+            {% end %}
+        </td>
+    </tr>
+
+    <tr>
         <td style="text-align: right;">ACP Connected:</td>
         <td style="text-align: left;">
             {% if 'connected' in telstatus['V20'] %}{{ telstatus['V20']['connected'] }}{% end %}
