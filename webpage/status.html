@@ -231,18 +231,18 @@
         </td>
         <td style="text-align: left;">
             {% if 'dome_shutterstatus' in telstatus['V5'] %}
-                {% if telstatus['V20']['dome_shutterstatus'] == 0 %}
+                {% if telstatus['V5']['dome_shutterstatus'] == 0 %}
                     <font color="green">Open</font>
-                {% elif telstatus['V20']['dome_shutterstatus'] == 1 %}
+                {% elif telstatus['V5']['dome_shutterstatus'] == 1 %}
                     <font color="red">Closed</font>
-                {% elif telstatus['V20']['dome_shutterstatus'] == 2 %}
+                {% elif telstatus['V5']['dome_shutterstatus'] == 2 %}
                     <font color="orange">Opening</font>
-                {% elif telstatus['V20']['dome_shutterstatus'] == 3 %}
+                {% elif telstatus['V5']['dome_shutterstatus'] == 3 %}
                     <font color="orange">Closing</font>
-                {% elif telstatus['V20']['dome_shutterstatus'] == 4 %}
-                    <font color="red">{{ telstatus['V20']['shutter_str'] }}</font>
+                {% elif telstatus['V5']['dome_shutterstatus'] == 4 %}
+                    <font color="red">{{ telstatus['V5']['shutter_str'] }}</font>
                 {% else %}
-                    <font color="black">{{ telstatus['V20']['dome_shutterstatus'] }}</font>
+                    <font color="black">{{ telstatus['V5']['dome_shutterstatus'] }}</font>
                 {% end %}
             {% end %}
         </td>

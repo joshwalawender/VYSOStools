@@ -182,12 +182,12 @@ class Status(RequestHandler):
                                              3: 'Closing', 4: 'Unknown'}
                     shutter_status_str = shutter_status_values[shutter_status_code]
                     last_non_error_status_str = shutter_status_values[last_non_error_status_code]
-                    tlog.app_log.info(f"  Shutter Status: {shutter_status_str} ({shutter_status_code})")
-                    tlog.app_log.info(f"  Was Status: {last_non_error_status_str} ({last_non_error_status_code})")
+                    tlog.app_log.info(f"  {telescope} Shutter Status: {shutter_status_str} ({shutter_status_code})")
+                    tlog.app_log.info(f"  {telescope} Was Status: {last_non_error_status_str} ({last_non_error_status_code})")
                     shutter_last = {0: '', 1: '', 2: '', 3: '',
                                     4: f' (was {last_non_error_status_str})'}
                     telstatus[telescope]['shutter_str'] = f'{shutter_status_str}{shutter_last[shutter_status_code]}'
-                    tlog.app_log.info(f"  Shutter string: {telstatus[telescope]['shutter_str']}")
+                    tlog.app_log.info(f"  {telescope} Shutter string: {telstatus[telescope]['shutter_str']}")
                 else:
                     telstatus[telescope]['shutter_str'] = f'unknown'
             except StopIteration:
