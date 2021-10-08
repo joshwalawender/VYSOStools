@@ -241,7 +241,7 @@ def get_dome_info(status, logger, number=0):
 
     logger.info(f'Getting Dome Status')
     for command in commands:
-        url = f'http://192.168.1.110:11111/api/v1/dome/{number}/{command}'
+        url = f'http://127.0.0.1:11111/api/v1/dome/{number}/{command}'
         try:
             r = requests.get(url)
             j = json.loads(r.text)
@@ -270,8 +270,8 @@ def get_status_and_log(telescope, logger):
     get_AAGSolo(status, logger)
     status = get_telescope_info(status, logger)
     status = get_focuser_info(status, logger)
+    status = get_dome_info(status, logger)
     if telescope == 'V20':
-        status = get_dome_info(status, logger)
         status = get_RCOS_info(status, logger)
 
     ##-------------------------------------------------------------------------
