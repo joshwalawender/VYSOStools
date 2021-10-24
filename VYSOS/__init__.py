@@ -80,7 +80,7 @@ class Telescope(object):
             self.pointing_error_limit = 3
             self.throughput_limit = 0.08
         elif self.name == 'V5':
-            self.FWHM_limit_pix = 2.5
+            self.FWHM_limit_pix = (7.0*u.arcsec/self.pixel_scale).decompose()
             self.ellipticity_limit = 1.3
             self.pointing_error_limit = 6
             self.throughput_limit = 0.30
