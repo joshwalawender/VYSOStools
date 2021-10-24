@@ -114,4 +114,4 @@ def main(telescope='V5'):
 
 
 if __name__ == '__main__':
-    main(telescope='V20')
+    main(telescope='V5')
