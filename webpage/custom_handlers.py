@@ -199,11 +199,11 @@ class Status(RequestHandler):
                         if 'dome_shutterstatus' in entry.keys():
                             shutterstatus_code = entry['dome_shutterstatus']
                             shutterstatus = shutter_status_values[shutterstatus_code]
-                            shutterstatus_time = entry['date'].strftime('%Y-%m-%d %H:%M UT')
+                            shutterstatus_time = entry['date'].strftime('%H:%M UT')
                             if shutterstatus != last_shutterstatus:
                                 if last_shutterstatus != 'unknown':
                                     tlog.app_log.info(f"  {telescope} Shutter transition to {shutterstatus} at {shutterstatus_time}")
-                                    telstatus[telescope]['shutter_str'] += f'\n{shutterstatus} at {shutterstatus_time}'
+                                    telstatus[telescope]['shutter_str'] += f'\n{shutterstatus_time}: {shutterstatus}'
                                 last_shutterstatus = shutterstatus
                     tlog.app_log.info(f"  {telescope} Shutter string: {telstatus[telescope]['shutter_str']}")
 

@@ -240,9 +240,9 @@
                 {% elif telstatus['V5']['dome_shutterstatus'] == 3 %}
                     <font color="orange">Closing</font>
                 {% elif telstatus['V5']['dome_shutterstatus'] == 4 %}
-                    <font color="red">{{ telstatus['V5']['shutter_str'] }}</font>
+                    <font color="red">{{ telstatus['V5']['shutter_str'].split('\n')[0] }}</font>
                 {% else %}
-                    <font color="black">{{ telstatus['V5']['dome_shutterstatus'] }}</font>
+                    <font color="black">{{ telstatus['V5']['dome_shutterstatus'].split('\n')[0] }}</font>
                 {% end %}
             {% end %}
         </td>
