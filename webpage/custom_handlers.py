@@ -51,7 +51,7 @@ def get_image_list(telescope, date, flats=False, cals=False):
         descriptor = 'flats '
         path = os.path.join(path, 'AutoFlat')
         disk_array_path = os.path.join(disk_array_path, 'AutoFlat')
-        filename_pattern = f'AutoFlat*fts*'
+        filename_pattern = f'*AutoFlat*fts*'
     elif cals is True:
         descriptor = 'cals '
         path = os.path.join(path, 'Calibration')
