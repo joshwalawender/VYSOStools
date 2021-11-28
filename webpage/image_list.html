@@ -54,8 +54,11 @@
         <th style="width:50px">Moon Illum. (%)</th>
         <th style="width:50px">Sky Bkg.</th>
         <th style="width:50px">N Stars</th>
-        <th style="width:60px">FWHM ({{ FWHM_units }})</th>
         <th style="width:50px">Ellip.</th>
+        <th style="width:60px">FWHM ({{ FWHM_units }})</th>
+        <th style="width:50px">Focus Pos</th>
+        <th style="width:50px">Tocus Temp</th>
+        <th style="width:50px">Proc. Time</th>
     </tr>
 
     {% for i,image in enumerate(image_list) %}
@@ -181,6 +184,19 @@
         {% end %}
         </td>
 
+        {% if 'ellipticity' in image.keys() %}
+            {% if flags[i]['ellipticity'] is True %}
+                <td style={{ 'text-align:right;background-color:#FF5C33;' }}>
+            {% elif flags[i]['ellipticity'] is False %}
+                <td style={{ 'text-align:right;background-color:#70DB70;' }}>
+            {% else %}
+                <td>
+            {% end %}
+            {{ '{:.2f}'.format(image['ellipticity']) }}
+        {% else %}
+        <td>
+        {% end %}
+        </td>
 
         {% if 'FWHM_pix' in image.keys() %}
             {% if flags[i]['FWHM'] is True %}
@@ -196,19 +212,24 @@
         {% end %}
         </td>
 
-        {% if 'ellipticity' in image.keys() %}
-            {% if flags[i]['ellipticity'] is True %}
-                <td style={{ 'text-align:right;background-color:#FF5C33;' }}>
-            {% elif flags[i]['ellipticity'] is False %}
-                <td style={{ 'text-align:right;background-color:#70DB70;' }}>
-            {% else %}
-                <td>
-            {% end %}
-            {{ '{:.2f}'.format(image['ellipticity']) }}
-        {% else %}
         <td>
+        {% if 'focus_position' in image.keys() %}
+            {{ '{:.0f}'.format(image['focus_position']) }}
         {% end %}
         </td>
+
+        <td>
+        {% if 'focus_temperature' in image.keys() %}
+            {{ '{:.1f}'.format(image['focus_temperature']) }}
+        {% end %}
+        </td>
+
+        <td style={{ 'text-align:right;' }}>
+        {% if 'processing time' in image.keys() %}
+            {{ '{:.0f}'.format(image['processing time']) }}
+        {% end %}
+        </td>
+
 
     </tr>
     {% end %}

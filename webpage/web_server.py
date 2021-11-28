@@ -22,6 +22,7 @@ from tornado import websocket
 import tornado.log as tlog
 
 from astropy import units as u
+from astropy import stats
 from astropy.coordinates import SkyCoord
 import ephem
 
@@ -85,6 +86,7 @@ class ListOfImages(RequestHandler):
         tlog.app_log.info('  Connected to client.')
         db = client[tel.mongo_db]
         collection = db[tel.mongo_collection]
+        status_collection = db[f"{tel.name}status"]
         tlog.app_log.info('  Retrieved collection.')
 
         tlog.app_log.info('  Getting list of images from mongo')
@@ -101,6 +103,9 @@ class ListOfImages(RequestHandler):
                           collection.find(querydict).sort(\
                           [('date', pymongo.ASCENDING)])]
             tlog.app_log.info('  Got list of {} images for night.'.format(len(image_list)))
+            status_entries = [entry for entry in\
+                              status_collection.find(querydict).sort(\
+                              [('date', pymongo.ASCENDING)])]
         ##---------------------------------------------------------------------
         ## If subject matches a target name, then get images for that target
         ##---------------------------------------------------------------------
@@ -153,7 +158,6 @@ class ListOfImages(RequestHandler):
                      'throughput': (image['zero point'] < tel.throughput_limit) if 'zero point' in image.keys() else True,
                      }
                 flags.append(f)
-
             tlog.app_log.info('  Rendering ListOfImages')
             self.render("image_list.html", title="{} Results".format(telescopename),\
                         telescope = telescope,\
@@ -163,6 +167,7 @@ class ListOfImages(RequestHandler):
                         FWHM_units = tel.units_for_FWHM.to_string(),\
                         FWHM_multiplier = FWHM_multiplier,\
                         flags=flags,\
+#                         focus=focus,\
                        )
             tlog.app_log.info('  Done.')
 

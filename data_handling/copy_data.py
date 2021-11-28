@@ -21,7 +21,7 @@ from astropy.io import fits
 ##-------------------------------------------------------------------------
 ## Copy Data
 ##-------------------------------------------------------------------------
-def copy_data(date, tel, verbose=False, run=True):
+def copy_data(date, tel, verbose=False, run=True, delete=False):
 
     ##-------------------------------------------------------------------------
     ## Create logger object
@@ -30,7 +30,7 @@ def copy_data(date, tel, verbose=False, run=True):
     logger.setLevel(logging.DEBUG)
     ## Set up console output
     LogConsoleHandler = logging.StreamHandler()
-    if args.verbose:
+    if verbose:
         LogConsoleHandler.setLevel(logging.DEBUG)
     else:
         LogConsoleHandler.setLevel(logging.INFO)
@@ -138,16 +138,16 @@ def copy_data(date, tel, verbose=False, run=True):
                             if run: shutil.copy2(join(path, file), dest_file)
                         if os.path.exists(dest_file) or not run:
                             ok2del[i] = True
-                if args.delete and np.all(ok2del):
+                if delete and np.all(ok2del):
                     logger.info(f'  Deleting {file}')
                     if run: os.remove(join(path, file))
-            if args.delete:
+            if delete:
                 if len(glob.glob(join(path, '*'))) == 0:
                     logger.info('Removing {}'.format(path))
                     if run: os.rmdir(path)
                 else:
                     logger.warning(f'Files still remain in {path}')
-        if args.delete:
+        if delete:
             if run:
                 try:
                     os.rmdir(source_path)
@@ -156,7 +156,7 @@ def copy_data(date, tel, verbose=False, run=True):
                     pass
 
 
-if __name__ == '__main__':
+def main():
     ##-------------------------------------------------------------------------
     ## Parse Command Line Arguments
     ##-------------------------------------------------------------------------
@@ -192,4 +192,8 @@ if __name__ == '__main__':
     else:
         date = datetime.datetime.utcnow().strftime('%Y%m%dUT')
 
-    copy_data(date, args.telescope, verbose=args.verbose)
+    copy_data(date, args.telescope, verbose=args.verbose, delete=args.delete)
+
+
+if __name__ == '__main__':
+    main()
