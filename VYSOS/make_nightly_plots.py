@@ -75,6 +75,11 @@ def query_mongo(db, collection, query):
               )
         dtype=(dt, np.float, np.float, np.float, np.float, np.int, np.int,
                np.float, np.float, np.float, np.float)
+    elif collection == 'V5status':
+        names=('date', 'focuser_temperature', 'focuser_position',
+               'alt', 'az', 'RA', 'DEC', 
+              )
+        dtype=(dt, np.float, np.float, np.float, np.float, np.float, np.float)
     elif collection == 'images':
         names=('date', 'telescope', 'moon_separation', 'perr_arcmin',
                'airmass', 'FWHM_pix', 'ellipticity', 'throughput', 'filter')
@@ -153,15 +158,17 @@ def make_plots(date_string, telescope, l, fit_airmass=False):
     db = client[tel.mongo_db]
     
     l.info(f"Querying database for images")
-    images = query_mongo(db, 'images', {'date': {'$gt':start, '$lt':end}, 'telescope':telescope } )
+    query_dict = {'date': {'$gt':start, '$lt':end}, 'telescope':telescope }
+    images = query_mongo(db, 'images', query_dict)
     l.info(f"  Found {len(images)} image entries")
     
-    l.info(f"Querying database for V20status")
-    status = query_mongo(db, 'V20status', {'date': {'$gt':start, '$lt':end} } )
+    l.info(f"Querying database for {telescope}status")
+    query_dict = {'date': {'$gt':start, '$lt':end}}
+    status = query_mongo(db, f'{telescope}status', query_dict)
     l.info(f"  Found {len(status)} status entries")
-    
+
     l.info(f"Querying database for weather")
-    weather = query_mongo(db, 'weather', {'date': {'$gt':start, '$lt':end} } )
+    weather = query_mongo(db, 'weather', query_dict)
     l.info(f"  Found {len(weather)} weather entries")
 
     if len(images) == 0 and len(status) == 0:
@@ -178,6 +185,12 @@ def make_plots(date_string, telescope, l, fit_airmass=False):
                            ( [0.000, 0.490, 0.465, 0.050], [0.535, 0.315, 0.465, 0.240] ),
                            ( [0.000, 0.210, 0.465, 0.250], [0.535, 0.000, 0.465, 0.265] ),
                            ( [0.000, 0.000, 0.465, 0.200], None                         ) ]
+    elif telescope == "V5":
+        plot_positions = [ ( [0.000, 0.755, 0.465, 0.245], [0.535, 0.760, 0.465, 0.240] ),
+                           ( None                        , [0.535, 0.570, 0.465, 0.160] ),
+                           ( None                        , [0.535, 0.315, 0.465, 0.240] ),
+                           ( [0.000, 0.440, 0.465, 0.250], [0.535, 0.000, 0.465, 0.265] ),
+                           ( [0.000, 0.165, 0.465, 0.250], None                         ) ]
 
 
     l.info("Writing Output File: {}".format(night_plot_file_name))
@@ -195,27 +208,30 @@ def make_plots(date_string, telescope, l, fit_airmass=False):
     t.plot_date(weather['date'], weather['temp']*9/5+32, 'k-',
                      markersize=2, markeredgewidth=0, drawstyle="default",
                      label="Outside Temp")
-
     l.debug('  Adding focuser temp to plot')
-    t.plot_date(status['date'], status['focuser_temperature']*9/5+32, 'y-',
-                     markersize=2, markeredgewidth=0,
-                     label="Focuser Temp")
 
-    l.debug('  Adding primary temp to plot')
-    t.plot_date(status['date'], status['primary_temperature']*9/5+32, 'r-',
-                     markersize=2, markeredgewidth=0,
-                     label="Primary Temp")
-
-    l.debug('  Adding secondary temp to plot')
-    t.plot_date(status['date'], status['secondary_temperature']*9/5+32, 'g-',
-                     markersize=2, markeredgewidth=0,
-                     label="Secondary Temp")
-
-    l.debug('  Adding truss temp to plot')
-    t.plot_date(status['date'], status['truss_temperature']*9/5+32, 'k-',
-                     alpha=0.5,
-                     markersize=2, markeredgewidth=0,
-                     label="Truss Temp")
+    if telescope == 'V5':
+        t.plot_date(status['date'], status['focuser_temperature'], 'y-',
+                         markersize=2, markeredgewidth=0,
+                         label="Focuser Temp")
+    elif telescope == 'V20':
+        l.debug('  Adding focuser temp to plot')
+        t.plot_date(status['date'], status['focuser_temperature']*9/5+32, 'y-',
+                         markersize=2, markeredgewidth=0,
+                         label="Focuser Temp")
+        l.debug('  Adding primary temp to plot')
+        t.plot_date(status['date'], status['primary_temperature']*9/5+32, 'r-',
+                         markersize=2, markeredgewidth=0,
+                         label="Primary Temp")
+        l.debug('  Adding secondary temp to plot')
+        t.plot_date(status['date'], status['secondary_temperature']*9/5+32, 'g-',
+                         markersize=2, markeredgewidth=0,
+                         label="Secondary Temp")
+        l.debug('  Adding truss temp to plot')
+        t.plot_date(status['date'], status['truss_temperature']*9/5+32, 'k-',
+                         alpha=0.5,
+                         markersize=2, markeredgewidth=0,
+                         label="Truss Temp")
 
     plt.xlim(plot_start, plot_end)
     plt.ylim(28,87)
@@ -306,16 +322,21 @@ def make_plots(date_string, telescope, l, fit_airmass=False):
     f = plt.axes(plot_positions[3][0])
     plt.title(f"Image Quality for {telescope} on the Night of {date_string}")
 
-    fwhm = images['FWHM_pix']*u.pix * tel.pixel_scale
+    fwhm = images['FWHM_pix']
+    if telescope == 'V20':
+        fwhm *= u.pix * tel.pixel_scale
     f.plot_date(images['date'], fwhm, 'ko',
                      markersize=3, markeredgewidth=0,
                      label="FWHM")
     plt.xlim(plot_start, plot_end)
-    plt.ylim(0,10)
+    if telescope == 'V20':
+        plt.ylabel(f"FWHM (arcsec)")
+    elif telescope == 'V5':
+        plt.ylabel(f"FWHM (pix)")
+    plt.ylim(0,8)
     f.xaxis.set_major_locator(hours)
     f.xaxis.set_major_formatter(hours_fmt)
     f.xaxis.set_ticklabels([])
-    plt.ylabel(f"FWHM (arcsec)")
     plt.grid(which='major', color='k')
 
     ##------------------------------------------------------------------------
@@ -482,26 +503,30 @@ def make_plots(date_string, telescope, l, fit_airmass=False):
     l.info('Adding throughput vs. airmass plot')
     zp = plt.axes(plot_positions[3][1])
 
-    images_i = images[(images['filter'] == 'PSi') & (images['throughput'] > 0)]
-    if len(images_i) > 1:
-        l.info(f'  Found {len(images_i)} i-band images')
-        airmass = [x['airmass'] for x in images_i if x['throughput'] > 0]
-        zero_point = [x['throughput'] for x in images_i if x['throughput'] > 0]
-        zp.plot(airmass, zero_point, 'ko',
-                markersize=3, markeredgewidth=0,
-                label="i-band Throughput")
-        if fit_airmass is True and (max(airmass)-min(airmass)) > 0.5:
-            l.info('  Fitting airmass term')
-            fitted_line = sigma_clipping_line_fit(np.array(airmass),
-                                                  np.array(zero_point), log=l)
-            mag_per_airmass = 2.512*np.log10(fitted_line(1)/fitted_line(0))
-            zp.plot(airmass, fitted_line(airmass), 'k-', alpha=0.2,
-                    label=f"i-band Airmass Term: {mag_per_airmass:.3f} mag")
-            l.info(f'  i-band Airmass Term = {mag_per_airmass:.3f} mag per airmass')
-            l.info(f'  i-band Throughput at airmass = 0 is {fitted_line(0):.3f}')
-            l.info(f'  i-band Throughput at airmass = 1 is {fitted_line(1):.3f}')
+    if telescope == 'V20':
+        images_i = images[(images['filter'] == 'PSi') & (images['throughput'] > 0)]
+        if len(images_i) > 1:
+            l.info(f'  Found {len(images_i)} i-band images')
+            airmass = [x['airmass'] for x in images_i if x['throughput'] > 0]
+            zero_point = [x['throughput'] for x in images_i if x['throughput'] > 0]
+            zp.plot(airmass, zero_point, 'ko',
+                    markersize=3, markeredgewidth=0,
+                    label="i-band Throughput")
+            if fit_airmass is True and (max(airmass)-min(airmass)) > 0.5:
+                l.info('  Fitting airmass term')
+                fitted_line = sigma_clipping_line_fit(np.array(airmass),
+                                                      np.array(zero_point), log=l)
+                mag_per_airmass = 2.512*np.log10(fitted_line(1)/fitted_line(0))
+                zp.plot(airmass, fitted_line(airmass), 'k-', alpha=0.2,
+                        label=f"i-band Airmass Term: {mag_per_airmass:.3f} mag")
+                l.info(f'  i-band Airmass Term = {mag_per_airmass:.3f} mag per airmass')
+                l.info(f'  i-band Throughput at airmass = 0 is {fitted_line(0):.3f}')
+                l.info(f'  i-band Throughput at airmass = 1 is {fitted_line(1):.3f}')
 
-    images_r = images[(images['filter'] == 'PSr') & (images['throughput'] > 0)]
+    if telescope == 'V20':
+        images_r = images[(images['filter'] == 'PSr') & (images['throughput'] > 0)]
+    else:
+        images_r = images[images['throughput'] > 0]
     if len(images_r) > 1:
         l.info(f'  Found {len(images_r)} r-band images')
         airmass = [x['airmass'] for x in images_r if x['throughput'] > 0]
@@ -528,7 +553,8 @@ def make_plots(date_string, telescope, l, fit_airmass=False):
     plt.ylim(0,ymax)
     plt.xlabel(f"Airmass")
     plt.ylabel(f"Throughput")
-    plt.legend(loc='best', fontsize=10)
+    if telescope == 'V20':
+        plt.legend(loc='best', fontsize=10)
     plt.grid(color='k')
 
     ##------------------------------------------------------------------------
@@ -581,7 +607,7 @@ def main():
         default=False, help="Fit airmass term")
     ## add arguments
     parser.add_argument("-t", dest="telescope",
-        required=False, type=str,
+        required=False, type=str, default='V5',
         help="Telescope which took the data ('V5' or 'V20')")
     parser.add_argument("-d", dest="date",
         required=False, type=str,
