@@ -143,24 +143,59 @@ def plot_weather(date=None, verbose=False):
                                     sort=[('date', pymongo.DESCENDING)])]
     time = np.array([x['date'] for x in data])
 
+    # Get status collection for roof state
+    v5status_collection = client.vysos['V5status']
+    query_dict = {'date': {'$gt': start, '$lt': end}}
+#     shutter_status_values = {0: 'Open', 1: 'Closed', 2: 'Opening',
+#                              3: 'Closing', 4: 'Unknown'}
+    shutter_values = {0: 0, 1: 1, 2: 0, 3: 1, 4: 4}
+    v5status = [x for x in v5status_collection.find(query_dict,
+                           sort=[('date', pymongo.DESCENDING)])]
+    v5_shutter = [shutter_values[int(x['dome_shutterstatus'])] for x in v5status]
+    v5_status_time = np.array([x['date'] for x in v5status])
+
+    # Get images collection
+    images_collection = client.vysos['images']
+    query_dict = {'date': {'$gt': start, '$lt': end}, 'telescope': 'V5'}
+    v5images = [x for x in images_collection.find(query_dict,
+                           sort=[('date', pymongo.DESCENDING)])]
+    v5_image_airmass = []
+    v5_image_time = []
+    v5_cal_time = []
+    v5_flat_time = []
+    for im in v5images:
+        if im['filename'][:7] in ['V5_Bias', 'V5_Dark']:
+            v5_cal_time.append(im['date'])
+        elif im['filename'][:11] == 'V5_AutoFlat':
+            v5_flat_time.append(im['date'])
+        else:
+            if 'airmass' in im.keys():
+                v5_image_time.append(im['date'])
+                v5_image_airmass.append(im['airmass'])
+            else:
+                print(im['filename'])
+
     dpi=72
     fig = plt.figure(figsize=(20,10), dpi=dpi)
     night_plot_file_name = 'weather.png'
     destination_path = os.path.abspath('/var/www/')
     night_plot_file = os.path.join(destination_path, night_plot_file_name)
-    plot_positions = [ [ [0.060, 0.700, 0.600, 0.220], [0.670, 0.700, 0.320, 0.220] ],
-                       [ [0.060, 0.470, 0.600, 0.220], [0.670, 0.470, 0.320, 0.220] ],
-                       [ [0.060, 0.240, 0.600, 0.220], [0.670, 0.240, 0.320, 0.220] ],
-                       [ [0.060, 0.090, 0.600, 0.140], [0.670, 0.090, 0.320, 0.140] ],
-                       [ [0.060, 0.020, 0.600, 0.060], [0.670, 0.020, 0.320, 0.060] ],
+    plot_positions = [ [ [0.060, 0.700, 0.600, 0.200], [0.670, 0.700, 0.320, 0.200] ],
+                       [ [0.060, 0.490, 0.600, 0.200], [0.670, 0.490, 0.320, 0.200] ],
+                       [ [0.060, 0.280, 0.600, 0.200], [0.670, 0.280, 0.320, 0.200] ],
+                       [ [0.060, 0.150, 0.600, 0.120], [0.670, 0.150, 0.320, 0.120] ],
+                       [ [0.060, 0.080, 0.600, 0.060], [0.670, 0.080, 0.320, 0.060] ],
+                       [ [0.060, 0.010, 0.600, 0.060], [0.670, 0.010, 0.320, 0.060] ],
                      ]
-    labels = ['Outside Temp (F)', 'Cloudiness (C)', 'Wind (kph)', 'Rain', 'Safe']
+    labels = ['Outside Temp (F)', 'Cloudiness (C)', 'Wind (kph)', 'Rain', 'Safe', 'V5']
     data = [ np.array([(float(x['temp'])*1.8+32.) for x in data]),
              np.array([float(x['clouds']) for x in data]),
              np.array([float(x['wind']) for x in data]),
              np.array([float(x['rain']) for x in data]),
              np.array([float(x['safe']) for x in data]),
+             np.array(v5_shutter),
            ]
+    times = [time, time, time, time, time, v5_status_time]
 
     windlim_data = list(data[2]*1.1) # multiply by 1.1 for plot limit
     windlim_data.append(65) # minimum limit on plot is 65
@@ -169,6 +204,7 @@ def plot_weather(date=None, verbose=False):
               (-2,max(windlim_data)),
               (3000,0),
               (-0.25, 1.1),
+              (-0.25,1.1),
             ]
 
     ##-------------------------------------------------------------------------
@@ -193,7 +229,7 @@ def plot_weather(date=None, verbose=False):
 
         for lr in range(2):
             t_axes = plt.axes(plot_positions[i][lr])
-            if label != 'Safe':
+            if label in ['Outside Temp (F)', 'Cloudiness (C)', 'Wind (kph)', 'Rain']:
                 ## Overplot Twilights
                 try:
                     twilights = get_twilights(start, end)
@@ -206,31 +242,36 @@ def plot_weather(date=None, verbose=False):
 #                     print(e)
                 ## Plot data
                 if label in weather_limits.keys():
-                    t_axes.plot_date(time, data[i], 'ko', label=label,
+                    t_axes.plot_date(times[i], data[i], 'ko', label=label,
                                      markersize=(lr+1)*2, markeredgewidth=0,
                                      drawstyle="default")
                     if len(wsafe) > 0:
-                        t_axes.plot_date(time[wsafe], data[i][wsafe], 'go',
+                        t_axes.plot_date(times[i][wsafe], data[i][wsafe], 'go',
                                          markersize=(lr+1)*2, markeredgewidth=0,
                                          drawstyle="default")
                     if len(wwarn) > 0:
-                        t_axes.plot_date(time[wwarn], data[i][wwarn], 'yo',
+                        t_axes.plot_date(times[i][wwarn], data[i][wwarn], 'yo',
                                          markersize=(lr+1)*2, markeredgewidth=0,
                                          drawstyle="default")
                     if len(wunsafe) > 0:
-                        t_axes.plot_date(time[wunsafe], data[i][wunsafe], 'ro',
+                        t_axes.plot_date(times[i][wunsafe], data[i][wunsafe], 'ro',
                                          markersize=(lr+1)*2, markeredgewidth=0,
                                          drawstyle="default")
 
                 else:
-                    t_axes.plot_date(time, data[i], 'ko', label=label,
+                    t_axes.plot_date(times[i], data[i], 'ko', label=label,
                                      markersize=4, markeredgewidth=0,
                                      drawstyle="default")
-            else:
-                plt.fill_between(time, -1, data[i], where=np.array(data[i])>0, facecolor='green')
-                plt.fill_between(time, -1, data[i], where=np.array(data[i])<=0, facecolor='red')
+            if label == 'Safe':
+                plt.fill_between(times[i], -1, data[i], where=np.array(data[i])>0, facecolor='green', alpha=0.6)
+                plt.fill_between(times[i], -1, data[i], where=np.array(data[i])<=0, facecolor='red', alpha=0.6)
+            if label == 'V5':
+                plt.fill_between(times[i], -1, data[i], where=np.array(data[i])>0, facecolor='k', alpha=0.5)
+                plt.plot(v5_image_time, 2-np.array(v5_image_airmass), 'bo', mew=0, ms=3)
+                plt.plot(v5_cal_time, [0.5]*len(v5_cal_time), 'ko', mew=0, ms=3)
+                plt.plot(v5_flat_time, [0.5]*len(v5_flat_time), 'yo', mew=0, ms=3)
             if label == 'Wind (kph)':
-                matime, wind_mavg = moving_averagexy(time, data[i], 5)
+                matime, wind_mavg = moving_averagexy(times[i], data[i], 5)
                 t_axes.plot_date(matime, wind_mavg, 'k-')
             if lr==0:
                 if i==0:
@@ -240,13 +281,15 @@ def plot_weather(date=None, verbose=False):
                 t_axes.xaxis.set_major_locator(HourLocator(byhour=range(24)))
                 if label == 'Rain':
                     t_axes.get_yaxis().set_ticklabels([])
-                if i == len(labels)-1:
+                if label in ['Safe', 'V5']:
                     t_axes.set_yticks([])
                     t_axes.get_yaxis().set_ticklabels([])
-                    t_axes.xaxis.set_major_formatter(DateFormatter('%H'))
                 else:
                     plt.grid(which='major', color='k')
                     plt.grid(which='minor', color='k', alpha=0.8)
+                if label == 'V5':
+                    t_axes.xaxis.set_major_formatter(DateFormatter('%H'))
+                else:
                     t_axes.xaxis.set_major_formatter(plt.NullFormatter())
             elif lr==1:
                 plt.xlim(end - tdelta(0,1.25*60*60), end)
